@@ -4,24 +4,22 @@ info:
   description: |
     # Sistem Informasi & Manajemen Event Universitas (SITIVENT)
     REST API Backend Polyglot Go (Gin) dengan arsitektur Hierarchical Multi-Tenant (Rektorat & Fakultas) dan Permission-Based Access Control (PBAC).
-    
+
     ### Struktur Multi-Tenant:
     1. **Tenant Utama (Rektorat / Universitas)**: `type = ROOT`, `parent_id = NULL`. Mengelola seluruh tenant dan event tingkat universitas.
     2. **Tenant Children (Fakultas / Unit Kerja)**: `type = FACULTY`, `parent_id = <ID_Rektorat>`. Mengelola event, panitia, kuota, pembayaran, dan absensi khusus fakultas.
     3. **Peserta Universal**: Akun mahasiswa/umum (`role = peserta`, `tenant_id = NULL`) yang dapat mendaftar ke event lintas fakultas dan rektorat.
   version: 1.0.0
   contact:
-    name: Tim Pengembang SITIVENT
-    email: support@untitled.ac.id
+    name: Naufal Akbar Nugroho
+    email: naufalakbar378@gmail.com
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
 
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:8000
     description: Local Development Server
-  - url: https://api.untitled.ac.id
-    description: Production Server
 
 tags:
   - name: Health
@@ -66,7 +64,7 @@ paths:
       summary: Health check server
       description: Memeriksa apakah service API berjalan normal
       responses:
-        '200':
+        "200":
           description: Service sehat dan beroperasi
           content:
             application/json:
@@ -94,18 +92,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignUpRequest'
+              $ref: "#/components/schemas/SignUpRequest"
       responses:
-        '201':
+        "201":
           description: Berhasil registrasi akun
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthSuccessResponse'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '409':
-          $ref: '#/components/responses/ConflictError'
+                $ref: "#/components/schemas/AuthSuccessResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
 
   /core/v1/auth/signin:
     post:
@@ -118,18 +116,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignInRequest'
+              $ref: "#/components/schemas/SignInRequest"
       responses:
-        '200':
+        "200":
           description: Login berhasil
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthSuccessResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/ForbiddenError'
+                $ref: "#/components/schemas/AuthSuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
 
   /core/v1/auth/refresh:
     post:
@@ -150,14 +148,14 @@ paths:
                   type: string
                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
       responses:
-        '200':
+        "200":
           description: Token berhasil diperbarui
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
+                $ref: "#/components/schemas/TokenResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
 
   /core/v1/auth/me:
     get:
@@ -168,14 +166,14 @@ paths:
       security:
         - BearerAuth: []
       responses:
-        '200':
+        "200":
           description: Data profil berhasil diambil
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MeSuccessResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
+                $ref: "#/components/schemas/MeSuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
 
   /core/v1/auth/switch-tenant:
     post:
@@ -190,20 +188,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SwitchTenantRequest'
+              $ref: "#/components/schemas/SwitchTenantRequest"
       responses:
-        '200':
+        "200":
           description: Konteks tenant berhasil dialihkan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthSuccessResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/ForbiddenError'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
+                $ref: "#/components/schemas/AuthSuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
 
   # ============================================================================
   # CORE - TENANT MANAGEMENT
@@ -227,12 +225,12 @@ paths:
             type: string
           description: Pencarian nama atau kode tenant
       responses:
-        '200':
+        "200":
           description: Daftar tenant berhasil diambil
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TenantListResponse'
+                $ref: "#/components/schemas/TenantListResponse"
     post:
       tags:
         - Core - Tenants
@@ -245,20 +243,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateTenantRequest'
+              $ref: "#/components/schemas/CreateTenantRequest"
       responses:
-        '201':
+        "201":
           description: Tenant baru berhasil dibuat
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TenantDetailResponse'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '403':
-          $ref: '#/components/responses/ForbiddenError'
+                $ref: "#/components/schemas/TenantDetailResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
 
   /core/v1/tenants/{id}:
     get:
@@ -273,14 +271,14 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Detail tenant ditemukan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TenantDetailResponse'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
+                $ref: "#/components/schemas/TenantDetailResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
     put:
       tags:
         - Core - Tenants
@@ -299,18 +297,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateTenantRequest'
+              $ref: "#/components/schemas/UpdateTenantRequest"
       responses:
-        '200':
+        "200":
           description: Data tenant berhasil diubah
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TenantDetailResponse'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
+                $ref: "#/components/schemas/TenantDetailResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
     delete:
       tags:
         - Core - Tenants
@@ -325,14 +323,14 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Tenant berhasil dihapus
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BaseResponse'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
+                $ref: "#/components/schemas/BaseResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
 
   /core/v1/tenants/by-slug/{slug}:
     get:
@@ -348,14 +346,14 @@ paths:
             type: string
             example: fasilkom
       responses:
-        '200':
+        "200":
           description: Profil tenant ditemukan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TenantDetailResponse'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
+                $ref: "#/components/schemas/TenantDetailResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
 
   /core/v1/tenants/{id}/payment-gateway:
     get:
@@ -373,12 +371,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Konfigurasi payment gateway tenant
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaymentGatewayDetailResponse'
+                $ref: "#/components/schemas/PaymentGatewayDetailResponse"
     put:
       tags:
         - Core - Tenants
@@ -398,14 +396,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdatePaymentGatewayRequest'
+              $ref: "#/components/schemas/UpdatePaymentGatewayRequest"
       responses:
-        '200':
+        "200":
           description: Konfigurasi payment gateway berhasil disimpan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaymentGatewayDetailResponse'
+                $ref: "#/components/schemas/PaymentGatewayDetailResponse"
 
   # ============================================================================
   # CORE - USER MANAGEMENT
@@ -439,12 +437,12 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Daftar pengguna berhasil diambil
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserPaginatedResponse'
+                $ref: "#/components/schemas/UserPaginatedResponse"
     post:
       tags:
         - Core - Users
@@ -457,14 +455,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUserRequest'
+              $ref: "#/components/schemas/CreateUserRequest"
       responses:
-        '201':
+        "201":
           description: Pengguna berhasil dibuat
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDetailResponse'
+                $ref: "#/components/schemas/UserDetailResponse"
 
   /core/v1/users/{id}:
     get:
@@ -481,14 +479,14 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Detail user ditemukan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDetailResponse'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
+                $ref: "#/components/schemas/UserDetailResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
     put:
       tags:
         - Core - Users
@@ -507,14 +505,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateUserRequest'
+              $ref: "#/components/schemas/UpdateUserRequest"
       responses:
-        '200':
+        "200":
           description: User berhasil diupdate
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDetailResponse'
+                $ref: "#/components/schemas/UserDetailResponse"
 
   /core/v1/users/{id}/ban:
     post:
@@ -535,14 +533,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BanUserRequest'
+              $ref: "#/components/schemas/BanUserRequest"
       responses:
-        '200':
+        "200":
           description: Akun berhasil diblokir
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BaseResponse'
+                $ref: "#/components/schemas/BaseResponse"
 
   /core/v1/users/{id}/unban:
     post:
@@ -559,12 +557,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Blokir akun berhasil dibuka
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BaseResponse'
+                $ref: "#/components/schemas/BaseResponse"
 
   /core/v1/users/me:
     put:
@@ -587,12 +585,12 @@ paths:
                   type: string
                   example: https://images.unsplash.com/photo-user.jpg
       responses:
-        '200':
+        "200":
           description: Profil berhasil diperbarui
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDetailResponse'
+                $ref: "#/components/schemas/UserDetailResponse"
 
   /core/v1/users/change-password:
     post:
@@ -606,14 +604,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ChangePasswordRequest'
+              $ref: "#/components/schemas/ChangePasswordRequest"
       responses:
-        '200':
+        "200":
           description: Password berhasil diubah
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BaseResponse'
+                $ref: "#/components/schemas/BaseResponse"
 
   # ============================================================================
   # CORE - ROLES & PERMISSIONS
@@ -626,12 +624,12 @@ paths:
       security:
         - BearerAuth: []
       responses:
-        '200':
+        "200":
           description: Daftar roles berhasil diambil
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RoleListResponse'
+                $ref: "#/components/schemas/RoleListResponse"
 
   /core/v1/roles/{id}:
     get:
@@ -648,12 +646,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Detail role dengan daftar permissions
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RoleDetailResponse'
+                $ref: "#/components/schemas/RoleDetailResponse"
 
   # ============================================================================
   # CORE - AUDIT LOGS
@@ -687,12 +685,12 @@ paths:
             type: string
             example: CREATE
       responses:
-        '200':
+        "200":
           description: Riwayat audit log berhasil diambil
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuditLogPaginatedResponse'
+                $ref: "#/components/schemas/AuditLogPaginatedResponse"
 
   # ============================================================================
   # MODULES - EVENTS & CATEGORIES
@@ -736,12 +734,12 @@ paths:
             type: integer
             default: 10
       responses:
-        '200':
+        "200":
           description: Katalog event berhasil diambil
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EventPaginatedResponse'
+                $ref: "#/components/schemas/EventPaginatedResponse"
     post:
       tags:
         - Modules - Events
@@ -753,14 +751,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateEventRequest'
+              $ref: "#/components/schemas/CreateEventRequest"
       responses:
-        '201':
+        "201":
           description: Event berhasil dibuat
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EventDetailResponse'
+                $ref: "#/components/schemas/EventDetailResponse"
 
   /modules/v1/events/{id}:
     get:
@@ -775,14 +773,14 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Detail event ditemukan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EventDetailResponse'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
+                $ref: "#/components/schemas/EventDetailResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
     put:
       tags:
         - Modules - Events
@@ -801,14 +799,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateEventRequest'
+              $ref: "#/components/schemas/UpdateEventRequest"
       responses:
-        '200':
+        "200":
           description: Event berhasil diperbarui
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EventDetailResponse'
+                $ref: "#/components/schemas/EventDetailResponse"
     delete:
       tags:
         - Modules - Events
@@ -823,12 +821,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Event berhasil dihapus
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BaseResponse'
+                $ref: "#/components/schemas/BaseResponse"
 
   /modules/v1/events/by-slug/{slug}:
     get:
@@ -843,14 +841,14 @@ paths:
             type: string
             example: seminar-dies-natalis-2026
       responses:
-        '200':
+        "200":
           description: Detail event ditemukan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EventDetailResponse'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
+                $ref: "#/components/schemas/EventDetailResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
 
   /modules/v1/event-categories:
     get:
@@ -865,12 +863,12 @@ paths:
             format: uuid
           description: ID Fakultas / Rektorat
       responses:
-        '200':
+        "200":
           description: Daftar kategori event
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EventCategoryListResponse'
+                $ref: "#/components/schemas/EventCategoryListResponse"
 
   # ============================================================================
   # MODULES - REGISTRATIONS & ATTENDANCE
@@ -899,12 +897,12 @@ paths:
             type: integer
             default: 1
       responses:
-        '200':
+        "200":
           description: Daftar registrasi peserta
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegistrationPaginatedResponse'
+                $ref: "#/components/schemas/RegistrationPaginatedResponse"
     post:
       tags:
         - Modules - Registrations
@@ -927,13 +925,13 @@ paths:
                   type: boolean
                   default: false
       responses:
-        '201':
+        "201":
           description: Pendaftaran berhasil dibuat
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegistrationDetailResponse'
-        '400':
+                $ref: "#/components/schemas/RegistrationDetailResponse"
+        "400":
           description: Kuota penuh atau pendaftaran ditutup
 
   /modules/v1/attendance/scan:
@@ -957,13 +955,13 @@ paths:
                   type: string
                   example: valid-token-scan1-12345
       responses:
-        '200':
+        "200":
           description: Kehadiran berhasil diverifikasi
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AttendanceScanResponse'
-        '400':
+                $ref: "#/components/schemas/AttendanceScanResponse"
+        "400":
           description: Token tidak valid atau peserta sudah pernah check-in sebelumnya
 
   # ============================================================================
@@ -998,12 +996,12 @@ paths:
                 rejection_reason:
                   type: string
       responses:
-        '200':
+        "200":
           description: Status pembayaran berhasil diperbarui
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BaseResponse'
+                $ref: "#/components/schemas/BaseResponse"
 
   /modules/v1/payments/webhook/ipaymu:
     post:
@@ -1029,7 +1027,7 @@ paths:
                 channel:
                   type: string
       responses:
-        '200':
+        "200":
           description: Webhook berhasil diproses
 
   # ============================================================================
@@ -1049,13 +1047,13 @@ paths:
             type: string
             example: CERT/CS-2026/001
       responses:
-        '200':
+        "200":
           description: Data sertifikat valid
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CertificateVerifyResponse'
-        '404':
+                $ref: "#/components/schemas/CertificateVerifyResponse"
+        "404":
           description: Nomor sertifikat tidak ditemukan
 
 # ==============================================================================
@@ -1075,31 +1073,31 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
     UnauthorizedError:
       description: Token otentikasi tidak disediakan atau tidak valid
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
     ForbiddenError:
       description: Pengguna tidak memiliki izin / hak akses ke resource ini
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
     NotFoundError:
       description: Resource yang diminta tidak ditemukan
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
     ConflictError:
       description: "Terjadi konflik data (contoh: email atau slug sudah digunakan)"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
 
   schemas:
     # ─── Standard Envelopes ───────────────────────────────────────────────────
@@ -1228,9 +1226,9 @@ components:
               type: string
               example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
             user:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
             tenant:
-              $ref: '#/components/schemas/Tenant'
+              $ref: "#/components/schemas/Tenant"
 
     MeSuccessResponse:
       type: object
@@ -1242,9 +1240,9 @@ components:
           type: object
           properties:
             user:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
             tenant:
-              $ref: '#/components/schemas/Tenant'
+              $ref: "#/components/schemas/Tenant"
             permissions:
               type: array
               items:
@@ -1351,7 +1349,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Tenant'
+            $ref: "#/components/schemas/Tenant"
 
     TenantDetailResponse:
       type: object
@@ -1360,7 +1358,7 @@ components:
           type: integer
           example: 200
         data:
-          $ref: '#/components/schemas/Tenant'
+          $ref: "#/components/schemas/Tenant"
 
     PaymentGatewayDetailResponse:
       type: object
@@ -1369,7 +1367,7 @@ components:
           type: integer
           example: 200
         data:
-          $ref: '#/components/schemas/TenantPaymentGateway'
+          $ref: "#/components/schemas/TenantPaymentGateway"
 
     TenantPaymentGateway:
       type: object
@@ -1535,9 +1533,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     UserDetailResponse:
       type: object
@@ -1546,7 +1544,7 @@ components:
           type: integer
           example: 200
         data:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
 
     # ─── Role Schemas ─────────────────────────────────────────────────────────
     Role:
@@ -1577,7 +1575,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Role'
+            $ref: "#/components/schemas/Role"
 
     RoleDetailResponse:
       type: object
@@ -1589,7 +1587,7 @@ components:
           type: object
           properties:
             role:
-              $ref: '#/components/schemas/Role'
+              $ref: "#/components/schemas/Role"
             permissions:
               type: array
               items:
@@ -1642,9 +1640,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/AuditLog'
+            $ref: "#/components/schemas/AuditLog"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     # ─── Event Schemas ────────────────────────────────────────────────────────
     Event:
@@ -1792,9 +1790,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Event'
+            $ref: "#/components/schemas/Event"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     EventDetailResponse:
       type: object
@@ -1803,7 +1801,7 @@ components:
           type: integer
           example: 200
         data:
-          $ref: '#/components/schemas/Event'
+          $ref: "#/components/schemas/Event"
 
     EventCategory:
       type: object
@@ -1832,7 +1830,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/EventCategory'
+            $ref: "#/components/schemas/EventCategory"
 
     # ─── Registration & Attendance Schemas ───────────────────────────────────
     Registration:
@@ -1871,9 +1869,9 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Registration'
+            $ref: "#/components/schemas/Registration"
         meta:
-          $ref: '#/components/schemas/PaginationMeta'
+          $ref: "#/components/schemas/PaginationMeta"
 
     RegistrationDetailResponse:
       type: object
@@ -1882,7 +1880,7 @@ components:
           type: integer
           example: 201
         data:
-          $ref: '#/components/schemas/Registration'
+          $ref: "#/components/schemas/Registration"
 
     AttendanceScanResponse:
       type: object
@@ -1934,4 +1932,3 @@ components:
             pdf_url:
               type: string
               example: https://storage.googleapis.com/certificates/CERT-001.pdf
-

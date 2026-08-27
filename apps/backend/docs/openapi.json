@@ -1224,8 +1224,8 @@
   },
   "info": {
     "contact": {
-      "email": "support@untitled.ac.id",
-      "name": "Tim Pengembang SITIVENT"
+      "email": "naufalakbar378@gmail.com",
+      "name": "Naufal Akbar Nugroho"
     },
     "description": "# Sistem Informasi \u0026 Manajemen Event Universitas (SITIVENT)\nREST API Backend Polyglot Go (Gin) dengan arsitektur Hierarchical Multi-Tenant (Rektorat \u0026 Fakultas) dan Permission-Based Access Control (PBAC).\n\n### Struktur Multi-Tenant:\n1. **Tenant Utama (Rektorat / Universitas)**: `type = ROOT`, `parent_id = NULL`. Mengelola seluruh tenant dan event tingkat universitas.\n2. **Tenant Children (Fakultas / Unit Kerja)**: `type = FACULTY`, `parent_id = \u003cID_Rektorat\u003e`. Mengelola event, panitia, kuota, pembayaran, dan absensi khusus fakultas.\n3. **Peserta Universal**: Akun mahasiswa/umum (`role = peserta`, `tenant_id = NULL`) yang dapat mendaftar ke event lintas fakultas dan rektorat.\n",
     "license": {
@@ -2833,11 +2833,7 @@
   "servers": [
     {
       "description": "Local Development Server",
-      "url": "http://localhost:8080"
-    },
-    {
-      "description": "Production Server",
-      "url": "https://api.untitled.ac.id"
+      "url": "http://localhost:8000"
     }
   ],
   "tags": [
