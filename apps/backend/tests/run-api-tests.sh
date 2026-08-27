@@ -134,7 +134,15 @@ if [ "$BAIL" = "--bail" ]; then
   BRU_ARGS="$BRU_ARGS --bail"
 fi
 
-if (cd "$COLLECTION_DIR" && "$BRU" run . -r $BRU_ARGS --env-file "$RUNTIME_ENV_FILE") 2>&1; then
+BRU_OUTPUT=""
+if BRU_OUTPUT=$(cd "$COLLECTION_DIR" && "$BRU" run . -r $BRU_ARGS --env-file "$RUNTIME_ENV_FILE" 2>&1); then
+  :
+else
+  :
+fi
+printf '%s\n' "$BRU_OUTPUT"
+
+if printf '%s\n' "$BRU_OUTPUT" | grep -q '│ Status.*✓ PASS'; then
   TOTAL_PASS=1
   TOTAL_FAIL=0
 else
