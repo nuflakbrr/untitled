@@ -20,7 +20,7 @@ src/
 │   ├── label/                 # Status badge / pill labels
 │   ├── lightbox/              # Fullscreen image viewer & gallery modal
 │   ├── loading-screen/        # Full-page & section loading indicators
-│   ├── logo/                  # Logo brand SITIVENT
+│   ├── logo/                  # Logo brand universitas / fakultas
 │   ├── markdown/              # HTML/Markdown parser & renderer
 │   ├── nav-section/           # Sidebar & drawer navigation blocks
 │   ├── phone-input/           # International phone number input
@@ -28,15 +28,16 @@ src/
 │   └── scrollbar/             # Custom simplebar scroll container
 │
 ├── layouts/                   # Shell & Frame Layouts
-│   ├── main/                  # Layout navigasi publik (Header, Footer)
-│   ├── dashboard/             # Layout panel Admin & Peserta (Sidebar, NavHeader)
+│   ├── main/                  # Layout navigasi publik (Header, Footer, Faculty Switcher)
+│   ├── dashboard/             # Layout panel Admin & Peserta (Sidebar, NavHeader, Tenant Badge)
 │   ├── auth/                  # Layout halaman login, register, reset password
 │   └── config-nav.tsx         # Konfigurasi menu sidebar & permission mapping
 │
 └── sections/                  # Tampilan Fitur / Composite Feature Views
-    ├── home/                  # Hero banner, event carousels, CTA
-    ├── events/                # Event list view, filter sidebar, event detail view
-    ├── auth/                  # Form login, register, verifikasi
+    ├── home/                  # Hero banner, event carousels, CTA fakultas
+    ├── events/                # Event list view, filter sidebar per fakultas, event detail view
+    ├── tenants/               # Manajemen tenant fakultas (CRUD fakultas, switcher)
+    ├── auth/                  # Form login, register universal, verifikasi
     ├── dashboard/             # Widget analitik, kartu event terdekat
     ├── account/               # Form profil, reset kata sandi
     ├── articles/              # Artikel list, detail artikel, share buttons
@@ -74,4 +75,4 @@ const methods = useForm({
 ## 3. Feedback, Loading & Empty States
 
 - **Loading**: Gunakan `<LoadingScreen />` atau `<CircularProgress />` dari MUI untuk state transisi data.
-- **Empty State**: Gunakan `<SearchNotFound />` saat pencarian data atau filter tidak menghasilkan hasil.
+- **Empty State**: Gunakan `<SearchNotFound />` saat pencarian data atau filter fakultas tidak menghasilkan hasil.

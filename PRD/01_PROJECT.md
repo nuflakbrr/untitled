@@ -2,46 +2,34 @@
 
 > **Version**: 1.0.0  
 > **Product Name**: SITIVENT (Untitled Monorepo)  
-> **Target Event**: Seminar, Workshop, Webinar, Kompetisi, Konferensi Ilmiah  
+> **Target Domain**: Sistem Informasi & Manajemen Event Universitas (Hierarchical Multi-Tenant: Rektorat & Fakultas)  
+> **Target Event**: Seminar Ilmiah, Workshop Akademik, Webinar, Kompetisi Mahasiswa, Konferensi Internasional, Expo Kampus, Dies Natalis, dan Wisuda.
 
 ---
 
 ## 1. Deskripsi Produk
 
-**SITIVENT** (versi Untitled Monorepo) adalah platform manajemen dan pendaftaran event berskala enterprise yang dirancang menggunakan arsitektur **Turborepo Polyglot Monorepo** (Go Gin REST API Backend + Next.js 16 App Router Frontend + PostgreSQL + Redis).
+**SITIVENT** adalah platform manajemen dan pendaftaran event berskala enterprise yang dirancang khusus untuk ekosistem **Perguruan Tinggi / Universitas** menggunakan arsitektur **Hierarchical Multi-Tenant** di atas **Turborepo Polyglot Monorepo** (Go Gin REST API Backend + Next.js 16 App Router Frontend + PostgreSQL + Redis).
 
-SITIVENT memfasilitasi seluruh siklus hidup penyelenggaraan acara:
-- Publikasi katalog event daring & luring beserta narasumber dan fasilitas.
-- Pendaftaran peserta mandiri & penerbitan nomor registrasi unik beserta tiket QR Code.
-- Manajemen pembayaran manual dan verifikasi bukti transfer oleh panitia.
-- Pemindaian dan validasi kehadiran di lokasi acara secara langsung via kamera perangkat (HTML5 QR Scanner).
-- Perancangan template sertifikat digital interaktif, otomatisasi penerbitan sertifikat bagi peserta yang hadir, dan portal publik verifikasi keaslian sertifikat via nomor sertifikat / kode QR.
-- Publikasi artikel, galeri dokumentasi kegiatan, dan modul tiket pesan bantuan (support).
+SITIVENT memfasilitasi seluruh siklus hidup penyelenggaraan acara kampus:
+- **Hierarchical Multi-Tenancy**: Tenant Utama (Rektorat / Universitas) dan Child Tenants (Fakultas / Departemen / Unit Kerja).
+- **Akun Superadmin Mandiri**: Tiap tenant (Rektorat maupun Fakultas) memiliki 1 akun Superadmin tersendiri untuk mengelola operasionalnya.
+- **Event Terisolasi per Fakultas/Rektorat**: Fakultas mengelola event, kategori, kuota, pembicara, dan sertifikat masing-masing secara independen.
+- **Pendaftaran Peserta Universal**: Mahasiswa dan peserta umum cukup memiliki 1 akun universal untuk mendaftar ke event di fakultas manapun maupun event universitas.
+- **Verifikasi Pembayaran & Presensi QR**: Verifikasi bukti transfer manual oleh panitia fakultas dan pemindaian kehadiran real-time via kamera perangkat di lokasi acara.
+- **Sertifikat Digital & E-Signature Pejabat**: Template builder dengan tanda tangan digital resmi Dekan / Rektor / Ketua Panitia serta portal verifikasi publik.
 
 ---
 
 ## 2. Sasaran Pengguna (Target Personas)
 
-1. **Super Administrator**:
-   - Memiliki kendali penuh atas sistem, manajemen pengguna, role, dan hak akses (PBAC).
-2. **Panitia Acara (Organizer)**:
-   - Membuat, mempublikasikan, dan mengelola data event, fasilitas, narasumber, template sertifikat, dan verifikasi bukti transfer.
-3. **Petugas Scanner (Gate Staff)**:
-   - Bertugas di gerbang masuk venue untuk memindai QR Code tiket peserta dan mencatat kehadiran secara real-time.
-4. **Peserta Acara (Participant)**:
-   - Mencari event, mendaftar, mengunggah bukti pembayaran, mendapatkan tiket QR, dan mengunduh e-sertifikat setelah acara selesai.
-
----
-
-## 3. Status Fitur & Roadmap
-
-| Modul Fitur | Status Backend (Go) | Status Frontend (Next.js) | Keterangan |
-| :--- | :---: | :---: | :--- |
-| **Authentication & PBAC** | ✅ Siap (JWT + Redis) | 🟡 Integrasi Login/Reg | Auth JWT dengan 39 permissions |
-| **Event & Kategori** | ✅ Skema & Model Siap | 🟡 Integrasi UI Katalog | Dukungan Online & Offline event |
-| **Pendaftaran & Tiket QR** | ✅ Skema & Model Siap | 🟡 Integrasi Form Daftar | Generate QR Token otomatis |
-| **Pembayaran & Verifikasi**| ✅ Skema & Model Siap | 🟡 Upload Bukti Transfer | Status WAITING, PAID, REFUNDED |
-| **Presensi & QR Scanner** | ✅ Skema & Model Siap | 🟡 Scanner Kamera | Validasi check-in instan |
-| **Sertifikat Builder** | ✅ Skema & Model Siap | 🟡 Verifikasi Publik | Template kustom & tanda tangan |
-| **Artikel & Galeri** | ✅ Skema & Model Siap | 🟡 Portal Berita/Galeri | Many-to-Many artikel kategori |
-| **Pesan Bantuan (Support)**| ✅ Skema & Model Siap | 🟡 Form Dukungan | Tiket status PENDING/RESOLVED |
+1. **Super Administrator Universitas (Rektorat)**:
+   - Memiliki kendali penuh atas sistem, manajemen master tenant fakultas, monitoring analitik lintas fakultas, dan penyelenggaraan event universitas.
+2. **Super Administrator Fakultas**:
+   - Memiliki kendali penuh atas satu fakultas (manajemen akun panitia fakultas, akun scanner, monitoring performa event fakultas).
+3. **Panitia Acara Fakultas (Organizer)**:
+   - Membuat, mempublikasikan, dan mengelola event fakultas, fasilitas, narasumber, template sertifikat, dan verifikasi bukti transfer.
+4. **Petugas Scanner (Gate Staff)**:
+   - Memindai tiket QR Code peserta di gerbang masuk venue acara fakultas untuk presensi instan.
+5. **Peserta (Mahasiswa & Umum)**:
+   - Menjelajahi katalog event antar-fakultas, mendaftar, mengunggah bukti bayar, menggunakan tiket QR, dan mengunduh sertifikat resmi.

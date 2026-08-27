@@ -18,6 +18,13 @@ INSERT INTO permissions (id, name, description, created_at, updated_at) VALUES
 ('10000000-0000-0000-0000-000000000012', 'user.delete', 'Menghapus pengguna', NOW(), NOW()),
 ('10000000-0000-0000-0000-000000000013', 'admin.access', 'Mengakses dashboard admin', NOW(), NOW()),
 
+-- Tenant Management Module (Multi-Tenant University & Faculty)
+('10000000-0000-0000-0000-000000000048', 'tenant.read', 'Melihat daftar tenant fakultas', NOW(), NOW()),
+('10000000-0000-0000-0000-000000000049', 'tenant.create', 'Membuat tenant fakultas baru', NOW(), NOW()),
+('10000000-0000-0000-0000-000000000050', 'tenant.update', 'Mengubah data tenant fakultas', NOW(), NOW()),
+('10000000-0000-0000-0000-000000000051', 'tenant.delete', 'Menghapus tenant fakultas', NOW(), NOW()),
+('10000000-0000-0000-0000-000000000052', 'tenant.switch', 'Beralih konteks tenant fakultas', NOW(), NOW()),
+
 -- Event Categories Module
 ('10000000-0000-0000-0000-000000000014', 'event.categories.read', 'Melihat daftar event kategori', NOW(), NOW()),
 ('10000000-0000-0000-0000-000000000015', 'event.categories.create', 'Membuat event kategori baru', NOW(), NOW()),
@@ -76,4 +83,3 @@ INSERT INTO permissions (id, name, description, created_at, updated_at) VALUES
 ON CONFLICT (name) DO UPDATE SET
     description = EXCLUDED.description,
     updated_at = NOW();
-

@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS tenants CASCADE;
+DROP TYPE IF EXISTS tenant_type;
+

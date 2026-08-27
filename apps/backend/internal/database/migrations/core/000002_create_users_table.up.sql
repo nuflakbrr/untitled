@@ -1,8 +1,6 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-
 CREATE TABLE IF NOT EXISTS users (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    tenant_id VARCHAR(36) REFERENCES tenants(id) ON DELETE SET NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     name VARCHAR(255),
     email_verified BOOLEAN NOT NULL DEFAULT FALSE,
@@ -18,4 +16,4 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role_id ON users(role_id);
-
+CREATE INDEX IF NOT EXISTS idx_users_tenant_id ON users(tenant_id);

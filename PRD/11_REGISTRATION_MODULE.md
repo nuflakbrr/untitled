@@ -1,7 +1,7 @@
 # Registration Module - SITIVENT (Untitled Monorepo)
 
 > **Version**: 1.0.0  
-> Modul pengelolaan pendaftaran peserta event, generasi nomor registrasi unik, alokasi QR Code, dan validasi kuota secara transaksional.
+> Modul pengelolaan pendaftaran peserta event (Universal Participant Registration), generasi nomor registrasi unik, alokasi QR Code, dan validasi kuota secara transaksional lintas fakultas.
 
 ---
 
@@ -12,9 +12,9 @@ Tabel PostgreSQL `registrations` mencakup atribut:
 | Field | Tipe Data | Deskripsi |
 | :--- | :--- | :--- |
 | `id` | `VARCHAR(36) PK` | Identifier unik registrasi (UUID v4) |
-| `event_id` | `VARCHAR(36)` | Relasi FK ke `events(id)` |
-| `user_id` | `VARCHAR(36)` | Relasi FK ke `users(id)` pendaftar |
-| `registration_number` | `VARCHAR(100) UNIQUE` | Format: `REG-{SLUG}-{YEAR}-{COUNTER}` |
+| `event_id` | `VARCHAR(36)` | Relasi FK ke `events(id)` (Event Fakultas / Rektorat) |
+| `user_id` | `VARCHAR(36)` | Relasi FK ke `users(id)` akun peserta universal |
+| `registration_number` | `VARCHAR(100) UNIQUE` | Format: `REG-{TENANT_CODE}-{SLUG}-{YEAR}-{COUNTER}` |
 | `qr_token` | `VARCHAR(255) UNIQUE` | Token rahasia unik untuk QR Code presensi |
 | `online_attendance` | `BOOLEAN` | Pilihan metode kehadiran peserta (online/offline) |
 | `status` | `registration_status` | `WAITING_PAYMENT`, `REGISTERED`, `CANCELLED`, `CHECKED_IN` |
@@ -24,18 +24,20 @@ Tabel PostgreSQL `registrations` mencakup atribut:
 
 ---
 
-## 2. Alur Pendaftaran & Transaksi Database
+## 2. Alur Pendaftaran Lintas Fakultas
+
+Mahasiswa atau peserta umum menggunakan satu akun universal untuk mendaftar ke berbagai acara di fakultas manapun:
 
 ```mermaid
 sequenceDiagram
-    participant User as Peserta (Frontend)
+    participant User as Peserta Universal (Frontend)
     participant API as Go Backend API
-    participant DB as PostgreSQL (Tx)
+    participant DB as PostgreSQL (sql.Tx)
     participant Mail as Email Service
 
     User->>API: POST /features/v1/registrations (EventID)
     API->>DB: BEGIN Transaction
-    API->>DB: Lock Event Row (FOR UPDATE) & Check Quota
+    API->>DB: Lock Event Row (FOR UPDATE) & Check Quota per Tenant
     alt Event Gratis (Price == 0)
         API->>DB: Insert Registration (Status: REGISTERED)
         API->>DB: Commit Tx

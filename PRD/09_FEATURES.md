@@ -1,94 +1,84 @@
 # Core Modules & Features - SITIVENT (Untitled Monorepo)
 
 > **Version**: 1.0.0  
-> SITIVENT terdiri dari kumpulan modul terpadu yang dirancang untuk mendukung operasional event dari hulu ke hilir dalam arsitektur monorepo polyglot (Go Backend + Next.js Frontend).
+> SITIVENT terdiri dari kumpulan modul terpadu yang dirancang untuk mendukung operasional event dari hulu ke hilir dalam arsitektur **Hierarchical Multi-Tenant** (Rektorat Universitas & Fakultas).
 
 ---
 
-## 1. Authentication & Identity Management
+## 1. Multi-Tenant Organization & PBAC
 
-- **JWT & PBAC Architecture**:
-  - Login email & password, registrasi akun peserta mandiri, verifikasi email otomatis, forgot password, dan reset password aman.
-  - Dukungan Google OAuth / Firebase ID Token verification di backend.
-- **Permission-Based Access Control (PBAC)**:
-  - Manajemen Roles (`superadmin`, `panitia`, `scanner`, `peserta`).
-  - Manajemen Permissions granular (`events.create`, `payments.verify`, `attendance.scan`, dll.).
-  - Redis In-Memory Permission Cache untuk otorisasi berkecepatan tinggi (< 1ms).
-  - Manajemen Pengguna: Assign role, status banned, ban reason, dan ban expiry.
+- **Hierarchical Tenant Model**:
+  - **Root Tenant (Rektorat / Universitas)**: Pengawasan global lintas fakultas, manajemen data master tenant fakultas, dan event skala universitas.
+  - **Child Tenants (Fakultas / Unit Kerja)**: Ruang kerja terisolasi untuk masing-masing fakultas (Fasilkom, Teknik, FEB, dll.).
+  - **Tenant Switcher**: Kemampuan bagi Superadmin Universitas untuk beralih konteks antar-fakultas secara instan di dashboard.
+- **Akun & Otorisasi Bertingkat**:
+  - 1 Akun **Superadmin Universitas (Rektorat)**.
+  - 1 Akun **Superadmin Fakultas** per tenant fakultas.
+  - Akun **Panitia** dan **Scanner** terafiliasi dengan fakultas masing-masing.
+  - Akun **Peserta (Universal)**: Mahasiswa dan peserta umum memiliki 1 akun untuk mendaftar ke seluruh event di berbagai fakultas maupun universitas.
 
 ---
 
 ## 2. Admin CMS Management & Master Data
 
-- **Analytics Dashboard**: Kartu ringkasan metrik (Total Event, Registrasi, Omzet Finansial, Kehadiran Check-In, Sertifikat terbit) dan grafik interaktif performa event terpopuler.
-- **Event Categories**: CRUD kategori event dengan penomoran slug unik.
-- **Event Master**:
-  - Pengaturan event `ONLINE` dan `OFFLINE`, lokasi fisik, link meeting virtual (Zoom/GMeet), dan flag `onlineAttendance`.
-  - Multi-Speaker (nama, titel, perusahaan, URL, profil sosial media, avatar).
-  - Event Benefits (daftar fasilitas & manfaat peserta dengan ikon dan urutan).
+- **Analytics Dashboard**:
+  - Statistik agregasi global universitas (khusus Rektorat) atau statistik terisolasi per fakultas.
+  - Metrik: Total Event, Pendaftar, Total Omzet Finansial, Persentase Kehadiran, dan Sertifikat Terbit.
+- **Tenant Management (Khusus Rektorat)**:
+  - CRUD fakultas, kustomisasi kode singkatan, domain/subdomain, logo, dan profil dekanat.
+- **Event Categories**:
+  - Kategori global universitas (Seminar, Workshop, Webinar, dll.) dan kategori kustom spesifik fakultas.
+- **Event Master per Fakultas**:
+  - Pengaturan event `ONLINE` dan `OFFLINE`, lokasi fisik aula fakultas, link meeting virtual (Zoom/GMeet), dan flag `onlineAttendance`.
+  - Multi-Speaker (nama, titel, instansi/perusahaan, media sosial, avatar).
+  - Event Benefits (daftar fasilitas & sertifikat).
   - Pengaturan kuota pendaftar, harga tiket (gratis / berbayar), dan batas deadline pendaftaran.
   - Siklus status: `DRAFT` ➔ `PUBLISHED` ➔ `CLOSED` ➔ `COMPLETED`.
-  - Rich Text Editor untuk deskripsi interaktif.
-- **Galleries**: Manajemen foto dokumentasi kegiatan dengan status _featured_ dan galeri publik.
-- **Publications (Articles)**: Manajemen artikel berita, panduan, dan tips dengan relasi kategori artikel.
-- **Testimonials & Ratings**: Moderasi ulasan dan penilaian bintang (1-5) dari peserta event.
-- **Support Inquiries**: Pengelolaan pesan bantuan & tiket kendala peserta dengan status `PENDING`, `PROCESS`, `RESOLVED`.
+- **Galleries & Publications (Articles)**:
+  - Publikasi berita kampus, tips akademik, dan dokumentasi foto kegiatan per tenant fakultas / universitas.
+- **Support Inquiries**:
+  - Tiket pesan bantuan dan kendala pendaftaran yang ditangani panitia fakultas atau admin universitas.
 
 ---
 
-## 3. Transaction & Registration Engine
+## 3. Transaction & Registration Engine (Universal)
 
 - **Pendaftaran Peserta**:
-  - Validasi otomatis kuota dengan transactional row locking (`FOR UPDATE`), deadline, status publish, dan pencegahan duplikasi pendaftaran per user.
-  - Generasi otomatis **Nomor Registrasi** dan **QR Token** acak yang aman.
+  - Mahasiswa / peserta umum dapat mendaftar ke event fakultas manapun tanpa perlu membuat akun baru.
+  - Validasi kuota transaksional dengan database row locking (`FOR UPDATE`) guna mencegah *race condition*.
+  - Generasi otomatis **Nomor Registrasi** unik (`REG-{SLUG}-{YEAR}-{COUNTER}`) dan **QR Token** kriptografis.
   - Auto-approval untuk event gratis (`price = 0` ➔ status `REGISTERED`).
-- **Verifikasi Pembayaran**:
-  - Alur upload bukti transfer manual untuk event berbayar (`WAITING_PAYMENT` ➔ `WAITING`).
-  - Pratinjau bukti bayar dan verifikasi persetujuan admin (`PAID` ➔ status registrasi menjadi `REGISTERED`).
-  - Penolakan bukti transfer palsu (`FAILED`) dan pencatatan pengembalian dana (`REFUNDED`).
-  - Pencatatan audit trail otomatis (`audit_logs`) atas setiap tindakan verifikasi admin.
-- **Ekspor Data**: Download data peserta terdaftar dalam format spreadsheet Excel (`.xlsx`).
+- **Verifikasi Pembayaran Manual**:
+  - Peserta mengunggah foto bukti transfer manual ke rekening panitia fakultas.
+  - Panitia fakultas memverifikasi keabsahan pembayaran (`PAID` ➔ tiket QR aktif).
+  - Pencatatan riwayat audit log atas setiap tindakan verifikasi.
+- **Ekspor Data**: Ekspor spreadsheet Excel (`.xlsx`) data peserta per event.
 
 ---
 
 ## 4. Attendance & QR Scanner Module
 
-- **Camera QR Scanner**: Pemindai kode QR interaktif berbasis HTML5 di browser smartphone/laptop tanpa perlu instalasi aplikasi khusus.
-- **Validasi Kehadiran Real-time**: Pengecekan status pendaftaran, pencegahan scan ganda (`QR_ALREADY_USED`), validasi token tidak valid (`INVALID_QR`), dan update status pendaftar menjadi `CHECKED_IN`.
-- **Scan Result Page**: Halaman ringkasan hasil scan langsung dengan umpan balik visual dan data detail peserta.
+- **Camera QR Scanner**: Pemindai kamera HTML5 langsung dari browser petugas scanner di gerbang aula fakultas.
+- **Validasi Kehadiran Real-Time**:
+  - Verifikasi kepemilikan tiket terhadap event fakultas yang sedang berlangsung.
+  - Pencegahan double check-in (`QR_ALREADY_USED`).
+  - Update status peserta menjadi `CHECKED_IN` secara atomik.
 
 ---
 
-## 5. Certificate Builder & Automated Distribution
+## 5. Certificate Builder & E-Signatures
 
-- **Certificate Template Builder**:
-  - Pengaturan background sertifikat (Cloud Storage URL).
-  - Kustomisasi tipografi (font judul, font konten, font header), skema warna teks, dan warna aksen primer.
-  - Kustomisasi header text, subjudul, dan margin bawah footer.
-  - Template nomor sertifikat dinamis dengan tag pengganti: `{SLUG}`, `{REG_NO}`, `{YEAR}`, `{MONTH}`, `{DAY}`, `{SEQ}`, `{RAND}`.
-  - Multi E-Signatures: Unggah tanda tangan elektronik panitia/pimpinan dengan nama, gelar, dan urutan tampilan.
-- **Automated Generation**:
-  - Generate dan update sertifikat instan bagi peserta yang berstatus `CHECKED_IN` pada event yang selesai (`COMPLETED`).
-  - Bulk synchronization sertifikat untuk seluruh event.
-- **Verifikasi Publik & Unduhan**:
-  - Halaman publik verifikasi sertifikat resmi di `/certificates/[id]`.
-  - Unduh sertifikat format PDF langsung dari dashboard peserta atau link publik.
-  - Pencatatan waktu unduhan (`download_time`).
+- **Visual Template Builder**:
+  - Desain latar belakang sertifikat khusus fakultas / rektorat.
+  - Multi E-Signature resmi: Tanda tangan digital Dekan, Rektor, atau Ketua Pelaksana.
+  - Penomoran seri dinamis (`CERT/{FAKULTAS}/{YEAR}/{SEQ}`).
+- **Otomatisasi & Verifikasi Publik**:
+  - Generate otomatis e-sertifikat PDF untuk peserta yang berstatus `CHECKED_IN` saat event `COMPLETED`.
+  - Halaman verifikasi keaslian sertifikat publik (`/certificates/[id]`).
 
 ---
 
-## 6. Participant Experience Portal
+## 6. Participant Experience & Public Experience
 
-- **Participant Dashboard**: Kartu event terdekat, status registrasi & tiket, pintasan unduh QR, dan statistik event yang diikuti.
-- **Event History**: Riwayat seluruh event yang pernah didaftar lengkap dengan status kehadiran dan tombol unduh sertifikat.
-- **Payment History**: Riwayat tagihan dan form unggah/perbarui bukti pembayaran.
-- **User Profile**: Pengelolaan data diri, foto avatar, ubah kata sandi, dan riwayat tiket bantuan.
-- **Help & Support Submission**: Form pengajuan tiket kendala langsung ke tim admin.
-
----
-
-## 7. Public Experience & SEO
-
-- **Landing Page**: Hero banner, pencarian & filter event instan, event unggulan, hitung mundur event terdekat, statistik platform, artikel terbaru, carousel testimoni peserta, grid galeri, dan subscription newsletter.
-- **Catalog & Detail Event**: Informasi lengkap tanggal, lokasi/link virtual, harga tiket, profil pembicara, fasilitas peserta, dan CTA pendaftaran.
-- **SEO Optimization**: Metadata otomatis, sitemap dinamis (`sitemap.tsx`), `robots.tsx`, OpenGraph image, dan pemisahan indexing rute internal.
+- **Portal Mahasiswa & Peserta**: Dashboard event terdekat, tiket barcode QR interaktif, riwayat pembayaran, dan unduh sertifikat resmi.
+- **Katalog Publik Terpadu**: Beranda utama universitas dengan filter instan per fakultas, kategori, tanggal, dan format online/offline.

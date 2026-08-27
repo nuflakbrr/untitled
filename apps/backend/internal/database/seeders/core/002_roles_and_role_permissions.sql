@@ -4,23 +4,32 @@
 
 -- 1. Insert Roles
 INSERT INTO roles (id, name, description, created_at, updated_at) VALUES
-('00000000-0000-0000-0000-000000000001', 'superadmin', 'Super Administrator dengan akses penuh ke seluruh sistem', NOW(), NOW()),
-('00000000-0000-0000-0000-000000000002', 'panitia', 'Panitia event dengan akses manajemen event dan absensi', NOW(), NOW()),
-('00000000-0000-0000-0000-000000000003', 'scanner', 'Petugas pemindaian kehadiran peserta', NOW(), NOW()),
-('00000000-0000-0000-0000-000000000004', 'peserta', 'Peserta dengan akses pendaftaran dan sertifikat', NOW(), NOW())
+('00000000-0000-0000-0000-000000000000', 'root_superadmin', 'Super Administrator Universitas (Rektorat) dengan akses penuh ke seluruh tenant', NOW(), NOW()),
+('00000000-0000-0000-0000-000000000001', 'superadmin', 'Super Administrator Fakultas dengan akses penuh ke data fakultasnya', NOW(), NOW()),
+('00000000-0000-0000-0000-000000000002', 'panitia', 'Panitia event dengan akses manajemen event dan absensi fakultas', NOW(), NOW()),
+('00000000-0000-0000-0000-000000000003', 'scanner', 'Petugas pemindaian kehadiran peserta fakultas', NOW(), NOW()),
+('00000000-0000-0000-0000-000000000004', 'peserta', 'Peserta universal (mahasiswa & umum) dengan akses pendaftaran lintas fakultas', NOW(), NOW())
 ON CONFLICT (name) DO UPDATE SET
     description = EXCLUDED.description,
     updated_at = NOW();
 
--- 2. Role Permissions: Superadmin (All permissions)
+-- 2. Role Permissions: Root Superadmin (Universitas / Rektorat - All permissions)
 INSERT INTO role_has_permissions (role_id, permission_id, created_at, updated_at)
 SELECT r.id, p.id, NOW(), NOW()
 FROM roles r
 CROSS JOIN permissions p
-WHERE r.name = 'superadmin'
+WHERE r.name = 'root_superadmin'
 ON CONFLICT (role_id, permission_id) DO NOTHING;
 
--- 3. Role Permissions: Panitia
+-- 3. Role Permissions: Superadmin (Fakultas - All permissions except root tenant management)
+INSERT INTO role_has_permissions (role_id, permission_id, created_at, updated_at)
+SELECT r.id, p.id, NOW(), NOW()
+FROM roles r
+CROSS JOIN permissions p
+WHERE r.name = 'superadmin' AND p.name NOT IN ('tenant.create', 'tenant.delete')
+ON CONFLICT (role_id, permission_id) DO NOTHING;
+
+-- 4. Role Permissions: Panitia
 INSERT INTO role_has_permissions (role_id, permission_id, created_at, updated_at)
 SELECT r.id, p.id, NOW(), NOW()
 FROM roles r
@@ -42,7 +51,7 @@ JOIN permissions p ON p.name IN (
 WHERE r.name = 'panitia'
 ON CONFLICT (role_id, permission_id) DO NOTHING;
 
--- 4. Role Permissions: Scanner
+-- 5. Role Permissions: Scanner
 INSERT INTO role_has_permissions (role_id, permission_id, created_at, updated_at)
 SELECT r.id, p.id, NOW(), NOW()
 FROM roles r
@@ -54,7 +63,7 @@ JOIN permissions p ON p.name IN (
 WHERE r.name = 'scanner'
 ON CONFLICT (role_id, permission_id) DO NOTHING;
 
--- 5. Role Permissions: Peserta
+-- 6. Role Permissions: Peserta
 INSERT INTO role_has_permissions (role_id, permission_id, created_at, updated_at)
 SELECT r.id, p.id, NOW(), NOW()
 FROM roles r
@@ -66,4 +75,3 @@ JOIN permissions p ON p.name IN (
 )
 WHERE r.name = 'peserta'
 ON CONFLICT (role_id, permission_id) DO NOTHING;
-

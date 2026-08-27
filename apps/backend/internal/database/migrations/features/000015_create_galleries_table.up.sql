@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS galleries (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    tenant_id VARCHAR(36) REFERENCES tenants(id) ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
     description TEXT,
     image_url TEXT NOT NULL,
@@ -9,6 +10,6 @@ CREATE TABLE IF NOT EXISTS galleries (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE INDEX IF NOT EXISTS idx_galleries_tenant_id ON galleries(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_galleries_event_id ON galleries(event_id);
 CREATE INDEX IF NOT EXISTS idx_galleries_featured ON galleries(featured);
-

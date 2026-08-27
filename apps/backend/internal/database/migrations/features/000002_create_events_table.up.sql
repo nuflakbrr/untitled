@@ -12,6 +12,7 @@ END $$;
 
 CREATE TABLE IF NOT EXISTS events (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
     slug VARCHAR(255) NOT NULL UNIQUE,
     description TEXT NOT NULL,
@@ -37,9 +38,9 @@ CREATE TABLE IF NOT EXISTS events (
     created_by_id VARCHAR(36) REFERENCES users(id) ON DELETE SET NULL
 );
 
+CREATE INDEX IF NOT EXISTS idx_events_tenant_id ON events(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_events_slug ON events(slug);
 CREATE INDEX IF NOT EXISTS idx_events_category_id ON events(category_id);
 CREATE INDEX IF NOT EXISTS idx_events_status ON events(status);
 CREATE INDEX IF NOT EXISTS idx_events_dates ON events(start_date, end_date);
 CREATE INDEX IF NOT EXISTS idx_events_created_by ON events(created_by_id);
-

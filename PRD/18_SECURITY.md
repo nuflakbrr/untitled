@@ -1,11 +1,22 @@
 # Security Policies & Data Protection - SITIVENT (Untitled Monorepo)
 
 > **Version**: 1.0.0  
-> Pedoman keamanan komprehensif untuk melindungi integritas sistem, data pribadi peserta, dan keaslian transaksi pada arsitektur monorepo polyglot.
+> Pedoman keamanan komprehensif untuk melindungi integritas sistem, data pribadi peserta, isolasi data antar-tenant, dan keaslian transaksi pada arsitektur monorepo polyglot.
 
 ---
 
-## 1. Autentikasi & Pengelolaan Kredensial
+## 1. Isolasi Data Multi-Tenant (Tenant Boundary Guard)
+
+- **Strict Tenant Scoping**:
+  - Setiap query database di backend Go wajib dibatasi oleh parameter `tenant_id` dari konteks sesi pengguna terotentikasi.
+  - Panitia Fakultas dilarang keras melihat atau mengubah data event, peserta, bukti transfer, atau pengaturan fakultas lain.
+- **Cross-Tenant Attack Prevention**:
+  - Endpoint update/delete selalu memvalidasi `WHERE id = $1 AND tenant_id = $2`.
+  - Percobaan manipulasi payload `tenant_id` dari sisi client otomatis ditolak dan menghasilkan respons `403 Forbidden`.
+
+---
+
+## 2. Autentikasi & Pengelolaan Kredensial
 
 - **Password Hashing**: Menggunakan algoritma **Bcrypt** (`golang.org/x/crypto/bcrypt`) dengan work cost yang aman.
 - **JWT Protection**:
@@ -15,40 +26,19 @@
 
 ---
 
-## 2. Validasi & Sanitasi Data (Input Sanitization)
+## 3. Validasi & Sanitasi Data (Input Sanitization)
 
 - **Go Request Binding & Validation**: Handler di backend memvalidasi tipe data dan batasan nilai melalui struct tags validator (`binding:"required,min=..."`).
 - **Skema Zod Ketat (Frontend)**: Seluruh form input divalidasi dengan Zod schema sebelum dikirim ke backend.
-- **HTML Sanitization (DOMPurify)**: Konten teks kaya (Rich Text deskripsi event dan artikel) disanitasi menggunakan `isomorphic-dompurify` sebelum dirender di browser guna mencegah celah **Cross-Site Scripting (XSS)**.
+- **HTML Sanitization (DOMPurify)**: Konten teks kaya disanitasi menggunakan `isomorphic-dompurify` sebelum dirender di browser guna mencegah celah **Cross-Site Scripting (XSS)**.
 - **SQL Injection Immunity**: Seluruh kueri database dieksekusi dengan prepared statements dan parameterized queries (`$1, $2, ...`).
-
----
-
-## 3. Proteksi Akses & Otorisasi Server-Side
-
-- **PBAC Middleware Guards**: Validasi keamanan utama wajib berada di server Go dengan middleware `RequirePermission("module.action")` didukung oleh cache izin di Redis.
-- **Proteksi Akun Tingkat Tinggi**:
-  - Pencegahan penghapusan akun sendiri (_Self-Deletion Guard_).
-  - Pencegahan eskalasi jabatan non-admin menjadi superadmin (_Role Escalation Guard_).
-  - Pencegahan pengeditan akun superadmin oleh non-superadmin (_Superadmin Guard_).
 
 ---
 
 ## 4. Audit Trail & Logging
 
-- Tabel `audit_logs` mencatat seluruh tindakan administratif yang mengubah status data sensitif:
-  - Verifikasi atau penolakan bukti pembayaran.
+- Tabel `audit_logs` mencatat seluruh tindakan administratif yang mengubah status data sensitif beserta `tenant_id` terkait:
+  - Verifikasi atau penolakan bukti pembayaran tiket fakultas.
   - Perubahan status pendaftaran atau pembatalan tiket.
   - Perubahan role atau penugasan permission user.
   - Penghapusan data master (Event, Kategori, Sertifikat).
-
----
-
-## 5. Security Headers & CORS
-
-- **CORS Configuration**: Gin CORS middleware membatasi domain asal hanya untuk frontend resmi (`http://localhost:8002`, domain produksi).
-- **Security Headers**:
-  - `X-Frame-Options: SAMEORIGIN` (mencegah Clickjacking).
-  - `X-Content-Type-Options: nosniff` (mencegah MIME-type sniffing).
-  - `Referrer-Policy: strict-origin-when-cross-origin`.
-  - `Permissions-Policy: camera=(self), microphone=()` (akses kamera hanya untuk fitur QR scanner).

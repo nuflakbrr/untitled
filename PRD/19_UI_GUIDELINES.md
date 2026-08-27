@@ -1,7 +1,7 @@
 # UI/UX & Design Guidelines - SITIVENT (Untitled Monorepo)
 
 > **Version**: 1.0.0  
-> Pedoman antarmuka pengguna berbasis **Material UI v9 (Minimal/Zone UI Base)** dan **Tailwind CSS v4**.
+> Pedoman antarmuka pengguna berbasis **Material UI v9 (Minimal/Zone UI Base)** dan **Tailwind CSS v4** dengan dukungan penjenamaan fakultas (*Faculty Theming & Branding*).
 
 ---
 
@@ -15,18 +15,14 @@
    - Warna palette tema dikonfigurasi secara tersentralisasi di `apps/frontend/src/theme/core/palette.ts`.
    - Komponen wajib mendukung mode gelap tanpa merusak kontras teks atau elemen interaktif.
 
-3. **Responsive Breakpoints**:
-   - `xs`: 0px (Mobile portrait)
-   - `sm`: 600px (Mobile landscape / small tablet)
-   - `md`: 900px (Tablet / small laptop)
-   - `lg`: 1200px (Desktop)
-   - `xl`: 1536px (Large desktop screens)
+3. **Faculty Branding & Tenant Accent Colors**:
+   - Setiap fakultas dapat memiliki warna aksen primer dan logo tersendiri (misal: Biru Fasilkom, Oranye Teknik, Hijau FEB) yang diinjeksikan secara dinamis melalui tema context.
 
 ---
 
 ## 2. Iconography & Ilustrasi
 
-- Gunakan komponen `<Iconify />` yang memuat icon pack terstandarisasi (seperti `eva`, `solar`, `mingcute`, `material-symbols`).
+- Gunakan komponen `<Iconify />` yang memuat icon pack terstandarisasi (`eva`, `solar`, `mingcute`, `material-symbols`).
 - Hindari menyematkan file SVG inline yang besar secara berulang.
 
 ---

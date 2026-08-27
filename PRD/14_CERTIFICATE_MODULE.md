@@ -1,7 +1,7 @@
 # Certificate Module - SITIVENT (Untitled Monorepo)
 
 > **Version**: 1.0.0  
-> Modul penerbitan dan verifikasi sertifikat digital dinamis yang dilengkapi dengan _Certificate Template Builder_, dukungan multi tanda tangan elektronik (_E-Signature_), dan verifikasi publik.
+> Modul penerbitan dan verifikasi sertifikat digital dinamis per fakultas/rektorat yang dilengkapi dengan _Certificate Template Builder_, dukungan multi tanda tangan elektronik resmi (Dekan / Rektor), dan portal verifikasi publik.
 
 ---
 
@@ -22,20 +22,21 @@ Sertifikat digital hanya digenerate untuk peserta jika memenuhi ketiga syarat be
 | Field | Tipe Data | Deskripsi |
 | :--- | :--- | :--- |
 | `id` | `VARCHAR(36) PK` | Identifier unik template (UUID v4) |
+| `tenant_id` | `VARCHAR(36)` | Relasi FK ke `tenants(id)` (Fakultas / Rektorat) |
 | `event_id` | `VARCHAR(36) UNIQUE` | Relasi 1-to-1 ke tabel `events(id)` |
 | `background_url` | `TEXT` | URL gambar latar sertifikat di ImageKit / GCS |
-| `number_template` | `VARCHAR(255)` | Pola nomor sertifikat (default: `CERT/{SLUG}/{REG_NO}`) |
+| `number_template` | `VARCHAR(255)` | Pola nomor sertifikat (default: `CERT/{TENANT}/{SLUG}/{REG_NO}`) |
 | `number_mode` | `cert_number_mode` | Enum: `AUTO` atau `MANUAL` |
 | `show_issued_date` | `BOOLEAN` | Menampilkan tanggal terbit sertifikat |
 | `show_event_date` | `BOOLEAN` | Menampilkan tanggal event |
 | `show_event_location` | `BOOLEAN` | Menampilkan lokasi event |
 | `show_header` | `BOOLEAN` | Menampilkan header atas |
-| `header_text` | `VARCHAR(255)` | Teks judul header (default: "SITIVENT") |
-| `header_subtitle` | `VARCHAR(255)` | Subjudul header |
+| `header_text` | `VARCHAR(255)` | Teks judul header (default: "UNIVERSITAS MANDIRI NUSANTARA") |
+| `header_subtitle` | `VARCHAR(255)` | Subjudul header (contoh: "Fakultas Ilmu Komputer") |
 | `header_font` / `header_color` | `VARCHAR(100)` | Tipografi dan warna header |
 | `title_font` / `title_color` | `VARCHAR(100)` | Tipografi dan warna judul sertifikat |
 | `content_font` / `content_color` | `VARCHAR(100)` | Tipografi dan warna teks isi sertifikat |
-| `primary_color` | `VARCHAR(50)` | Warna aksen utama template |
+| `primary_color` | `VARCHAR(50)` | Warna aksen utama template fakultas |
 | `footer_margin_bottom` | `INTEGER` | Jarak margin bawah footer |
 
 ### B. Tanda Tangan Elektronik (`certificate_signatures`)
@@ -44,28 +45,14 @@ Sertifikat digital hanya digenerate untuk peserta jika memenuhi ketiga syarat be
 | :--- | :--- | :--- |
 | `id` | `VARCHAR(36) PK` | Identifier unik tanda tangan (UUID v4) |
 | `template_id` | `VARCHAR(36)` | Relasi FK ke `certificate_templates(id)` |
-| `name` | `VARCHAR(255)` | Nama penandatangan (contoh: "Dr. Budi Santoso, M.Kom.") |
-| `title` | `VARCHAR(255)` | Jabatan penandatangan (contoh: "Ketua Pelaksana") |
+| `name` | `VARCHAR(255)` | Nama penandatangan (contoh: "Prof. Dr. Ir. H. Ahmad Fauzi, M.T.") |
+| `title` | `VARCHAR(255)` | Jabatan resmi (contoh: "Dekan Fakultas Ilmu Komputer") |
 | `signature_url` | `TEXT` | URL gambar tanda tangan PNG/WebP transparan |
 | `order` | `INTEGER` | Urutan penataan posisi tanda tangan |
-
-### C. Rekod Sertifikat Terbit (`certificates`)
-
-| Field | Tipe Data | Deskripsi |
-| :--- | :--- | :--- |
-| `id` | `VARCHAR(36) PK` | Identifier unik sertifikat (UUID v4) |
-| `registration_id` | `VARCHAR(36)` | Relasi FK ke `registrations(id)` |
-| `event_id` | `VARCHAR(36)` | Relasi FK ke `events(id)` |
-| `user_id` | `VARCHAR(36)` | Relasi FK ke `users(id)` penerima |
-| `certificate_number` | `VARCHAR(255) UNIQUE` | Nomor seri sertifikat yang telah di-resolve |
-| `template_url` | `TEXT` | Snapshot background template |
-| `pdf_url` | `TEXT` | Link unduh file PDF sertifikat |
-| `download_url` | `TEXT` | Link unduh file gambar PNG sertifikat |
-| `download_time` | `TIMESTAMPTZ` | Waktu pertama kali peserta mengunduh sertifikat |
 
 ---
 
 ## 3. Halaman Verifikasi Publik (`/certificates/:id`)
 
-- Siapapun (publik, institusi, recruiter) dapat memvalidasi keaslian sertifikat melalui URL publik `/certificates/[id]` atau pemindaian QR Code di bagian bawah sertifikat fisik/digital.
-- Halaman menampilkan nama lengkap peserta, judul event, tanggal acara, status keabsahan, dan identitas penandatangan.
+- Siapapun dapat memvalidasi keaslian sertifikat melalui URL publik `/certificates/[id]` atau pemindaian QR Code di bagian bawah sertifikat.
+- Halaman menampilkan nama lengkap peserta, asal fakultas penyelenggara, judul event, tanggal acara, status keabsahan, dan identitas penandatangan dekanat/rektorat.

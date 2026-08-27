@@ -4,6 +4,7 @@
 
 INSERT INTO events (
     id,
+    tenant_id,
     title,
     slug,
     description,
@@ -25,17 +26,19 @@ INSERT INTO events (
     created_at,
     updated_at
 ) VALUES
+-- Event 1: Event Rektorat / Universitas
 (
     '20000000-0000-0000-0001-000000000001',
-    'Seminar Teknologi & Inovasi 2026',
-    'seminar-teknologi-2026',
-    'Seminar tahunan membahas perkembangan teknologi terkini, AI, dan ekosistem startup Indonesia. Terbuka untuk umum tanpa biaya pendaftaran.',
+    '10000000-0000-0000-0000-000000000001',
+    'Seminar Dies Natalis & Inovasi Perguruan Tinggi 2026',
+    'seminar-dies-natalis-2026',
+    'Seminar tahunan universitas membahas perkembangan riset inovatif dan transformasi akademik Indonesia.',
     'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=60',
     '2026-10-10 00:00:00+00',
     '2026-10-10 00:00:00+00',
     '09:00',
     '12:00',
-    'Gedung Serbaguna, Kampus Utama',
+    'Auditorium Pusat Gedung Rektorat Lt. 3',
     'OFFLINE',
     FALSE,
     '2026-10-09 23:59:59+00',
@@ -48,17 +51,19 @@ INSERT INTO events (
     NOW(),
     NOW()
 ),
+-- Event 2: Event Fasilkom (Webinar)
 (
     '20000000-0000-0000-0001-000000000002',
-    'Webinar Desain UI/UX untuk Pemula',
-    'webinar-desain-ui-ux',
-    'Webinar interaktif bersama praktisi UI/UX profesional. Pelajari prinsip desain modern dan workflow Figma dari nol hingga mahir.',
+    '10000000-0000-0000-0000-000000000002',
+    'Webinar Desain UI/UX & Design Systems Fasilkom',
+    'webinar-desain-ui-ux-fasilkom',
+    'Webinar interaktif bersama praktisi UI/UX profesional alumni Fakultas Ilmu Komputer.',
     'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&auto=format&fit=crop&q=60',
     '2026-10-15 00:00:00+00',
     '2026-10-15 00:00:00+00',
     '13:00',
     '16:00',
-    'Zoom Meeting (link dikirim via email)',
+    'Zoom Meeting (Link otomatis dikirim via email)',
     'ONLINE',
     TRUE,
     '2026-10-14 23:59:59+00',
@@ -71,17 +76,19 @@ INSERT INTO events (
     NOW(),
     NOW()
 ),
+-- Event 3: Event Fasilkom (Workshop Berbayar)
 (
     '20000000-0000-0000-0001-000000000003',
-    'Workshop Full-Stack Web dengan Next.js 15',
-    'workshop-fullstack-nextjs',
-    'Workshop intensif 2 hari membangun aplikasi web full-stack dengan Next.js 15, Prisma ORM, dan PostgreSQL. Kuota sangat terbatas.',
+    '10000000-0000-0000-0000-000000000002',
+    'Workshop Full-Stack Go & Next.js Fasilkom',
+    'workshop-fullstack-fasilkom',
+    'Workshop intensif 2 hari membangun arsitektur monorepo modern dengan Go dan Next.js.',
     'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop&q=60',
     '2026-10-20 00:00:00+00',
     '2026-10-21 00:00:00+00',
     '09:00',
     '17:00',
-    'Lab Komputer Gedung F, Lt. 3',
+    'Lab Komputer Gedung Fasilkom Lt. 3',
     'OFFLINE',
     FALSE,
     '2026-10-18 23:59:59+00',
@@ -94,17 +101,19 @@ INSERT INTO events (
     NOW(),
     NOW()
 ),
+-- Event 4: Event Fakultas Teknik (Expo Rekayasa)
 (
     '20000000-0000-0000-0001-000000000004',
-    'Konferensi Riset Mahasiswa 2026',
-    'konferensi-riset-mahasiswa-2026',
-    'Forum presentasi paper dan poster riset mahasiswa dari berbagai universitas. Proses seleksi abstrak dan full paper oleh reviewer.',
+    '10000000-0000-0000-0000-000000000003',
+    'Expo Rekayasa & Otomasi Robotika FT 2026',
+    'expo-rekayasa-ft-2026',
+    'Pameran proyek inovasi teknologi mesin, elektro, dan robotika karya mahasiswa Fakultas Teknik.',
     'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&auto=format&fit=crop&q=60',
     '2026-11-05 00:00:00+00',
     '2026-11-06 00:00:00+00',
     '08:00',
     '17:00',
-    'Auditorium Utama, Gedung Rektorat',
+    'Plaza Gedung Fakultas Teknik',
     'OFFLINE',
     FALSE,
     '2026-10-31 23:59:59+00',
@@ -113,21 +122,23 @@ INSERT INTO events (
     'PUBLISHED',
     TRUE,
     NOW(),
-    '20000000-0000-0000-0000-000000000005',
+    '20000000-0000-0000-0000-000000000007',
     NOW(),
     NOW()
 ),
+-- Event 5: Event FEB (Kompetisi Business Plan)
 (
     '20000000-0000-0000-0001-000000000005',
-    'Kompetisi Programming 2026',
-    'kompetisi-programming-2026',
-    'Ajang kompetisi algoritma dan pemrograman tingkat nasional. Hadiah total Rp 10.000.000 untuk juara 1, 2, dan 3.',
+    '10000000-0000-0000-0000-000000000004',
+    'National Business Case Competition FEB 2026',
+    'national-business-case-feb',
+    'Ajang kompetisi analisis studi kasus bisnis nasional untuk mahasiswa sarjana ekonomi se-Indonesia.',
     NULL,
     '2026-12-01 00:00:00+00',
     '2026-12-01 00:00:00+00',
     '08:00',
     '17:00',
-    'TBD',
+    'Hall Utama FEB',
     'OFFLINE',
     FALSE,
     '2026-11-25 23:59:59+00',
@@ -141,10 +152,10 @@ INSERT INTO events (
     NOW()
 )
 ON CONFLICT (slug) DO UPDATE SET
+    tenant_id = EXCLUDED.tenant_id,
     title = EXCLUDED.title,
     description = EXCLUDED.description,
     price = EXCLUDED.price,
     quota = EXCLUDED.quota,
     status = EXCLUDED.status,
     updated_at = NOW();
-
