@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS _role_to_user (
+    "A" VARCHAR(36) NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+    "B" VARCHAR(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    PRIMARY KEY ("A", "B")
+);
+
+CREATE INDEX IF NOT EXISTS idx_role_to_user_b ON _role_to_user("B");
+

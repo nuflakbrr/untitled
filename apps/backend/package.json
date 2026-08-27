@@ -1,0 +1,14 @@
+{
+  "name": "@venturo/backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "air",
+    "build": "go build -o bin/api cmd/api/main.go",
+    "test": "go test ./...",
+    "lint": "golangci-lint run ./...",
+    "db:migrate": "make migrate-up",
+    "db:seed": "make seed",
+    "db:setup": "make db-setup"
+  }
+}

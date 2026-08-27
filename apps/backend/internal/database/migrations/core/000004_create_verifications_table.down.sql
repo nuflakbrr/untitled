@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS verifications CASCADE;
+

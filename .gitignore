@@ -1,0 +1,83 @@
+# Turborepo
+.turbo/
+
+# Dependencies
+node_modules/
+.pnp/
+.pnp.*
+
+# Lockfiles
+bun.lock
+bun.lockb
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build Outputs
+.next/
+out/
+dist/
+build/
+bin/
+*.tsbuildinfo
+next-env.d.ts
+
+# Go Binaries & Tests
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+go.work
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+logs/
+
+# Testing coverage
+coverage/
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+.env.prod
+cmd/*/.env
+cmd/*/.env.local
+cmd/*/.env.*.local
+deployments/kubernetes/**/secret.yaml
+!.env.example
+!.env.prod.example
+!deployments/kubernetes/**/secret.yaml.example
+
+# Deployment
+.vercel
+.netlify
+
+# Editor & System Files
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.pem
+.ncurc.js
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files & Generated reports
+tmp/
+temp/
+*.pdf
+

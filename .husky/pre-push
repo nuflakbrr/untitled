@@ -1,0 +1,2 @@
+# Type-check sebelum push — gate utama repo ini
+bun run tsc:check

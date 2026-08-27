@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS email_queues CASCADE;
+DROP TYPE IF EXISTS email_status CASCADE;
+
