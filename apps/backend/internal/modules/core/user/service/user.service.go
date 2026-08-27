@@ -15,7 +15,7 @@ import (
 
 var (
 	ErrInvalidCurrentPassword = errors.New("current password does not match")
-	ErrCannotBanSelf           = errors.New("cannot ban your own account")
+	ErrCannotBanSelf          = errors.New("cannot ban your own account")
 )
 
 type UserService struct {
@@ -109,6 +109,11 @@ func (s *UserService) Update(ctx context.Context, id string, req dto.UpdateUserR
 
 	resp := toUserResponse(user)
 	return &resp, nil
+}
+
+// Delete removes a user and its cascade-owned credentials and sessions.
+func (s *UserService) Delete(ctx context.Context, id string) error {
+	return s.repo.Delete(ctx, id)
 }
 
 // UpdateMe updates profile of currently authenticated user

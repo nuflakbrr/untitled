@@ -1,0 +1,30 @@
+meta {
+  name: Create Tenant - Unauthorized (no token)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/core/v1/tenants
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Fakultas Test",
+    "slug": "ftest",
+    "code": "FTEST",
+    "type": "FACULTY"
+  }
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+}

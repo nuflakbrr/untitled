@@ -1,0 +1,71 @@
+meta {
+  name: Sign In - Superadmin Universitas
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/core/v1/auth/signin
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "{{superadminEmail}}",
+    "password": "{{superadminPassword}}"
+  }
+}
+
+script:post-response {
+  // Save access token for subsequent requests
+  if (res.status === 200 && res.body.data) {
+    bru.setEnvVar("accessToken", res.body.data.access_token);
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("message is Login successful", function() {
+    expect(res.body.message).to.equal("Login successful");
+  });
+
+  test("data contains access_token", function() {
+    expect(res.body.data).to.have.property("access_token");
+    expect(res.body.data.access_token).to.be.a("string");
+    expect(res.body.data.access_token.length).to.be.greaterThan(50);
+  });
+
+  test("token_type is Bearer", function() {
+    expect(res.body.data.token_type).to.equal("Bearer");
+  });
+
+  test("role is root_superadmin", function() {
+    expect(res.body.data.role).to.equal("root_superadmin");
+  });
+
+  test("tenant is ROOT type", function() {
+    expect(res.body.data.tenant.type).to.equal("ROOT");
+    expect(res.body.data.tenant.slug).to.equal("rektorat");
+  });
+
+  test("user email matches", function() {
+    expect(res.body.data.user.email).to.equal("superadmin.univ@untitled.ac.id");
+  });
+
+  test("permissions array is not empty", function() {
+    expect(res.body.data.permissions).to.be.an("array");
+    expect(res.body.data.permissions.length).to.be.greaterThan(0);
+  });
+
+  test("has admin.access permission", function() {
+    expect(res.body.data.permissions).to.include("admin.access");
+  });
+}

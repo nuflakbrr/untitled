@@ -245,6 +245,18 @@ func (r *UserRepository) Update(ctx context.Context, user *domain.User) error {
 	).Scan(&user.UpdatedAt)
 }
 
+// Delete removes a user; related accounts, sessions, and role links cascade.
+func (r *UserRepository) Delete(ctx context.Context, id string) error {
+	cmdTag, err := r.db.Exec(ctx, `DELETE FROM users WHERE id = $1`, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete user: %w", err)
+	}
+	if cmdTag.RowsAffected() == 0 {
+		return ErrUserNotFound
+	}
+	return nil
+}
+
 // UpdatePassword updates the password in accounts table
 func (r *UserRepository) UpdatePassword(ctx context.Context, userID, newPasswordHash string) error {
 	query := `

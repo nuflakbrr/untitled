@@ -1,0 +1,19 @@
+meta {
+  name: Read Created User
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/core/v1/users/{{crudUserId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("returns created user", function() { expect(res.body.data.id).to.equal(bru.getEnvVar("crudUserId")); });
+}

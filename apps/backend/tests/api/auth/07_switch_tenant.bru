@@ -1,0 +1,41 @@
+meta {
+  name: Switch Tenant - Root ke FASILKOM
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/core/v1/auth/switch-tenant
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "tenant_id": "{{tenantFasilkomId}}"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("returns new access_token", function() {
+    expect(res.body.data.access_token).to.be.a("string");
+    expect(res.body.data.access_token.length).to.be.greaterThan(50);
+  });
+
+  test("tenant switched to FASILKOM", function() {
+    expect(res.body.data.tenant.slug).to.equal("fasilkom");
+    expect(res.body.data.tenant.type).to.equal("FACULTY");
+  });
+}

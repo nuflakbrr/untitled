@@ -1,4 +1,4 @@
-.PHONY: help migrate-up migrate-down migrate-create migrate-force migrate-version seed seed-core seed-features db-setup db-reset dev build run test test-coverage test-short
+.PHONY: help migrate-up migrate-down migrate-create migrate-force migrate-version seed seed-core seed-features db-setup db-reset dev build run test test-coverage test-short test-api
 
 help:
 	@echo "Available commands:"
@@ -22,6 +22,13 @@ help:
 	@echo "Setup commands:"
 	@echo "  make db-setup                - Run migrations + seeders (fresh setup)"
 	@echo "  make db-reset                - Drop, migrate, and seed database"
+	@echo ""
+	@echo "Testing commands:"
+	@echo "  make test                    - Run all Go unit tests (verbose, race)"
+	@echo "  make test-coverage           - Run unit tests + HTML coverage report"
+	@echo "  make test-short              - Run unit tests (fast, skips integration)"
+	@echo "  make test-api                - Run API endpoint tests (requires running server)"
+	@echo "  make test-api BAIL=--bail    - Stop API tests on first failure"
 
 # Database migrations
 export PATH := $(HOME)/go/bin:/Library/PostgreSQL/18/bin:/Library/PostgreSQL/17/bin:/Library/PostgreSQL/16/bin:/opt/homebrew/bin:/opt/homebrew/opt/libpq/bin:/usr/local/bin:$(PATH)
@@ -141,3 +148,9 @@ test-coverage:
 test-short:
 	@echo "⚡ Running tests (short mode, skips integration tests)..."
 	@go test -short -count=1 ./...
+
+BAIL ?=
+test-api:
+	@echo "🌐 Running API endpoint tests (requires server on localhost:8000)..."
+	@chmod +x tests/run-api-tests.sh
+	@BASE_URL=http://localhost:8000 tests/run-api-tests.sh $(BAIL)

@@ -1,0 +1,19 @@
+meta {
+  name: Delete Created Tenant
+  type: http
+  seq: 9
+}
+
+delete {
+  url: {{baseUrl}}/core/v1/tenants/{{crudTenantId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+}

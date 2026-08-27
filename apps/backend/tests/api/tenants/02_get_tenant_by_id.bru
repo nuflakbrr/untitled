@@ -1,0 +1,24 @@
+meta {
+  name: Get Tenant by ID - Rektorat
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/core/v1/tenants/{{tenantRektoratId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("returns correct tenant", function() {
+    const tenant = res.body.data;
+    expect(tenant.id).to.equal(bru.getEnvVar("tenantRektoratId"));
+    expect(tenant.slug).to.equal("rektorat");
+    expect(tenant.type).to.equal("ROOT");
+  });
+}

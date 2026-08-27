@@ -12,11 +12,16 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "test": "turbo test",
+    "test:unit": "cd apps/backend && go test -v -race -count=1 ./...",
+    "test:api": "cd apps/backend && bash tests/run-api-tests.sh",
+    "test:api:bail": "cd apps/backend && bash tests/run-api-tests.sh --bail",
+    "test:coverage": "cd apps/backend && go test -race -count=1 -coverprofile=coverage.out ./... && go tool cover -func=coverage.out",
     "tsc:check": "turbo tsc:check",
     "clean": "turbo clean",
     "prepare": "husky"
   },
   "devDependencies": {
+    "@usebruno/cli": "^4.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.8",
     "prettier": "^3.8.3",

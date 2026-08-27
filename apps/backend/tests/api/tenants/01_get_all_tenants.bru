@@ -1,0 +1,52 @@
+meta {
+  name: Get All Tenants
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/core/v1/tenants
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("message is success", function() {
+    expect(res.body.message).to.equal("Tenants retrieved successfully");
+  });
+
+  test("data is array", function() {
+    expect(res.body.data).to.be.an("array");
+    expect(res.body.data.length).to.be.greaterThan(0);
+  });
+
+  test("pagination meta present", function() {
+    expect(res.body.meta.pagination).to.have.property("page");
+    expect(res.body.meta.pagination).to.have.property("total");
+  });
+
+  test("has ROOT type tenant (Rektorat)", function() {
+    const rootTenant = res.body.data.find(t => t.type === "ROOT");
+    expect(rootTenant).to.not.be.undefined;
+    expect(rootTenant.slug).to.equal("rektorat");
+  });
+
+  test("has FACULTY type tenants", function() {
+    const faculties = res.body.data.filter(t => t.type === "FACULTY");
+    expect(faculties.length).to.be.greaterThan(0);
+  });
+
+  test("all tenants have required fields", function() {
+    res.body.data.forEach(tenant => {
+      expect(tenant).to.have.property("id");
+      expect(tenant).to.have.property("name");
+      expect(tenant).to.have.property("slug");
+      expect(tenant).to.have.property("code");
+      expect(tenant).to.have.property("type");
+    });
+  });
+}

@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "SITIVENT API Tests",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

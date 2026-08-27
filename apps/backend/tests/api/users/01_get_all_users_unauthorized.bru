@@ -1,0 +1,17 @@
+meta {
+  name: Get All Users - Unauthorized
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/core/v1/users
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 401 without token", function() {
+    expect(res.status).to.equal(401);
+  });
+}

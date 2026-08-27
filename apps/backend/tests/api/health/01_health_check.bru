@@ -1,0 +1,26 @@
+meta {
+  name: Health Check
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/health
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("returns ok status", function() {
+    const data = res.body;
+    expect(data.status).to.equal("ok");
+  });
+
+  test("message contains SITIVENT", function() {
+    expect(res.body.message).to.include("SITIVENT");
+  });
+}

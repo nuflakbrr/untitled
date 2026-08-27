@@ -1,0 +1,41 @@
+meta {
+  name: Sign Up - Peserta Baru
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/core/v1/auth/signup
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "peserta.test.{{$randomInt}}@gmail.com",
+    "name": "Peserta Test Otomatis",
+    "password": "securepassword123"
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+
+  test("message is registration successful", function() {
+    expect(res.body.message).to.equal("Registration successful");
+  });
+
+  test("user role is peserta", function() {
+    expect(res.body.data.user.role).to.equal("peserta");
+  });
+
+  test("tenant is null (universal participant)", function() {
+    expect(res.body.data.user.tenant_id).to.be.undefined;
+  });
+}

@@ -1,0 +1,38 @@
+meta {
+  name: Get Me - Authenticated Profile
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/core/v1/auth/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("message is success", function() {
+    expect(res.body.message).to.equal("User profile retrieved successfully");
+  });
+
+  test("data.user has required fields", function() {
+    const user = res.body.data.user;
+    expect(user).to.have.property("id");
+    expect(user).to.have.property("email");
+    expect(user).to.have.property("name");
+    expect(user).to.have.property("role");
+  });
+
+  test("permissions are present", function() {
+    expect(res.body.data.permissions).to.be.an("array");
+    expect(res.body.data.permissions.length).to.be.greaterThan(0);
+  });
+}

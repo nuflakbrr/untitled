@@ -118,6 +118,19 @@ func (h *UserHandler) Update(c *gin.Context) {
 	response.Success(c, http.StatusOK, "User updated successfully", user)
 }
 
+// Delete handles DELETE /core/v1/users/:id
+func (h *UserHandler) Delete(c *gin.Context) {
+	if err := h.service.Delete(c.Request.Context(), c.Param("id")); err != nil {
+		if errors.Is(err, repository.ErrUserNotFound) {
+			response.Error(c, http.StatusNotFound, "User not found", "")
+			return
+		}
+		response.Error(c, http.StatusInternalServerError, "Failed to delete user", err.Error())
+		return
+	}
+	response.Success(c, http.StatusOK, "User deleted successfully", nil)
+}
+
 // UpdateMe handles PUT /core/v1/users/me
 func (h *UserHandler) UpdateMe(c *gin.Context) {
 	claims, err := middleware.GetUserFromContext(c)

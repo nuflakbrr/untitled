@@ -42,6 +42,7 @@ func (m *UserModule) SetupRoutes(router *gin.RouterGroup) {
 		users.GET("/:id", middleware.RequirePermission("user.read"), m.Handler.GetByID)
 		users.POST("", middleware.RequirePermission("user.create"), m.Handler.Create)
 		users.PUT("/:id", middleware.RequirePermission("user.update"), m.Handler.Update)
+		users.DELETE("/:id", middleware.RequirePermission("user.delete"), m.Handler.Delete)
 
 		// Ban / Unban endpoints
 		users.POST("/:id/ban", middleware.RequirePermission("user.update"), m.Handler.BanUser)
