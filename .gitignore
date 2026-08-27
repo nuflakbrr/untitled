@@ -65,6 +65,10 @@ deployments/kubernetes/**/secret.yaml
 .DS_Store
 .vscode/
 .idea/
+.claude/
+**/.claude/
+.gemini/
+**/.gemini/
 *.swp
 *.swo
 *~
