@@ -5,6 +5,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -91,6 +93,9 @@ type RedisConfig struct {
 }
 
 func Load() *Config {
+	// Attempt to load .env from current directory, or apps/backend/.env, or root .env
+	_ = godotenv.Load(".env", "apps/backend/.env", "../../apps/backend/.env", "../.env")
+
 	return &Config{
 		Database: DatabaseConfig{
 			Host:     getEnv("DB_HOST", "localhost"),
@@ -145,7 +150,7 @@ func Load() *Config {
 
 func (c *DatabaseConfig) GetDSN() string {
 	return fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=%s&timezone=UTC&search_path=public,core",
+		"postgres://%s:%s@%s:%s/%s?sslmode=%s&timezone=UTC",
 		c.User, c.Password, c.Host, c.Port, c.DBName, c.SSLMode,
 	)
 }

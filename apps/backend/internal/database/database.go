@@ -52,6 +52,12 @@ func ParseConfig(dsn string) (*pgxpool.Config, error) {
 		config.ConnConfig.ConnectTimeout = connectTimeout
 	}
 
+	// Configure RuntimeParams - Ensure search_path includes both public and core schemas
+	if config.ConnConfig.RuntimeParams == nil {
+		config.ConnConfig.RuntimeParams = make(map[string]string)
+	}
+	config.ConnConfig.RuntimeParams["search_path"] = "public,core"
+
 	return config, nil
 }
 
