@@ -1,6 +1,6 @@
 .PHONY: help install dev dev-fe dev-be build lint test tsc clean db-setup db-reset docker-up docker-down
 
-export PATH := /Library/PostgreSQL/18/bin:/Library/PostgreSQL/17/bin:/Library/PostgreSQL/16/bin:/opt/homebrew/bin:/opt/homebrew/opt/libpq/bin:/usr/local/bin:$(PATH)
+export PATH := $(HOME)/go/bin:/Library/PostgreSQL/18/bin:/Library/PostgreSQL/17/bin:/Library/PostgreSQL/16/bin:/opt/homebrew/bin:/opt/homebrew/opt/libpq/bin:/usr/local/bin:$(PATH)
 
 help:
 	@echo "Venturo Monorepo Commands:"
@@ -33,10 +33,10 @@ dev:
 	@bun run dev
 
 dev-fe:
-	@bun run --filter @venturo/skeleton-next dev
+	@bun run --filter untitled-frontend dev
 
 dev-be:
-	@bun run --filter @venturo/backend dev
+	@bun run --filter untitled-backend dev
 
 build:
 	@bun run build
