@@ -145,7 +145,7 @@ func Load() *Config {
 
 func (c *DatabaseConfig) GetDSN() string {
 	return fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=%s&timezone=UTC",
+		"postgres://%s:%s@%s:%s/%s?sslmode=%s&timezone=UTC&search_path=public,core",
 		c.User, c.Password, c.Host, c.Port, c.DBName, c.SSLMode,
 	)
 }

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS galleries (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
-    tenant_id VARCHAR(36) REFERENCES tenants(id) ON DELETE CASCADE,
+    tenant_id VARCHAR(36) REFERENCES core.tenants(id) ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
     description TEXT,
     image_url TEXT NOT NULL,

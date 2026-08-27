@@ -7,7 +7,7 @@ END $$;
 CREATE TABLE IF NOT EXISTS registrations (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
     event_id VARCHAR(36) NOT NULL REFERENCES events(id) ON DELETE RESTRICT,
-    user_id VARCHAR(36) NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+    user_id VARCHAR(36) NOT NULL REFERENCES core.users(id) ON DELETE RESTRICT,
     registration_number VARCHAR(100) NOT NULL UNIQUE,
     qr_token VARCHAR(255) UNIQUE,
     online_attendance BOOLEAN NOT NULL DEFAULT FALSE,

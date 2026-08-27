@@ -28,8 +28,8 @@ INSERT INTO events (
 ) VALUES
 -- Event 1: Event Rektorat / Universitas
 (
-    '20000000-0000-0000-0001-000000000001',
-    '10000000-0000-0000-0000-000000000001',
+    '2093030b-adb4-4803-9af2-13a6c1ad8b1a',
+    'c9711506-d356-4704-a32e-0543dfe3e104',
     'Seminar Dies Natalis & Inovasi Perguruan Tinggi 2026',
     'seminar-dies-natalis-2026',
     'Seminar tahunan universitas membahas perkembangan riset inovatif dan transformasi akademik Indonesia.',
@@ -47,14 +47,14 @@ INSERT INTO events (
     'PUBLISHED',
     TRUE,
     NOW(),
-    '20000000-0000-0000-0000-000000000001',
+    '83780fb3-7c86-48f7-aeac-4e169a2ef760',
     NOW(),
     NOW()
 ),
 -- Event 2: Event Fasilkom (Webinar)
 (
-    '20000000-0000-0000-0001-000000000002',
-    '10000000-0000-0000-0000-000000000002',
+    '2d802a9d-970d-4a80-adcd-091d4d7b1c3d',
+    '20492a21-59c3-4edf-bb64-1eaa6cf11deb',
     'Webinar Desain UI/UX & Design Systems Fasilkom',
     'webinar-desain-ui-ux-fasilkom',
     'Webinar interaktif bersama praktisi UI/UX profesional alumni Fakultas Ilmu Komputer.',
@@ -72,14 +72,14 @@ INSERT INTO events (
     'PUBLISHED',
     TRUE,
     NOW(),
-    '20000000-0000-0000-0000-000000000003',
+    '9ddd82e1-8f52-4e2f-a71a-1eee6d4a8798',
     NOW(),
     NOW()
 ),
 -- Event 3: Event Fasilkom (Workshop Berbayar)
 (
-    '20000000-0000-0000-0001-000000000003',
-    '10000000-0000-0000-0000-000000000002',
+    'b62644fd-67db-4a89-8de9-b8b796086a2e',
+    '20492a21-59c3-4edf-bb64-1eaa6cf11deb',
     'Workshop Full-Stack Go & Next.js Fasilkom',
     'workshop-fullstack-fasilkom',
     'Workshop intensif 2 hari membangun arsitektur monorepo modern dengan Go dan Next.js.',
@@ -97,14 +97,14 @@ INSERT INTO events (
     'PUBLISHED',
     TRUE,
     NOW(),
-    '20000000-0000-0000-0000-000000000002',
+    '94c14f8f-75c7-4e70-838c-fce050460ca8',
     NOW(),
     NOW()
 ),
 -- Event 4: Event Fakultas Teknik (Expo Rekayasa)
 (
-    '20000000-0000-0000-0001-000000000004',
-    '10000000-0000-0000-0000-000000000003',
+    '1b0b2df2-87ab-412d-a3ae-8434f90ea1f5',
+    '0ae41d16-bc49-4a88-b079-94def1b5b3ff',
     'Expo Rekayasa & Otomasi Robotika FT 2026',
     'expo-rekayasa-ft-2026',
     'Pameran proyek inovasi teknologi mesin, elektro, dan robotika karya mahasiswa Fakultas Teknik.',
@@ -122,14 +122,14 @@ INSERT INTO events (
     'PUBLISHED',
     TRUE,
     NOW(),
-    '20000000-0000-0000-0000-000000000007',
+    'be9b5e2b-ae8b-48f6-a8c2-fe47c99782e4',
     NOW(),
     NOW()
 ),
 -- Event 5: Event FEB (Kompetisi Business Plan)
 (
-    '20000000-0000-0000-0001-000000000005',
-    '10000000-0000-0000-0000-000000000004',
+    '0cab550d-5978-4ed3-a505-8a02e6e20144',
+    '2f36ab3a-bc06-4652-8bc4-cc8f7a703eb9',
     'National Business Case Competition FEB 2026',
     'national-business-case-feb',
     'Ajang kompetisi analisis studi kasus bisnis nasional untuk mahasiswa sarjana ekonomi se-Indonesia.',
@@ -147,7 +147,7 @@ INSERT INTO events (
     'DRAFT',
     FALSE,
     NULL,
-    '20000000-0000-0000-0000-000000000004',
+    '3ea53a64-535a-42b8-9379-1740813051be',
     NOW(),
     NOW()
 )

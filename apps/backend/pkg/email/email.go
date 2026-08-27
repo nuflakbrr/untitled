@@ -2,10 +2,13 @@ package email
 
 import (
 	"bytes"
+	"embed"
 	"fmt"
 	"html/template"
-	"path/filepath"
 )
+
+//go:embed templates/*.html
+var templateFS embed.FS
 
 // EmailService defines the interface for sending emails
 type EmailService interface {
@@ -21,28 +24,23 @@ type EmailService interface {
 
 // EmailData represents common data for email templates
 type EmailData struct {
-	Name              string
-	AppName           string
-	AppURL            string
-	VerificationURL   string
-	ResetPasswordURL  string
-	OTPCode           string
-	SupportEmail      string
-	Year              int
+	Name             string
+	AppName          string
+	AppURL           string
+	VerificationURL  string
+	ResetPasswordURL string
+	OTPCode          string
+	SupportEmail     string
+	Year             int
 }
 
-// renderTemplate renders an email template with the given data
+// renderTemplate renders an email template with the given data from embedded filesystem
 func renderTemplate(templateName string, data interface{}) (string, error) {
-	// Get the template file path
-	templatePath := filepath.Join("pkg", "email", "templates", templateName)
-
-	// Parse the template
-	tmpl, err := template.ParseFiles(templatePath)
+	tmpl, err := template.ParseFS(templateFS, "templates/"+templateName)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse template %s: %w", templateName, err)
 	}
 
-	// Execute the template
 	var buf bytes.Buffer
 	if err := tmpl.Execute(&buf, data); err != nil {
 		return "", fmt.Errorf("failed to execute template %s: %w", templateName, err)

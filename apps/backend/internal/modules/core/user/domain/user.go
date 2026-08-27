@@ -2,44 +2,43 @@ package domain
 
 import "time"
 
-// User represents a user entity in the core schema
+// User represents a user entity in SITIVENT
 type User struct {
-	ID              string     `json:"id"`
-	Email           string     `json:"email"`
-	Username        string     `json:"username"`
-	PasswordHash    string     `json:"-"`
-	FullName        *string    `json:"full_name,omitempty"`
-	Phone           *string    `json:"phone,omitempty"`
-	AvatarURL       *string    `json:"avatar_url,omitempty"`
-	IsActive        bool       `json:"is_active"`
-	IsEmailVerified bool       `json:"is_email_verified"`
-	EmailVerifiedAt *time.Time `json:"email_verified_at,omitempty"`
-	FailedLoginCount int       `json:"failed_login_count"`
-	LockedUntil     *time.Time `json:"locked_until,omitempty"`
-	LastLoginAt     *time.Time `json:"last_login_at,omitempty"`
-	CreatedAt       time.Time  `json:"created_at"`
-	CreatedBy       *string    `json:"created_by,omitempty"`
-	UpdatedAt       time.Time  `json:"updated_at"`
-	UpdatedBy       *string    `json:"updated_by,omitempty"`
-	DeletedAt       *time.Time `json:"deleted_at,omitempty"`
-	DeletedBy       *string    `json:"deleted_by,omitempty"`
+	ID            string     `json:"id" db:"id"`
+	TenantID      *string    `json:"tenant_id,omitempty" db:"tenant_id"`
+	Email         string     `json:"email" db:"email"`
+	Name          string     `json:"name" db:"name"`
+	EmailVerified bool       `json:"email_verified" db:"email_verified"`
+	Image         *string    `json:"image,omitempty" db:"image"`
+	Role          string     `json:"role" db:"role"`
+	Banned        bool       `json:"banned" db:"banned"`
+	BanReason     *string    `json:"ban_reason,omitempty" db:"ban_reason"`
+	BanExpires    *time.Time `json:"ban_expires,omitempty" db:"ban_expires"`
+	RoleID        string     `json:"role_id" db:"role_id"`
+	CreatedAt     time.Time  `json:"created_at" db:"created_at"`
+	UpdatedAt     time.Time  `json:"updated_at" db:"updated_at"`
+
+	// Relational data
+	PasswordHash string   `json:"-" db:"password"`
+	Roles        []string `json:"roles" db:"-"`
+	TenantName   *string  `json:"tenant_name,omitempty" db:"tenant_name"`
+	TenantSlug   *string  `json:"tenant_slug,omitempty" db:"tenant_slug"`
+	TenantCode   *string  `json:"tenant_code,omitempty" db:"tenant_code"`
+	TenantType   *string  `json:"tenant_type,omitempty" db:"tenant_type"`
 }
 
-// IsLocked checks if the user account is currently locked
-func (u *User) IsLocked() bool {
-	if u.LockedUntil == nil {
+// IsBanned checks if user is currently banned
+func (u *User) IsBanned() bool {
+	if !u.Banned {
 		return false
 	}
-	return time.Now().Before(*u.LockedUntil)
+	if u.BanExpires == nil {
+		return true // permanent ban
+	}
+	return time.Now().Before(*u.BanExpires)
 }
 
-// CanLogin checks if the user can login
+// CanLogin checks if user is allowed to authenticate
 func (u *User) CanLogin() bool {
-	return u.IsActive && !u.IsLocked()
-}
-
-// UserWithRoles represents user with their assigned roles
-type UserWithRoles struct {
-	User  User     `json:"user"`
-	Roles []string `json:"roles"`
+	return !u.IsBanned()
 }

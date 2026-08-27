@@ -1,2 +1,0 @@
-DROP TABLE IF EXISTS _role_to_user CASCADE;
-

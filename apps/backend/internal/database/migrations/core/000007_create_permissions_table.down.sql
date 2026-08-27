@@ -1,2 +1,1 @@
-DROP TABLE IF EXISTS permissions CASCADE;
-
+DROP TABLE IF EXISTS core.permissions CASCADE;

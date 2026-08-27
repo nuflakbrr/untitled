@@ -10,7 +10,7 @@
 
 Autentikasi di backend Go menggunakan pola **Stateless JWT** yang didukung **Redis Permission Cache**:
 
-- **Tabel Database**: `users`, `sessions`, `accounts`, `verifications`, `roles`, `permissions`, `role_has_permissions`, `model_has_permissions`, `_role_to_user`.
+- **Tabel Database**: `core.users`, `core.sessions`, `core.accounts`, `core.verifications`, `core.roles`, `core.permissions`, `core.role_has_permissions`, `core._role_to_user`.
 - **Password Hashing**: Menggunakan `golang.org/x/crypto/bcrypt` dengan salt terenkripsi.
 - **JWT Token Generation (`pkg/jwt`)**:
   - Algorithm: HS256
@@ -47,7 +47,7 @@ erDiagram
    - Menyimpan `userID` dan `roles` ke dalam `gin.Context`.
 2. **`middleware.RequirePermission(permissionName string)`**:
    - Membaca daftar permission user dari Redis Cache (`user_permissions:{userId}`).
-   - Jika cache-miss: Mengambil dari tabel `role_has_permissions` & `model_has_permissions` lalu menyimpannya ke Redis (TTL 10 menit).
+   - Jika cache-miss: Mengambil dari tabel `role_has_permissions` & `_role_to_user` lalu menyimpannya ke Redis (TTL 10 menit).
    - Memeriksa apakah `permissionName` ada dalam daftar izin user.
 3. **Invalidasi Cache**:
    - Saat admin mengubah permission role atau user, backend mengeksekusi `DEL user_permissions:{userId}` di Redis.

@@ -27,7 +27,7 @@ help:
 export PATH := /Library/PostgreSQL/18/bin:/Library/PostgreSQL/17/bin:/Library/PostgreSQL/16/bin:/opt/homebrew/bin:/opt/homebrew/opt/libpq/bin:/usr/local/bin:$(PATH)
 PSQL ?= $(shell which psql 2>/dev/null || find /Library/PostgreSQL/*/bin /opt/homebrew/bin /usr/local/bin -name psql 2>/dev/null | head -n 1 || echo psql)
 
-DB_URL=postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSLMODE)
+DB_URL=postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSLMODE)&search_path=public,core
 MIGRATIONS_PATH=internal/database/migrations
 SEEDERS_PATH=internal/database/seeders
 

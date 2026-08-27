@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS certificates (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
     registration_id VARCHAR(36) NOT NULL REFERENCES registrations(id) ON DELETE CASCADE,
     event_id VARCHAR(36) NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-    user_id VARCHAR(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id VARCHAR(36) NOT NULL REFERENCES core.users(id) ON DELETE CASCADE,
     certificate_number VARCHAR(100) NOT NULL UNIQUE,
     template_url TEXT,
     pdf_url TEXT NOT NULL,

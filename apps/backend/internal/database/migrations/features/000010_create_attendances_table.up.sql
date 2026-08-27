@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS attendances (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
     registration_id VARCHAR(36) REFERENCES registrations(id) ON DELETE CASCADE,
     scan_time TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    scanner_id VARCHAR(36) REFERENCES users(id) ON DELETE SET NULL,
+    scanner_id VARCHAR(36) REFERENCES core.users(id) ON DELETE SET NULL,
     status attendance_status NOT NULL
 );
 

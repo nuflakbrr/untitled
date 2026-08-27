@@ -3,10 +3,10 @@ package audit
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-
 	"venturo-skeleton-go/internal/middleware"
 	"venturo-skeleton-go/internal/shared/response"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
@@ -30,23 +30,20 @@ func (h *Handler) List(c *gin.Context) {
 		params.Limit = 50
 	}
 
-	// Cross-filter rule: reff_id only makes sense scoped by a reff_type.
-	if params.ReffID != "" && params.ReffType == "" {
-		response.Error(c, http.StatusBadRequest, "reff_type is required when reff_id is provided", "")
-		return
+	claims, err := middleware.GetUserFromContext(c)
+	tenantID := params.TenantID
+	if err == nil && claims != nil && !claims.IsSuperAdmin && claims.TenantID != "" {
+		tenantID = &claims.TenantID
 	}
 
-	companyID := middleware.GetCompanyID(c)
 	items, total, err := h.svc.List(c.Request.Context(), ListFilter{
-		CompanyID: companyID,
-		ReffType:  params.ReffType,
-		ReffID:    params.ReffID,
-		ActorID:   params.ActorID,
-		Action:    params.Action,
-		DateFrom:  params.DateFrom,
-		DateTo:    params.DateTo,
-		Page:      params.Page,
-		Limit:     params.Limit,
+		TenantID: tenantID,
+		UserID:   params.UserID,
+		Entity:   params.Entity,
+		EntityID: params.EntityID,
+		Action:   params.Action,
+		Page:     params.Page,
+		Limit:    params.Limit,
 	})
 	if err != nil {
 		response.Error(c, http.StatusInternalServerError, "Failed to list audit logs", err.Error())

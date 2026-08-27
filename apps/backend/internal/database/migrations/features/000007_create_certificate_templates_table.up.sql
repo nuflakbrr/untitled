@@ -6,7 +6,7 @@ END $$;
 
 CREATE TABLE IF NOT EXISTS certificate_templates (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
-    tenant_id VARCHAR(36) REFERENCES tenants(id) ON DELETE CASCADE,
+    tenant_id VARCHAR(36) REFERENCES core.tenants(id) ON DELETE CASCADE,
     event_id VARCHAR(36) NOT NULL UNIQUE REFERENCES events(id) ON DELETE CASCADE,
     background_url TEXT,
     number_template VARCHAR(255) NOT NULL DEFAULT 'CERT/{SLUG}/{REG_NO}',

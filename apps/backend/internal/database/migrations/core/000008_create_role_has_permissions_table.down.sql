@@ -1,2 +1,1 @@
-DROP TABLE IF EXISTS role_has_permissions CASCADE;
-
+DROP TABLE IF EXISTS core.role_has_permissions CASCADE;

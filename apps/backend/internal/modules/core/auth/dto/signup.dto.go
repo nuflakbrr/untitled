@@ -1,18 +1,14 @@
 package dto
 
-// SignUpRequest represents the signup request payload
+// SignUpRequest represents universal participant registration request
 type SignUpRequest struct {
-	Email       string  `json:"email" binding:"required,email"`
-	Username    string  `json:"username" binding:"required,min=3,max=100"`
-	Password    string  `json:"password" binding:"required,min=8"`
-	FullName    *string `json:"full_name" binding:"omitempty,max=255"`
-	Phone       *string `json:"phone" binding:"omitempty,max=20"`
-	CompanyName string  `json:"company_name" binding:"required,min=2,max=255"`
+	Email    string `json:"email" binding:"required,email"`
+	Name     string `json:"name" binding:"required,min=2,max=255"`
+	Password string `json:"password" binding:"required,min=8"`
 }
 
-// SignUpResponse represents the signup response
+// SignUpResponse represents universal signup response
 type SignUpResponse struct {
-	Message string      `json:"message"`
-	User    UserInfo    `json:"user"`
-	Company CompanyInfo `json:"company"`
+	Message string   `json:"message"`
+	User    UserInfo `json:"user"`
 }

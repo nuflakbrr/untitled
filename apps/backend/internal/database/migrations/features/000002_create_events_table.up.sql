@@ -12,7 +12,8 @@ END $$;
 
 CREATE TABLE IF NOT EXISTS events (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
-    tenant_id VARCHAR(36) NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    tenant_id VARCHAR(36) NOT NULL REFERENCES core.tenants(id) ON DELETE CASCADE,
+    category_id VARCHAR(36) REFERENCES event_categories(id) ON DELETE SET NULL,
     title VARCHAR(255) NOT NULL,
     slug VARCHAR(255) NOT NULL UNIQUE,
     description TEXT NOT NULL,
@@ -22,20 +23,19 @@ CREATE TABLE IF NOT EXISTS events (
     start_time VARCHAR(20) NOT NULL,
     end_time VARCHAR(20) NOT NULL,
     location TEXT NOT NULL,
-    event_type event_type NOT NULL,
+    meeting_link TEXT,
+    event_type event_type NOT NULL DEFAULT 'OFFLINE',
     online_attendance BOOLEAN NOT NULL DEFAULT FALSE,
     registration_deadline TIMESTAMPTZ NOT NULL,
     quota INT NOT NULL,
-    price INT NOT NULL,
+    price INT NOT NULL DEFAULT 0,
     status event_status NOT NULL DEFAULT 'DRAFT',
     certificate_enabled BOOLEAN NOT NULL DEFAULT FALSE,
     published_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMPTZ,
-    category_id VARCHAR(36) REFERENCES event_categories(id) ON DELETE SET NULL,
-    meeting_link TEXT,
-    created_by_id VARCHAR(36) REFERENCES users(id) ON DELETE SET NULL
+    created_by_id VARCHAR(36) REFERENCES core.users(id) ON DELETE SET NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_events_tenant_id ON events(tenant_id);
