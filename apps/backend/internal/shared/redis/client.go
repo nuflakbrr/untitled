@@ -24,14 +24,15 @@ func New(ctx context.Context, cfg config.RedisConfig) (*goredis.Client, error) {
 		Addr:         fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 		Password:     cfg.Password,
 		DB:           cfg.DB,
-		DialTimeout:  3 * time.Second,
-		ReadTimeout:  2 * time.Second,
-		WriteTimeout: 2 * time.Second,
+		DialTimeout:  500 * time.Millisecond,
+		ReadTimeout:  1 * time.Second,
+		WriteTimeout: 1 * time.Second,
+		MaxRetries:   1,
 		PoolSize:     20,
 		MinIdleConns: 2,
 	})
 
-	pingCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	pingCtx, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
 
 	if err := client.Ping(pingCtx).Err(); err != nil {
