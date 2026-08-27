@@ -32,13 +32,19 @@ func Setup(router *gin.Engine, db *pgxpool.Pool, cfg *config.Config) {
 	// ─── Redis & authz cache ────────────────────────────────────────
 	redisClient, err := sharedRedis.New(context.Background(), cfg.Redis)
 	if err != nil {
-		log.Fatal("Failed to connect to Redis", zap.Error(err))
+		if cfg.Server.Env == "production" {
+			log.Fatal("Failed to connect to Redis", zap.Error(err))
+		} else {
+			log.Warn("⚠️ Redis is not available — running in fallback mode (direct DB query, caching disabled)", zap.Error(err))
+			redisClient = nil
+		}
+	} else {
+		log.Info("Redis connected successfully",
+			zap.String("addr", cfg.Redis.Host+":"+cfg.Redis.Port),
+			zap.Int("db", cfg.Redis.DB),
+			zap.Duration("permission_ttl", cfg.Redis.PermissionTTL),
+		)
 	}
-	log.Info("Redis connected",
-		zap.String("addr", cfg.Redis.Host+":"+cfg.Redis.Port),
-		zap.Int("db", cfg.Redis.DB),
-		zap.Duration("permission_ttl", cfg.Redis.PermissionTTL),
-	)
 
 	// Logging & Recovery middleware
 	router.Use(ginzap.Ginzap(log, time.RFC3339, true))

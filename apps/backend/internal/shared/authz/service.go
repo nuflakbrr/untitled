@@ -41,16 +41,18 @@ func (s *Service) GetPermissions(ctx context.Context, userID, tenantID string) (
 
 	key := cacheKey(userID, tenantID)
 
-	// 1. Try cache
-	if raw, err := s.redis.Get(ctx, key).Bytes(); err == nil {
-		var perms []string
-		if jsonErr := json.Unmarshal(raw, &perms); jsonErr == nil {
-			return perms, nil
+	// 1. Try cache (if redis is available)
+	if s.redis != nil {
+		if raw, err := s.redis.Get(ctx, key).Bytes(); err == nil {
+			var perms []string
+			if jsonErr := json.Unmarshal(raw, &perms); jsonErr == nil {
+				return perms, nil
+			}
+			_ = s.redis.Del(ctx, key).Err()
 		}
-		_ = s.redis.Del(ctx, key).Err()
 	}
 
-	// 2. Cache miss -> fetch from DB
+	// 2. Cache miss or no redis -> fetch from DB
 	var tid *string
 	if tenantID != "" {
 		tid = &tenantID
@@ -63,9 +65,11 @@ func (s *Service) GetPermissions(ctx context.Context, userID, tenantID string) (
 		perms = []string{}
 	}
 
-	// 3. Populate cache
-	if payload, mErr := json.Marshal(perms); mErr == nil {
-		_ = s.redis.Set(ctx, key, payload, s.ttl).Err()
+	// 3. Populate cache (if redis is available)
+	if s.redis != nil {
+		if payload, mErr := json.Marshal(perms); mErr == nil {
+			_ = s.redis.Set(ctx, key, payload, s.ttl).Err()
+		}
 	}
 
 	return perms, nil
@@ -85,6 +89,9 @@ func (s *Service) Has(ctx context.Context, userID, tenantID, permission string) 
 }
 
 func (s *Service) InvalidateUser(ctx context.Context, userID string) error {
+	if s.redis == nil {
+		return nil
+	}
 	iter := s.redis.Scan(ctx, 0, fmt.Sprintf("perms:user:%s:*", userID), 0).Iterator()
 	for iter.Next(ctx) {
 		_ = s.redis.Del(ctx, iter.Val()).Err()
@@ -93,6 +100,9 @@ func (s *Service) InvalidateUser(ctx context.Context, userID string) error {
 }
 
 func (s *Service) InvalidateAll(ctx context.Context) error {
+	if s.redis == nil {
+		return nil
+	}
 	iter := s.redis.Scan(ctx, 0, "perms:user:*", 0).Iterator()
 	for iter.Next(ctx) {
 		_ = s.redis.Del(ctx, iter.Val()).Err()
