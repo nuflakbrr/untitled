@@ -12,33 +12,28 @@ import (
 
 type RoleModule struct {
 	Handler    *handler.RoleHandler
-	Repository *repository.RoleRepository
 	Service    *service.RoleService
+	Repository *repository.RoleRepository
 }
 
-// Initialize initializes the role module with all dependencies
 func Initialize(db *pgxpool.Pool) *RoleModule {
-	roleRepo := repository.NewRoleRepository(db)
-	roleService := service.NewRoleService(roleRepo)
-	roleHandler := handler.NewRoleHandler(roleService)
+	repo := repository.NewRoleRepository(db)
+	svc := service.NewRoleService(repo)
+	h := handler.NewRoleHandler(svc)
 
 	return &RoleModule{
-		Handler:    roleHandler,
-		Repository: roleRepo,
-		Service:    roleService,
+		Handler:    h,
+		Service:    svc,
+		Repository: repo,
 	}
 }
 
-// SetupRoutes registers all role module routes
+// SetupRoutes registers routes for role module
 func (m *RoleModule) SetupRoutes(router *gin.RouterGroup) {
 	roles := router.Group("/roles")
 	roles.Use(middleware.JWTAuth())
 	{
-		roles.GET("", m.Handler.GetAll)
-		roles.GET("/:id", m.Handler.GetByID)
-		roles.POST("", middleware.RequirePermission("roles:create"), m.Handler.Create)
-		roles.PUT("/:id", middleware.RequirePermission("roles:update"), m.Handler.Update)
-		roles.PUT("/:id/permissions", middleware.RequirePermission("roles:update"), m.Handler.UpdatePermissions)
-		roles.DELETE("/:id", middleware.RequirePermission("roles:delete"), m.Handler.Delete)
+		roles.GET("", middleware.RequirePermission("role.read"), m.Handler.GetAll)
+		roles.GET("/:id", middleware.RequirePermission("role.read"), m.Handler.GetByID)
 	}
 }

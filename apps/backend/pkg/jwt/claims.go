@@ -4,45 +4,39 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// RoleSuperAdmin is the constant for the super admin role code
-const RoleSuperAdmin = "super_admin"
+// Role constants for SITIVENT Hierarchical Multi-Tenancy
+const (
+	RoleRootSuperAdmin = "root_superadmin"
+	RoleSuperAdmin     = "superadmin"
+	RolePanitia        = "panitia"
+	RoleScanner        = "scanner"
+	RolePeserta        = "peserta"
+)
 
-// Claims represents custom JWT claims for Untitled.
+// Claims represents custom JWT claims for SITIVENT.
 //
-// Permissions are intentionally NOT embedded here — they live in Redis
-// (see internal/shared/authz) and are looked up on the request path.
-// That keeps the JWT small enough to survive every proxy / ingress in
-// the chain and lets admin-side permission changes take effect without
-// waiting for the token to expire.
-//
-// Roles are kept inline because the set is small (1–2 entries per user)
-// and middleware.RequireRole checks them synchronously with no cache.
+// Permissions live in Redis (internal/shared/authz) and are evaluated
+// dynamically at runtime on each request.
 type Claims struct {
 	UserID       string   `json:"user_id"`
-	CompanyID    string   `json:"company_id"`   // Primary company ID for multi-tenancy
-	CompanyName  string   `json:"company_name"` // Company name for display purposes
-	ClientID     string   `json:"client_id"`    // Registration-level tenant ID (parent of company)
-	ClientSlug   string   `json:"client_slug"`  // DNS-safe client identifier — used by FE to call public translation bootstrap
+	TenantID     string   `json:"tenant_id,omitempty"`   // Active Tenant ID (UUID of Rektorat or Faculty)
+	TenantName   string   `json:"tenant_name,omitempty"` // Name of the tenant (e.g. "Fakultas Ilmu Komputer")
+	TenantSlug   string   `json:"tenant_slug,omitempty"` // URL slug of the tenant (e.g. "fasilkom")
+	TenantCode   string   `json:"tenant_code,omitempty"` // Code of the tenant (e.g. "FASILKOM")
+	TenantType   string   `json:"tenant_type,omitempty"` // ROOT, FACULTY, DEPARTMENT, UNIT
 	Email        string   `json:"email"`
-	Username     string   `json:"username"`
-	FullName     string   `json:"full_name"`
-	IsSuperAdmin bool     `json:"is_super_admin"` // Bypasses all permission checks
+	Name         string   `json:"name"`
+	Role         string   `json:"role"`
+	RoleID       string   `json:"role_id"`
+	IsSuperAdmin bool     `json:"is_super_admin"` // true for root_superadmin
 	Roles        []string `json:"roles"`
 
-	// ScopedPermissions is a runtime-only permission set used when a
-	// request is authenticated via API key. API keys can carry a
-	// narrower scope than the owning user's full permissions, so they
-	// bypass the Redis cache (which holds the user's *full* set) and
-	// pin an explicit list here. Never serialised into the JWT — the
-	// `json:"-"` tag is intentional.
 	ScopedPermissions []string `json:"-"`
 
 	jwt.RegisteredClaims
 }
 
-// HasScopedPermission is a helper for the API-key flow: true when the
-// request-scoped set includes the given permission. Not used by the
-// regular JWT flow (which reads from authz/Redis instead).
+// HasScopedPermission checks for request-scoped permission
 func (c *Claims) HasScopedPermission(permission string) bool {
 	for _, p := range c.ScopedPermissions {
 		if p == permission {
@@ -54,6 +48,9 @@ func (c *Claims) HasScopedPermission(permission string) bool {
 
 // HasRole checks if user has a specific role
 func (c *Claims) HasRole(role string) bool {
+	if c.Role == role {
+		return true
+	}
 	for _, r := range c.Roles {
 		if r == role {
 			return true

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS tenant_payment_gateways (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
-    tenant_id VARCHAR(36) NOT NULL UNIQUE REFERENCES tenants(id) ON DELETE CASCADE,
+    tenant_id VARCHAR(36) NOT NULL UNIQUE REFERENCES core.tenants(id) ON DELETE CASCADE,
     provider VARCHAR(50) NOT NULL DEFAULT 'IPAYMU',
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     

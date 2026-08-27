@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS verifications (
+CREATE TABLE IF NOT EXISTS core.verifications (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
     identifier VARCHAR(255) NOT NULL,
     value TEXT NOT NULL,
@@ -7,5 +7,4 @@ CREATE TABLE IF NOT EXISTS verifications (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_verifications_identifier ON verifications(identifier);
-
+CREATE INDEX IF NOT EXISTS idx_verifications_identifier ON core.verifications(identifier);

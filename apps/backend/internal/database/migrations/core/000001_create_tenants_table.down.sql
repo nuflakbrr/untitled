@@ -1,3 +1,2 @@
-DROP TABLE IF EXISTS tenants CASCADE;
-DROP TYPE IF EXISTS tenant_type;
-
+DROP TABLE IF EXISTS core.tenants CASCADE;
+DROP TYPE IF EXISTS core.tenant_type CASCADE;

@@ -5,6 +5,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -91,9 +93,12 @@ type RedisConfig struct {
 }
 
 func Load() *Config {
+	// Attempt to load .env from current directory, or apps/backend/.env, or root .env
+	_ = godotenv.Load(".env", "apps/backend/.env", "../../apps/backend/.env", "../.env")
+
 	return &Config{
 		Database: DatabaseConfig{
-			Host:     getEnv("DB_HOST", "localhost"),
+			Host:     getEnv("DB_HOST", "127.0.0.1"),
 			Port:     getEnv("DB_PORT", "5432"),
 			User:     getEnv("DB_USER", "postgres"),
 			Password: getEnv("DB_PASSWORD", "postgres"),
@@ -101,7 +106,7 @@ func Load() *Config {
 			SSLMode:  getEnv("DB_SSLMODE", "disable"),
 		},
 		Server: ServerConfig{
-			Port: getEnv("SERVER_PORT", "8080"),
+			Port: getEnv("SERVER_PORT", "8000"),
 			Env:  getEnv("ENV", "development"),
 		},
 		Security: SecurityConfig{
@@ -125,7 +130,7 @@ func Load() *Config {
 			Timeout: getEnvInt("OPENAI_TIMEOUT", 120),
 		},
 		Redis: RedisConfig{
-			Host:          getEnv("REDIS_HOST", "localhost"),
+			Host:          getEnv("REDIS_HOST", "127.0.0.1"),
 			Port:          getEnv("REDIS_PORT", "6379"),
 			Password:      getEnv("REDIS_PASSWORD", ""),
 			DB:            getEnvInt("REDIS_DB", 10),

@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS payments (
     proof_url TEXT,
     expired_at TIMESTAMPTZ,
     verified_at TIMESTAMPTZ,
-    verified_by_id VARCHAR(36) REFERENCES users(id) ON DELETE SET NULL,
+    verified_by_id VARCHAR(36) REFERENCES core.users(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMPTZ

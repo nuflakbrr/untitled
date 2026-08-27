@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS event_categories (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
-    tenant_id VARCHAR(36) REFERENCES tenants(id) ON DELETE CASCADE,
+    tenant_id VARCHAR(36) REFERENCES core.tenants(id) ON DELETE CASCADE,
     name VARCHAR(150) NOT NULL,
     slug VARCHAR(150) NOT NULL,
     description TEXT,

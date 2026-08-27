@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS support_messages (
     id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
-    tenant_id VARCHAR(36) REFERENCES tenants(id) ON DELETE SET NULL,
+    tenant_id VARCHAR(36) REFERENCES core.tenants(id) ON DELETE SET NULL,
     email VARCHAR(255) NOT NULL,
     phone VARCHAR(50) NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS support_messages (
     category VARCHAR(100) NOT NULL,
     chronology TEXT NOT NULL,
     status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
-    user_id VARCHAR(36) REFERENCES users(id) ON DELETE SET NULL,
+    user_id VARCHAR(36) REFERENCES core.users(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

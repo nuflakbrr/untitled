@@ -1,0 +1,36 @@
+meta {
+  name: Sign In - Invalid Credentials
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/core/v1/auth/signin
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "superadmin.univ@untitled.ac.id",
+    "password": "wrongpassword"
+  }
+}
+
+tests {
+  test("status 401", function() {
+    expect(res.status).to.equal(401);
+  });
+
+  test("message indicates invalid credentials", function() {
+    expect(res.body.message).to.include("Invalid");
+  });
+
+  test("data is null", function() {
+    expect(res.body.data).to.be.null;
+  });
+}

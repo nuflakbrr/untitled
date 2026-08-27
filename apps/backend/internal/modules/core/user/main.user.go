@@ -11,37 +11,41 @@ import (
 )
 
 type UserModule struct {
-	Handler *handler.UserHandler
-	Service *service.UserService
+	Handler    *handler.UserHandler
+	Service    *service.UserService
+	Repository *repository.UserRepository
 }
 
-// Initialize initializes the user module with all dependencies
 func Initialize(db *pgxpool.Pool) *UserModule {
-	userRepo := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepo)
-	userHandler := handler.NewUserHandler(userService)
+	repo := repository.NewUserRepository(db)
+	svc := service.NewUserService(repo)
+	h := handler.NewUserHandler(svc)
 
 	return &UserModule{
-		Handler: userHandler,
-		Service: userService,
+		Handler:    h,
+		Service:    svc,
+		Repository: repo,
 	}
 }
 
-// SetupRoutes registers all user module routes
+// SetupRoutes registers routes for user module
 func (m *UserModule) SetupRoutes(router *gin.RouterGroup) {
 	users := router.Group("/users")
 	users.Use(middleware.JWTAuth())
 	{
-		// Current user endpoints (must be before /:id to avoid conflict)
-		users.GET("/me", m.Handler.GetMe)
+		// Self profile endpoints
 		users.PUT("/me", m.Handler.UpdateMe)
-		users.PUT("/me/password", m.Handler.ChangePassword)
+		users.POST("/change-password", m.Handler.ChangePassword)
 
-		// User management endpoints
-		users.GET("", m.Handler.GetAll)
-		users.GET("/:id", m.Handler.GetByID)
-		users.POST("", middleware.RequirePermission("user-management:create"), m.Handler.Create)
-		users.PUT("/:id", middleware.RequirePermission("user-management:update"), m.Handler.Update)
-		users.DELETE("/:id", middleware.RequirePermission("user-management:delete"), m.Handler.Delete)
+		// Administrative user management endpoints
+		users.GET("", middleware.RequirePermission("user.read"), m.Handler.GetAll)
+		users.GET("/:id", middleware.RequirePermission("user.read"), m.Handler.GetByID)
+		users.POST("", middleware.RequirePermission("user.create"), m.Handler.Create)
+		users.PUT("/:id", middleware.RequirePermission("user.update"), m.Handler.Update)
+		users.DELETE("/:id", middleware.RequirePermission("user.delete"), m.Handler.Delete)
+
+		// Ban / Unban endpoints
+		users.POST("/:id/ban", middleware.RequirePermission("user.update"), m.Handler.BanUser)
+		users.POST("/:id/unban", middleware.RequirePermission("user.update"), m.Handler.UnbanUser)
 	}
 }

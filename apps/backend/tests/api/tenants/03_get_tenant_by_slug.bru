@@ -1,0 +1,24 @@
+meta {
+  name: Get Tenant by Slug - fasilkom
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/core/v1/tenants/by-slug/fasilkom
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("returns FASILKOM tenant", function() {
+    const tenant = res.body.data;
+    expect(tenant.slug).to.equal("fasilkom");
+    expect(tenant.code).to.equal("FASILKOM");
+    expect(tenant.type).to.equal("FACULTY");
+  });
+}

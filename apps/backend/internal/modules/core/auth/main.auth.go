@@ -7,8 +7,8 @@ import (
 	"venturo-skeleton-go/internal/config"
 	"venturo-skeleton-go/internal/middleware"
 	"venturo-skeleton-go/internal/modules/core/auth/handler"
-	"venturo-skeleton-go/internal/modules/core/auth/repository"
 	"venturo-skeleton-go/internal/modules/core/auth/service"
+	tenantRepo "venturo-skeleton-go/internal/modules/core/tenant/repository"
 	userRepo "venturo-skeleton-go/internal/modules/core/user/repository"
 )
 
@@ -17,11 +17,10 @@ type AuthModule struct {
 	Service *service.AuthService
 }
 
-// Initialize initializes the auth module with all dependencies
 func Initialize(db *pgxpool.Pool, cfg *config.Config) *AuthModule {
 	userRepository := userRepo.NewUserRepository(db)
-	refreshTokenRepo := repository.NewRefreshTokenRepository(db)
-	authService := service.NewAuthService(userRepository, refreshTokenRepo, cfg)
+	tenantRepository := tenantRepo.NewTenantRepository(db)
+	authService := service.NewAuthService(userRepository, tenantRepository, cfg)
 	authHandler := handler.NewAuthHandler(authService)
 
 	return &AuthModule{
@@ -30,21 +29,16 @@ func Initialize(db *pgxpool.Pool, cfg *config.Config) *AuthModule {
 	}
 }
 
-// SetupRoutes registers all auth module routes
 func (m *AuthModule) SetupRoutes(router *gin.RouterGroup) {
 	auth := router.Group("/auth")
 	{
 		// Public routes
 		auth.POST("/signup", m.Handler.SignUp)
 		auth.POST("/signin", m.Handler.SignIn)
-		auth.POST("/google", m.Handler.SignInWithGoogle)
 		auth.POST("/refresh", m.Handler.Refresh)
 
 		// Protected routes
-		auth.POST("/logout", middleware.JWTAuth(), m.Handler.Logout)
-		auth.POST("/logout-all", middleware.JWTAuth(), m.Handler.LogoutAll)
-		auth.POST("/switch-company", middleware.JWTAuth(), m.Handler.SwitchCompany)
-		auth.GET("/companies", middleware.JWTAuth(), m.Handler.GetMyCompanies)
 		auth.GET("/me", middleware.JWTAuth(), m.Handler.GetMe)
+		auth.POST("/switch-tenant", middleware.JWTAuth(), m.Handler.SwitchTenant)
 	}
 }

@@ -7,16 +7,12 @@ import (
 	"venturo-skeleton-go/internal/middleware"
 )
 
-// Module bundles the audit repository, service, and handler for both
-// cross-module write access (feature services inject *Service) and the
-// read-side global endpoint mounted under /core/v1/audit-logs.
 type Module struct {
 	Repository *Repository
 	Service    *Service
 	Handler    *Handler
 }
 
-// Initialize wires the audit module.
 func Initialize(db *pgxpool.Pool) *Module {
 	repo := NewRepository(db)
 	svc := NewService(repo)
@@ -28,13 +24,10 @@ func Initialize(db *pgxpool.Pool) *Module {
 	}
 }
 
-// SetupRoutes registers the global audit endpoint. The audit trail is
-// polymorphic — one endpoint serves every feature via reff_type + reff_id
-// filters. Feature modules never mount their own /history routes.
 func (m *Module) SetupRoutes(router *gin.RouterGroup) {
 	logs := router.Group("/audit-logs")
-	logs.Use(middleware.JWTAuth(), middleware.CompanyContext())
+	logs.Use(middleware.JWTAuth())
 	{
-		logs.GET("", m.Handler.List)
+		logs.GET("", middleware.RequirePermission("audit.read"), m.Handler.List)
 	}
 }

@@ -1,8 +1,11 @@
--- Seed Tenants (Root Rektorat & Child Fakultas)
-INSERT INTO tenants (id, name, slug, code, type, parent_id, website, description, settings, created_at, updated_at)
+-- =====================================================
+-- SEEDER CORE: 000_tenants.sql
+-- =====================================================
+
+INSERT INTO core.tenants (id, name, slug, code, type, parent_id, website, description, settings, created_at, updated_at)
 VALUES
 (
-    '10000000-0000-0000-0000-000000000001',
+    'c9711506-d356-4704-a32e-0543dfe3e104',
     'Universitas Mandiri Nusantara (Rektorat)',
     'rektorat',
     'UMN',
@@ -15,12 +18,12 @@ VALUES
     NOW()
 ),
 (
-    '10000000-0000-0000-0000-000000000002',
+    '20492a21-59c3-4edf-bb64-1eaa6cf11deb',
     'Fakultas Ilmu Komputer',
     'fasilkom',
     'FASILKOM',
     'FACULTY',
-    '10000000-0000-0000-0000-000000000001',
+    'c9711506-d356-4704-a32e-0543dfe3e104',
     'https://cs.umn.ac.id',
     'Fakultas Ilmu Komputer & Teknologi Informasi',
     '{"themeColor": "#0284C7", "facultyCode": "CS"}'::jsonb,
@@ -28,12 +31,12 @@ VALUES
     NOW()
 ),
 (
-    '10000000-0000-0000-0000-000000000003',
+    '0ae41d16-bc49-4a88-b079-94def1b5b3ff',
     'Fakultas Teknik',
     'teknik',
     'FT',
     'FACULTY',
-    '10000000-0000-0000-0000-000000000001',
+    'c9711506-d356-4704-a32e-0543dfe3e104',
     'https://eng.umn.ac.id',
     'Fakultas Teknik & Rekayasa Industri',
     '{"themeColor": "#D97706", "facultyCode": "ENG"}'::jsonb,
@@ -41,12 +44,12 @@ VALUES
     NOW()
 ),
 (
-    '10000000-0000-0000-0000-000000000004',
+    '2f36ab3a-bc06-4652-8bc4-cc8f7a703eb9',
     'Fakultas Ekonomi & Bisnis',
     'feb',
     'FEB',
     'FACULTY',
-    '10000000-0000-0000-0000-000000000001',
+    'c9711506-d356-4704-a32e-0543dfe3e104',
     'https://feb.umn.ac.id',
     'Fakultas Ekonomi, Manajemen & Akuntansi Bisnis',
     '{"themeColor": "#059669", "facultyCode": "FEB"}'::jsonb,
@@ -63,4 +66,3 @@ ON CONFLICT (id) DO UPDATE SET
     description = EXCLUDED.description,
     settings = EXCLUDED.settings,
     updated_at = NOW();
-

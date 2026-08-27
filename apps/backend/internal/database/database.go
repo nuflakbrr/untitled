@@ -7,8 +7,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"venturo-skeleton-go/pkg/logger"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Database struct {
@@ -51,6 +52,12 @@ func ParseConfig(dsn string) (*pgxpool.Config, error) {
 	if connectTimeout := getEnvAsDuration("DB_CONNECT_TIMEOUT", "5s"); connectTimeout > 0 {
 		config.ConnConfig.ConnectTimeout = connectTimeout
 	}
+
+	// Configure RuntimeParams - Ensure search_path includes both public and core schemas
+	if config.ConnConfig.RuntimeParams == nil {
+		config.ConnConfig.RuntimeParams = make(map[string]string)
+	}
+	config.ConnConfig.RuntimeParams["search_path"] = "public,core"
 
 	return config, nil
 }

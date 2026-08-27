@@ -2,84 +2,63 @@
 -- SEEDER CORE: 001_permissions.sql
 -- =====================================================
 
-INSERT INTO permissions (id, name, description, created_at, updated_at) VALUES
--- Core / Administration Module
-('10000000-0000-0000-0000-000000000001', 'permission.read', 'Melihat daftar hak akses', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000002', 'permission.create', 'Membuat hak akses baru', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000003', 'permission.update', 'Mengubah data hak akses', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000004', 'permission.delete', 'Menghapus hak akses', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000005', 'role.read', 'Melihat daftar jabatan', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000006', 'role.create', 'Membuat jabatan baru', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000007', 'role.update', 'Mengubah data jabatan', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000008', 'role.delete', 'Menghapus jabatan', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000009', 'user.read', 'Melihat daftar pengguna', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000010', 'user.create', 'Membuat pengguna baru', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000011', 'user.update', 'Mengubah data pengguna', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000012', 'user.delete', 'Menghapus pengguna', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000013', 'admin.access', 'Mengakses dashboard admin', NOW(), NOW()),
-
--- Tenant Management Module (Multi-Tenant University & Faculty)
-('10000000-0000-0000-0000-000000000048', 'tenant.read', 'Melihat daftar tenant fakultas', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000049', 'tenant.create', 'Membuat tenant fakultas baru', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000050', 'tenant.update', 'Mengubah data tenant fakultas', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000051', 'tenant.delete', 'Menghapus tenant fakultas', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000052', 'tenant.switch', 'Beralih konteks tenant fakultas', NOW(), NOW()),
-
--- Event Categories Module
-('10000000-0000-0000-0000-000000000014', 'event.categories.read', 'Melihat daftar event kategori', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000015', 'event.categories.create', 'Membuat event kategori baru', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000016', 'event.categories.update', 'Mengubah data event kategori', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000017', 'event.categories.delete', 'Menghapus event kategori', NOW(), NOW()),
-
--- Articles Module
-('10000000-0000-0000-0000-000000000018', 'article.read', 'Melihat daftar artikel', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000019', 'article.create', 'Membuat artikel baru', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000020', 'article.update', 'Mengubah data artikel', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000021', 'article.delete', 'Menghapus artikel', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000022', 'article.category.read', 'Melihat daftar kategori artikel', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000023', 'article.category.create', 'Membuat kategori artikel baru', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000024', 'article.category.update', 'Mengubah data kategori artikel', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000025', 'article.category.delete', 'Menghapus kategori artikel', NOW(), NOW()),
-
--- Galleries Module
-('10000000-0000-0000-0000-000000000026', 'galleries.read', 'Melihat daftar galeri', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000027', 'galleries.create', 'Membuat galeri baru', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000028', 'galleries.update', 'Mengubah data galeri', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000029', 'galleries.delete', 'Menghapus galeri', NOW(), NOW()),
-
--- Testimonies Module
-('10000000-0000-0000-0000-000000000030', 'testimonies.read', 'Melihat daftar testimoni', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000031', 'testimonies.create', 'Membuat testimoni baru', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000032', 'testimonies.update', 'Mengubah data testimoni', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000033', 'testimonies.delete', 'Menghapus testimoni', NOW(), NOW()),
-
--- Event Module
-('10000000-0000-0000-0000-000000000034', 'events.read', 'Melihat daftar event', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000035', 'events.create', 'Membuat event baru', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000036', 'events.update', 'Mengubah data event', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000037', 'events.delete', 'Menghapus event', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000038', 'events.publish', 'Mempublikasikan event', NOW(), NOW()),
-
--- Registration Module
-('10000000-0000-0000-0000-000000000039', 'registrations.read', 'Melihat daftar registrasi', NOW(), NOW()),
-
--- Payment Module
-('10000000-0000-0000-0000-000000000040', 'payments.verify', 'Memverifikasi pembayaran', NOW(), NOW()),
-
--- Certificate Module
-('10000000-0000-0000-0000-000000000041', 'certificates.read', 'Melihat sertifikat', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000042', 'certificates.create', 'Membuat sertifikat baru', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000043', 'certificates.download', 'Mengunduh sertifikat', NOW(), NOW()),
-
--- Attendance Module
-('10000000-0000-0000-0000-000000000044', 'attendance.scan', 'Melakukan pemindaian kehadiran', NOW(), NOW()),
-
--- Support Module
-('10000000-0000-0000-0000-000000000045', 'support.read', 'Melihat pesan dukungan', NOW(), NOW()),
-('10000000-0000-0000-0000-000000000046', 'support.update', 'Mengubah status pesan dukungan', NOW(), NOW()),
-
--- Participant Module
-('10000000-0000-0000-0000-000000000047', 'participant.dashboard', 'Mengakses dashboard peserta', NOW(), NOW())
+INSERT INTO core.permissions (id, name, description, created_at, updated_at) VALUES
+('954fc7fe-9fcd-4187-9aee-2b0ad9e3e729', 'permission.read', 'Melihat daftar hak akses', NOW(), NOW()),
+('05579937-4c9c-4bbf-9ce2-fbbb6bc26d72', 'permission.create', 'Membuat hak akses baru', NOW(), NOW()),
+('1260774a-2b1b-4473-9b16-ade4a2b98834', 'permission.update', 'Mengubah data hak akses', NOW(), NOW()),
+('9c146705-eb91-4f9d-98a6-ef8ffa1ab46d', 'permission.delete', 'Menghapus hak akses', NOW(), NOW()),
+('7d401992-2352-4881-8c28-666a53e8005c', 'role.read', 'Melihat daftar jabatan', NOW(), NOW()),
+('765c3fcf-27a6-4a03-9b12-890547b3d557', 'role.create', 'Membuat jabatan baru', NOW(), NOW()),
+('104cffc5-42ce-4216-81ee-c4e56d709c08', 'role.update', 'Mengubah data jabatan', NOW(), NOW()),
+('a9627603-da9a-440f-bede-c498f9e037b6', 'role.delete', 'Menghapus jabatan', NOW(), NOW()),
+('ec18eb88-6f55-43cf-9acd-be976c06d846', 'user.read', 'Melihat daftar pengguna', NOW(), NOW()),
+('db32c0b1-3dc6-46b7-a7e2-682726f08d69', 'user.create', 'Membuat pengguna baru', NOW(), NOW()),
+('dfa5690e-1806-428e-b7c0-dc6b33aba843', 'user.update', 'Mengubah data pengguna', NOW(), NOW()),
+('fa1fdd83-0d13-4cb7-bf7e-8189713ec637', 'user.delete', 'Menghapus pengguna', NOW(), NOW()),
+('60942a78-df29-4624-8f9f-a9c955329ac4', 'admin.access', 'Mengakses dashboard admin', NOW(), NOW()),
+('10383af8-fb76-4a6c-9c75-e95af0ce70d1', 'tenant.read', 'Melihat daftar tenant fakultas', NOW(), NOW()),
+('d03bc806-2f82-46c7-b73c-02fa4b98056c', 'tenant.create', 'Membuat tenant fakultas baru', NOW(), NOW()),
+('96c178fb-0113-403b-bacc-fb34155209ac', 'tenant.update', 'Mengubah data tenant fakultas', NOW(), NOW()),
+('fe9e1453-5a99-4cbf-b9ac-af584ed95e8d', 'tenant.delete', 'Menghapus tenant fakultas', NOW(), NOW()),
+('42682e10-a195-411b-8e7c-44d2414caf70', 'tenant.switch', 'Beralih konteks tenant fakultas', NOW(), NOW()),
+('24e498be-d63b-4c6e-ae2f-6fd4340a6ac9', 'event.categories.read', 'Melihat daftar event kategori', NOW(), NOW()),
+('d540db7b-17be-40d3-a632-624fe790240b', 'event.categories.create', 'Membuat event kategori baru', NOW(), NOW()),
+('1fa6a940-2113-4645-892e-41d6b0747420', 'event.categories.update', 'Mengubah data event kategori', NOW(), NOW()),
+('7a8a5ed4-b38b-401c-b6a7-1dfff3da538e', 'event.categories.delete', 'Menghapus event kategori', NOW(), NOW()),
+('8883ee13-2128-4416-99ef-12888e820dbc', 'article.read', 'Melihat daftar artikel', NOW(), NOW()),
+('e8050d26-2eb9-4102-a245-e81e33b35922', 'article.create', 'Membuat artikel baru', NOW(), NOW()),
+('95f8d077-e99d-4f1d-a438-fca61e4449c5', 'article.update', 'Mengubah data artikel', NOW(), NOW()),
+('8cc6e561-7f6e-4b74-933d-0fd1cbe6c55f', 'article.delete', 'Menghapus artikel', NOW(), NOW()),
+('115d82ac-7fb8-4efb-b131-6e834b0fd35b', 'article.category.read', 'Melihat daftar kategori artikel', NOW(), NOW()),
+('9134aafb-f60c-435e-ab1c-82a6ea960690', 'article.category.create', 'Membuat kategori artikel baru', NOW(), NOW()),
+('5f701b7c-8225-48a4-87e1-3fe3ebaf8a84', 'article.category.update', 'Mengubah data kategori artikel', NOW(), NOW()),
+('4a7b07b5-b0c2-481a-b5db-ba85a188b1d8', 'article.category.delete', 'Menghapus kategori artikel', NOW(), NOW()),
+('ff8d5ab8-55a8-4c57-a6d4-162301c15825', 'galleries.read', 'Melihat daftar galeri', NOW(), NOW()),
+('eca2cf93-e38a-4153-b75d-da198154587d', 'galleries.create', 'Membuat galeri baru', NOW(), NOW()),
+('c009132e-4379-4a11-a66a-dfcf2823a480', 'galleries.update', 'Mengubah data galeri', NOW(), NOW()),
+('ea845be8-6d61-4c1b-8501-b1cf8598b941', 'galleries.delete', 'Menghapus galeri', NOW(), NOW()),
+('ac6b52a9-7c84-4f9b-a844-3be31d5113e7', 'testimonies.read', 'Melihat daftar testimoni', NOW(), NOW()),
+('b9d1e642-9034-43d8-b1e4-e0efa86f2f0e', 'testimonies.create', 'Membuat testimoni baru', NOW(), NOW()),
+('1a35aa42-8b3e-4c80-aa27-f07a388b9e8b', 'testimonies.update', 'Mengubah data testimoni', NOW(), NOW()),
+('75108e8c-3bb6-4438-9b52-aa257a980603', 'testimonies.delete', 'Menghapus testimoni', NOW(), NOW()),
+('d1f827e0-c8a4-4b78-ac87-09a3fc330ce3', 'events.read', 'Melihat daftar event', NOW(), NOW()),
+('0fd9475b-9a24-42bf-acc7-9d553f852331', 'events.create', 'Membuat event baru', NOW(), NOW()),
+('2ce9db18-59af-4d76-8ce5-6ba1e0eb7551', 'events.update', 'Mengubah data event', NOW(), NOW()),
+('bae730b2-b487-4f6b-a074-429a46e8925e', 'events.delete', 'Menghapus event', NOW(), NOW()),
+('3edaa619-462c-43ae-ad83-558c58590dc1', 'events.publish', 'Mempublikasikan event', NOW(), NOW()),
+('99385d32-54e6-4921-8054-df0a80c986f9', 'registrations.read', 'Melihat data registrasi peserta', NOW(), NOW()),
+('6e383ff6-51e8-444b-ab54-4477032ee2d9', 'registrations.create', 'Mendaftar event', NOW(), NOW()),
+('e6ab3c3d-bdf3-4353-9dca-8a65d22c508b', 'registrations.cancel', 'Membatalkan registrasi', NOW(), NOW()),
+('18091490-0d60-4d8a-8ae7-e93d21a7e0cf', 'payments.read', 'Melihat transaksi pembayaran', NOW(), NOW()),
+('de783e2b-c40d-4a0c-adc0-8a17666291d3', 'payments.verify', 'Verifikasi bukti transfer manual', NOW(), NOW()),
+('494a8c6d-9cee-4767-8157-0e3233a42dd9', 'attendance.scan', 'Memindai QR Code presensi peserta', NOW(), NOW()),
+('628acb27-a554-43d5-b489-49221b75f186', 'attendance.read', 'Melihat riwayat kehadiran peserta', NOW(), NOW()),
+('3db3d4c2-3101-43a4-af36-b8d43b1a2f3d', 'certificates.read', 'Melihat sertifikat', NOW(), NOW()),
+('55a0ccac-3374-4795-8f3d-99f8dc8fbb6e', 'certificates.create', 'Membuat template sertifikat', NOW(), NOW()),
+('e6a775c1-b36d-4c44-bda8-bef7739e79b6', 'certificates.download', 'Mengunduh sertifikat peserta', NOW(), NOW()),
+('a95a745b-92dc-4c2f-aa0e-5bf46564d3bf', 'support.read', 'Melihat pesan bantuan peserta', NOW(), NOW()),
+('9017a43c-7e26-4793-a677-6b9c601ffe0d', 'support.update', 'Menanggapi pesan bantuan', NOW(), NOW()),
+('e01c1307-11e3-42e5-b842-2035d93a9c1d', 'participant.dashboard', 'Mengakses dashboard peserta universal', NOW(), NOW())
 ON CONFLICT (name) DO UPDATE SET
     description = EXCLUDED.description,
     updated_at = NOW();

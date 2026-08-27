@@ -1,2 +1,1 @@
-DROP TABLE IF EXISTS verifications CASCADE;
-
+DROP TABLE IF EXISTS core.verifications CASCADE;

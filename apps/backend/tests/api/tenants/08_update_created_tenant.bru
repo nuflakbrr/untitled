@@ -1,0 +1,30 @@
+meta {
+  name: Update Created Tenant
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{baseUrl}}/core/v1/tenants/{{crudTenantId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Tenant API Test Updated"
+  }
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("updates tenant name", function() { expect(res.body.data.name).to.equal("Tenant API Test Updated"); });
+}

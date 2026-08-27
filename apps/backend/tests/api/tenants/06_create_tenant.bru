@@ -1,0 +1,37 @@
+meta {
+  name: Create Tenant
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/core/v1/tenants
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Tenant API Test",
+    "slug": "tenant-api-{{$randomInt}}",
+    "code": "API{{$randomInt}}",
+    "type": "FACULTY"
+  }
+}
+
+script:post-response {
+  bru.setEnvVar("crudTenantId", res.body.data.id);
+}
+
+tests {
+  test("status 201", function() { expect(res.status).to.equal(201); });
+  test("returns tenant id", function() { expect(res.body.data.id).to.be.a("string"); });
+}

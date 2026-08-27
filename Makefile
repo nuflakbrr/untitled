@@ -1,6 +1,6 @@
-.PHONY: help install dev dev-fe dev-be build lint test tsc clean db-setup db-reset docker-up docker-down
+.PHONY: help install dev dev-fe dev-be build lint test test-api test-api-bail tsc clean db-setup db-reset docker-up docker-down
 
-export PATH := /Library/PostgreSQL/18/bin:/Library/PostgreSQL/17/bin:/Library/PostgreSQL/16/bin:/opt/homebrew/bin:/opt/homebrew/opt/libpq/bin:/usr/local/bin:$(PATH)
+export PATH := $(HOME)/go/bin:/Library/PostgreSQL/18/bin:/Library/PostgreSQL/17/bin:/Library/PostgreSQL/16/bin:/opt/homebrew/bin:/opt/homebrew/opt/libpq/bin:/usr/local/bin:$(PATH)
 
 help:
 	@echo "Venturo Monorepo Commands:"
@@ -15,6 +15,8 @@ help:
 	@echo "  make build        - Build all apps (Next.js & Go)"
 	@echo "  make lint         - Run linters across all apps"
 	@echo "  make test         - Run tests across all apps"
+	@echo "  make test-api     - Run backend API endpoint tests"
+	@echo "  make test-api-bail - Stop API tests on first failure"
 	@echo "  make tsc          - Run TypeScript type checks"
 	@echo "  make clean        - Clean build caches & node_modules"
 	@echo ""
@@ -33,10 +35,10 @@ dev:
 	@bun run dev
 
 dev-fe:
-	@bun run --filter @venturo/skeleton-next dev
+	@bun run --filter untitled-frontend dev
 
 dev-be:
-	@bun run --filter @venturo/backend dev
+	@bun run --filter untitled-backend dev
 
 build:
 	@bun run build
@@ -46,6 +48,12 @@ lint:
 
 test:
 	@bun run test
+
+test-api:
+	@$(MAKE) -C apps/backend test-api
+
+test-api-bail:
+	@$(MAKE) -C apps/backend test-api BAIL=--bail
 
 tsc:
 	@bun run tsc:check
@@ -66,4 +74,3 @@ docker-up:
 
 docker-down:
 	@docker compose down
-

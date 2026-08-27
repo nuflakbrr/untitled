@@ -13,7 +13,6 @@
   - `roles`: Master jabatan (`superadmin`, `panitia`, `scanner`, `peserta`).
   - `permissions`: Master izin atomic (39 permissions).
   - `role_has_permissions`: Pivot relasi role $\leftrightarrow$ permission.
-  - `model_has_permissions`: Override izin khusus per model instance.
   - `_role_to_user`: Pivot relasi user $\leftrightarrow$ role.
 
 ---

@@ -1,0 +1,1934 @@
+openapi: 3.0.3
+info:
+  title: SITIVENT Multi-Tenant API
+  description: |
+    # Sistem Informasi & Manajemen Event Universitas (SITIVENT)
+    REST API Backend Polyglot Go (Gin) dengan arsitektur Hierarchical Multi-Tenant (Rektorat & Fakultas) dan Permission-Based Access Control (PBAC).
+
+    ### Struktur Multi-Tenant:
+    1. **Tenant Utama (Rektorat / Universitas)**: `type = ROOT`, `parent_id = NULL`. Mengelola seluruh tenant dan event tingkat universitas.
+    2. **Tenant Children (Fakultas / Unit Kerja)**: `type = FACULTY`, `parent_id = <ID_Rektorat>`. Mengelola event, panitia, kuota, pembayaran, dan absensi khusus fakultas.
+    3. **Peserta Universal**: Akun mahasiswa/umum (`role = peserta`, `tenant_id = NULL`) yang dapat mendaftar ke event lintas fakultas dan rektorat.
+  version: 1.0.0
+  contact:
+    name: Naufal Akbar Nugroho
+    email: naufalakbar378@gmail.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8000
+    description: Local Development Server
+
+tags:
+  - name: Health
+    description: Health check dan status operasional sistem
+  - name: Core - Auth
+    description: Otentikasi JWT, registrasi peserta, login, dan perpindahan konteks tenant
+  - name: Core - Tenants
+    description: Manajemen tenant fakultas dan konfigurasi payment gateway per fakultas
+  - name: Core - Users
+    description: Manajemen data pengguna, panitia, scanner, dan kontrol status banned
+  - name: Core - Roles & Permissions
+    description: Manajemen jabatan dan hak akses PBAC (Permission-Based Access Control)
+  - name: Core - Audit Logs
+    description: Audit trail aktivitas administratif dan keamanan sistem
+  - name: Modules - Events
+    description: Manajemen katalog event fakultas dan universitas
+  - name: Modules - Event Categories
+    description: Kategori event per fakultas dan kategori global rektorat
+  - name: Modules - Registrations
+    description: Pendaftaran peserta event dan penerbitan tiket QR Code
+  - name: Modules - Payments
+    description: Transaksi pembayaran manual & iPaymu per-fakultas serta verifikasi bukti transfer
+  - name: Modules - Attendance
+    description: Pemindaian QR Code kehadiran dan riwayat presensi
+  - name: Modules - Certificates
+    description: Template sertifikat dinamis dan pengunduhan sertifikat peserta
+  - name: Modules - Articles
+    description: Berita, kabar fakultas, dan panduan akademik
+  - name: Modules - Galleries
+    description: Dokumentasi dan galeri foto kegiatan event kampus
+  - name: Modules - Support Messages
+    description: Layanan bantuan dan pesan dukungan dari peserta
+
+paths:
+  # ============================================================================
+  # HEALTH CHECK
+  # ============================================================================
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check server
+      description: Memeriksa apakah service API berjalan normal
+      responses:
+        "200":
+          description: Service sehat dan beroperasi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  message:
+                    type: string
+                    example: SITIVENT API is running
+
+  # ============================================================================
+  # CORE - AUTHENTICATION
+  # ============================================================================
+  /core/v1/auth/signup:
+    post:
+      tags:
+        - Core - Auth
+      summary: Registrasi Peserta Mandiri (Universal)
+      description: "Mendaftarkan akun peserta umum/mahasiswa baru. Otomatis mendapatkan role 'peserta' dan 'tenant_id: null'."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignUpRequest"
+      responses:
+        "201":
+          description: Berhasil registrasi akun
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSuccessResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+
+  /core/v1/auth/signin:
+    post:
+      tags:
+        - Core - Auth
+      summary: Login Akun Pengguna
+      description: Otentikasi dengan email & password. Mengembalikan JWT access token dengan konteks tenant dan daftar permissions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignInRequest"
+      responses:
+        "200":
+          description: Login berhasil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /core/v1/auth/refresh:
+    post:
+      tags:
+        - Core - Auth
+      summary: Refresh Access Token
+      description: Memperbarui access token yang telah kedaluwarsa menggunakan refresh token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refresh_token
+              properties:
+                refresh_token:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      responses:
+        "200":
+          description: Token berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+
+  /core/v1/auth/me:
+    get:
+      tags:
+        - Core - Auth
+      summary: Get Profil & Konteks Tenant Pengguna
+      description: Mengambil data pengguna yang sedang login beserta peran, daftar hak akses (permissions), dan tenant yang sedang aktif.
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Data profil berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeSuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+
+  /core/v1/auth/switch-tenant:
+    post:
+      tags:
+        - Core - Auth
+      summary: Beralih Konteks Tenant (Root Superadmin Only)
+      description: "Khusus akun Superadmin Universitas (Rektorat) untuk berpindah konteks administrasi ke fakultas tertentu (fasilkom, teknik, dll.) dan memperoleh JWT token baru."
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SwitchTenantRequest"
+      responses:
+        "200":
+          description: Konteks tenant berhasil dialihkan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSuccessResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  # ============================================================================
+  # CORE - TENANT MANAGEMENT
+  # ============================================================================
+  /core/v1/tenants:
+    get:
+      tags:
+        - Core - Tenants
+      summary: List Semua Tenant / Fakultas
+      description: Mengambil seluruh daftar tenant fakultas dan rektorat. Digunakan untuk dropdown katalog dan manajemen unit kerja.
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [ROOT, FACULTY, DEPARTMENT, UNIT]
+          description: Filter berdasarkan tipe tenant
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Pencarian nama atau kode tenant
+      responses:
+        "200":
+          description: Daftar tenant berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantListResponse"
+    post:
+      tags:
+        - Core - Tenants
+      summary: Tambah Tenant Fakultas Baru
+      description: "Menambahkan fakultas atau unit kerja baru ke dalam sistem. Wajib memiliki izin 'tenant.create'."
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTenantRequest"
+      responses:
+        "201":
+          description: Tenant baru berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantDetailResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /core/v1/tenants/{id}:
+    get:
+      tags:
+        - Core - Tenants
+      summary: Detail Tenant by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Detail tenant ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantDetailResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+    put:
+      tags:
+        - Core - Tenants
+      summary: Update Data Tenant Fakultas
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTenantRequest"
+      responses:
+        "200":
+          description: Data tenant berhasil diubah
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantDetailResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+    delete:
+      tags:
+        - Core - Tenants
+      summary: Hapus Tenant Fakultas
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Tenant berhasil dihapus
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /core/v1/tenants/by-slug/{slug}:
+    get:
+      tags:
+        - Core - Tenants
+      summary: Detail Tenant by Slug
+      description: "Mengambil data profil tenant berdasarkan slug publik (contoh: fasilkom, teknik, rektorat)."
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema:
+            type: string
+            example: fasilkom
+      responses:
+        "200":
+          description: Profil tenant ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantDetailResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /core/v1/tenants/{id}/payment-gateway:
+    get:
+      tags:
+        - Core - Tenants
+      summary: Get Konfigurasi Payment Gateway Tenant
+      description: Mengambil kredensial iPaymu dan rekening bank manual khusus fakultas/rektorat tersebut.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Konfigurasi payment gateway tenant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentGatewayDetailResponse"
+    put:
+      tags:
+        - Core - Tenants
+      summary: Update Konfigurasi Payment Gateway Tenant
+      description: Mengatur API Key iPaymu, nomor VA, environment (sandbox/production), dan rekening bank manual fakultas.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePaymentGatewayRequest"
+      responses:
+        "200":
+          description: Konfigurasi payment gateway berhasil disimpan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentGatewayDetailResponse"
+
+  # ============================================================================
+  # CORE - USER MANAGEMENT
+  # ============================================================================
+  /core/v1/users:
+    get:
+      tags:
+        - Core - Users
+      summary: List Data Pengguna (Tenant-Scoped)
+      description: Mengambil daftar pengguna dengan filter role, status banned, dan tenant fakultas masing-masing.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 10
+        - in: query
+          name: role
+          schema:
+            type: string
+            enum: [root_superadmin, superadmin, panitia, scanner, peserta]
+        - in: query
+          name: search
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Daftar pengguna berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPaginatedResponse"
+    post:
+      tags:
+        - Core - Users
+      summary: Buat Akun Pengguna Baru (Superadmin)
+      description: Membuat akun panitia, scanner, atau admin fakultas baru oleh Superadmin.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+      responses:
+        "201":
+          description: Pengguna berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDetailResponse"
+
+  /core/v1/users/{id}:
+    get:
+      tags:
+        - Core - Users
+      summary: Detail Pengguna by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Detail user ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDetailResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+    put:
+      tags:
+        - Core - Users
+      summary: Update Pengguna by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+      responses:
+        "200":
+          description: User berhasil diupdate
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDetailResponse"
+
+  /core/v1/users/{id}/ban:
+    post:
+      tags:
+        - Core - Users
+      summary: Blokir / Ban Akun Pengguna
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BanUserRequest"
+      responses:
+        "200":
+          description: Akun berhasil diblokir
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+
+  /core/v1/users/{id}/unban:
+    post:
+      tags:
+        - Core - Users
+      summary: Buka Blokir / Unban Akun Pengguna
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Blokir akun berhasil dibuka
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+
+  /core/v1/users/me:
+    put:
+      tags:
+        - Core - Users
+      summary: Update Profil Pribadi
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Naufal Akbar
+                avatar:
+                  type: string
+                  example: https://images.unsplash.com/photo-user.jpg
+      responses:
+        "200":
+          description: Profil berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDetailResponse"
+
+  /core/v1/users/change-password:
+    post:
+      tags:
+        - Core - Users
+      summary: Ganti Password Login
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordRequest"
+      responses:
+        "200":
+          description: Password berhasil diubah
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+
+  # ============================================================================
+  # CORE - ROLES & PERMISSIONS
+  # ============================================================================
+  /core/v1/roles:
+    get:
+      tags:
+        - Core - Roles & Permissions
+      summary: List Master Jabatan (Roles)
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Daftar roles berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleListResponse"
+
+  /core/v1/roles/{id}:
+    get:
+      tags:
+        - Core - Roles & Permissions
+      summary: Detail Role & Permissions
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Detail role dengan daftar permissions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleDetailResponse"
+
+  # ============================================================================
+  # CORE - AUDIT LOGS
+  # ============================================================================
+  /core/v1/audit-logs:
+    get:
+      tags:
+        - Core - Audit Logs
+      summary: List Riwayat Audit Log (Tenant-Scoped)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 10
+        - in: query
+          name: entity
+          schema:
+            type: string
+            example: event
+        - in: query
+          name: action
+          schema:
+            type: string
+            example: CREATE
+      responses:
+        "200":
+          description: Riwayat audit log berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditLogPaginatedResponse"
+
+  # ============================================================================
+  # MODULES - EVENTS & CATEGORIES
+  # ============================================================================
+  /modules/v1/events:
+    get:
+      tags:
+        - Modules - Events
+      summary: Katalog Event (Publik & Terfilter Tenant)
+      description: "Menampilkan daftar event. Jika menyertakan tenant_id atau slug fakultas, akan menampilkan event khusus fakultas tersebut."
+      parameters:
+        - in: query
+          name: tenant_id
+          schema:
+            type: string
+            format: uuid
+          description: ID Fakultas / Rektorat
+        - in: query
+          name: category_id
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: event_type
+          schema:
+            type: string
+            enum: [ONLINE, OFFLINE]
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [DRAFT, PUBLISHED, CLOSED, COMPLETED]
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Katalog event berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventPaginatedResponse"
+    post:
+      tags:
+        - Modules - Events
+      summary: Buat Event Baru (Fakultas / Rektorat)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEventRequest"
+      responses:
+        "201":
+          description: Event berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventDetailResponse"
+
+  /modules/v1/events/{id}:
+    get:
+      tags:
+        - Modules - Events
+      summary: Detail Event by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Detail event ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventDetailResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+    put:
+      tags:
+        - Modules - Events
+      summary: Update Data Event
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEventRequest"
+      responses:
+        "200":
+          description: Event berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventDetailResponse"
+    delete:
+      tags:
+        - Modules - Events
+      summary: Hapus Event
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Event berhasil dihapus
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+
+  /modules/v1/events/by-slug/{slug}:
+    get:
+      tags:
+        - Modules - Events
+      summary: Detail Event by Slug Publik
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema:
+            type: string
+            example: seminar-dies-natalis-2026
+      responses:
+        "200":
+          description: Detail event ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventDetailResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /modules/v1/event-categories:
+    get:
+      tags:
+        - Modules - Event Categories
+      summary: List Kategori Event
+      parameters:
+        - in: query
+          name: tenant_id
+          schema:
+            type: string
+            format: uuid
+          description: ID Fakultas / Rektorat
+      responses:
+        "200":
+          description: Daftar kategori event
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventCategoryListResponse"
+
+  # ============================================================================
+  # MODULES - REGISTRATIONS & ATTENDANCE
+  # ============================================================================
+  /modules/v1/registrations:
+    get:
+      tags:
+        - Modules - Registrations
+      summary: List Registrasi Peserta (Tenant Scoped)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: event_id
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [WAITING_PAYMENT, REGISTERED, CANCELLED, CHECKED_IN]
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: Daftar registrasi peserta
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistrationPaginatedResponse"
+    post:
+      tags:
+        - Modules - Registrations
+      summary: Daftar Ikut Event (Peserta)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - event_id
+              properties:
+                event_id:
+                  type: string
+                  format: uuid
+                online_attendance:
+                  type: boolean
+                  default: false
+      responses:
+        "201":
+          description: Pendaftaran berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistrationDetailResponse"
+        "400":
+          description: Kuota penuh atau pendaftaran ditutup
+
+  /modules/v1/attendance/scan:
+    post:
+      tags:
+        - Modules - Attendance
+      summary: Scan QR Code Presensi Peserta
+      description: Khusus petugas Scanner atau Panitia untuk memvalidasi QR Token kehadiran peserta di lokasi acara.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - qr_token
+              properties:
+                qr_token:
+                  type: string
+                  example: valid-token-scan1-12345
+      responses:
+        "200":
+          description: Kehadiran berhasil diverifikasi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttendanceScanResponse"
+        "400":
+          description: Token tidak valid atau peserta sudah pernah check-in sebelumnya
+
+  # ============================================================================
+  # MODULES - PAYMENTS (IPAYMU & MANUAL)
+  # ============================================================================
+  /modules/v1/payments/{id}/verify:
+    post:
+      tags:
+        - Modules - Payments
+      summary: Verifikasi Bukti Bayar Manual (Panitia Fakultas)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [PAID, FAILED]
+                rejection_reason:
+                  type: string
+      responses:
+        "200":
+          description: Status pembayaran berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+
+  /modules/v1/payments/webhook/ipaymu:
+    post:
+      tags:
+        - Modules - Payments
+      summary: Webhook Notifikasi Pembayaran Otomatis iPaymu
+      description: Endpoint IPN (Instant Payment Notification) yang dipanggil oleh server iPaymu untuk auto-update status pembayaran event.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                trx_id:
+                  type: string
+                status:
+                  type: string
+                reference_id:
+                  type: string
+                via:
+                  type: string
+                channel:
+                  type: string
+      responses:
+        "200":
+          description: Webhook berhasil diproses
+
+  # ============================================================================
+  # MODULES - CERTIFICATES
+  # ============================================================================
+  /modules/v1/certificates/verify/{certificate_number}:
+    get:
+      tags:
+        - Modules - Certificates
+      summary: Verifikasi Sertifikat Publik
+      description: Halaman verifikasi publik keaslian sertifikat peserta tanpa perlu login.
+      parameters:
+        - in: path
+          name: certificate_number
+          required: true
+          schema:
+            type: string
+            example: CERT/CS-2026/001
+      responses:
+        "200":
+          description: Data sertifikat valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CertificateVerifyResponse"
+        "404":
+          description: Nomor sertifikat tidak ditemukan
+
+# ==============================================================================
+# COMPONENTS & SCHEMAS
+# ==============================================================================
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Masukkan access token JWT dengan prefix 'Bearer <token>'
+
+  responses:
+    BadRequestError:
+      description: Request tidak valid atau validasi schema gagal
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    UnauthorizedError:
+      description: Token otentikasi tidak disediakan atau tidak valid
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ForbiddenError:
+      description: Pengguna tidak memiliki izin / hak akses ke resource ini
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFoundError:
+      description: Resource yang diminta tidak ditemukan
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    ConflictError:
+      description: "Terjadi konflik data (contoh: email atau slug sudah digunakan)"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+  schemas:
+    # ─── Standard Envelopes ───────────────────────────────────────────────────
+    BaseResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Operasi berhasil dilakukan
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: Validasi gagal
+        errors:
+          type: array
+          items:
+            type: string
+          example: ["email format is invalid"]
+
+    PaginationMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        per_page:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          example: 42
+        total_pages:
+          type: integer
+          example: 5
+
+    # ─── Auth Schemas ─────────────────────────────────────────────────────────
+    SignUpRequest:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          example: Budi Pratama
+        email:
+          type: string
+          format: email
+          example: budi.pratama@gmail.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: password123
+
+    SignInRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: superadmin.univ@untitled.ac.id
+        password:
+          type: string
+          format: password
+          example: password
+
+    SwitchTenantRequest:
+      type: object
+      required:
+        - tenant_slug
+      properties:
+        tenant_slug:
+          type: string
+          example: fasilkom
+          description: Slug tenant fakultas tujuan beralih konteks
+
+    TokenResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Token refreshed successfully
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            refresh_token:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    AuthSuccessResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Login berhasil
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            refresh_token:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            user:
+              $ref: "#/components/schemas/User"
+            tenant:
+              $ref: "#/components/schemas/Tenant"
+
+    MeSuccessResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          type: object
+          properties:
+            user:
+              $ref: "#/components/schemas/User"
+            tenant:
+              $ref: "#/components/schemas/Tenant"
+            permissions:
+              type: array
+              items:
+                type: string
+              example: ["events.read", "events.create", "payments.verify"]
+
+    # ─── Tenant Schemas ───────────────────────────────────────────────────────
+    Tenant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: c9711506-d356-4704-a32e-0543dfe3e104
+        name:
+          type: string
+          example: Fakultas Ilmu Komputer
+        slug:
+          type: string
+          example: fasilkom
+        code:
+          type: string
+          example: FASILKOM
+        type:
+          type: string
+          enum: [ROOT, FACULTY, DEPARTMENT, UNIT]
+          example: FACULTY
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        website:
+          type: string
+          example: https://cs.untitled.ac.id
+        description:
+          type: string
+          example: Fakultas Ilmu Komputer & Teknologi Informasi
+        settings:
+          type: object
+          example:
+            themeColor: "#0284C7"
+            facultyCode: "CS"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CreateTenantRequest:
+      type: object
+      required:
+        - name
+        - slug
+        - code
+        - type
+      properties:
+        name:
+          type: string
+          example: Fakultas Kedokteran
+        slug:
+          type: string
+          example: fk
+        code:
+          type: string
+          example: FK
+        type:
+          type: string
+          enum: [FACULTY, DEPARTMENT, UNIT]
+          example: FACULTY
+        parent_id:
+          type: string
+          format: uuid
+          nullable: true
+        website:
+          type: string
+          example: https://fk.untitled.ac.id
+        description:
+          type: string
+          example: Fakultas Kedokteran dan Ilmu Kesehatan
+        settings:
+          type: object
+          example:
+            themeColor: "#10B981"
+
+    UpdateTenantRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        website:
+          type: string
+        description:
+          type: string
+        settings:
+          type: object
+
+    TenantListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tenant"
+
+    TenantDetailResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          $ref: "#/components/schemas/Tenant"
+
+    PaymentGatewayDetailResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          $ref: "#/components/schemas/TenantPaymentGateway"
+
+    TenantPaymentGateway:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        provider:
+          type: string
+          example: IPAYMU
+        is_active:
+          type: boolean
+          example: true
+        virtual_account:
+          type: string
+          example: "081222222222"
+        env:
+          type: string
+          example: sandbox
+        bank_name:
+          type: string
+          example: Bank Mandiri
+        bank_account_number:
+          type: string
+          example: "1370001234567"
+        bank_account_holder:
+          type: string
+          example: Fakultas Ilmu Komputer (Kas Event)
+
+    UpdatePaymentGatewayRequest:
+      type: object
+      properties:
+        provider:
+          type: string
+          default: IPAYMU
+        is_active:
+          type: boolean
+        api_key:
+          type: string
+        virtual_account:
+          type: string
+        env:
+          type: string
+          enum: [sandbox, production]
+        bank_name:
+          type: string
+        bank_account_number:
+          type: string
+        bank_account_holder:
+          type: string
+
+    # ─── User Schemas ─────────────────────────────────────────────────────────
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 48e8167e-0105-4242-b6db-9bb12dc84bce
+        tenant_id:
+          type: string
+          format: uuid
+          nullable: true
+          example: c9711506-d356-4704-a32e-0543dfe3e104
+        email:
+          type: string
+          format: email
+          example: superadmin.fasilkom@untitled.ac.id
+        name:
+          type: string
+          example: Superadmin FASILKOM
+        role:
+          type: string
+          example: superadmin
+        role_id:
+          type: string
+          format: uuid
+        email_verified:
+          type: boolean
+          example: true
+        banned:
+          type: boolean
+          example: false
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CreateUserRequest:
+      type: object
+      required:
+        - email
+        - name
+        - password
+        - role
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        password:
+          type: string
+          minLength: 8
+        role:
+          type: string
+          enum: [superadmin, panitia, scanner, peserta]
+        tenant_id:
+          type: string
+          format: uuid
+          nullable: true
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+          enum: [superadmin, panitia, scanner, peserta]
+        tenant_id:
+          type: string
+          format: uuid
+          nullable: true
+
+    BanUserRequest:
+      type: object
+      required:
+        - reason
+      properties:
+        reason:
+          type: string
+          example: Melanggar ketentuan etika universitas
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Tanggal kadaluarsa ban (kosongkan untuk ban permanen)
+
+    ChangePasswordRequest:
+      type: object
+      required:
+        - current_password
+        - new_password
+      properties:
+        current_password:
+          type: string
+        new_password:
+          type: string
+          minLength: 8
+
+    UserPaginatedResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    UserDetailResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          $ref: "#/components/schemas/User"
+
+    # ─── Role Schemas ─────────────────────────────────────────────────────────
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: panitia
+        description:
+          type: string
+          example: Panitia event dengan akses manajemen event dan absensi fakultas
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    RoleListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Role"
+
+    RoleDetailResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          type: object
+          properties:
+            role:
+              $ref: "#/components/schemas/Role"
+            permissions:
+              type: array
+              items:
+                type: string
+              example: ["events.read", "events.create", "attendance.scan"]
+
+    # ─── Audit Log Schemas ────────────────────────────────────────────────────
+    AuditLog:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+          nullable: true
+        user_id:
+          type: string
+          format: uuid
+          nullable: true
+        action:
+          type: string
+          example: CREATE
+        entity:
+          type: string
+          example: event
+        entity_id:
+          type: string
+          example: 20000000-0000-0000-0001-000000000001
+        old_values:
+          type: object
+          nullable: true
+        new_values:
+          type: object
+          nullable: true
+        ip_address:
+          type: string
+          example: 127.0.0.1
+        created_at:
+          type: string
+          format: date-time
+
+    AuditLogPaginatedResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditLog"
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    # ─── Event Schemas ────────────────────────────────────────────────────────
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        category_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: Webinar Desain UI/UX & Design Systems Fasilkom
+        slug:
+          type: string
+          example: webinar-desain-ui-ux-fasilkom
+        description:
+          type: string
+        banner:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        start_time:
+          type: string
+          example: "09:00"
+        end_time:
+          type: string
+          example: "12:00"
+        location:
+          type: string
+        event_type:
+          type: string
+          enum: [ONLINE, OFFLINE]
+        online_attendance:
+          type: boolean
+        registration_deadline:
+          type: string
+          format: date-time
+        quota:
+          type: integer
+          example: 100
+        price:
+          type: integer
+          example: 0
+        status:
+          type: string
+          enum: [DRAFT, PUBLISHED, CLOSED, COMPLETED]
+        certificate_enabled:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CreateEventRequest:
+      type: object
+      required:
+        - title
+        - description
+        - start_date
+        - end_date
+        - start_time
+        - end_time
+        - location
+        - event_type
+        - quota
+        - price
+        - registration_deadline
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+        category_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        banner:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        start_time:
+          type: string
+        end_time:
+          type: string
+        location:
+          type: string
+        meeting_link:
+          type: string
+        event_type:
+          type: string
+          enum: [ONLINE, OFFLINE]
+        online_attendance:
+          type: boolean
+        registration_deadline:
+          type: string
+          format: date-time
+        quota:
+          type: integer
+        price:
+          type: integer
+        status:
+          type: string
+          enum: [DRAFT, PUBLISHED]
+        certificate_enabled:
+          type: boolean
+
+    UpdateEventRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        quota:
+          type: integer
+        price:
+          type: integer
+        status:
+          type: string
+          enum: [DRAFT, PUBLISHED, CLOSED, COMPLETED]
+
+    EventPaginatedResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    EventDetailResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          $ref: "#/components/schemas/Event"
+
+    EventCategory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Workshop
+        slug:
+          type: string
+          example: workshop
+        description:
+          type: string
+
+    EventCategoryListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/EventCategory"
+
+    # ─── Registration & Attendance Schemas ───────────────────────────────────
+    Registration:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        event_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        registration_number:
+          type: string
+          example: REG-SCAN-1-2026
+        qr_token:
+          type: string
+          example: valid-token-scan1-12345
+        status:
+          type: string
+          enum: [WAITING_PAYMENT, REGISTERED, CANCELLED, CHECKED_IN]
+        online_attendance:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    RegistrationPaginatedResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Registration"
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    RegistrationDetailResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 201
+        data:
+          $ref: "#/components/schemas/Registration"
+
+    AttendanceScanResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Kehadiran berhasil diverifikasi
+        data:
+          type: object
+          properties:
+            participant_name:
+              type: string
+              example: Peserta Scan 1
+            event_title:
+              type: string
+              example: Seminar Dies Natalis 2026
+            scan_time:
+              type: string
+              format: date-time
+
+    # ─── Certificate Schemas ──────────────────────────────────────────────────
+    CertificateVerifyResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          type: object
+          properties:
+            certificate_number:
+              type: string
+              example: CERT/CS-2026/001
+            participant_name:
+              type: string
+              example: Peserta Scan 1
+            event_title:
+              type: string
+              example: Seminar Dies Natalis 2026
+            issuer_faculty:
+              type: string
+              example: Fakultas Ilmu Komputer
+            issued_at:
+              type: string
+              format: date-time
+            pdf_url:
+              type: string
+              example: https://storage.googleapis.com/certificates/CERT-001.pdf

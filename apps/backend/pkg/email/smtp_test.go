@@ -235,7 +235,7 @@ func TestSMTPConfigDefaults(t *testing.T) {
 	}{
 		{"default host", service.config.Host, "smtp.mailtrap.io"},
 		{"default port", string(rune(service.config.Port)), string(rune(587))},
-		{"default from name", service.config.FromName, "Lakukan"},
+		{"default from name", service.config.FromName, "Untitled"},
 	}
 
 	for _, tt := range tests {

@@ -1,0 +1,17 @@
+meta {
+  name: Get Tenant - Not Found
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/core/v1/tenants/00000000-0000-0000-0000-000000000000
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 404", function() {
+    expect(res.status).to.equal(404);
+  });
+}

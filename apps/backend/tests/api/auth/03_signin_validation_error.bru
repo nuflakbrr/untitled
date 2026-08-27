@@ -1,0 +1,31 @@
+meta {
+  name: Sign In - Validation Error (missing email)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/core/v1/auth/signin
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "password": "password123"
+  }
+}
+
+tests {
+  test("status 400", function() {
+    expect(res.status).to.equal(400);
+  });
+
+  test("message indicates validation error", function() {
+    expect(res.body.message).to.include("Validation");
+  });
+}

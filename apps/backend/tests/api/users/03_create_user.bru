@@ -1,0 +1,37 @@
+meta {
+  name: Create User
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/core/v1/users
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "email": "user.api.test.{{$randomInt}}@example.com",
+    "name": "User API Test",
+    "password": "password123",
+    "role": "peserta"
+  }
+}
+
+script:post-response {
+  bru.setEnvVar("crudUserId", res.body.data.id);
+}
+
+tests {
+  test("status 201", function() { expect(res.status).to.equal(201); });
+  test("returns user id", function() { expect(res.body.data.id).to.be.a("string"); });
+}

@@ -1,0 +1,16 @@
+meta {
+  name: Read Created Tenant
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/core/v1/tenants/{{crudTenantId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("returns created tenant", function() { expect(res.body.data.id).to.equal(bru.getEnvVar("crudTenantId")); });
+}
