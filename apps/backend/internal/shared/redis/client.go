@@ -1,14 +1,9 @@
-// Package redis owns the shared Redis client used by the rest of the app.
-//
-// We keep this tiny on purpose: just a *redis.Client builder + a Close
-// helper. Feature packages (e.g. authz) depend on *redis.Client directly
-// so they can use the full go-redis API without any thin wrapper to
-// maintain.
 package redis
 
 import (
 	"context"
 	"fmt"
+	"net"
 	"time"
 
 	"venturo-skeleton-go/internal/config"
@@ -20,14 +15,22 @@ import (
 // Returns an error so the caller can decide whether Redis is load-bearing
 // (fatal) or optional (degraded-mode fallback).
 func New(ctx context.Context, cfg config.RedisConfig) (*goredis.Client, error) {
+	addr := fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
+
+	// Quick TCP probe to verify if Redis server is reachable before spinning up connection pool
+	conn, err := net.DialTimeout("tcp", addr, 300*time.Millisecond)
+	if err != nil {
+		return nil, fmt.Errorf("redis server unreachable at %s: %w", addr, err)
+	}
+	_ = conn.Close()
+
 	client := goredis.NewClient(&goredis.Options{
-		Addr:         fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+		Addr:         addr,
 		Password:     cfg.Password,
 		DB:           cfg.DB,
-		DialTimeout:  500 * time.Millisecond,
-		ReadTimeout:  1 * time.Second,
-		WriteTimeout: 1 * time.Second,
-		MaxRetries:   1,
+		DialTimeout:  1 * time.Second,
+		ReadTimeout:  2 * time.Second,
+		WriteTimeout: 2 * time.Second,
 		PoolSize:     20,
 		MinIdleConns: 2,
 	})
@@ -37,7 +40,7 @@ func New(ctx context.Context, cfg config.RedisConfig) (*goredis.Client, error) {
 
 	if err := client.Ping(pingCtx).Err(); err != nil {
 		_ = client.Close()
-		return nil, fmt.Errorf("redis ping failed (%s:%s db=%d): %w", cfg.Host, cfg.Port, cfg.DB, err)
+		return nil, fmt.Errorf("redis ping failed (%s db=%d): %w", addr, cfg.DB, err)
 	}
 
 	return client, nil
