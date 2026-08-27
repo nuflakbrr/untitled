@@ -20,7 +20,7 @@ INSERT INTO support_messages (
     '7bef2c25-89e0-49c4-bb6f-3dca571e320e',
     '20492a21-59c3-4edf-bb64-1eaa6cf11deb',
     'Peserta Mandiri',
-    'peserta@untitled.com',
+    'peserta@untitled.ac.id',
     '081234567890',
     'Gagal mengunduh sertifikat event webinar Fasilkom',
     'Event',
