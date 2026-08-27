@@ -88,7 +88,7 @@ paths:
       tags:
         - Core - Auth
       summary: Registrasi Peserta Mandiri (Universal)
-      description: Mendaftarkan akun peserta umum/mahasiswa baru. Otomatis mendapatkan role `peserta` dan `tenant_id: null`.
+      description: "Mendaftarkan akun peserta umum/mahasiswa baru. Otomatis mendapatkan role 'peserta' dan 'tenant_id: null'."
       requestBody:
         required: true
         content:
@@ -182,7 +182,7 @@ paths:
       tags:
         - Core - Auth
       summary: Beralih Konteks Tenant (Root Superadmin Only)
-      description: Khusus akun Superadmin Universitas (Rektorat) untuk berpindah konteks administrasi ke fakultas tertentu (`fasilkom`, `teknik`, dll.) dan memperoleh JWT token baru.
+      description: "Khusus akun Superadmin Universitas (Rektorat) untuk berpindah konteks administrasi ke fakultas tertentu (fasilkom, teknik, dll.) dan memperoleh JWT token baru."
       security:
         - BearerAuth: []
       requestBody:
@@ -237,7 +237,7 @@ paths:
       tags:
         - Core - Tenants
       summary: Tambah Tenant Fakultas Baru
-      description: Menambahkan fakultas atau unit kerja baru ke dalam sistem. Wajib memiliki izin `tenant.create`.
+      description: "Menambahkan fakultas atau unit kerja baru ke dalam sistem. Wajib memiliki izin 'tenant.create'."
       security:
         - BearerAuth: []
       requestBody:
@@ -339,7 +339,7 @@ paths:
       tags:
         - Core - Tenants
       summary: Detail Tenant by Slug
-      description: Mengambil data profil tenant berdasarkan slug publik (contoh: `fasilkom`, `teknik`, `rektorat`).
+      description: "Mengambil data profil tenant berdasarkan slug publik (contoh: fasilkom, teknik, rektorat)."
       parameters:
         - in: path
           name: slug
@@ -702,7 +702,7 @@ paths:
       tags:
         - Modules - Events
       summary: Katalog Event (Publik & Terfilter Tenant)
-      description: Menampilkan daftar event. Jika menyertakan `tenant_id` atau slug fakultas, akan menampilkan event khusus fakultas tersebut.
+      description: "Menampilkan daftar event. Jika menyertakan tenant_id atau slug fakultas, akan menampilkan event khusus fakultas tersebut."
       parameters:
         - in: query
           name: tenant_id
@@ -1095,7 +1095,7 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
     ConflictError:
-      description: Terjadi konflik data (contoh: email atau slug sudah digunakan)
+      description: "Terjadi konflik data (contoh: email atau slug sudah digunakan)"
       content:
         application/json:
           schema:
