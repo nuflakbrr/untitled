@@ -1934,3 +1934,4 @@ components:
             pdf_url:
               type: string
               example: https://storage.googleapis.com/certificates/CERT-001.pdf
+
