@@ -153,4 +153,4 @@ BAIL ?=
 test-api:
 	@echo "🌐 Running API endpoint tests (requires server on localhost:8000)..."
 	@chmod +x tests/run-api-tests.sh
-	@BASE_URL=http://localhost:8000 tests/run-api-tests.sh $(BAIL)
+	@BASE_URL=$(or $(BASE_URL),http://localhost:8000) tests/run-api-tests.sh $(BAIL)

@@ -164,4 +164,6 @@ else
   RESULT=0
 fi
 
+trap - EXIT
+cleanup
 exit "$RESULT"
