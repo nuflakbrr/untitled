@@ -17,11 +17,30 @@ var (
 	ErrCodeAlreadyExists = errors.New("tenant code already exists")
 )
 
-type TenantService struct {
-	repo *repository.TenantRepository
+// TenantRepositoryInterface defines the contract for tenant data access.
+// Satisfied by *repository.TenantRepository and mock implementations in tests.
+type TenantRepositoryInterface interface {
+	FindAll(ctx context.Context, filter dto.TenantQueryFilter) ([]*domain.Tenant, int64, error)
+	FindByID(ctx context.Context, id string) (*domain.Tenant, error)
+	FindBySlug(ctx context.Context, slug string) (*domain.Tenant, error)
+	Create(ctx context.Context, t *domain.Tenant) error
+	Update(ctx context.Context, t *domain.Tenant) error
+	Delete(ctx context.Context, id string) error
+	GetPaymentGateway(ctx context.Context, tenantID string) (*domain.TenantPaymentGateway, error)
+	UpsertPaymentGateway(ctx context.Context, pg *domain.TenantPaymentGateway) error
 }
 
+type TenantService struct {
+	repo TenantRepositoryInterface
+}
+
+// NewTenantService wires the concrete repository.
 func NewTenantService(repo *repository.TenantRepository) *TenantService {
+	return &TenantService{repo: repo}
+}
+
+// NewTenantServiceWithInterface allows injection of mock repository (used in tests).
+func NewTenantServiceWithInterface(repo TenantRepositoryInterface) *TenantService {
 	return &TenantService{repo: repo}
 }
 

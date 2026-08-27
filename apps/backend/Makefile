@@ -1,4 +1,4 @@
-.PHONY: help migrate-up migrate-down migrate-create migrate-force migrate-version seed seed-core seed-features db-setup db-reset dev build run
+.PHONY: help migrate-up migrate-down migrate-create migrate-force migrate-version seed seed-core seed-features db-setup db-reset dev build run test test-coverage test-short
 
 help:
 	@echo "Available commands:"
@@ -124,3 +124,20 @@ run:
 dev:
 	@echo "🔥 Starting development server with hot reload..."
 	@~/go/bin/air
+
+# Testing commands
+test:
+	@echo "🧪 Running unit tests..."
+	@go test -v -race -count=1 ./...
+	@echo "✅ All tests passed!"
+
+test-coverage:
+	@echo "📊 Running tests with coverage report..."
+	@go test -v -race -count=1 -coverprofile=coverage.out ./...
+	@go tool cover -func=coverage.out
+	@echo ""
+	@echo "💡 To view HTML coverage report, run: go tool cover -html=coverage.out"
+
+test-short:
+	@echo "⚡ Running tests (short mode, skips integration tests)..."
+	@go test -short -count=1 ./...

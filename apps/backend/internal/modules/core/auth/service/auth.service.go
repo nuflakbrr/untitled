@@ -8,6 +8,7 @@ import (
 
 	"venturo-skeleton-go/internal/config"
 	"venturo-skeleton-go/internal/modules/core/auth/dto"
+	tenantDomain "venturo-skeleton-go/internal/modules/core/tenant/domain"
 	tenantRepo "venturo-skeleton-go/internal/modules/core/tenant/repository"
 	userDomain "venturo-skeleton-go/internal/modules/core/user/domain"
 	userRepo "venturo-skeleton-go/internal/modules/core/user/repository"
@@ -27,25 +28,49 @@ const (
 	RolePesertaID = "096401d0-a130-4d9b-a596-d0cb26554402"
 )
 
+// PermissionReader is satisfied by authz.AuthzService.
 type PermissionReader interface {
 	GetPermissions(ctx context.Context, userID, tenantID string) ([]string, error)
 }
 
+// UserRepository is satisfied by *userRepo.UserRepository (and mocks in tests).
+type UserRepository interface {
+	FindByEmail(ctx context.Context, email string) (*userDomain.User, error)
+	FindByID(ctx context.Context, id string) (*userDomain.User, error)
+	Create(ctx context.Context, user *userDomain.User, password string) error
+}
+
+// TenantRepository is satisfied by *tenantRepo.TenantRepository (and mocks in tests).
+type TenantRepository interface {
+	FindByID(ctx context.Context, id string) (*tenantDomain.Tenant, error)
+	FindBySlug(ctx context.Context, slug string) (*tenantDomain.Tenant, error)
+}
+
 type AuthService struct {
-	userRepo         *userRepo.UserRepository
-	tenantRepo       *tenantRepo.TenantRepository
+	userRepo         UserRepository
+	tenantRepo       TenantRepository
 	cfg              *config.Config
 	permissionReader PermissionReader
 }
 
+// NewAuthService wires concrete repository implementations.
 func NewAuthService(
-	userRepo *userRepo.UserRepository,
-	tenantRepo *tenantRepo.TenantRepository,
+	uRepo *userRepo.UserRepository,
+	tRepo *tenantRepo.TenantRepository,
 	cfg *config.Config,
 ) *AuthService {
 	return &AuthService{
-		userRepo:   userRepo,
-		tenantRepo: tenantRepo,
+		userRepo:   uRepo,
+		tenantRepo: tRepo,
+		cfg:        cfg,
+	}
+}
+
+// NewAuthServiceWithInterfaces allows injection of mock repositories (used in tests).
+func NewAuthServiceWithInterfaces(uRepo UserRepository, tRepo TenantRepository, cfg *config.Config) *AuthService {
+	return &AuthService{
+		userRepo:   uRepo,
+		tenantRepo: tRepo,
 		cfg:        cfg,
 	}
 }
@@ -53,6 +78,7 @@ func NewAuthService(
 func (s *AuthService) SetPermissionReader(pr PermissionReader) {
 	s.permissionReader = pr
 }
+
 
 // SignIn authenticates a user and returns a multi-tenant JWT
 func (s *AuthService) SignIn(ctx context.Context, req dto.SignInRequest) (*dto.SignInResponse, error) {
