@@ -65,6 +65,9 @@ func Setup(router *gin.Engine, db *pgxpool.Pool, cfg *config.Config) {
 		})
 	})
 
+	// OpenAPI 3.0 specification static file for Apidog / Postman / Swagger tools
+	router.StaticFile("/openapi.yaml", "./docs/openapi.yaml")
+
 	// Core v1 routes
 	coreV1 := router.Group("/core/v1")
 	{
