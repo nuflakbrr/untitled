@@ -122,6 +122,7 @@ cleanup() {
     fi
   fi
   rm -f "$RUNTIME_ENV_FILE"
+  return 0
 }
 trap cleanup EXIT
 
@@ -156,8 +157,11 @@ echo -e "  ${GREEN}PASSED:${NC} $TOTAL_PASS suite(s)"
 if [ $TOTAL_FAIL -gt 0 ]; then
   echo -e "  ${RED}FAILED:${NC} API collection"
   echo "════════════════════════════════════════"
-  exit 1
+  RESULT=1
 else
   echo -e "  ${GREEN}All API test suites PASSED ✅${NC}"
   echo "════════════════════════════════════════"
+  RESULT=0
 fi
+
+exit "$RESULT"
