@@ -85,3 +85,9 @@ tmp/
 temp/
 *.pdf
 
+# Local Project Checkpoints & Handoff Notes
+MILESTONE.md
+MILESTONE*.md
+milestone.md
+milestone*.md
+
