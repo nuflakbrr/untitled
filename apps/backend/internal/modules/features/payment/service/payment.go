@@ -1,0 +1,192 @@
+package service
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"os"
+	"strings"
+	"time"
+
+	"venturo-skeleton-go/internal/modules/features/payment/domain"
+	"venturo-skeleton-go/internal/modules/features/payment/dto"
+	"venturo-skeleton-go/internal/modules/features/payment/repository"
+	"venturo-skeleton-go/pkg/ipaymu"
+)
+
+var ErrForbidden = errors.New("not allowed to act on this payment")
+
+// IpaymuClient is the subset of *ipaymu.Client the service depends on, so
+// tests can substitute a fake gateway without hitting the network.
+type IpaymuClient interface {
+	CreatePayment(ctx context.Context, req ipaymu.CreatePaymentRequest) (*ipaymu.CreatePaymentData, error)
+	CheckTransaction(ctx context.Context, transactionID string) (*ipaymu.TransactionStatus, error)
+}
+
+// ClientFactory builds a gateway client scoped to ONE tenant's own
+// credentials. It is called fresh for every checkout/webhook so a request
+// for a Fasilkom event can never end up using Rektorat's (or any other
+// faculty's) api_key/virtual_account.
+type ClientFactory func(env, virtualAccount, apiKey string) IpaymuClient
+
+type Repository interface {
+	GetRegistrationForCheckout(ctx context.Context, registrationID string) (*repository.RegistrationForCheckout, error)
+	GetActiveGateway(ctx context.Context, tenantID string) (*domain.Gateway, error)
+	UpsertPendingPayment(ctx context.Context, registrationID, provider string, amount int64) (*domain.Payment, error)
+	UpdateAfterGatewayResponse(ctx context.Context, id, transactionID, paymentURL, method, channel string) error
+	GetByRegistrationID(ctx context.Context, registrationID string) (*domain.Payment, error)
+	GetGatewayByTransactionID(ctx context.Context, transactionID string) (*domain.Payment, *domain.Gateway, error)
+	MarkPaid(ctx context.Context, paymentID string, verifiedByID *string, method, channel string) error
+	MarkFailed(ctx context.Context, paymentID string, verifiedByID *string) error
+	SubmitProof(ctx context.Context, paymentID, userID, proofURL string) error
+	VerifyProofScope(ctx context.Context, paymentID string, scopeTenantID *string) error
+}
+
+type PaymentService struct {
+	repository    Repository
+	newClient     ClientFactory
+	publicBaseURL string
+	frontendURL   string
+}
+
+func NewPaymentService(repo *repository.PaymentRepository, publicBaseURL string, httpTimeoutSeconds int) *PaymentService {
+	timeout := time.Duration(httpTimeoutSeconds) * time.Second
+	factory := func(env, va, apiKey string) IpaymuClient {
+		return ipaymu.NewClient(env, va, apiKey, timeout)
+	}
+	return NewPaymentServiceWithInterfaces(repo, factory, publicBaseURL, os.Getenv("FRONTEND_URL"))
+}
+
+func NewPaymentServiceWithInterfaces(repo Repository, factory ClientFactory, publicBaseURL, frontendURL string) *PaymentService {
+	if frontendURL == "" {
+		frontendURL = "http://localhost:3000"
+	}
+	return &PaymentService{repository: repo, newClient: factory, publicBaseURL: publicBaseURL, frontendURL: frontendURL}
+}
+
+// Checkout opens (or resumes) a payment for a registration the caller owns.
+// The tenant that organizes the event is resolved strictly from the
+// registration's own event, so the gateway credentials used — and therefore
+// where the money settles — always belong to that one tenant.
+func (s *PaymentService) Checkout(ctx context.Context, userID string, req dto.CheckoutRequest) (*dto.PaymentResponse, error) {
+	reg, err := s.repository.GetRegistrationForCheckout(ctx, req.RegistrationID)
+	if err != nil {
+		return nil, err
+	}
+	if reg.UserID != userID {
+		return nil, repository.ErrRegistrationNotFound
+	}
+	if reg.Status == "REGISTERED" || reg.Status == "CHECKED_IN" {
+		return nil, repository.ErrAlreadyPaid
+	}
+	if reg.Status != "WAITING_PAYMENT" {
+		return nil, repository.ErrNotPayable
+	}
+
+	gateway, err := s.repository.GetActiveGateway(ctx, reg.TenantID)
+	if err != nil {
+		return nil, err
+	}
+
+	payment, err := s.repository.UpsertPendingPayment(ctx, req.RegistrationID, gateway.Provider, reg.Amount)
+	if err != nil {
+		return nil, err
+	}
+
+	if gateway.Provider == domain.ProviderManual {
+		response := toResponse(payment)
+		response.Provider = domain.ProviderManual
+		response.BankName = gateway.BankName
+		response.BankAccountNumber = gateway.BankAccountNumber
+		response.BankAccountHolder = gateway.BankAccountHolder
+		return &response, nil
+	}
+
+	client := s.newClient(gateway.Env, gateway.VirtualAccount, gateway.APIKey)
+	created, err := client.CreatePayment(ctx, ipaymu.CreatePaymentRequest{
+		Product:     []string{"Event Registration"},
+		Qty:         []int{1},
+		Price:       []int64{reg.Amount},
+		ReturnURL:   s.frontendURL + "/my-tickets",
+		CancelURL:   s.frontendURL + "/my-tickets",
+		NotifyURL:   strings.TrimRight(s.publicBaseURL, "/") + "/features/v1/payments/webhook/ipaymu",
+		ReferenceID: payment.ID,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("open ipaymu checkout: %w", err)
+	}
+	if err := s.repository.UpdateAfterGatewayResponse(ctx, payment.ID, created.TransactionID, created.URL, "", ""); err != nil {
+		return nil, err
+	}
+	payment.TransactionID = created.TransactionID
+	payment.PaymentURL = created.URL
+	response := toResponse(payment)
+	return &response, nil
+}
+
+// HandleWebhook never trusts the callback body beyond using its trx_id as a
+// lookup key: the real status is re-fetched from iPaymu using the SAME
+// tenant's own credentials before anything in the database changes.
+func (s *PaymentService) HandleWebhook(ctx context.Context, payload dto.WebhookPayload) error {
+	if payload.TransactionID == "" {
+		return nil
+	}
+	payment, gateway, err := s.repository.GetGatewayByTransactionID(ctx, payload.TransactionID)
+	if errors.Is(err, repository.ErrPaymentNotFound) {
+		return nil // unknown transaction — ignore rather than leak/500-loop
+	}
+	if err != nil {
+		return err
+	}
+	if payment.Status != domain.StatusWaiting {
+		return nil // already settled — idempotent no-op
+	}
+
+	client := s.newClient(gateway.Env, gateway.VirtualAccount, gateway.APIKey)
+	status, err := client.CheckTransaction(ctx, payload.TransactionID)
+	if err != nil {
+		return fmt.Errorf("verify ipaymu transaction: %w", err)
+	}
+
+	switch {
+	case status.Status == 1:
+		return s.repository.MarkPaid(ctx, payment.ID, nil, strings.ToUpper(status.Via), strings.ToUpper(status.Channel))
+	case status.Status < 0:
+		return s.repository.MarkFailed(ctx, payment.ID, nil)
+	default:
+		return nil // still pending
+	}
+}
+
+func (s *PaymentService) SubmitProof(ctx context.Context, userID, paymentID string, req dto.SubmitProofRequest) error {
+	return s.repository.SubmitProof(ctx, paymentID, userID, req.ProofURL)
+}
+
+func (s *PaymentService) VerifyProof(ctx context.Context, scopeTenantID *string, approverID, paymentID string, req dto.VerifyProofRequest) error {
+	if err := s.repository.VerifyProofScope(ctx, paymentID, scopeTenantID); err != nil {
+		return err
+	}
+	if req.Approve {
+		return s.repository.MarkPaid(ctx, paymentID, &approverID, domain.MethodManual, "")
+	}
+	return s.repository.MarkFailed(ctx, paymentID, &approverID)
+}
+
+func (s *PaymentService) GetByRegistration(ctx context.Context, registrationID string) (*dto.PaymentResponse, error) {
+	payment, err := s.repository.GetByRegistrationID(ctx, registrationID)
+	if err != nil {
+		return nil, err
+	}
+	response := toResponse(payment)
+	return &response, nil
+}
+
+func toResponse(payment *domain.Payment) dto.PaymentResponse {
+	return dto.PaymentResponse{
+		ID: payment.ID, RegistrationID: payment.RegistrationID, Amount: payment.Amount,
+		Status: string(payment.Status), Provider: payment.Provider, TransactionID: payment.TransactionID,
+		PaymentMethod: payment.PaymentMethod, PaymentChannel: payment.PaymentChannel,
+		PaymentURL: payment.PaymentURL, ProofURL: payment.ProofURL, ExpiredAt: payment.ExpiredAt,
+		VerifiedAt: payment.VerifiedAt, CreatedAt: payment.CreatedAt, UpdatedAt: payment.UpdatedAt,
+	}
+}

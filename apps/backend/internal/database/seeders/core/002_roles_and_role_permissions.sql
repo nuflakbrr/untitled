@@ -41,6 +41,7 @@ JOIN core.permissions p ON p.name IN (
     'events.publish',
     'event.categories.read',
     'registrations.read',
+    'payments.read',
     'payments.verify',
     'attendance.scan',
     'certificates.read',
@@ -72,6 +73,8 @@ JOIN core.permissions p ON p.name IN (
     'registrations.read',
     'registrations.create',
     'registrations.cancel',
+    'payments.checkout',
+    'payments.read',
     'certificates.read',
     'certificates.download',
     'participant.dashboard'
