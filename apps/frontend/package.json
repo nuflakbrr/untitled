@@ -5,8 +5,8 @@
   "description": "Venturo company-profile skeleton — Next.js 16 + MUI 9 (Zone UI v4.6.0 base)",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 8002",
-    "start": "next start -p 8002",
+    "dev": "next dev -p 3000",
+    "start": "next start -p 3000",
     "build": "next build",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
