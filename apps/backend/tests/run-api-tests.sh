@@ -125,6 +125,8 @@ vars {
   crudEventId:
   crudEventSlug:
   crudRegistrationId:
+  crudPesertaAccessToken:
+  crudQrToken:
 }
 ENVEOF
 

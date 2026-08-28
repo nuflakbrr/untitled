@@ -1,0 +1,38 @@
+meta {
+  name: Register For Scan Test Event
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/features/v1/registrations
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{crudPesertaAccessToken}}
+}
+
+body:json {
+  {
+    "event_id": "2093030b-adb4-4803-9af2-13a6c1ad8b1a"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("crudRegistrationId", res.body.data.id);
+    bru.setEnvVar("crudQrToken", res.body.data.qr_token);
+  }
+}
+
+tests {
+  test("status 201", function() { expect(res.status).to.equal(201); });
+  test("registered immediately (free event)", function() { expect(res.body.data.status).to.equal("REGISTERED"); });
+  test("qr token issued", function() { expect(res.body.data.qr_token).to.be.a("string").with.length.greaterThan(32); });
+}

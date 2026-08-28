@@ -1,0 +1,35 @@
+meta {
+  name: Scan QR Code Duplicate Rejected
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/features/v1/attendances/scan
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+
+body:json {
+  {
+    "qr_token": "{{crudQrToken}}",
+    "event_id": "2093030b-adb4-4803-9af2-13a6c1ad8b1a"
+  }
+}
+
+tests {
+  test("status 409", function() { expect(res.status).to.equal(409); });
+  test("message indicates already checked in", function() { expect(res.body.message).to.contain("already checked in"); });
+  test("response includes prior scan time and participant", function() {
+    expect(res.body.data.scan_time).to.be.a("string");
+    expect(res.body.data.participant_name).to.be.a("string");
+  });
+}
