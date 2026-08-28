@@ -1,0 +1,30 @@
+meta {
+  name: Scan QR Code Wrong Event Rejected
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/features/v1/attendances/scan
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+
+body:json {
+  {
+    "qr_token": "{{crudQrToken}}",
+    "event_id": "2d802a9d-970d-4a80-adcd-091d4d7b1c3d"
+  }
+}
+
+tests {
+  test("status 404", function() { expect(res.status).to.equal(404); });
+}

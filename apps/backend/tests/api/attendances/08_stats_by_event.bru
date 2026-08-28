@@ -1,0 +1,21 @@
+meta {
+  name: Live Attendance Stats By Event
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/features/v1/attendances/event/2093030b-adb4-4803-9af2-13a6c1ad8b1a/stats
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("at least one checked-in participant", function() { expect(res.body.data.total_checked_in).to.be.greaterThan(0); });
+  test("total registered covers checked-in", function() { expect(res.body.data.total_registered).to.be.at.least(res.body.data.total_checked_in); });
+}

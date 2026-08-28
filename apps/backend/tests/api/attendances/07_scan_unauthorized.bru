@@ -1,0 +1,25 @@
+meta {
+  name: Scan Requires Authentication
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/features/v1/attendances/scan
+  body: json
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "qr_token": "irrelevant-token",
+    "event_id": "2093030b-adb4-4803-9af2-13a6c1ad8b1a"
+  }
+}
+
+tests {
+  test("status 401", function() { expect(res.status).to.equal(401); });
+}

@@ -1,0 +1,33 @@
+meta {
+  name: Sign In Disposable Participant
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/core/v1/auth/signin
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "{{crudPesertaEmail}}",
+    "password": "securepassword123"
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setEnvVar("crudPesertaAccessToken", res.body.data.access_token);
+  }
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("returns access token", function() { expect(res.body.data.access_token).to.be.a("string"); });
+}

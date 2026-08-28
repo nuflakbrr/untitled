@@ -44,6 +44,7 @@ JOIN core.permissions p ON p.name IN (
     'payments.read',
     'payments.verify',
     'attendance.scan',
+    'attendance.read',
     'certificates.read',
     'certificates.create',
     'support.read',
