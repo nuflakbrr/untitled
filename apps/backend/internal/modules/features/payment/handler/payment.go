@@ -18,7 +18,7 @@ type Service interface {
 	HandleWebhook(ctx context.Context, payload dto.WebhookPayload) error
 	SubmitProof(ctx context.Context, userID, paymentID string, req dto.SubmitProofRequest) error
 	VerifyProof(ctx context.Context, scopeTenantID *string, approverID, paymentID string, req dto.VerifyProofRequest) error
-	GetByRegistration(ctx context.Context, registrationID string) (*dto.PaymentResponse, error)
+	GetByRegistration(ctx context.Context, callerUserID, callerTenantID string, callerIsSuperAdmin bool, registrationID string) (*dto.PaymentResponse, error)
 }
 
 type PaymentHandler struct {
@@ -103,10 +103,12 @@ func (h *PaymentHandler) VerifyProof(c *gin.Context) {
 }
 
 func (h *PaymentHandler) GetByRegistration(c *gin.Context) {
-	if _, ok := actorUserID(c); !ok {
+	claims, err := middleware.GetUserFromContext(c)
+	if err != nil || claims == nil || claims.UserID == "" {
+		response.Error(c, http.StatusUnauthorized, "Authentication required", "")
 		return
 	}
-	payment, err := h.service.GetByRegistration(c.Request.Context(), c.Param("registrationID"))
+	payment, err := h.service.GetByRegistration(c.Request.Context(), claims.UserID, claims.TenantID, claims.IsSuperAdmin, c.Param("registrationID"))
 	if err != nil {
 		writePaymentError(c, err, "Failed to retrieve payment")
 		return

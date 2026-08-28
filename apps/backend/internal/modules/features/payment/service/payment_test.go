@@ -324,6 +324,48 @@ func TestVerifyProof_OutOfScopeIsRejected(t *testing.T) {
 	}
 }
 
+func TestGetByRegistration_OwnerCanView(t *testing.T) {
+	repo := newFakeRepo()
+	repo.registrations["reg-1"] = &repository.RegistrationForCheckout{UserID: "user-1", TenantID: "tenant-1", Amount: 10000, Status: "WAITING_PAYMENT"}
+	repo.payments["reg-1"] = &domain.Payment{ID: "pay-1", RegistrationID: "reg-1"}
+	svc := NewPaymentServiceWithInterfaces(repo, noopFactory, "", "")
+
+	if _, err := svc.GetByRegistration(context.Background(), "user-1", "", false, "reg-1"); err != nil {
+		t.Fatalf("owner should be able to view their own payment: %v", err)
+	}
+}
+
+func TestGetByRegistration_StrangerIsRejected(t *testing.T) {
+	repo := newFakeRepo()
+	repo.registrations["reg-1"] = &repository.RegistrationForCheckout{UserID: "owner", TenantID: "tenant-1", Amount: 10000, Status: "WAITING_PAYMENT"}
+	repo.payments["reg-1"] = &domain.Payment{ID: "pay-1", RegistrationID: "reg-1"}
+	svc := NewPaymentServiceWithInterfaces(repo, noopFactory, "", "")
+
+	_, err := svc.GetByRegistration(context.Background(), "intruder", "", false, "reg-1")
+	if !errors.Is(err, repository.ErrPaymentNotFound) {
+		t.Fatalf("a stranger with no tenant match must not see someone else's payment (IDOR), got %v", err)
+	}
+
+	_, err = svc.GetByRegistration(context.Background(), "intruder", "other-tenant", false, "reg-1")
+	if !errors.Is(err, repository.ErrPaymentNotFound) {
+		t.Fatalf("an organizer from a DIFFERENT tenant must not see this payment, got %v", err)
+	}
+}
+
+func TestGetByRegistration_OrganizerInScopeOrSuperAdminCanView(t *testing.T) {
+	repo := newFakeRepo()
+	repo.registrations["reg-1"] = &repository.RegistrationForCheckout{UserID: "owner", TenantID: "tenant-1", Amount: 10000, Status: "WAITING_PAYMENT"}
+	repo.payments["reg-1"] = &domain.Payment{ID: "pay-1", RegistrationID: "reg-1"}
+	svc := NewPaymentServiceWithInterfaces(repo, noopFactory, "", "")
+
+	if _, err := svc.GetByRegistration(context.Background(), "panitia-1", "tenant-1", false, "reg-1"); err != nil {
+		t.Fatalf("organizer in the same tenant should be able to view: %v", err)
+	}
+	if _, err := svc.GetByRegistration(context.Background(), "root-1", "", true, "reg-1"); err != nil {
+		t.Fatalf("root superadmin should be able to view: %v", err)
+	}
+}
+
 func noopFactory(string, string, string) IpaymuClient { return &fakeClient{} }
 
 func strPtr(s string) *string { return &s }

@@ -172,7 +172,21 @@ func (s *PaymentService) VerifyProof(ctx context.Context, scopeTenantID *string,
 	return s.repository.MarkFailed(ctx, paymentID, &approverID)
 }
 
-func (s *PaymentService) GetByRegistration(ctx context.Context, registrationID string) (*dto.PaymentResponse, error) {
+// GetByRegistration only returns the payment to the registration's own
+// owner, to a root superadmin, or to an organizer whose own tenant matches
+// the event's tenant. Anyone else gets ErrPaymentNotFound (not 403), so the
+// response never confirms whether a given registration exists.
+func (s *PaymentService) GetByRegistration(ctx context.Context, callerUserID, callerTenantID string, callerIsSuperAdmin bool, registrationID string) (*dto.PaymentResponse, error) {
+	reg, err := s.repository.GetRegistrationForCheckout(ctx, registrationID)
+	if err != nil {
+		return nil, err
+	}
+	isOwner := reg.UserID == callerUserID
+	isOrganizerInScope := callerTenantID != "" && callerTenantID == reg.TenantID
+	if !isOwner && !callerIsSuperAdmin && !isOrganizerInScope {
+		return nil, repository.ErrPaymentNotFound
+	}
+
 	payment, err := s.repository.GetByRegistrationID(ctx, registrationID)
 	if err != nil {
 		return nil, err

@@ -20,7 +20,7 @@ type mockService struct {
 	handleWebhookFn     func(context.Context, dto.WebhookPayload) error
 	submitProofFn       func(context.Context, string, string, dto.SubmitProofRequest) error
 	verifyProofFn       func(context.Context, *string, string, string, dto.VerifyProofRequest) error
-	getByRegistrationFn func(context.Context, string) (*dto.PaymentResponse, error)
+	getByRegistrationFn func(context.Context, string, string, bool, string) (*dto.PaymentResponse, error)
 }
 
 func (m *mockService) Checkout(ctx context.Context, userID string, req dto.CheckoutRequest) (*dto.PaymentResponse, error) {
@@ -35,8 +35,8 @@ func (m *mockService) SubmitProof(ctx context.Context, userID, paymentID string,
 func (m *mockService) VerifyProof(ctx context.Context, scope *string, approverID, paymentID string, req dto.VerifyProofRequest) error {
 	return m.verifyProofFn(ctx, scope, approverID, paymentID, req)
 }
-func (m *mockService) GetByRegistration(ctx context.Context, registrationID string) (*dto.PaymentResponse, error) {
-	return m.getByRegistrationFn(ctx, registrationID)
+func (m *mockService) GetByRegistration(ctx context.Context, callerUserID, callerTenantID string, callerIsSuperAdmin bool, registrationID string) (*dto.PaymentResponse, error) {
+	return m.getByRegistrationFn(ctx, callerUserID, callerTenantID, callerIsSuperAdmin, registrationID)
 }
 
 func authAs(userID, tenantID string, superadmin bool) gin.HandlerFunc {
@@ -66,8 +66,8 @@ func TestPaymentHandlerHappyPaths(t *testing.T) {
 			calls["verify"] = approverID == "panitia-1" && paymentID == "pay-1" && req.Approve && scope != nil && *scope == "tenant-a"
 			return nil
 		},
-		getByRegistrationFn: func(_ context.Context, registrationID string) (*dto.PaymentResponse, error) {
-			calls["get"] = registrationID == "reg-1"
+		getByRegistrationFn: func(_ context.Context, callerUserID, callerTenantID string, callerIsSuperAdmin bool, registrationID string) (*dto.PaymentResponse, error) {
+			calls["get"] = registrationID == "reg-1" && callerUserID == "user-1"
 			return &dto.PaymentResponse{ID: "pay-1"}, nil
 		},
 	}
