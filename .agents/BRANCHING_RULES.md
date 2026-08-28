@@ -1,10 +1,16 @@
 # Branching Rules
 
-## Branch Utama
+## Aturan Utama Pembuatan Branch (MANDATORY)
 
-- `main` adalah branch utama dan harus selalu dalam kondisi stabil.
-- Jangan mengembangkan fitur langsung di `main`.
-- Branch kerja harus dibuat dari `main` terbaru.
+- **SELALU buat branch baru dari branch `main` terbaru**. Dilarang keras mencabangkan fitur dari branch kerja lain (`feat/*`, `fix/*`, dll.).
+- Sebelum membuat branch kerja baru, wajib berpindah ke `main` dan tarik perubahan terbaru:
+  ```bash
+  git checkout main
+  git pull origin main
+  git checkout -b <type>/<scope>/<short-description>
+  ```
+- `main` adalah branch utama (single source of truth) dan harus selalu dalam kondisi stabil.
+- Jangan pernah mengembangkan fitur atau melakukan commit langsung di `main`.
 
 ## Format Nama Branch
 
