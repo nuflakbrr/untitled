@@ -67,7 +67,6 @@ deployments/kubernetes/**/secret.yaml
 .idea/
 .claude/
 **/.claude/
-.agents/
 .gemini/
 **/.gemini/
 *.swp
