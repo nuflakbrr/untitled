@@ -67,6 +67,7 @@ deployments/kubernetes/**/secret.yaml
 .idea/
 .claude/
 **/.claude/
+.agents/
 .gemini/
 **/.gemini/
 *.swp
@@ -90,4 +91,3 @@ MILESTONE.md
 MILESTONE*.md
 milestone.md
 milestone*.md
-
