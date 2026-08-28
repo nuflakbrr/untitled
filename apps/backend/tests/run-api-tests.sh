@@ -84,6 +84,18 @@ fi
 success "FASILKOM login successful."
 echo ""
 
+log "Authenticating as participant..."
+PESERTA_LOGIN_RESP=$(curl -sf -X POST "$BASE_URL/core/v1/auth/signin" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"peserta@untitled.ac.id","password":"password"}' 2>&1)
+PESERTA_ACCESS_TOKEN=$(echo "$PESERTA_LOGIN_RESP" | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
+if [ -z "$PESERTA_ACCESS_TOKEN" ]; then
+  error "Could not extract participant access_token. Check if DB is seeded (make seed)."
+  exit 1
+fi
+success "Participant login successful."
+echo ""
+
 # ── 3. Export token into env for bru ────────────────────────────────────────
 # bru CLI reads env file — we patch accessToken at runtime
 export ACCESS_TOKEN_ENV="$ACCESS_TOKEN"
@@ -96,6 +108,7 @@ vars {
   accessToken: $ACCESS_TOKEN
   rootAccessToken: $ACCESS_TOKEN
   fasilkomAccessToken: $FASILKOM_ACCESS_TOKEN
+  pesertaAccessToken: $PESERTA_ACCESS_TOKEN
   superadminEmail: superadmin.univ@untitled.ac.id
   superadminPassword: password
   fasilkomEmail: superadmin.fasilkom@untitled.ac.id
@@ -111,11 +124,23 @@ vars {
   crudEventCategoryId:
   crudEventId:
   crudEventSlug:
+  crudRegistrationId:
 }
 ENVEOF
 
 cleanup() {
   # Remove records created by CRUD suites even when a test fails midway.
+  CRUD_REGISTRATION_ID=$(grep '^  crudRegistrationId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudRegistrationId:[[:space:]]*//')
+  if [ -n "${CRUD_REGISTRATION_ID:-}" ]; then
+    CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+      -X DELETE "$BASE_URL/features/v1/registrations/$CRUD_REGISTRATION_ID" \
+      -H "Authorization: Bearer $PESERTA_ACCESS_TOKEN")
+    if [ "$CLEANUP_STATUS" = "200" ] || [ "$CLEANUP_STATUS" = "404" ]; then
+      success "Cleanup completed for registration $CRUD_REGISTRATION_ID"
+    else
+      warn "Cleanup failed for registration $CRUD_REGISTRATION_ID; cancel it manually if still active."
+    fi
+  fi
   CRUD_EVENT_ID=$(grep '^  crudEventId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudEventId:[[:space:]]*//')
   if [ -n "${CRUD_EVENT_ID:-}" ]; then
     CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \

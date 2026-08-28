@@ -1,0 +1,44 @@
+meta {
+  name: Register Free Event
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/features/v1/registrations
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{pesertaAccessToken}}
+}
+
+body:json {
+  {
+    "event_id": "2093030b-adb4-4803-9af2-13a6c1ad8b1a",
+    "online_attendance": false
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("crudRegistrationId", res.body.data.id);
+  }
+}
+
+tests {
+  test("status 201", function() { expect(res.status).to.equal(201); });
+  test("free event is registered immediately", function() {
+    expect(res.body.data.status).to.equal("REGISTERED");
+  });
+  test("ticket identifiers are generated", function() {
+    expect(res.body.data.registration_number).to.match(/^REG-UMN-SEMINAR-DIES-NATALIS-2026-2026-\d{5}$/);
+    expect(res.body.data.qr_token).to.be.a("string").with.length.greaterThan(32);
+  });
+}
+

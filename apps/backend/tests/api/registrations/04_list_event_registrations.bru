@@ -1,0 +1,23 @@
+meta {
+  name: List Event Registrations
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/features/v1/registrations/event/2093030b-adb4-4803-9af2-13a6c1ad8b1a
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("organizer sees event registrations", function() {
+    expect(res.body.data).to.be.an("array").that.is.not.empty;
+  });
+}
+
