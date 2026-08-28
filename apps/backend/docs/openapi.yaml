@@ -1059,13 +1059,82 @@ paths:
           description: Token tidak valid atau peserta sudah pernah check-in sebelumnya
 
   # ============================================================================
-  # MODULES - PAYMENTS (IPAYMU & MANUAL)
+  # FEATURES - PAYMENTS (IPAYMU & MANUAL)
   # ============================================================================
-  /modules/v1/payments/{id}/verify:
+  /features/v1/payments/checkout:
     post:
       tags:
-        - Modules - Payments
-      summary: Verifikasi Bukti Bayar Manual (Panitia Fakultas)
+        - Features - Payments
+      summary: Buka Checkout Pembayaran (Peserta)
+      description: >
+        Merutekan checkout ke gateway iPaymu milik tenant penyelenggara event
+        (via `tenant_payment_gateways`) — kredensial API key/VA satu tenant
+        tidak pernah dipakai untuk tenant lain. Provider `MANUAL` melewati
+        panggilan iPaymu dan langsung mengembalikan info rekening bank tenant.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - registration_id
+              properties:
+                registration_id:
+                  type: string
+                  format: uuid
+      responses:
+        "201":
+          description: Checkout berhasil dibuka
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentDetailResponse"
+        "404":
+          description: Registrasi tidak ditemukan atau gateway tenant belum dikonfigurasi
+        "409":
+          description: Registrasi sudah lunas
+        "422":
+          description: Registrasi tidak sedang menunggu pembayaran
+
+  /features/v1/payments/webhook/ipaymu:
+    post:
+      tags:
+        - Features - Payments
+      summary: Webhook Notifikasi Pembayaran iPaymu
+      description: >
+        Dipanggil server-to-server oleh iPaymu (tanpa Bearer token). Payload
+        webhook iPaymu TIDAK ditandatangani, jadi `trx_id` di body ini hanya
+        dipakai sebagai kunci pencarian — status sebenarnya diverifikasi ulang
+        via Check Transaction API iPaymu memakai kredensial tenant yang sama
+        sebelum status pembayaran/registrasi diubah. `trx_id` tak dikenal
+        diabaikan dengan 200 (tidak membocorkan informasi).
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                trx_id:
+                  type: string
+                reference_id:
+                  type: string
+                status_code:
+                  type: string
+      responses:
+        "200":
+          description: Webhook diproses (termasuk saat trx_id tidak dikenal/diabaikan)
+        "500":
+          description: Gagal memverifikasi transaksi ke iPaymu (iPaymu boleh retry)
+
+  /features/v1/payments/{id}/proof:
+    post:
+      tags:
+        - Features - Payments
+      summary: Unggah Bukti Transfer Manual (Peserta)
       security:
         - BearerAuth: []
       parameters:
@@ -1082,47 +1151,80 @@ paths:
             schema:
               type: object
               required:
-                - status
+                - proof_url
               properties:
-                status:
+                proof_url:
                   type: string
-                  enum: [PAID, FAILED]
-                rejection_reason:
-                  type: string
+                  format: uri
       responses:
         "200":
-          description: Status pembayaran berhasil diperbarui
+          description: Bukti transfer berhasil disimpan
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/BaseResponse"
+        "404":
+          description: Payment tidak ditemukan, bukan milik peserta, atau bukan provider MANUAL
 
-  /modules/v1/payments/webhook/ipaymu:
+  /features/v1/payments/{id}/verify:
     post:
       tags:
-        - Modules - Payments
-      summary: Webhook Notifikasi Pembayaran Otomatis iPaymu
-      description: Endpoint IPN (Instant Payment Notification) yang dipanggil oleh server iPaymu untuk auto-update status pembayaran event.
+        - Features - Payments
+      summary: Verifikasi Bukti Transfer Manual (Panitia / Organizer)
+      description: Root superadmin dapat verifikasi lintas tenant; panitia/superadmin fakultas dibatasi tenant miliknya sendiri.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               properties:
-                trx_id:
-                  type: string
-                status:
-                  type: string
-                reference_id:
-                  type: string
-                via:
-                  type: string
-                channel:
+                approve:
+                  type: boolean
+                note:
                   type: string
       responses:
         "200":
-          description: Webhook berhasil diproses
+          description: Payment disetujui (PAID + registrasi diaktifkan) atau ditolak (FAILED)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+        "404":
+          description: Payment tidak ditemukan atau di luar scope tenant panitia
+
+  /features/v1/payments/registration/{registrationID}:
+    get:
+      tags:
+        - Features - Payments
+      summary: Lihat Status Pembayaran per Registrasi
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: registrationID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Detail payment ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentDetailResponse"
+        "404":
+          description: Payment belum ada untuk registrasi ini
 
   # ============================================================================
   # MODULES - CERTIFICATES
@@ -2004,6 +2106,69 @@ components:
           example: 201
         data:
           $ref: "#/components/schemas/Registration"
+
+    # ─── Payment Schemas ──────────────────────────────────────────────────────
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        registration_id:
+          type: string
+          format: uuid
+        amount:
+          type: integer
+          format: int64
+          example: 50000
+        status:
+          type: string
+          enum: [WAITING, PAID, FAILED, REFUNDED]
+        provider:
+          type: string
+          enum: [IPAYMU, MANUAL]
+        transaction_id:
+          type: string
+        payment_method:
+          type: string
+          example: QRIS
+        payment_channel:
+          type: string
+          example: BCA
+        payment_url:
+          type: string
+          description: Hosted checkout link (IPAYMU provider only)
+        proof_url:
+          type: string
+          description: Manual transfer proof (MANUAL provider only)
+        bank_name:
+          type: string
+          description: Only populated for MANUAL provider checkout
+        bank_account_number:
+          type: string
+        bank_account_holder:
+          type: string
+        expired_at:
+          type: string
+          format: date-time
+        verified_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    PaymentDetailResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          $ref: "#/components/schemas/Payment"
 
     AttendanceScanResponse:
       type: object
