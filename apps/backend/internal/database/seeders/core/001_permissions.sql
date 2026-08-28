@@ -51,6 +51,7 @@ INSERT INTO core.permissions (id, name, description, created_at, updated_at) VAL
 ('e6ab3c3d-bdf3-4353-9dca-8a65d22c508b', 'registrations.cancel', 'Membatalkan registrasi', NOW(), NOW()),
 ('18091490-0d60-4d8a-8ae7-e93d21a7e0cf', 'payments.read', 'Melihat transaksi pembayaran', NOW(), NOW()),
 ('de783e2b-c40d-4a0c-adc0-8a17666291d3', 'payments.verify', 'Verifikasi bukti transfer manual', NOW(), NOW()),
+('7e6b6a3b-3e3a-4f0e-9a1a-2b0d2f6b6b52', 'payments.checkout', 'Membuka checkout pembayaran tiket', NOW(), NOW()),
 ('494a8c6d-9cee-4767-8157-0e3233a42dd9', 'attendance.scan', 'Memindai QR Code presensi peserta', NOW(), NOW()),
 ('628acb27-a554-43d5-b489-49221b75f186', 'attendance.read', 'Melihat riwayat kehadiran peserta', NOW(), NOW()),
 ('3db3d4c2-3101-43a4-af36-b8d43b1a2f3d', 'certificates.read', 'Melihat sertifikat', NOW(), NOW()),

@@ -19,6 +19,7 @@ type Config struct {
 	Redis    RedisConfig
 	GCS      GCSConfig
 	Firebase FirebaseConfig
+	Payment  PaymentConfig
 }
 
 type GCSConfig struct {
@@ -79,6 +80,15 @@ type OpenAIConfig struct {
 	APIKey  string
 	Model   string
 	Timeout int // API timeout in seconds
+}
+
+// PaymentConfig holds settings shared by every tenant's iPaymu integration.
+// Per-tenant credentials (api_key, virtual_account, env) live in the
+// tenant_payment_gateways table, not here — this only carries the backend's
+// own public URL so iPaymu knows where to POST its webhook.
+type PaymentConfig struct {
+	PublicBaseURL string // e.g. https://api.untitled.id — used to build iPaymu's notifyUrl
+	HTTPTimeout   int    // HTTP timeout in seconds for calls to iPaymu
 }
 
 type RedisConfig struct {
@@ -144,6 +154,10 @@ func Load() *Config {
 		Firebase: FirebaseConfig{
 			ProjectID:       getEnv("FIREBASE_PROJECT_ID", ""),
 			CredentialsJSON: getEnv("FIREBASE_CREDENTIALS_JSON", ""),
+		},
+		Payment: PaymentConfig{
+			PublicBaseURL: getEnv("PAYMENT_PUBLIC_BASE_URL", "http://localhost:8000"),
+			HTTPTimeout:   getEnvInt("PAYMENT_HTTP_TIMEOUT", 30),
 		},
 	}
 }

@@ -1,0 +1,19 @@
+meta {
+  name: Webhook Ignores Unknown Transaction
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/features/v1/payments/webhook/ipaymu
+  body: formUrlEncoded
+}
+
+body:form-urlencoded {
+  trx_id: does-not-exist-12345
+  status_code: 1
+}
+
+tests {
+  test("status 200 (never leaks existence)", function() { expect(res.status).to.equal(200); });
+}
