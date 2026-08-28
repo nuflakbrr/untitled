@@ -871,42 +871,14 @@ paths:
                 $ref: "#/components/schemas/EventCategoryListResponse"
 
   # ============================================================================
-  # MODULES - REGISTRATIONS & ATTENDANCE
+  # FEATURES - REGISTRATIONS & ATTENDANCE
   # ============================================================================
-  /modules/v1/registrations:
-    get:
-      tags:
-        - Modules - Registrations
-      summary: List Registrasi Peserta (Tenant Scoped)
-      security:
-        - BearerAuth: []
-      parameters:
-        - in: query
-          name: event_id
-          schema:
-            type: string
-            format: uuid
-        - in: query
-          name: status
-          schema:
-            type: string
-            enum: [WAITING_PAYMENT, REGISTERED, CANCELLED, CHECKED_IN]
-        - in: query
-          name: page
-          schema:
-            type: integer
-            default: 1
-      responses:
-        "200":
-          description: Daftar registrasi peserta
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RegistrationPaginatedResponse"
+  /features/v1/registrations:
     post:
       tags:
-        - Modules - Registrations
+        - Features - Registrations
       summary: Daftar Ikut Event (Peserta)
+      description: "Auto-approval (`REGISTERED`) untuk event gratis; event berbayar masuk status `WAITING_PAYMENT`. Kuota dikunci via `SELECT ... FOR UPDATE` untuk mencegah oversell."
       security:
         - BearerAuth: []
       requestBody:
@@ -931,8 +903,130 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RegistrationDetailResponse"
-        "400":
-          description: Kuota penuh atau pendaftaran ditutup
+        "404":
+          description: Event tidak ditemukan atau tidak tersedia
+        "409":
+          description: Peserta sudah terdaftar (duplicate) atau kuota penuh
+        "422":
+          description: Pendaftaran ditutup (event bukan `PUBLISHED`) atau online attendance tidak tersedia
+
+  /features/v1/registrations/me:
+    get:
+      tags:
+        - Features - Registrations
+      summary: Daftar Tiket Saya (Peserta)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [WAITING_PAYMENT, REGISTERED, CANCELLED, CHECKED_IN]
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+      responses:
+        "200":
+          description: Daftar registrasi milik peserta
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistrationPaginatedResponse"
+
+  /features/v1/registrations/{id}:
+    delete:
+      tags:
+        - Features - Registrations
+      summary: Batalkan Registrasi Saya (Peserta)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Registrasi berhasil dibatalkan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+        "404":
+          description: Registrasi tidak ditemukan atau bukan milik peserta
+
+  /features/v1/registrations/event/{eventID}:
+    get:
+      tags:
+        - Features - Registrations
+      summary: List Registrasi per Event (Panitia / Organizer)
+      description: "Root superadmin melihat lintas tenant; superadmin/panitia fakultas dibatasi tenant miliknya sendiri."
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: eventID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [WAITING_PAYMENT, REGISTERED, CANCELLED, CHECKED_IN]
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+      responses:
+        "200":
+          description: Daftar peserta event
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistrationPaginatedResponse"
+
+  /features/v1/registrations/event/{eventID}/export:
+    get:
+      tags:
+        - Features - Registrations
+      summary: Ekspor Peserta Event ke Excel (Panitia / Organizer)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: eventID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: File `.xlsx` daftar peserta
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
 
   /modules/v1/attendance/scan:
     post:
@@ -1842,23 +1936,52 @@ components:
         event_id:
           type: string
           format: uuid
+        event_title:
+          type: string
+          example: Seminar Dies Natalis 2026
+        event_slug:
+          type: string
+          example: seminar-dies-natalis-2026
+        tenant_id:
+          type: string
+          format: uuid
+        tenant_code:
+          type: string
+          example: FASILKOM
         user_id:
           type: string
           format: uuid
+        user_name:
+          type: string
+          example: Peserta Scan 1
+        user_email:
+          type: string
+          format: email
         registration_number:
           type: string
-          example: REG-SCAN-1-2026
+          example: REG-UMN-SEMINAR-DIES-NATALIS-2026-2026-00001
         qr_token:
           type: string
           example: valid-token-scan1-12345
+        online_attendance:
+          type: boolean
         status:
           type: string
           enum: [WAITING_PAYMENT, REGISTERED, CANCELLED, CHECKED_IN]
-        online_attendance:
-          type: boolean
+        price:
+          type: integer
+          format: int64
+          example: 0
         created_at:
           type: string
           format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
 
     RegistrationPaginatedResponse:
       type: object

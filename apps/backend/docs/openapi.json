@@ -690,8 +690,21 @@
             "format": "date-time",
             "type": "string"
           },
+          "deleted_at": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
           "event_id": {
             "format": "uuid",
+            "type": "string"
+          },
+          "event_slug": {
+            "example": "seminar-dies-natalis-2026",
+            "type": "string"
+          },
+          "event_title": {
+            "example": "Seminar Dies Natalis 2026",
             "type": "string"
           },
           "id": {
@@ -701,12 +714,17 @@
           "online_attendance": {
             "type": "boolean"
           },
+          "price": {
+            "example": 0,
+            "format": "int64",
+            "type": "integer"
+          },
           "qr_token": {
             "example": "valid-token-scan1-12345",
             "type": "string"
           },
           "registration_number": {
-            "example": "REG-SCAN-1-2026",
+            "example": "REG-UMN-SEMINAR-DIES-NATALIS-2026-2026-00001",
             "type": "string"
           },
           "status": {
@@ -718,8 +736,28 @@
             ],
             "type": "string"
           },
+          "tenant_code": {
+            "example": "FASILKOM",
+            "type": "string"
+          },
+          "tenant_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "user_email": {
+            "format": "email",
+            "type": "string"
+          },
           "user_id": {
             "format": "uuid",
+            "type": "string"
+          },
+          "user_name": {
+            "example": "Peserta Scan 1",
             "type": "string"
           }
         },
@@ -2724,62 +2762,9 @@
         ]
       }
     },
-    "/modules/v1/registrations": {
-      "get": {
-        "parameters": [
-          {
-            "in": "query",
-            "name": "event_id",
-            "schema": {
-              "format": "uuid",
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "status",
-            "schema": {
-              "enum": [
-                "WAITING_PAYMENT",
-                "REGISTERED",
-                "CANCELLED",
-                "CHECKED_IN"
-              ],
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
-            "name": "page",
-            "schema": {
-              "default": 1,
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RegistrationPaginatedResponse"
-                }
-              }
-            },
-            "description": "Daftar registrasi peserta"
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ],
-        "summary": "List Registrasi Peserta (Tenant Scoped)",
-        "tags": [
-          "Modules - Registrations"
-        ]
-      },
+    "/features/v1/registrations": {
       "post": {
+        "description": "Auto-approval (`REGISTERED`) untuk event gratis; event berbayar masuk status `WAITING_PAYMENT`. Kuota dikunci via `SELECT ... FOR UPDATE` untuk mencegah oversell.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2814,8 +2799,14 @@
             },
             "description": "Pendaftaran berhasil dibuat"
           },
-          "400": {
-            "description": "Kuota penuh atau pendaftaran ditutup"
+          "404": {
+            "description": "Event tidak ditemukan atau tidak tersedia"
+          },
+          "409": {
+            "description": "Peserta sudah terdaftar (duplicate) atau kuota penuh"
+          },
+          "422": {
+            "description": "Pendaftaran ditutup (event bukan `PUBLISHED`) atau online attendance tidak tersedia"
           }
         },
         "security": [
@@ -2825,7 +2816,207 @@
         ],
         "summary": "Daftar Ikut Event (Peserta)",
         "tags": [
-          "Modules - Registrations"
+          "Features - Registrations"
+        ]
+      }
+    },
+    "/features/v1/registrations/event/{eventID}": {
+      "get": {
+        "description": "Root superadmin melihat lintas tenant; superadmin/panitia fakultas dibatasi tenant miliknya sendiri.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "eventID",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "enum": [
+                "WAITING_PAYMENT",
+                "REGISTERED",
+                "CANCELLED",
+                "CHECKED_IN"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "default": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 10,
+              "maximum": 100,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationPaginatedResponse"
+                }
+              }
+            },
+            "description": "Daftar peserta event"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "List Registrasi per Event (Panitia / Organizer)",
+        "tags": [
+          "Features - Registrations"
+        ]
+      }
+    },
+    "/features/v1/registrations/event/{eventID}/export": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "eventID",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "File `.xlsx` daftar peserta"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Ekspor Peserta Event ke Excel (Panitia / Organizer)",
+        "tags": [
+          "Features - Registrations"
+        ]
+      }
+    },
+    "/features/v1/registrations/me": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "enum": [
+                "WAITING_PAYMENT",
+                "REGISTERED",
+                "CANCELLED",
+                "CHECKED_IN"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "default": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "default": 10,
+              "maximum": 100,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationPaginatedResponse"
+                }
+              }
+            },
+            "description": "Daftar registrasi milik peserta"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Daftar Tiket Saya (Peserta)",
+        "tags": [
+          "Features - Registrations"
+        ]
+      }
+    },
+    "/features/v1/registrations/{id}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseResponse"
+                }
+              }
+            },
+            "description": "Registrasi berhasil dibatalkan"
+          },
+          "404": {
+            "description": "Registrasi tidak ditemukan atau bukan milik peserta"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "summary": "Batalkan Registrasi Saya (Peserta)",
+        "tags": [
+          "Features - Registrations"
         ]
       }
     }
