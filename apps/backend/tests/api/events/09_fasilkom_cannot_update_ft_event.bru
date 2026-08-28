@@ -1,0 +1,31 @@
+meta {
+  name: FASILKOM Cannot Update FT Event
+  type: http
+	seq: 10
+}
+
+put {
+  url: {{baseUrl}}/features/v1/events/1b0b2df2-87ab-412d-a3ae-8434f90ea1f5
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{fasilkomAccessToken}}
+}
+
+body:json {
+  {
+    "title": "Unauthorized cross-tenant update"
+  }
+}
+
+tests {
+  test("cross-tenant update is denied or hidden", function() {
+    expect(res.status).to.be.oneOf([403, 404]);
+  });
+}

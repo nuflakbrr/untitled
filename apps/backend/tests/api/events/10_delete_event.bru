@@ -1,0 +1,19 @@
+meta {
+  name: Delete Created Event
+  type: http
+	seq: 11
+}
+
+delete {
+  url: {{baseUrl}}/features/v1/events/{{crudEventId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+}

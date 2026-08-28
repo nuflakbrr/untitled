@@ -1,0 +1,34 @@
+meta {
+  name: Update Event
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{baseUrl}}/features/v1/events/{{crudEventId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+
+body:json {
+  {
+    "title": "API Event Updated",
+    "description": "Updated by the local API test suite",
+    "quota": 20,
+    "price": 10000
+  }
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("updates title", function() { expect(res.body.data.title).to.equal("API Event Updated"); });
+}
+

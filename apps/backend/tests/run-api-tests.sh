@@ -72,6 +72,18 @@ fi
 success "Login successful. Token acquired."
 echo ""
 
+log "Authenticating as FASILKOM superadmin..."
+FASILKOM_LOGIN_RESP=$(curl -sf -X POST "$BASE_URL/core/v1/auth/signin" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"superadmin.fasilkom@untitled.ac.id","password":"password"}' 2>&1)
+FASILKOM_ACCESS_TOKEN=$(echo "$FASILKOM_LOGIN_RESP" | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
+if [ -z "$FASILKOM_ACCESS_TOKEN" ]; then
+  error "Could not extract FASILKOM access_token. Check if DB is seeded (make seed)."
+  exit 1
+fi
+success "FASILKOM login successful."
+echo ""
+
 # ── 3. Export token into env for bru ────────────────────────────────────────
 # bru CLI reads env file — we patch accessToken at runtime
 export ACCESS_TOKEN_ENV="$ACCESS_TOKEN"
@@ -82,6 +94,8 @@ cat > "$RUNTIME_ENV_FILE" << ENVEOF
 vars {
   baseUrl: $BASE_URL
   accessToken: $ACCESS_TOKEN
+  rootAccessToken: $ACCESS_TOKEN
+  fasilkomAccessToken: $FASILKOM_ACCESS_TOKEN
   superadminEmail: superadmin.univ@untitled.ac.id
   superadminPassword: password
   fasilkomEmail: superadmin.fasilkom@untitled.ac.id
@@ -94,12 +108,37 @@ vars {
   tenantFasilkomId: 20492a21-59c3-4edf-bb64-1eaa6cf11deb
   crudTenantId:
   crudUserId:
+  crudEventCategoryId:
+  crudEventId:
+  crudEventSlug:
 }
 ENVEOF
 
 cleanup() {
-  # Remove the tenant created by the CRUD suite even when a test fails midway.
-  CRUD_TENANT_ID=$(grep '^  crudTenantId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudTenantId: //')
+  # Remove records created by CRUD suites even when a test fails midway.
+  CRUD_EVENT_ID=$(grep '^  crudEventId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudEventId:[[:space:]]*//')
+  if [ -n "${CRUD_EVENT_ID:-}" ]; then
+    CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+      -X DELETE "$BASE_URL/features/v1/events/$CRUD_EVENT_ID" \
+      -H "Authorization: Bearer $ACCESS_TOKEN")
+    if [ "$CLEANUP_STATUS" = "200" ] || [ "$CLEANUP_STATUS" = "404" ]; then
+      success "Cleanup completed for event $CRUD_EVENT_ID"
+    else
+      warn "Cleanup failed for event $CRUD_EVENT_ID; remove it manually if still present."
+    fi
+  fi
+  CRUD_EVENT_CATEGORY_ID=$(grep '^  crudEventCategoryId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudEventCategoryId:[[:space:]]*//')
+  if [ -n "${CRUD_EVENT_CATEGORY_ID:-}" ]; then
+    CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+      -X DELETE "$BASE_URL/features/v1/event-categories/$CRUD_EVENT_CATEGORY_ID" \
+      -H "Authorization: Bearer $ACCESS_TOKEN")
+    if [ "$CLEANUP_STATUS" = "200" ] || [ "$CLEANUP_STATUS" = "404" ]; then
+      success "Cleanup completed for event category $CRUD_EVENT_CATEGORY_ID"
+    else
+      warn "Cleanup failed for event category $CRUD_EVENT_CATEGORY_ID; remove it manually if still present."
+    fi
+  fi
+  CRUD_TENANT_ID=$(grep '^  crudTenantId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudTenantId:[[:space:]]*//')
   if [ -n "${CRUD_TENANT_ID:-}" ]; then
     CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
       -X DELETE "$BASE_URL/core/v1/tenants/$CRUD_TENANT_ID" \
@@ -110,7 +149,7 @@ cleanup() {
       warn "Cleanup failed for tenant $CRUD_TENANT_ID; remove it manually if still present."
     fi
   fi
-  CRUD_USER_ID=$(grep '^  crudUserId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudUserId: //')
+  CRUD_USER_ID=$(grep '^  crudUserId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudUserId:[[:space:]]*//')
   if [ -n "${CRUD_USER_ID:-}" ]; then
     CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
       -X DELETE "$BASE_URL/core/v1/users/$CRUD_USER_ID" \
@@ -130,9 +169,9 @@ trap cleanup EXIT
 log "Running Bruno API tests..."
 echo ""
 
-BRU_ARGS="--env local"
+BRU_ARGS=""
 if [ "$BAIL" = "--bail" ]; then
-  BRU_ARGS="$BRU_ARGS --bail"
+	BRU_ARGS="--bail"
 fi
 
 BRU_OUTPUT=""

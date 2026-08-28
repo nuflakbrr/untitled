@@ -1,0 +1,15 @@
+meta {
+	name: Draft Event Is Hidden
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/features/v1/events/{{crudEventSlug}}
+  body: none
+  auth: none
+}
+
+tests {
+	test("status 404", function() { expect(res.status).to.equal(404); });
+}
