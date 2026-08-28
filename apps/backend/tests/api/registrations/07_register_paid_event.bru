@@ -1,0 +1,41 @@
+meta {
+  name: Register Paid Event
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/features/v1/registrations
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{pesertaAccessToken}}
+}
+
+body:json {
+  {
+    "event_id": "1b0b2df2-87ab-412d-a3ae-8434f90ea1f5",
+    "online_attendance": false
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("crudRegistrationId", res.body.data.id);
+  }
+}
+
+tests {
+  test("status 201", function() { expect(res.status).to.equal(201); });
+  test("paid event waits for payment", function() {
+    expect(res.body.data.status).to.equal("WAITING_PAYMENT");
+    expect(res.body.data.price).to.be.greaterThan(0);
+  });
+}
+

@@ -1,0 +1,29 @@
+meta {
+  name: Reject Draft Event Registration
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/features/v1/registrations
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{pesertaAccessToken}}
+}
+
+body:json {
+  {
+    "event_id": "0cab550d-5978-4ed3-a505-8a02e6e20144"
+  }
+}
+
+tests {
+  test("status 404", function() { expect(res.status).to.equal(404); });
+}

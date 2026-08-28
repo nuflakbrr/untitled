@@ -1,0 +1,33 @@
+meta {
+  name: Reject Duplicate Registration
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/features/v1/registrations
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{pesertaAccessToken}}
+}
+
+body:json {
+  {
+    "event_id": "2093030b-adb4-4803-9af2-13a6c1ad8b1a"
+  }
+}
+
+tests {
+  test("status 409", function() { expect(res.status).to.equal(409); });
+  test("duplicate registration is rejected", function() {
+    expect(res.body.message).to.contain("already registered");
+  });
+}
+

@@ -69,6 +69,9 @@ SELECT r.id, p.id, NOW(), NOW()
 FROM core.roles r
 JOIN core.permissions p ON p.name IN (
     'events.read',
+    'registrations.read',
+    'registrations.create',
+    'registrations.cancel',
     'certificates.read',
     'certificates.download',
     'participant.dashboard'
