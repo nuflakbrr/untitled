@@ -1,0 +1,17 @@
+meta {
+  name: List Event Categories
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/features/v1/event-categories
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("returns categories", function() { expect(res.body.data).to.be.an("array"); });
+  test("returns global ROOT categories", function() { expect(res.body.data.length).to.be.greaterThan(0); });
+}

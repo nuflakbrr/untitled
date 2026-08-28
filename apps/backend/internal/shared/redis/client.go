@@ -15,7 +15,7 @@ import (
 // Returns an error so the caller can decide whether Redis is load-bearing
 // (fatal) or optional (degraded-mode fallback).
 func New(ctx context.Context, cfg config.RedisConfig) (*goredis.Client, error) {
-	addr := fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
+	addr := net.JoinHostPort(cfg.Host, cfg.Port)
 
 	// Quick TCP probe to verify if Redis server is reachable before spinning up connection pool
 	conn, err := net.DialTimeout("tcp", addr, 300*time.Millisecond)

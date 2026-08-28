@@ -1,0 +1,53 @@
+meta {
+  name: Create Event
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/features/v1/events
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+
+body:json {
+  {
+    "title": "API Event {{$randomInt}}",
+    "category_id": "{{crudEventCategoryId}}",
+    "description": "Created by the local API test suite",
+    "start_date": "2026-12-10T00:00:00Z",
+    "end_date": "2026-12-10T00:00:00Z",
+    "start_time": "09:00",
+    "end_time": "11:00",
+    "location": "API Test Hall",
+    "event_type": "OFFLINE",
+    "quota": 10,
+    "price": 0,
+    "registration_deadline": "2026-12-09T23:59:59Z",
+    "certificate_enabled": true
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("crudEventId", res.body.data.id);
+    bru.setEnvVar("crudEventSlug", res.body.data.slug);
+  }
+}
+
+tests {
+  test("status 201", function() { expect(res.status).to.equal(201); });
+  test("returns event id and slug", function() {
+    expect(res.body.data.id).to.be.a("string");
+    expect(res.body.data.slug).to.be.a("string");
+  });
+}
+

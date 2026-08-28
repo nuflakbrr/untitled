@@ -1,0 +1,16 @@
+meta {
+  name: Get Published Event By Slug
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/features/v1/events/{{crudEventSlug}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("returns created event", function() { expect(res.body.data.id).to.equal(bru.getEnvVar("crudEventId")); });
+}

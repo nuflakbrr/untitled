@@ -1,0 +1,32 @@
+meta {
+  name: Update Event Category
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/features/v1/event-categories/{{crudEventCategoryId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+
+body:json {
+  {
+    "name": "API Event Category Updated",
+    "description": "Updated by the local API test suite"
+  }
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("updates category name", function() { expect(res.body.data.name).to.equal("API Event Category Updated"); });
+}
+

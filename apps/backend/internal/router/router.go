@@ -12,6 +12,7 @@ import (
 	"venturo-skeleton-go/internal/modules/core/role"
 	"venturo-skeleton-go/internal/modules/core/tenant"
 	"venturo-skeleton-go/internal/modules/core/user"
+	"venturo-skeleton-go/internal/modules/features/event"
 
 	"venturo-skeleton-go/internal/shared/audit"
 	"venturo-skeleton-go/internal/shared/authz"
@@ -103,6 +104,13 @@ func Setup(router *gin.Engine, db *pgxpool.Pool, cfg *config.Config) {
 		// 6. Audit Module
 		auditModule := audit.Initialize(db)
 		auditModule.SetupRoutes(coreV1)
+	}
+
+	// Feature v1 routes
+	featuresV1 := router.Group("/features/v1")
+	{
+		eventModule := event.Initialize(db)
+		eventModule.SetupRoutes(featuresV1)
 	}
 
 	log.Info("Routes setup completed", zap.Int("routes", len(router.Routes())))

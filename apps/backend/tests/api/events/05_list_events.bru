@@ -1,0 +1,16 @@
+meta {
+  name: List Events
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/features/v1/events?page=1&limit=10
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("returns event list", function() { expect(res.body.data).to.be.an("array"); });
+}
