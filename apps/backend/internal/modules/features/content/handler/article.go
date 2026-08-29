@@ -39,14 +39,7 @@ func (h *ArticleHandler) List(c *gin.Context) {
 		response.Error(c, http.StatusInternalServerError, "Failed to retrieve articles", err.Error())
 		return
 	}
-	page, limit := query.Page, query.Limit
-	if page <= 0 {
-		page = 1
-	}
-	if limit <= 0 {
-		limit = 10
-	}
-	response.SuccessWithPagination(c, http.StatusOK, "Articles retrieved successfully", articles, page, limit, total)
+	response.SuccessWithPagination(c, http.StatusOK, "Articles retrieved successfully", articles, query.Page, query.Limit, total)
 }
 
 func (h *ArticleHandler) GetBySlug(c *gin.Context) {
