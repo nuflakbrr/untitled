@@ -98,6 +98,12 @@ func (g *generatorStub) Generate(_ context.Context, input PDFInput) ([]byte, err
 	return []byte("%PDF-test"), nil
 }
 
+type panicGenerator struct{}
+
+func (panicGenerator) Generate(context.Context, PDFInput) ([]byte, error) {
+	panic("renderer crashed")
+}
+
 func TestProcessJobGeneratesAutomaticCertificate(t *testing.T) {
 	repo := &repositoryStub{
 		template: &domain.Template{NumberMode: domain.NumberModeAuto, NumberTemplate: "CERT/{TENANT}/{SLUG}/{REG_NO}"},
@@ -166,9 +172,11 @@ func TestCertificateServiceResponsesAndQueue(t *testing.T) {
 	}
 	request := dto.UpsertTemplateRequest{
 		NumberMode: domain.NumberModeAuto, NumberTemplate: "CERT/{TENANT}/{SLUG}/{REG_NO}",
+		ShowHeader: true,
 		Signatures: []dto.SignatureRequest{{Name: "Dean", SignatureURL: "https://example.com/sign.png"}},
 	}
-	if template, err := service.UpsertTemplate(context.Background(), "event-id", nil, request); err != nil || template.ID != "template-id" {
+	if template, err := service.UpsertTemplate(context.Background(), "event-id", nil, request); err != nil || template.ID != "template-id" ||
+		template.HeaderText != defaultHeaderText || template.HeaderSubtitle != defaultHeaderSubtitle {
 		t.Fatalf("UpsertTemplate() = %+v, %v", template, err)
 	}
 	if template, err := service.GetTemplate(context.Background(), "event-id", nil); err != nil || len(template.Signatures) != 1 {
@@ -279,6 +287,22 @@ func TestProcessJobInfrastructureFailures(t *testing.T) {
 				t.Fatalf("processJob() expected %s failure", stage)
 			}
 		})
+	}
+}
+
+func TestRunJobRecoversRendererPanic(t *testing.T) {
+	repo := &repositoryStub{
+		template: &domain.Template{NumberMode: domain.NumberModeAuto, NumberTemplate: "CERT/{TENANT}/{SLUG}/{REG_NO}"},
+		job:      &domain.GenerationJob{ID: "job-id", EventID: "event-id", TenantID: "tenant-id", Total: 1},
+		participants: []*domain.IssueData{{
+			RegistrationID: "registration-id", RegistrationNumber: "REG-1",
+			UserID: "user-id", EventID: "event-id", EventSlug: "event", TenantCode: "FT",
+		}},
+	}
+	service := NewCertificateService(repo, panicGenerator{}, nil, "http://localhost", 1)
+	service.runJob(context.Background(), "job-id")
+	if repo.finished != domain.JobFailed {
+		t.Fatalf("panicked job status = %q", repo.finished)
 	}
 }
 

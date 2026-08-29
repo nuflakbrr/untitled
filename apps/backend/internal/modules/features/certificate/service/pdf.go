@@ -184,14 +184,15 @@ func (g *GoPDFGenerator) loadAsset(ctx context.Context, url string) ([]byte, err
 }
 
 func drawFooter(pdf *gopdf.GoPdf, input PDFInput) error {
-	if err := textInRect(pdf, "bold", 9, [3]uint8{31, 41, 55}, 40, 532, 260, 16, input.CertificateNumber); err != nil {
+	margin := float64(input.Template.FooterMarginBottom)
+	if err := textInRect(pdf, "bold", 9, [3]uint8{31, 41, 55}, 40, 532-margin, 260, 16, input.CertificateNumber); err != nil {
 		return err
 	}
 	issued := ""
 	if input.Template.ShowIssuedDate {
 		issued = "Diterbitkan " + input.IssuedAt.Format("2 January 2006")
 	}
-	return textInRect(pdf, "regular", 8, [3]uint8{75, 85, 99}, 40, 550, 260, 14, issued)
+	return textInRect(pdf, "regular", 8, [3]uint8{75, 85, 99}, 40, 550-margin, 260, 14, issued)
 }
 
 func centeredText(pdf *gopdf.GoPdf, font string, size float64, rgb [3]uint8, y, height float64, value string) error {
