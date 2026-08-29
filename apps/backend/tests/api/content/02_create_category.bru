@@ -1,0 +1,36 @@
+meta {
+  name: Create Article Category
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/features/v1/article-categories
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+
+body:json {
+  {
+    "name": "Prestasi Kampus"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("crudArticleCategoryId", res.body.data.id);
+  }
+}
+
+tests {
+  test("status 201", function() { expect(res.status).to.equal(201); });
+  test("returns category id", function() { expect(res.body.data.id).to.be.a("string"); });
+}

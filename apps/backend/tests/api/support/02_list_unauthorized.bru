@@ -1,0 +1,14 @@
+meta {
+  name: List Support Messages Requires Auth
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/features/v1/support-messages
+  body: none
+}
+
+tests {
+  test("status 401", function() { expect(res.status).to.equal(401); });
+}

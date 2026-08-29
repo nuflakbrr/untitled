@@ -1,0 +1,29 @@
+meta {
+  name: Update Support Message Status
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/features/v1/support-messages/{{crudSupportMessageId}}/status
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+
+body:json {
+  {
+    "status": "RESOLVED"
+  }
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+}

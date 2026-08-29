@@ -1,0 +1,17 @@
+meta {
+  name: List Featured Galleries (Public)
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{baseUrl}}/features/v1/galleries?featured=true
+  body: none
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("all returned items are featured", function() {
+    res.body.data.forEach(function(item) { expect(item.featured).to.equal(true); });
+  });
+}

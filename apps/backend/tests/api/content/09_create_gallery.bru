@@ -1,0 +1,39 @@
+meta {
+  name: Create Gallery
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/features/v1/galleries
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{fasilkomAccessToken}}
+}
+
+body:json {
+  {
+    "title": "Dokumentasi Wisuda 2026",
+    "image_url": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1",
+    "featured": true
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("crudGalleryId", res.body.data.id);
+  }
+}
+
+tests {
+  test("status 201", function() { expect(res.status).to.equal(201); });
+  test("returns gallery id", function() { expect(res.body.data.id).to.be.a("string"); });
+  test("tenant scoped to creator's faculty", function() { expect(res.body.data.tenant_id).to.equal(bru.getEnvVar("tenantFasilkomId")); });
+}
