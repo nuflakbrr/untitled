@@ -29,14 +29,20 @@ var (
 )
 
 const registrationSelect = `
-	SELECT r.id, r.event_id, e.title, e.slug, e.tenant_id, t.code,
+	SELECT r.id, r.event_id, e.title, e.slug, e.banner, e.tenant_id, t.code,
 	       r.user_id, COALESCE(u.name, ''), u.email, r.registration_number,
 	       r.qr_token, r.online_attendance, r.status::text, e.price,
-	       r.created_at, r.updated_at, r.deleted_at
+	       r.created_at, r.updated_at, r.deleted_at, e.start_date, e.location,
+	       e.event_type::text,
+	       CASE WHEN r.status = 'CHECKED_IN' THEN 'HADIR' ELSE 'BELUM HADIR' END,
+	       CASE WHEN c.id IS NOT NULL THEN 'TERBIT'
+            WHEN e.certificate_enabled THEN 'MENUNGGU TERBIT'
+            ELSE 'TIDAK TERSEDIA' END
 	FROM registrations r
 	JOIN events e ON e.id = r.event_id
 	JOIN core.tenants t ON t.id = e.tenant_id
-	JOIN core.users u ON u.id = r.user_id`
+	JOIN core.users u ON u.id = r.user_id
+	LEFT JOIN certificates c ON c.registration_id = r.id`
 
 type RegistrationRepository struct {
 	db *pgxpool.Pool
@@ -257,10 +263,13 @@ func scanRegistrations(rows pgx.Rows) ([]*domain.Registration, error) {
 		var status string
 		if err := rows.Scan(
 			&registration.ID, &registration.EventID, &registration.EventTitle, &registration.EventSlug,
+			&registration.EventBanner,
 			&registration.TenantID, &registration.TenantCode, &registration.UserID,
 			&registration.UserName, &registration.UserEmail, &registration.RegistrationNumber,
 			&registration.QRToken, &registration.OnlineAttendance, &status, &registration.Price,
 			&registration.CreatedAt, &registration.UpdatedAt, &registration.DeletedAt,
+			&registration.EventStartDate, &registration.EventLocation, &registration.EventType,
+			&registration.AttendanceStatus, &registration.CertificateStatus,
 		); err != nil {
 			return nil, fmt.Errorf("scan registration: %w", err)
 		}

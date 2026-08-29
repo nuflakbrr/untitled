@@ -16,6 +16,12 @@ type Registration struct {
 	EventID            string
 	EventTitle         string
 	EventSlug          string
+	EventBanner        *string
+	EventStartDate     time.Time
+	EventLocation      string
+	EventType          string
+	AttendanceStatus   string
+	CertificateStatus  string
 	TenantID           string
 	TenantCode         string
 	UserID             string
