@@ -14,17 +14,7 @@ import { ImageImg, ImageRoot, ImageOverlay, ImagePlaceholder } from './styles';
 // ----------------------------------------------------------------------
 
 type PredefinedAspectRatio =
-  | '2/3'
-  | '3/2'
-  | '4/3'
-  | '3/4'
-  | '6/4'
-  | '4/6'
-  | '16/9'
-  | '9/16'
-  | '21/9'
-  | '9/21'
-  | '1/1';
+  '2/3' | '3/2' | '4/3' | '3/4' | '6/4' | '4/6' | '16/9' | '9/16' | '21/9' | '9/21' | '1/1';
 
 type AspectRatioType = PredefinedAspectRatio | `${number}/${number}`;
 

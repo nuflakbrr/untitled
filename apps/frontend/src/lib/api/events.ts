@@ -59,7 +59,9 @@ export async function getPublicCategories(): Promise<PublicCategory[]> {
   const baseUrl = (CONFIG.serverApiUrl ?? CONFIG.apiUrl).replace(/\/+$/, '');
   const response = await fetch(`${baseUrl}/features/v1/event-categories`, { cache: 'no-store' });
   if (!response.ok) throw new Error(`Categories API returned ${response.status}`);
-  const payload = z.object({ data: z.array(categorySchema).nullish() }).parse(await response.json());
+  const payload = z
+    .object({ data: z.array(categorySchema).nullish() })
+    .parse(await response.json());
   return payload.data ?? [];
 }
 

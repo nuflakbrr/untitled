@@ -193,9 +193,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "reason"
-        ],
+        "required": ["reason"],
         "type": "object"
       },
       "BaseResponse": {
@@ -259,10 +257,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "current_password",
-          "new_password"
-        ],
+        "required": ["current_password", "new_password"],
         "type": "object"
       },
       "CreateEventRequest": {
@@ -288,10 +283,7 @@
             "type": "string"
           },
           "event_type": {
-            "enum": [
-              "ONLINE",
-              "OFFLINE"
-            ],
+            "enum": ["ONLINE", "OFFLINE"],
             "type": "string"
           },
           "location": {
@@ -321,10 +313,7 @@
             "type": "string"
           },
           "status": {
-            "enum": [
-              "DRAFT",
-              "PUBLISHED"
-            ],
+            "enum": ["DRAFT", "PUBLISHED"],
             "type": "string"
           },
           "tenant_id": {
@@ -380,11 +369,7 @@
             "type": "string"
           },
           "type": {
-            "enum": [
-              "FACULTY",
-              "DEPARTMENT",
-              "UNIT"
-            ],
+            "enum": ["FACULTY", "DEPARTMENT", "UNIT"],
             "example": "FACULTY",
             "type": "string"
           },
@@ -393,12 +378,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "name",
-          "slug",
-          "code",
-          "type"
-        ],
+        "required": ["name", "slug", "code", "type"],
         "type": "object"
       },
       "CreateUserRequest": {
@@ -415,12 +395,7 @@
             "type": "string"
           },
           "role": {
-            "enum": [
-              "superadmin",
-              "panitia",
-              "scanner",
-              "peserta"
-            ],
+            "enum": ["superadmin", "panitia", "scanner", "peserta"],
             "type": "string"
           },
           "tenant_id": {
@@ -429,20 +404,13 @@
             "type": "string"
           }
         },
-        "required": [
-          "email",
-          "name",
-          "password",
-          "role"
-        ],
+        "required": ["email", "name", "password", "role"],
         "type": "object"
       },
       "ErrorResponse": {
         "properties": {
           "errors": {
-            "example": [
-              "email format is invalid"
-            ],
+            "example": ["email format is invalid"],
             "items": {
               "type": "string"
             },
@@ -487,10 +455,7 @@
             "type": "string"
           },
           "event_type": {
-            "enum": [
-              "ONLINE",
-              "OFFLINE"
-            ],
+            "enum": ["ONLINE", "OFFLINE"],
             "type": "string"
           },
           "id": {
@@ -528,12 +493,7 @@
             "type": "string"
           },
           "status": {
-            "enum": [
-              "DRAFT",
-              "PUBLISHED",
-              "CLOSED",
-              "COMPLETED"
-            ],
+            "enum": ["DRAFT", "PUBLISHED", "CLOSED", "COMPLETED"],
             "type": "string"
           },
           "tenant_id": {
@@ -625,11 +585,7 @@
           "data": {
             "properties": {
               "permissions": {
-                "example": [
-                  "events.read",
-                  "events.create",
-                  "payments.verify"
-                ],
+                "example": ["events.read", "events.create", "payments.verify"],
                 "items": {
                   "type": "string"
                 },
@@ -823,11 +779,7 @@
           "data": {
             "properties": {
               "permissions": {
-                "example": [
-                  "events.read",
-                  "events.create",
-                  "attendance.scan"
-                ],
+                "example": ["events.read", "events.create", "attendance.scan"],
                 "items": {
                   "type": "string"
                 },
@@ -874,10 +826,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "email",
-          "password"
-        ],
+        "required": ["email", "password"],
         "type": "object"
       },
       "SignUpRequest": {
@@ -898,11 +847,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "name",
-          "email",
-          "password"
-        ],
+        "required": ["name", "email", "password"],
         "type": "object"
       },
       "SwitchTenantRequest": {
@@ -913,9 +858,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "tenant_slug"
-        ],
+        "required": ["tenant_slug"],
         "type": "object"
       },
       "Tenant": {
@@ -958,12 +901,7 @@
             "type": "string"
           },
           "type": {
-            "enum": [
-              "ROOT",
-              "FACULTY",
-              "DEPARTMENT",
-              "UNIT"
-            ],
+            "enum": ["ROOT", "FACULTY", "DEPARTMENT", "UNIT"],
             "example": "FACULTY",
             "type": "string"
           },
@@ -1084,12 +1022,7 @@
             "type": "integer"
           },
           "status": {
-            "enum": [
-              "DRAFT",
-              "PUBLISHED",
-              "CLOSED",
-              "COMPLETED"
-            ],
+            "enum": ["DRAFT", "PUBLISHED", "CLOSED", "COMPLETED"],
             "type": "string"
           },
           "title": {
@@ -1113,10 +1046,7 @@
             "type": "string"
           },
           "env": {
-            "enum": [
-              "sandbox",
-              "production"
-            ],
+            "enum": ["sandbox", "production"],
             "type": "string"
           },
           "is_active": {
@@ -1155,12 +1085,7 @@
             "type": "string"
           },
           "role": {
-            "enum": [
-              "superadmin",
-              "panitia",
-              "scanner",
-              "peserta"
-            ],
+            "enum": ["superadmin", "panitia", "scanner", "peserta"],
             "type": "string"
           },
           "tenant_id": {
@@ -1329,9 +1254,7 @@
           }
         ],
         "summary": "List Riwayat Audit Log (Tenant-Scoped)",
-        "tags": [
-          "Core - Audit Logs"
-        ]
+        "tags": ["Core - Audit Logs"]
       }
     },
     "/core/v1/auth/me": {
@@ -1358,9 +1281,7 @@
           }
         ],
         "summary": "Get Profil \u0026 Konteks Tenant Pengguna",
-        "tags": [
-          "Core - Auth"
-        ]
+        "tags": ["Core - Auth"]
       }
     },
     "/core/v1/auth/refresh": {
@@ -1376,9 +1297,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "refresh_token"
-                ],
+                "required": ["refresh_token"],
                 "type": "object"
               }
             }
@@ -1401,9 +1320,7 @@
           }
         },
         "summary": "Refresh Access Token",
-        "tags": [
-          "Core - Auth"
-        ]
+        "tags": ["Core - Auth"]
       }
     },
     "/core/v1/auth/signin": {
@@ -1438,9 +1355,7 @@
           }
         },
         "summary": "Login Akun Pengguna",
-        "tags": [
-          "Core - Auth"
-        ]
+        "tags": ["Core - Auth"]
       }
     },
     "/core/v1/auth/signup": {
@@ -1475,9 +1390,7 @@
           }
         },
         "summary": "Registrasi Peserta Mandiri (Universal)",
-        "tags": [
-          "Core - Auth"
-        ]
+        "tags": ["Core - Auth"]
       }
     },
     "/core/v1/auth/switch-tenant": {
@@ -1520,9 +1433,7 @@
           }
         ],
         "summary": "Beralih Konteks Tenant (Root Superadmin Only)",
-        "tags": [
-          "Core - Auth"
-        ]
+        "tags": ["Core - Auth"]
       }
     },
     "/core/v1/roles": {
@@ -1545,9 +1456,7 @@
           }
         ],
         "summary": "List Master Jabatan (Roles)",
-        "tags": [
-          "Core - Roles \u0026 Permissions"
-        ]
+        "tags": ["Core - Roles \u0026 Permissions"]
       }
     },
     "/core/v1/roles/{id}": {
@@ -1581,9 +1490,7 @@
           }
         ],
         "summary": "Detail Role \u0026 Permissions",
-        "tags": [
-          "Core - Roles \u0026 Permissions"
-        ]
+        "tags": ["Core - Roles \u0026 Permissions"]
       }
     },
     "/core/v1/tenants": {
@@ -1595,12 +1502,7 @@
             "in": "query",
             "name": "type",
             "schema": {
-              "enum": [
-                "ROOT",
-                "FACULTY",
-                "DEPARTMENT",
-                "UNIT"
-              ],
+              "enum": ["ROOT", "FACULTY", "DEPARTMENT", "UNIT"],
               "type": "string"
             }
           },
@@ -1626,9 +1528,7 @@
           }
         },
         "summary": "List Semua Tenant / Fakultas",
-        "tags": [
-          "Core - Tenants"
-        ]
+        "tags": ["Core - Tenants"]
       },
       "post": {
         "description": "Menambahkan fakultas atau unit kerja baru ke dalam sistem. Wajib memiliki izin 'tenant.create'.",
@@ -1669,9 +1569,7 @@
           }
         ],
         "summary": "Tambah Tenant Fakultas Baru",
-        "tags": [
-          "Core - Tenants"
-        ]
+        "tags": ["Core - Tenants"]
       }
     },
     "/core/v1/tenants/by-slug/{slug}": {
@@ -1704,9 +1602,7 @@
           }
         },
         "summary": "Detail Tenant by Slug",
-        "tags": [
-          "Core - Tenants"
-        ]
+        "tags": ["Core - Tenants"]
       }
     },
     "/core/v1/tenants/{id}": {
@@ -1743,9 +1639,7 @@
           }
         ],
         "summary": "Hapus Tenant Fakultas",
-        "tags": [
-          "Core - Tenants"
-        ]
+        "tags": ["Core - Tenants"]
       },
       "get": {
         "parameters": [
@@ -1775,9 +1669,7 @@
           }
         },
         "summary": "Detail Tenant by ID",
-        "tags": [
-          "Core - Tenants"
-        ]
+        "tags": ["Core - Tenants"]
       },
       "put": {
         "parameters": [
@@ -1825,9 +1717,7 @@
           }
         ],
         "summary": "Update Data Tenant Fakultas",
-        "tags": [
-          "Core - Tenants"
-        ]
+        "tags": ["Core - Tenants"]
       }
     },
     "/core/v1/tenants/{id}/payment-gateway": {
@@ -1862,9 +1752,7 @@
           }
         ],
         "summary": "Get Konfigurasi Payment Gateway Tenant",
-        "tags": [
-          "Core - Tenants"
-        ]
+        "tags": ["Core - Tenants"]
       },
       "put": {
         "description": "Mengatur API Key iPaymu, nomor VA, environment (sandbox/production), dan rekening bank manual fakultas.",
@@ -1907,9 +1795,7 @@
           }
         ],
         "summary": "Update Konfigurasi Payment Gateway Tenant",
-        "tags": [
-          "Core - Tenants"
-        ]
+        "tags": ["Core - Tenants"]
       }
     },
     "/core/v1/users": {
@@ -1972,9 +1858,7 @@
           }
         ],
         "summary": "List Data Pengguna (Tenant-Scoped)",
-        "tags": [
-          "Core - Users"
-        ]
+        "tags": ["Core - Users"]
       },
       "post": {
         "description": "Membuat akun panitia, scanner, atau admin fakultas baru oleh Superadmin.",
@@ -2006,9 +1890,7 @@
           }
         ],
         "summary": "Buat Akun Pengguna Baru (Superadmin)",
-        "tags": [
-          "Core - Users"
-        ]
+        "tags": ["Core - Users"]
       }
     },
     "/core/v1/users/change-password": {
@@ -2041,9 +1923,7 @@
           }
         ],
         "summary": "Ganti Password Login",
-        "tags": [
-          "Core - Users"
-        ]
+        "tags": ["Core - Users"]
       }
     },
     "/core/v1/users/me": {
@@ -2086,9 +1966,7 @@
           }
         ],
         "summary": "Update Profil Pribadi",
-        "tags": [
-          "Core - Users"
-        ]
+        "tags": ["Core - Users"]
       }
     },
     "/core/v1/users/{id}": {
@@ -2125,9 +2003,7 @@
           }
         ],
         "summary": "Detail Pengguna by ID",
-        "tags": [
-          "Core - Users"
-        ]
+        "tags": ["Core - Users"]
       },
       "put": {
         "parameters": [
@@ -2169,9 +2045,7 @@
           }
         ],
         "summary": "Update Pengguna by ID",
-        "tags": [
-          "Core - Users"
-        ]
+        "tags": ["Core - Users"]
       }
     },
     "/core/v1/users/{id}/ban": {
@@ -2215,9 +2089,7 @@
           }
         ],
         "summary": "Blokir / Ban Akun Pengguna",
-        "tags": [
-          "Core - Users"
-        ]
+        "tags": ["Core - Users"]
       }
     },
     "/core/v1/users/{id}/unban": {
@@ -2251,9 +2123,7 @@
           }
         ],
         "summary": "Buka Blokir / Unban Akun Pengguna",
-        "tags": [
-          "Core - Users"
-        ]
+        "tags": ["Core - Users"]
       }
     },
     "/health": {
@@ -2282,9 +2152,7 @@
           }
         },
         "summary": "Health check server",
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     },
     "/modules/v1/attendance/scan": {
@@ -2300,9 +2168,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "qr_token"
-                ],
+                "required": ["qr_token"],
                 "type": "object"
               }
             }
@@ -2330,9 +2196,7 @@
           }
         ],
         "summary": "Scan QR Code Presensi Peserta",
-        "tags": [
-          "Modules - Attendance"
-        ]
+        "tags": ["Modules - Attendance"]
       }
     },
     "/features/v1/certificates/verify/{identifier}": {
@@ -2365,9 +2229,7 @@
           }
         },
         "summary": "Verifikasi Sertifikat Publik",
-        "tags": [
-          "Modules - Certificates"
-        ]
+        "tags": ["Modules - Certificates"]
       }
     },
     "/features/v1/event-categories": {
@@ -2396,9 +2258,7 @@
           }
         },
         "summary": "List Kategori Event",
-        "tags": [
-          "Modules - Event Categories"
-        ]
+        "tags": ["Modules - Event Categories"]
       }
     },
     "/features/v1/events": {
@@ -2426,10 +2286,7 @@
             "in": "query",
             "name": "event_type",
             "schema": {
-              "enum": [
-                "ONLINE",
-                "OFFLINE"
-              ],
+              "enum": ["ONLINE", "OFFLINE"],
               "type": "string"
             }
           },
@@ -2437,12 +2294,7 @@
             "in": "query",
             "name": "status",
             "schema": {
-              "enum": [
-                "DRAFT",
-                "PUBLISHED",
-                "CLOSED",
-                "COMPLETED"
-              ],
+              "enum": ["DRAFT", "PUBLISHED", "CLOSED", "COMPLETED"],
               "type": "string"
             }
           },
@@ -2476,9 +2328,7 @@
           }
         },
         "summary": "Katalog Event (Publik \u0026 Terfilter Tenant)",
-        "tags": [
-          "Modules - Events"
-        ]
+        "tags": ["Modules - Events"]
       },
       "post": {
         "requestBody": {
@@ -2509,9 +2359,7 @@
           }
         ],
         "summary": "Buat Event Baru (Fakultas / Rektorat)",
-        "tags": [
-          "Modules - Events"
-        ]
+        "tags": ["Modules - Events"]
       }
     },
     "/features/v1/events/{slug}": {
@@ -2543,9 +2391,7 @@
           }
         },
         "summary": "Detail Event by Slug Publik",
-        "tags": [
-          "Modules - Events"
-        ]
+        "tags": ["Modules - Events"]
       }
     },
     "/features/v1/events/{id}": {
@@ -2579,9 +2425,7 @@
           }
         ],
         "summary": "Hapus Event",
-        "tags": [
-          "Modules - Events"
-        ]
+        "tags": ["Modules - Events"]
       },
       "get": {
         "parameters": [
@@ -2611,9 +2455,7 @@
           }
         },
         "summary": "Detail Event by ID",
-        "tags": [
-          "Modules - Events"
-        ]
+        "tags": ["Modules - Events"]
       },
       "put": {
         "parameters": [
@@ -2655,9 +2497,7 @@
           }
         ],
         "summary": "Update Data Event",
-        "tags": [
-          "Modules - Events"
-        ]
+        "tags": ["Modules - Events"]
       }
     },
     "/modules/v1/payments/webhook/ipaymu": {
@@ -2696,9 +2536,7 @@
           }
         },
         "summary": "Webhook Notifikasi Pembayaran Otomatis iPaymu",
-        "tags": [
-          "Modules - Payments"
-        ]
+        "tags": ["Modules - Payments"]
       }
     },
     "/modules/v1/payments/{id}/verify": {
@@ -2723,16 +2561,11 @@
                     "type": "string"
                   },
                   "status": {
-                    "enum": [
-                      "PAID",
-                      "FAILED"
-                    ],
+                    "enum": ["PAID", "FAILED"],
                     "type": "string"
                   }
                 },
-                "required": [
-                  "status"
-                ],
+                "required": ["status"],
                 "type": "object"
               }
             }
@@ -2757,9 +2590,7 @@
           }
         ],
         "summary": "Verifikasi Bukti Bayar Manual (Panitia Fakultas)",
-        "tags": [
-          "Modules - Payments"
-        ]
+        "tags": ["Modules - Payments"]
       }
     },
     "/features/v1/registrations": {
@@ -2779,9 +2610,7 @@
                     "type": "boolean"
                   }
                 },
-                "required": [
-                  "event_id"
-                ],
+                "required": ["event_id"],
                 "type": "object"
               }
             }
@@ -2815,9 +2644,7 @@
           }
         ],
         "summary": "Daftar Ikut Event (Peserta)",
-        "tags": [
-          "Features - Registrations"
-        ]
+        "tags": ["Features - Registrations"]
       }
     },
     "/features/v1/registrations/event/{eventID}": {
@@ -2882,9 +2709,7 @@
           }
         ],
         "summary": "List Registrasi per Event (Panitia / Organizer)",
-        "tags": [
-          "Features - Registrations"
-        ]
+        "tags": ["Features - Registrations"]
       }
     },
     "/features/v1/registrations/event/{eventID}/export": {
@@ -2919,9 +2744,7 @@
           }
         ],
         "summary": "Ekspor Peserta Event ke Excel (Panitia / Organizer)",
-        "tags": [
-          "Features - Registrations"
-        ]
+        "tags": ["Features - Registrations"]
       }
     },
     "/features/v1/registrations/me": {
@@ -2976,9 +2799,7 @@
           }
         ],
         "summary": "Daftar Tiket Saya (Peserta)",
-        "tags": [
-          "Features - Registrations"
-        ]
+        "tags": ["Features - Registrations"]
       }
     },
     "/features/v1/registrations/{id}": {
@@ -3015,9 +2836,7 @@
           }
         ],
         "summary": "Batalkan Registrasi Saya (Peserta)",
-        "tags": [
-          "Features - Registrations"
-        ]
+        "tags": ["Features - Registrations"]
       }
     }
   },

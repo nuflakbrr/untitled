@@ -17,15 +17,17 @@ const credentialsSchema = z.object({
   password: z.string().min(8),
   returnTo: z.string(),
 });
-const signUpSchema = z.object({
-  name: z.string().trim().min(2).max(255),
-  email: z.email(),
-  password: z.string().min(8),
-  confirmation: z.string(),
-}).refine((value) => value.password === value.confirmation, {
-  message: 'Konfirmasi kata sandi tidak cocok',
-  path: ['confirmation'],
-});
+const signUpSchema = z
+  .object({
+    name: z.string().trim().min(2).max(255),
+    email: z.email(),
+    password: z.string().min(8),
+    confirmation: z.string(),
+  })
+  .refine((value) => value.password === value.confirmation, {
+    message: 'Konfirmasi kata sandi tidak cocok',
+    path: ['confirmation'],
+  });
 const switchSchema = z.uuid();
 
 async function responseJson<T>(response: Response) {
@@ -91,12 +93,26 @@ export async function signInAction(
   return redirect(safeReturnTo(input.data.returnTo));
 }
 
-export async function signUpAction(_state: AuthActionState, formData: FormData): Promise<AuthActionState> {
+export async function signUpAction(
+  _state: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
   const input = signUpSchema.safeParse({
-    name: formData.get('name'), email: formData.get('email'), password: formData.get('password'), confirmation: formData.get('confirmation'),
+    name: formData.get('name'),
+    email: formData.get('email'),
+    password: formData.get('password'),
+    confirmation: formData.get('confirmation'),
   });
-  if (!input.success) return { error: input.error.issues[0]?.message ?? 'Data registrasi tidak valid' };
-  const backend = await fetchBackend('core/v1/auth/signup', undefined, { method: 'POST', body: JSON.stringify({ name: input.data.name, email: input.data.email, password: input.data.password }) });
+  if (!input.success)
+    return { error: input.error.issues[0]?.message ?? 'Data registrasi tidak valid' };
+  const backend = await fetchBackend('core/v1/auth/signup', undefined, {
+    method: 'POST',
+    body: JSON.stringify({
+      name: input.data.name,
+      email: input.data.email,
+      password: input.data.password,
+    }),
+  });
   const payload = await responseJson<unknown>(backend);
   if (!backend.ok) return { error: payload.message };
   return redirect('/auth/sign-in?registered=1');

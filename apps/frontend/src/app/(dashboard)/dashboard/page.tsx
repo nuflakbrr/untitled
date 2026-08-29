@@ -43,12 +43,7 @@ export default async function DashboardPage() {
             Kelola agenda kampus, pantau alur peserta, dan jaga setiap proses event tetap rapi dari
             satu workspace.
           </Typography>
-          <Button
-            component="a"
-            href={paths.dashboard.events}
-            variant="contained"
-            sx={{ mt: 3 }}
-          >
+          <Button component="a" href={paths.dashboard.events} variant="contained" sx={{ mt: 3 }}>
             Buka modul event
           </Button>
         </Box>
@@ -84,12 +79,7 @@ export default async function DashboardPage() {
           <Typography color="text.secondary" sx={{ mt: 1, maxWidth: 560 }}>
             Siapkan informasi, jadwal, kuota, pembicara, benefit, dan status publikasi event.
           </Typography>
-          <Button
-            component="a"
-            href={paths.dashboard.events}
-            variant="outlined"
-            sx={{ mt: 3 }}
-          >
+          <Button component="a" href={paths.dashboard.events} variant="outlined" sx={{ mt: 3 }}>
             Kelola event
           </Button>
         </Paper>
