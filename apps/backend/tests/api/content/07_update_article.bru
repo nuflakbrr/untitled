@@ -1,0 +1,31 @@
+meta {
+  name: Update Article
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{baseUrl}}/features/v1/articles/{{crudArticleId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{fasilkomAccessToken}}
+}
+
+body:json {
+  {
+    "title": "Fasilkom Raih Penghargaan Nasional (Updated)",
+    "content": "Konten yang telah diperbarui."
+  }
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("title updated", function() { expect(res.body.data.title).to.equal("Fasilkom Raih Penghargaan Nasional (Updated)"); });
+}

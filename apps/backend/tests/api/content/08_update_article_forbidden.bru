@@ -1,0 +1,30 @@
+meta {
+  name: Update Article Forbidden Without Permission
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{baseUrl}}/features/v1/articles/{{crudArticleId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{pesertaAccessToken}}
+}
+
+body:json {
+  {
+    "title": "Should Not Be Allowed",
+    "content": "Should not be allowed."
+  }
+}
+
+tests {
+  test("status 403", function() { expect(res.status).to.equal(403); });
+}

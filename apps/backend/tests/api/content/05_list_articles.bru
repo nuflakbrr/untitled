@@ -1,0 +1,18 @@
+meta {
+  name: List Articles (Public)
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/features/v1/articles
+  body: none
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("returns paginated list", function() {
+    expect(res.body.data).to.be.an("array").that.is.not.empty;
+    expect(res.body.meta.pagination.total).to.be.greaterThan(0);
+  });
+}

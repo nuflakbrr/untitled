@@ -132,11 +132,49 @@ vars {
   certificateQrToken:
   certificateJobId:
   certificateId:
+  crudArticleCategoryId:
+  crudArticleId:
+  crudArticleSlug:
+  crudGalleryId:
+  crudSupportMessageId:
 }
 ENVEOF
 
 cleanup() {
   # Remove records created by CRUD suites even when a test fails midway.
+  CRUD_GALLERY_ID=$(grep '^  crudGalleryId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudGalleryId:[[:space:]]*//')
+  if [ -n "${CRUD_GALLERY_ID:-}" ]; then
+    CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+      -X DELETE "$BASE_URL/features/v1/galleries/$CRUD_GALLERY_ID" \
+      -H "Authorization: Bearer $ACCESS_TOKEN")
+    if [ "$CLEANUP_STATUS" = "200" ] || [ "$CLEANUP_STATUS" = "404" ]; then
+      success "Cleanup completed for gallery $CRUD_GALLERY_ID"
+    else
+      warn "Cleanup failed for gallery $CRUD_GALLERY_ID; remove it manually if still present."
+    fi
+  fi
+  CRUD_ARTICLE_ID=$(grep '^  crudArticleId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudArticleId:[[:space:]]*//')
+  if [ -n "${CRUD_ARTICLE_ID:-}" ]; then
+    CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+      -X DELETE "$BASE_URL/features/v1/articles/$CRUD_ARTICLE_ID" \
+      -H "Authorization: Bearer $ACCESS_TOKEN")
+    if [ "$CLEANUP_STATUS" = "200" ] || [ "$CLEANUP_STATUS" = "404" ]; then
+      success "Cleanup completed for article $CRUD_ARTICLE_ID"
+    else
+      warn "Cleanup failed for article $CRUD_ARTICLE_ID; remove it manually if still present."
+    fi
+  fi
+  CRUD_ARTICLE_CATEGORY_ID=$(grep '^  crudArticleCategoryId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudArticleCategoryId:[[:space:]]*//')
+  if [ -n "${CRUD_ARTICLE_CATEGORY_ID:-}" ]; then
+    CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+      -X DELETE "$BASE_URL/features/v1/article-categories/$CRUD_ARTICLE_CATEGORY_ID" \
+      -H "Authorization: Bearer $ACCESS_TOKEN")
+    if [ "$CLEANUP_STATUS" = "200" ] || [ "$CLEANUP_STATUS" = "404" ]; then
+      success "Cleanup completed for article category $CRUD_ARTICLE_CATEGORY_ID"
+    else
+      warn "Cleanup failed for article category $CRUD_ARTICLE_CATEGORY_ID; remove it manually if still present."
+    fi
+  fi
   CERTIFICATE_EVENT_ID=$(grep '^  certificateEventId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  certificateEventId:[[:space:]]*//')
   if [ -n "${CERTIFICATE_EVENT_ID:-}" ]; then
     CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \

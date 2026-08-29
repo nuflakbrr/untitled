@@ -14,9 +14,11 @@ import (
 	"venturo-skeleton-go/internal/modules/core/user"
 	"venturo-skeleton-go/internal/modules/features/attendance"
 	"venturo-skeleton-go/internal/modules/features/certificate"
+	"venturo-skeleton-go/internal/modules/features/content"
 	"venturo-skeleton-go/internal/modules/features/event"
 	"venturo-skeleton-go/internal/modules/features/payment"
 	"venturo-skeleton-go/internal/modules/features/registration"
+	"venturo-skeleton-go/internal/modules/features/support"
 
 	"venturo-skeleton-go/internal/shared/audit"
 	"venturo-skeleton-go/internal/shared/authz"
@@ -129,6 +131,10 @@ func Setup(router *gin.Engine, db *pgxpool.Pool, cfg *config.Config) {
 			router.StaticFS("/files", gin.Dir(certificateModule.LocalRoot, false))
 		}
 		certificateModule.SetupRoutes(featuresV1)
+		contentModule := content.Initialize(db)
+		contentModule.SetupRoutes(featuresV1)
+		supportModule := support.Initialize(db)
+		supportModule.SetupRoutes(featuresV1)
 	}
 
 	log.Info("Routes setup completed", zap.Int("routes", len(router.Routes())))

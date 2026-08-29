@@ -1,0 +1,15 @@
+meta {
+  name: Get Article By Slug (Public)
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/features/v1/articles/by-slug/{{crudArticleSlug}}
+  body: none
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("returns matching article", function() { expect(res.body.data.id).to.equal(bru.getEnvVar("crudArticleId")); });
+}
