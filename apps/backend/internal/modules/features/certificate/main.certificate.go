@@ -3,6 +3,7 @@ package certificate
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"venturo-skeleton-go/internal/config"
 	"venturo-skeleton-go/internal/middleware"
@@ -26,19 +27,25 @@ func Initialize(ctx context.Context, db *pgxpool.Pool, cfg *config.Config) (*Mod
 	repo := repository.NewCertificateRepository(db)
 	var storageClient pkgstorage.Client
 	localRoot := ""
-	if cfg.GCS.BucketName != "" {
+	switch strings.ToLower(strings.TrimSpace(cfg.Certificate.StorageDriver)) {
+	case "gcs":
+		if cfg.GCS.BucketName == "" {
+			return nil, fmt.Errorf("initialize certificate GCS storage: GCS_BUCKET_NAME is required")
+		}
 		client, err := pkgstorage.NewGCSClient(ctx, cfg.GCS.BucketName, cfg.GCS.CredentialsJSON)
 		if err != nil {
 			return nil, fmt.Errorf("initialize certificate GCS storage: %w", err)
 		}
 		storageClient = client
-	} else {
+	case "local":
 		client, err := pkgstorage.NewLocalClient(cfg.Certificate.LocalStorageDir, cfg.Certificate.PublicBaseURL)
 		if err != nil {
 			return nil, fmt.Errorf("initialize certificate local storage: %w", err)
 		}
 		storageClient = client
 		localRoot = client.RootDir()
+	default:
+		return nil, fmt.Errorf("initialize certificate storage: unsupported driver %q", cfg.Certificate.StorageDriver)
 	}
 	certificateService := service.NewCertificateService(
 		repo, service.NewGoPDFGenerator(cfg.Certificate.AssetTimeout), storageClient,
