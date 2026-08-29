@@ -20,6 +20,11 @@ import (
 
 var ErrInvalidRequest = errors.New("invalid certificate request")
 
+const (
+	defaultHeaderText     = "UNIVERSITAS MANDIRI NUSANTARA"
+	defaultHeaderSubtitle = "Sertifikat Partisipasi Resmi"
+)
+
 type Repository interface {
 	UpsertTemplate(context.Context, string, *string, *domain.Template) error
 	GetTemplate(context.Context, string, *string) (*domain.Template, error)
@@ -71,11 +76,21 @@ func (s *CertificateService) Start(ctx context.Context) error {
 }
 
 func (s *CertificateService) UpsertTemplate(ctx context.Context, eventID string, scopeTenantID *string, req dto.UpsertTemplateRequest) (*dto.TemplateResponse, error) {
+	headerText := strings.TrimSpace(req.HeaderText)
+	headerSubtitle := strings.TrimSpace(req.HeaderSubtitle)
+	if req.ShowHeader {
+		if headerText == "" {
+			headerText = defaultHeaderText
+		}
+		if headerSubtitle == "" {
+			headerSubtitle = defaultHeaderSubtitle
+		}
+	}
 	template := &domain.Template{
 		EventID: eventID, BackgroundURL: req.BackgroundURL, NumberTemplate: req.NumberTemplate,
 		NumberMode: req.NumberMode, ShowIssuedDate: req.ShowIssuedDate, ShowEventDate: req.ShowEventDate,
-		ShowEventLocation: req.ShowEventLocation, ShowHeader: req.ShowHeader, HeaderText: req.HeaderText,
-		HeaderSubtitle: req.HeaderSubtitle, HeaderFont: req.HeaderFont, HeaderColor: req.HeaderColor,
+		ShowEventLocation: req.ShowEventLocation, ShowHeader: req.ShowHeader, HeaderText: headerText,
+		HeaderSubtitle: headerSubtitle, HeaderFont: req.HeaderFont, HeaderColor: req.HeaderColor,
 		TitleFont: req.TitleFont, TitleColor: req.TitleColor, ContentFont: req.ContentFont,
 		ContentColor: req.ContentColor, PrimaryColor: req.PrimaryColor, FooterMarginBottom: req.FooterMarginBottom,
 	}
@@ -191,10 +206,21 @@ func (s *CertificateService) worker(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case id := <-s.queue:
-			if err := s.processJob(ctx, id); err != nil && !errors.Is(err, repository.ErrGenerationJobNotFound) {
-				logger.Error("Certificate generation job failed", logger.String("job_id", id), logger.Err(err))
-			}
+			s.runJob(ctx, id)
 		}
+	}
+}
+
+func (s *CertificateService) runJob(ctx context.Context, id string) {
+	defer func() {
+		if recovered := recover(); recovered != nil {
+			err := fmt.Errorf("certificate generation panic: %v", recovered)
+			_ = s.repository.FinishJob(ctx, id, domain.JobFailed, err)
+			logger.Error("Certificate generation job panicked", logger.String("job_id", id), logger.Err(err))
+		}
+	}()
+	if err := s.processJob(ctx, id); err != nil && !errors.Is(err, repository.ErrGenerationJobNotFound) {
+		logger.Error("Certificate generation job failed", logger.String("job_id", id), logger.Err(err))
 	}
 }
 
