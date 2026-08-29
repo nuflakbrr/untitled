@@ -37,6 +37,7 @@ const signUpSchema = z
     path: ['confirmation'],
   });
 const switchSchema = z.uuid();
+const registrationSchema = z.object({ event_id: z.uuid(), online_attendance: z.boolean() });
 const eventSearchSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -181,6 +182,32 @@ export async function listMyRegistrationsAction(): Promise<
   if (!backend.ok || !registrations.success)
     return { data: null, error: payload.message || 'Registrasi gagal dimuat' };
   return { data: registrations.data, error: null };
+}
+
+export async function registerAndCheckoutAction(formData: FormData) {
+  const input = registrationSchema.safeParse({
+    event_id: formData.get('event_id'),
+    online_attendance: formData.get('online_attendance') === 'true',
+  });
+  if (!input.success) redirect('/event');
+  const auth = await authenticatedSession();
+  if (!auth) redirect('/auth/sign-in');
+
+  const registrationResponse = await fetchBackend('features/v1/registrations', auth.token, {
+    method: 'POST',
+    body: JSON.stringify(input.data),
+  });
+  const registration = await responseJson<{ id?: string }>(registrationResponse);
+  if (!registrationResponse.ok || !registration.data?.id) redirect('/event?error=registration');
+
+  const checkoutResponse = await fetchBackend('features/v1/payments/checkout', auth.token, {
+    method: 'POST',
+    body: JSON.stringify({ registration_id: registration.data.id }),
+  });
+  const checkout = await responseJson<{ payment_url?: string }>(checkoutResponse);
+  if (!checkoutResponse.ok) redirect('/participant/dashboard?error=checkout');
+  if (checkout.data?.payment_url) redirect(checkout.data.payment_url);
+  redirect('/participant/dashboard');
 }
 
 export async function listTenantsAction(): Promise<AuthActionResult<TenantOption[]>> {
