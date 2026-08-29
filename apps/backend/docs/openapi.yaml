@@ -1399,6 +1399,479 @@ paths:
         "404":
           description: Sertifikat tidak ditemukan
 
+  # ============================================================================
+  # FEATURES - CONTENT (ARTICLES, CATEGORIES, GALLERIES)
+  # ============================================================================
+  /features/v1/articles:
+    get:
+      tags:
+        - Features - Content
+      summary: List Artikel (Publik)
+      description: Menampilkan artikel global (tenant_id NULL / tenant ROOT) beserta artikel milik tenant tertentu bila `tenant_id` disertakan.
+      parameters:
+        - in: query
+          name: tenant_id
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+      responses:
+        "200":
+          description: Daftar artikel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Article"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+    post:
+      tags:
+        - Features - Content
+      summary: Buat Artikel Baru (Panitia/Superadmin)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArticleRequest"
+      responses:
+        "201":
+          description: Artikel berhasil dibuat
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 201
+                  data:
+                    $ref: "#/components/schemas/Article"
+
+  /features/v1/articles/by-slug/{slug}:
+    get:
+      tags:
+        - Features - Content
+      summary: Detail Artikel by Slug (Publik)
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Detail artikel ditemukan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: "#/components/schemas/Article"
+        "404":
+          description: Artikel tidak ditemukan
+
+  /features/v1/articles/{id}:
+    put:
+      tags:
+        - Features - Content
+      summary: Perbarui Artikel
+      description: Superadmin/panitia fakultas dibatasi mengubah artikel milik tenant-nya sendiri; root superadmin unscoped.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArticleRequest"
+      responses:
+        "200":
+          description: Artikel berhasil diperbarui
+        "403":
+          description: Tidak memiliki permission `articles.update`
+        "404":
+          description: Artikel tidak ditemukan atau di luar scope tenant
+    delete:
+      tags:
+        - Features - Content
+      summary: Hapus Artikel
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Artikel berhasil dihapus
+        "404":
+          description: Artikel tidak ditemukan atau di luar scope tenant
+
+  /features/v1/article-categories:
+    get:
+      tags:
+        - Features - Content
+      summary: List Kategori Artikel (Publik)
+      responses:
+        "200":
+          description: Daftar kategori artikel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ArticleCategory"
+    post:
+      tags:
+        - Features - Content
+      summary: Buat Kategori Artikel Baru
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: Prestasi Kampus
+      responses:
+        "201":
+          description: Kategori berhasil dibuat
+
+  /features/v1/article-categories/{id}:
+    put:
+      tags:
+        - Features - Content
+      summary: Perbarui Kategori Artikel
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+      responses:
+        "200":
+          description: Kategori berhasil diperbarui
+        "404":
+          description: Kategori tidak ditemukan
+    delete:
+      tags:
+        - Features - Content
+      summary: Hapus Kategori Artikel
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Kategori berhasil dihapus
+        "404":
+          description: Kategori tidak ditemukan
+
+  /features/v1/galleries:
+    get:
+      tags:
+        - Features - Content
+      summary: List Galeri (Publik)
+      parameters:
+        - in: query
+          name: tenant_id
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: event_id
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: featured
+          schema:
+            type: boolean
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+      responses:
+        "200":
+          description: Daftar galeri
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Gallery"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+    post:
+      tags:
+        - Features - Content
+      summary: Tambah Foto Galeri
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GalleryRequest"
+      responses:
+        "201":
+          description: Galeri berhasil ditambahkan
+
+  /features/v1/galleries/{id}:
+    put:
+      tags:
+        - Features - Content
+      summary: Perbarui Foto Galeri
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GalleryRequest"
+      responses:
+        "200":
+          description: Galeri berhasil diperbarui
+        "404":
+          description: Galeri tidak ditemukan atau di luar scope tenant
+    delete:
+      tags:
+        - Features - Content
+      summary: Hapus Foto Galeri
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Galeri berhasil dihapus
+        "404":
+          description: Galeri tidak ditemukan atau di luar scope tenant
+
+  # ============================================================================
+  # FEATURES - SUPPORT MESSAGES
+  # ============================================================================
+  /features/v1/support-messages:
+    post:
+      tags:
+        - Features - Support
+      summary: Kirim Pesan Bantuan (Publik)
+      description: >
+        Endpoint publik tanpa autentikasi (form "hubungi kami"). `user_id`
+        sengaja tidak pernah diterima dari klien untuk mencegah seseorang
+        melampirkan keluhan ke akun orang lain.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - phone
+                - name
+                - title
+                - category
+                - chronology
+              properties:
+                tenant_id:
+                  type: string
+                  format: uuid
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                name:
+                  type: string
+                title:
+                  type: string
+                category:
+                  type: string
+                chronology:
+                  type: string
+      responses:
+        "201":
+          description: Pesan berhasil dikirim, status awal PENDING
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 201
+                  data:
+                    $ref: "#/components/schemas/SupportMessage"
+    get:
+      tags:
+        - Features - Support
+      summary: List Pesan Bantuan (Panitia/Superadmin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [PENDING, IN_PROGRESS, RESOLVED, REJECTED]
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+      responses:
+        "200":
+          description: Daftar pesan bantuan (ter-scope tenant panitia; root superadmin unscoped)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SupportMessage"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+
+  /features/v1/support-messages/{id}/status:
+    patch:
+      tags:
+        - Features - Support
+      summary: Perbarui Status Pesan Bantuan
+      description: >
+        Hanya mengubah status transisi (PENDING/IN_PROGRESS/RESOLVED/REJECTED)
+        — skema belum memiliki kolom balasan tertulis.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [PENDING, IN_PROGRESS, RESOLVED, REJECTED]
+      responses:
+        "200":
+          description: Status berhasil diperbarui
+        "404":
+          description: Pesan tidak ditemukan atau di luar scope tenant
+
 # ==============================================================================
 # COMPONENTS & SCHEMAS
 # ==============================================================================
@@ -2382,3 +2855,167 @@ components:
             pdf_url:
               type: string
               example: https://storage.googleapis.com/certificates/CERT-001.pdf
+
+    # ─── Content Schemas (Articles, Categories, Galleries) ───────────────────
+    Article:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: NULL berarti artikel global (tampil untuk semua tenant)
+        title:
+          type: string
+        content:
+          type: string
+        cover:
+          type: string
+          nullable: true
+        slug:
+          type: string
+          example: kampus-raih-penghargaan-nasional
+        created_by_id:
+          type: string
+          format: uuid
+        category_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ArticleRequest:
+      type: object
+      required:
+        - title
+        - content
+      properties:
+        title:
+          type: string
+          minLength: 3
+          maxLength: 255
+        content:
+          type: string
+        cover:
+          type: string
+          format: uri
+        category_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    ArticleCategory:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Prestasi Kampus
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Gallery:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+          nullable: true
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        image_url:
+          type: string
+        featured:
+          type: boolean
+        event_id:
+          type: string
+          format: uuid
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    GalleryRequest:
+      type: object
+      required:
+        - title
+        - image_url
+      properties:
+        title:
+          type: string
+          minLength: 3
+          maxLength: 255
+        description:
+          type: string
+        image_url:
+          type: string
+          format: uri
+        featured:
+          type: boolean
+        event_id:
+          type: string
+          format: uuid
+
+    # ─── Support Message Schema ───────────────────────────────────────────────
+    SupportMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+          nullable: true
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        name:
+          type: string
+        title:
+          type: string
+        category:
+          type: string
+        chronology:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, IN_PROGRESS, RESOLVED, REJECTED]
+        user_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Selalu NULL untuk pesan yang dikirim tanpa autentikasi
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
