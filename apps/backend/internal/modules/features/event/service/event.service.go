@@ -406,6 +406,18 @@ func toEventResponse(event *domain.Event) dto.EventResponse {
 		category := toCategoryResponse(event.Category)
 		response.Category = &category
 	}
+	if event.Tenant != nil {
+		response.Tenant = &dto.TenantInfoResponse{
+			ID: event.Tenant.ID, Name: event.Tenant.Name, Slug: event.Tenant.Slug,
+			Code: event.Tenant.Code, Type: event.Tenant.Type, LogoURL: event.Tenant.LogoURL,
+			Website: event.Tenant.Website,
+		}
+	}
+	if event.Creator != nil {
+		response.Creator = &dto.CreatorInfoResponse{
+			ID: event.Creator.ID, Name: event.Creator.Name, Email: event.Creator.Email, AvatarURL: event.Creator.AvatarURL,
+		}
+	}
 	for _, speaker := range event.Speakers {
 		response.Speakers = append(response.Speakers, dto.SpeakerResponse{
 			ID: speaker.ID, Name: speaker.Name, Title: speaker.Title, Company: speaker.Company,

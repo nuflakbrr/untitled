@@ -26,9 +26,13 @@ const eventSelect = `
 	       e.registration_deadline, e.quota, e.price, e.status::text,
 	       e.certificate_enabled, e.published_at, e.created_at, e.updated_at,
 	       e.deleted_at, e.created_by_id,
-	       c.id, c.tenant_id, c.name, c.slug, c.description
+	       c.id, c.tenant_id, c.name, c.slug, c.description,
+	       t.id, t.name, t.slug, t.code, t.type::text, t.logo_url, t.website,
+	       u.id, u.name, u.email, u.image
 	FROM events e
-	LEFT JOIN event_categories c ON c.id = e.category_id`
+	LEFT JOIN event_categories c ON c.id = e.category_id
+	LEFT JOIN core.tenants t ON t.id = e.tenant_id
+	LEFT JOIN core.users u ON u.id = e.created_by_id`
 
 type EventRepository struct {
 	db *pgxpool.Pool
@@ -264,6 +268,8 @@ func scanEvent(row rowScanner) (*domain.Event, error) {
 	event := new(domain.Event)
 	var eventType, status string
 	var categoryID, categoryTenantID, categoryName, categorySlug, categoryDescription *string
+	var tenantID, tenantName, tenantSlug, tenantCode, tenantType, tenantLogoURL, tenantWebsite *string
+	var creatorID, creatorName, creatorEmail, creatorAvatarURL *string
 	err := row.Scan(
 		&event.ID, &event.TenantID, &event.CategoryID, &event.Title, &event.Slug,
 		&event.Description, &event.Banner, &event.StartDate, &event.EndDate,
@@ -273,6 +279,8 @@ func scanEvent(row rowScanner) (*domain.Event, error) {
 		&event.PublishedAt, &event.CreatedAt, &event.UpdatedAt, &event.DeletedAt,
 		&event.CreatedByID, &categoryID, &categoryTenantID, &categoryName,
 		&categorySlug, &categoryDescription,
+		&tenantID, &tenantName, &tenantSlug, &tenantCode, &tenantType, &tenantLogoURL, &tenantWebsite,
+		&creatorID, &creatorName, &creatorEmail, &creatorAvatarURL,
 	)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, ErrEventNotFound
@@ -286,6 +294,18 @@ func scanEvent(row rowScanner) (*domain.Event, error) {
 		event.Category = &domain.Category{
 			ID: *categoryID, TenantID: categoryTenantID, Name: *categoryName,
 			Slug: *categorySlug, Description: categoryDescription,
+		}
+	}
+	if tenantID != nil && tenantName != nil {
+		event.Tenant = &domain.Tenant{
+			ID: *tenantID, Name: *tenantName, Slug: *tenantSlug,
+			Code: *tenantCode, Type: *tenantType, LogoURL: tenantLogoURL,
+			Website: tenantWebsite,
+		}
+	}
+	if creatorID != nil && creatorName != nil {
+		event.Creator = &domain.Creator{
+			ID: *creatorID, Name: *creatorName, Email: *creatorEmail, AvatarURL: creatorAvatarURL,
 		}
 	}
 	return event, nil
