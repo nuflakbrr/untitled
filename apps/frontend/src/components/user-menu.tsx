@@ -1,6 +1,7 @@
 'use client';
 
 import type { AuthSession } from 'src/auth/types';
+import { isAdminSession } from 'src/auth/types';
 
 import { useState } from 'react';
 
@@ -40,7 +41,11 @@ export function UserMenu({ session }: { session: AuthSession }) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <MenuItem component={RouterLink} href={paths.dashboard.root} onClick={close}>
+        <MenuItem
+          component={RouterLink}
+          href={isAdminSession(session) ? paths.dashboard.root : paths.participant.dashboard}
+          onClick={close}
+        >
           <Iconify icon="solar:home-2-outline" width={20} sx={{ mr: 1.5 }} />
           Dashboard
         </MenuItem>

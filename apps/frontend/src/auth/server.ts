@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 import { CONFIG } from 'src/global-config';
 
 import { SESSION_COOKIE } from './constants';
-import { sessionSchema, hasPermission } from './types';
+import { sessionSchema, hasPermission, isAdminSession } from './types';
 
 export { SESSION_COOKIE };
 
@@ -42,5 +42,11 @@ export async function requireSession(permission?: string) {
   const session = await getServerSession();
   if (!session) redirect('/auth/sign-in');
   if (permission && !hasPermission(session, permission)) redirect('/error/403');
+  return session;
+}
+
+export async function requireParticipantSession() {
+  const session = await requireSession();
+  if (isAdminSession(session)) redirect('/dashboard');
   return session;
 }

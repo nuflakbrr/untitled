@@ -22,6 +22,9 @@ export const paths = {
     root: '/dashboard',
     events: '/dashboard/events',
   },
+  participant: {
+    dashboard: '/participant/dashboard',
+  },
   /**
    * Article
    */

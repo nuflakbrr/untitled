@@ -6,12 +6,19 @@ import { z } from 'zod';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { safeReturnTo, tenantOptionSchema } from './types';
+import { isAdminSession, safeReturnTo, tenantOptionSchema } from './types';
 import { fetchBackend, SESSION_COOKIE, sessionFromToken } from './server';
 
 export type AuthActionState = { error: string };
 export type AuthActionResult<T> = { data: T; error: null } | { data: null; error: string };
 export type EventSearchResult = { id: string; title: string; slug: string; banner?: string | null };
+export type ParticipantRegistration = {
+  id: string;
+  event_title: string;
+  event_slug: string;
+  status: string;
+  created_at: string;
+};
 
 const credentialsSchema = z.object({
   email: z.email(),
@@ -35,6 +42,13 @@ const eventSearchSchema = z.object({
   title: z.string(),
   slug: z.string(),
   banner: z.string().nullish(),
+});
+const participantRegistrationSchema = z.object({
+  id: z.string(),
+  event_title: z.string(),
+  event_slug: z.string(),
+  status: z.string(),
+  created_at: z.string(),
 });
 
 async function responseJson<T>(response: Response) {
@@ -97,7 +111,19 @@ export async function signInAction(
   const session = await sessionFromToken(token);
   if (!session) return { error: 'Sesi gagal dibuat' };
   await setSessionCookie(token, payload.data?.expires_in ?? 86400);
-  return redirect(safeReturnTo(input.data.returnTo));
+
+  const defaultPath = isAdminSession(session) ? '/dashboard' : '/participant/dashboard';
+  const requestedPath = safeReturnTo(input.data.returnTo);
+  const isAdminPath = requestedPath === '/dashboard' || requestedPath.startsWith('/dashboard/');
+  const isParticipantPath =
+    requestedPath === '/participant/dashboard' ||
+    requestedPath.startsWith('/participant/dashboard/');
+
+  if ((isAdminPath && !isAdminSession(session)) || (isParticipantPath && isAdminSession(session))) {
+    return redirect(defaultPath);
+  }
+
+  return redirect(requestedPath === '/dashboard' ? defaultPath : requestedPath);
 }
 
 export async function signUpAction(
@@ -141,6 +167,20 @@ export async function searchEventsAction(
   if (!backend.ok || !results.success)
     return { data: null, error: payload.message || 'Pencarian event gagal' };
   return { data: results.data, error: null };
+}
+
+export async function listMyRegistrationsAction(): Promise<
+  AuthActionResult<ParticipantRegistration[]>
+> {
+  const auth = await authenticatedSession();
+  if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
+
+  const backend = await fetchBackend('features/v1/registrations/me?page=1&limit=20', auth.token);
+  const payload = await responseJson<unknown[]>(backend);
+  const registrations = z.array(participantRegistrationSchema).safeParse(payload.data);
+  if (!backend.ok || !registrations.success)
+    return { data: null, error: payload.message || 'Registrasi gagal dimuat' };
+  return { data: registrations.data, error: null };
 }
 
 export async function listTenantsAction(): Promise<AuthActionResult<TenantOption[]>> {
