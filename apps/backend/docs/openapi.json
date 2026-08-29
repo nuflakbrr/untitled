@@ -2370,7 +2370,7 @@
         ]
       }
     },
-    "/modules/v1/event-categories": {
+    "/features/v1/event-categories": {
       "get": {
         "parameters": [
           {
@@ -2401,7 +2401,7 @@
         ]
       }
     },
-    "/modules/v1/events": {
+    "/features/v1/events": {
       "get": {
         "description": "Menampilkan daftar event. Jika menyertakan tenant_id atau slug fakultas, akan menampilkan event khusus fakultas tersebut.",
         "parameters": [
@@ -2514,7 +2514,7 @@
         ]
       }
     },
-    "/modules/v1/events/by-slug/{slug}": {
+    "/features/v1/events/{slug}": {
       "get": {
         "parameters": [
           {
@@ -2548,7 +2548,7 @@
         ]
       }
     },
-    "/modules/v1/events/{id}": {
+    "/features/v1/events/{id}": {
       "delete": {
         "parameters": [
           {

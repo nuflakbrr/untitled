@@ -24,15 +24,18 @@ func NewCategoryRepository(db *pgxpool.Pool) *CategoryRepository {
 func (r *CategoryRepository) FindAll(ctx context.Context, tenantID *string) ([]*domain.Category, error) {
 	query := `
 		SELECT ec.id, ec.tenant_id, ec.name, ec.slug, ec.description, ec.created_at, ec.updated_at
-		FROM event_categories ec
-		LEFT JOIN core.tenants t ON t.id = ec.tenant_id
-		WHERE (ec.tenant_id IS NULL OR t.type = 'ROOT'`
+		FROM event_categories ec`
 	args := []any{}
 	if tenantID != nil && *tenantID != "" {
-		query += " OR ec.tenant_id = $1"
+		query += `
+			LEFT JOIN core.tenants t ON t.id = ec.tenant_id
+			WHERE (ec.tenant_id IS NULL OR t.type = 'ROOT' OR ec.tenant_id = $1)`
 		args = append(args, *tenantID)
+	} else {
+		// Public listing without a tenant must expose every active category.
+		// Tenant-scoped callers still use the restricted branch above.
 	}
-	query += ") ORDER BY ec.tenant_id NULLS FIRST, ec.name ASC"
+	query += " ORDER BY ec.tenant_id NULLS FIRST, ec.name ASC"
 
 	rows, err := r.db.Query(ctx, query, args...)
 	if err != nil {

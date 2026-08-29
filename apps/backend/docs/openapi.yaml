@@ -695,7 +695,7 @@ paths:
   # ============================================================================
   # MODULES - EVENTS & CATEGORIES
   # ============================================================================
-  /modules/v1/events:
+/features/v1/events:
     get:
       tags:
         - Modules - Events
@@ -760,7 +760,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/EventDetailResponse"
 
-  /modules/v1/events/{id}:
+/features/v1/events/{id}:
     get:
       tags:
         - Modules - Events
@@ -828,7 +828,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BaseResponse"
 
-  /modules/v1/events/by-slug/{slug}:
+/features/v1/events/{slug}:
     get:
       tags:
         - Modules - Events
@@ -850,7 +850,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
 
-  /modules/v1/event-categories:
+/features/v1/event-categories:
     get:
       tags:
         - Modules - Event Categories
