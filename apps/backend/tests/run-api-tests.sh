@@ -56,7 +56,7 @@ echo ""
 log "Authenticating as superadmin..."
 LOGIN_RESP=$(curl -sf -X POST "$BASE_URL/core/v1/auth/signin" \
   -H "Content-Type: application/json" \
-  -d '{"email":"superadmin.univ@untitled.ac.id","password":"password"}' 2>&1)
+  -d '{"email":"superadmin.univ@gmail.com","password":"password"}' 2>&1)
 
 if [ $? -ne 0 ]; then
   error "Login failed. Check if DB is seeded (make seed)."
@@ -75,7 +75,7 @@ echo ""
 log "Authenticating as FASILKOM superadmin..."
 FASILKOM_LOGIN_RESP=$(curl -sf -X POST "$BASE_URL/core/v1/auth/signin" \
   -H "Content-Type: application/json" \
-  -d '{"email":"superadmin.fasilkom@untitled.ac.id","password":"password"}' 2>&1)
+  -d '{"email":"superadmin.fasilkom@gmail.com","password":"password"}' 2>&1)
 FASILKOM_ACCESS_TOKEN=$(echo "$FASILKOM_LOGIN_RESP" | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
 if [ -z "$FASILKOM_ACCESS_TOKEN" ]; then
   error "Could not extract FASILKOM access_token. Check if DB is seeded (make seed)."
@@ -87,7 +87,7 @@ echo ""
 log "Authenticating as participant..."
 PESERTA_LOGIN_RESP=$(curl -sf -X POST "$BASE_URL/core/v1/auth/signin" \
   -H "Content-Type: application/json" \
-  -d '{"email":"peserta@untitled.ac.id","password":"password"}' 2>&1)
+  -d '{"email":"peserta@gmail.com","password":"password"}' 2>&1)
 PESERTA_ACCESS_TOKEN=$(echo "$PESERTA_LOGIN_RESP" | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
 if [ -z "$PESERTA_ACCESS_TOKEN" ]; then
   error "Could not extract participant access_token. Check if DB is seeded (make seed)."
@@ -109,13 +109,13 @@ vars {
   rootAccessToken: $ACCESS_TOKEN
   fasilkomAccessToken: $FASILKOM_ACCESS_TOKEN
   pesertaAccessToken: $PESERTA_ACCESS_TOKEN
-  superadminEmail: superadmin.univ@untitled.ac.id
+  superadminEmail: superadmin.univ@gmail.com
   superadminPassword: password
-  fasilkomEmail: superadmin.fasilkom@untitled.ac.id
+  fasilkomEmail: superadmin.fasilkom@gmail.com
   fasilkomPassword: password
-  panitiaEmail: panitia.fasilkom@untitled.ac.id
+  panitiaEmail: panitia.fasilkom@gmail.com
   panitiaPassword: password
-  pesertaEmail: peserta@untitled.ac.id
+  pesertaEmail: peserta@gmail.com
   pesertaPassword: password
   tenantRektoratId: c9711506-d356-4704-a32e-0543dfe3e104
   tenantFasilkomId: 20492a21-59c3-4edf-bb64-1eaa6cf11deb

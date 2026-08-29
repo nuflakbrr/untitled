@@ -49,8 +49,10 @@ Membuat tagihan pembayaran ke iPaymu menggunakan kredensial tenant penyelenggara
 
 Menerima konfirmasi pembayaran sukses dari server iPaymu dan mengaktifkan tiket QR secara real-time.
 
+Nilai `PAYMENT_PUBLIC_BASE_URL` harus berupa origin API yang dapat dijangkau publik. URL callback yang dikirim ke iPaymu adalah `{PAYMENT_PUBLIC_BASE_URL}/features/v1/payments/webhook/ipaymu`. Saat development lokal, gunakan HTTPS tunnel seperti ngrok; `localhost` tidak dapat dipanggil oleh iPaymu.
+
 - **Method**: `POST /features/v1/payments/webhook/ipaymu`
-- **Request Body (from iPaymu)**:
+- **Request Body (from iPaymu, form-encoded)**:
 
 ```json
 {

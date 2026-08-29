@@ -3,11 +3,23 @@ package ipaymu
 import (
 	"context"
 	"encoding/json"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
 )
+
+func newIPv4TestServer(handler http.Handler) *httptest.Server {
+	server := httptest.NewUnstartedServer(handler)
+	listener, err := net.Listen("tcp4", "127.0.0.1:0")
+	if err != nil {
+		panic(err)
+	}
+	server.Listener = listener
+	server.Start()
+	return server
+}
 
 func TestSign_MatchesReferenceAlgorithm(t *testing.T) {
 	// Reproduces the exact stringToSign construction from
@@ -38,7 +50,7 @@ func TestSign_MatchesReferenceAlgorithm(t *testing.T) {
 func TestClient_CreatePayment(t *testing.T) {
 	const va, apiKey = "1179000899", "test-api-key"
 
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := newIPv4TestServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/payment" {
 			t.Fatalf("unexpected path: %s", r.URL.Path)
 		}
@@ -82,7 +94,7 @@ func TestClient_CreatePayment(t *testing.T) {
 }
 
 func TestClient_CreatePayment_APIError(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := newIPv4TestServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_ = json.NewEncoder(w).Encode(map[string]any{
 			"Status":  400,
 			"Success": false,
@@ -100,21 +112,28 @@ func TestClient_CreatePayment_APIError(t *testing.T) {
 }
 
 func TestClient_CheckTransaction(t *testing.T) {
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := newIPv4TestServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/transaction" {
 			t.Fatalf("unexpected path: %s", r.URL.Path)
+		}
+		var request map[string]int64
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+			t.Fatalf("decode request: %v", err)
+		}
+		if request["transactionId"] != 228185 {
+			t.Fatalf("transactionId = %d, want 228185", request["transactionId"])
 		}
 		_ = json.NewEncoder(w).Encode(map[string]any{
 			"Status":  200,
 			"Success": true,
 			"Data": map[string]any{
-				"TransactionId": "trx-1",
+				"TransactionId": 228185,
 				"ReferenceId":   "REG-1",
 				"Status":        1,
 				"StatusDesc":    "Success",
 				"Via":           "qris",
 				"Channel":       "qris",
-				"Amount":        "50000",
+				"Amount":        50000,
 			},
 		})
 	}))
@@ -123,11 +142,18 @@ func TestClient_CheckTransaction(t *testing.T) {
 	client := NewClient("sandbox", "va", "key", time.Second)
 	client.baseURL = server.URL
 
-	status, err := client.CheckTransaction(context.Background(), "trx-1")
+	status, err := client.CheckTransaction(context.Background(), "228185")
 	if err != nil {
 		t.Fatalf("CheckTransaction returned error: %v", err)
 	}
 	if status.Status != 1 || status.ReferenceID != "REG-1" {
 		t.Fatalf("unexpected status: %+v", status)
+	}
+}
+
+func TestClient_CheckTransaction_RejectsNonNumericID(t *testing.T) {
+	client := NewClient("sandbox", "va", "key", time.Second)
+	if _, err := client.CheckTransaction(context.Background(), "not-a-number"); err == nil {
+		t.Fatal("expected invalid transaction ID error")
 	}
 }
