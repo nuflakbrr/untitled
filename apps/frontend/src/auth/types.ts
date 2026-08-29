@@ -45,6 +45,10 @@ export function hasPermission(session: AuthSession, permission: string) {
   return session.is_super_admin || session.permissions.includes(permission);
 }
 
+export function isAdminSession(session: AuthSession) {
+  return hasPermission(session, 'admin.access');
+}
+
 export function safeReturnTo(value: string | null) {
   if (!value?.startsWith('/')) return '/dashboard';
 

@@ -1,10 +1,21 @@
+import { redirect } from 'next/navigation';
+
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+
+import { paths } from 'src/routes/paths';
 
 import { Logo } from 'src/components/logo';
 import { ColorModeButton } from 'src/components/color-mode-button';
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+import { isAdminSession } from 'src/auth/types';
+import { getServerSession } from 'src/auth/server';
+
+export default async function AuthLayout({ children }: { children: React.ReactNode }) {
+  const session = await getServerSession();
+  if (session)
+    redirect(isAdminSession(session) ? paths.dashboard.root : paths.participant.dashboard);
+
   return (
     <Box
       component="main"

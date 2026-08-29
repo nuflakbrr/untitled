@@ -15,11 +15,13 @@ import { Meta, formatDate } from './home-meta';
 
 export function Hero({
   event,
+  isAuthenticated = false,
   total,
   activeIndex,
   onChange,
 }: {
   event?: PublicEvent;
+  isAuthenticated?: boolean;
   total: number;
   activeIndex: number;
   onChange: (index: number) => void;
@@ -39,7 +41,21 @@ export function Hero({
             <Typography variant="overline" color="primary.main">
               Event kampus
             </Typography>
-            <Typography variant="h1" sx={{ mt: 1.5, maxWidth: 650, letterSpacing: -1.8 }}>
+            <Typography
+              variant="h1"
+              sx={{
+                mt: 1.5,
+                maxWidth: 560,
+                minHeight: { xs: 76, md: 112 },
+                fontSize: { xs: '2.5rem', md: '3.5rem' },
+                lineHeight: 1.08,
+                letterSpacing: -1.2,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
               {event?.title ?? 'Temukan event kampusmu.'}
             </Typography>
             <Typography
@@ -53,16 +69,25 @@ export function Hero({
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mt: 4 }}>
               <Button
                 component={RouterLink}
-                href={paths.auth.signUp}
+                href={
+                  isAuthenticated && event ? paths.event.details(event.slug) : paths.auth.signUp
+                }
                 variant="contained"
                 size="large"
                 disabled={!event}
               >
-                Daftar sekarang
+                {isAuthenticated ? 'Lihat detail event' : 'Daftar sekarang'}
               </Button>
-              <Button component="a" href="#events" variant="outlined" size="large">
-                Lihat semua event
-              </Button>
+              {!isAuthenticated && (
+                <Button
+                  component={RouterLink}
+                  href={paths.event.root}
+                  variant="outlined"
+                  size="large"
+                >
+                  Lihat semua event
+                </Button>
+              )}
             </Stack>
             {event && (
               <Stack direction="row" spacing={2.5} sx={{ mt: 4 }}>

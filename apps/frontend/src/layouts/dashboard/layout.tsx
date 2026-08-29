@@ -32,6 +32,7 @@ import { Iconify } from 'src/components/iconify';
 import { ColorModeButton } from 'src/components/color-mode-button';
 
 import { useSession, PermissionGuard } from 'src/auth/session-provider';
+import { isAdminSession } from 'src/auth/types';
 import { signOutAction, listTenantsAction, switchTenantAction } from 'src/auth/actions';
 
 const NAV_WIDTH = 280;
@@ -39,7 +40,11 @@ const NAV_WIDTH = 280;
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const title = pathname.startsWith(paths.dashboard.events) ? 'Event' : 'Ringkasan';
+  const title = pathname.startsWith(paths.dashboard.events)
+    ? 'Event'
+    : pathname.startsWith(paths.participant.dashboard)
+      ? 'Dashboard peserta'
+      : 'Ringkasan';
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -119,33 +124,37 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
 function DashboardNav({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
   const { session } = useSession();
+  const isAdmin = isAdminSession(session);
+  const dashboardPath = isAdmin ? paths.dashboard.root : paths.participant.dashboard;
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ px: 3, py: 2.5 }}>
         <Logo />
       </Box>
-      <Box sx={{ px: 2.5, pb: 2 }}>
-        {session.is_super_admin ? (
-          <TenantSwitcher />
-        ) : (
-          <Box sx={{ p: 1.75, bgcolor: 'background.neutral', borderRadius: 1.2 }}>
-            <Typography variant="caption" color="text.secondary">
-              Tenant aktif
-            </Typography>
-            <Typography variant="subtitle2" noWrap>
-              {session.tenant?.name ?? 'Universitas'}
-            </Typography>
-          </Box>
-        )}
-      </Box>
+      {isAdmin ? (
+        <Box sx={{ px: 2.5, pb: 2 }}>
+          {session.is_super_admin ? (
+            <TenantSwitcher />
+          ) : (
+            <Box sx={{ p: 1.75, bgcolor: 'background.neutral', borderRadius: 1.2 }}>
+              <Typography variant="caption" color="text.secondary">
+                Tenant aktif
+              </Typography>
+              <Typography variant="subtitle2" noWrap>
+                {session.tenant?.name ?? 'Universitas'}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+      ) : null}
       <Divider />
       <List sx={{ flex: 1, px: 1.5, py: 2 }}>
         <NavItem
-          href={paths.dashboard.root}
-          label="Ringkasan"
+          href={dashboardPath}
+          label={isAdmin ? 'Ringkasan' : 'Dashboard peserta'}
           icon="solar:home-angle-linear"
-          active={pathname === paths.dashboard.root || pathname === `${paths.dashboard.root}/`}
+          active={pathname === dashboardPath || pathname === `${dashboardPath}/`}
           onClick={onNavigate}
         />
         <PermissionGuard permission="admin.access">
@@ -302,7 +311,12 @@ function TenantSwitcher() {
               ) : (
                 <Box
                   component="span"
-                  sx={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.4 }}
+                  sx={{
+                    display: 'block',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    lineHeight: 1.4,
+                  }}
                 >
                   {tenantOptions.find((tenant) => tenant.id === value)?.name ||
                     session.tenant?.name ||

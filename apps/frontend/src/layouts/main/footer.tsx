@@ -41,11 +41,19 @@ export function Footer({ sx, ...other }: FooterProps) {
             </Typography>
           </Box>
           <Box component="nav" aria-label="Navigasi footer" sx={{ display: 'flex', gap: 3 }}>
-            <Link component={RouterLink} href="/#events" color="inherit" underline="hover">
+            <Link component={RouterLink} href={paths.event.root} color="inherit" underline="hover">
               Event
             </Link>
-            <Link component={RouterLink} href="/#cara-kerja" color="inherit" underline="hover">
-              Cara kerja
+            <Link component={RouterLink} href={paths.gallery} color="inherit" underline="hover">
+              Galeri
+            </Link>
+            <Link
+              component={RouterLink}
+              href={paths.article.root}
+              color="inherit"
+              underline="hover"
+            >
+              Artikel
             </Link>
             <Link component={RouterLink} href={paths.auth.signIn} color="inherit" underline="hover">
               Masuk

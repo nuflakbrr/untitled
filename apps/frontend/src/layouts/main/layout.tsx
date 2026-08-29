@@ -3,6 +3,7 @@
 import type { Breakpoint } from '@mui/material/styles';
 import type { FooterProps } from './footer';
 import type { NavMainProps } from './nav/types';
+import type { AuthSession } from 'src/auth/types';
 import type { MainSectionProps } from '../core/main-section';
 import type { HeaderSectionProps } from '../core/header-section';
 import type { LayoutSectionProps } from '../core/layout-section';
@@ -11,13 +12,13 @@ import { useBoolean } from 'minimal-shared/hooks';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { Logo } from 'src/components/logo';
-import { Iconify } from 'src/components/iconify';
+import { UserMenu } from 'src/components/user-menu';
+import { EventSearch } from 'src/components/event-search';
 import { ColorModeButton } from 'src/components/color-mode-button';
 
 import { Footer } from './footer';
@@ -34,6 +35,7 @@ import { HeaderSection } from '../core/header-section';
 type LayoutBaseProps = Pick<LayoutSectionProps, 'sx' | 'children' | 'cssVars'>;
 
 export type MainLayoutProps = LayoutBaseProps & {
+  session?: AuthSession | null;
   layoutQuery?: Breakpoint;
   slotProps?: {
     header?: HeaderSectionProps;
@@ -51,7 +53,9 @@ export function MainLayout({
   children,
   slotProps,
   layoutQuery = 'md',
+  session = null,
 }: MainLayoutProps) {
+  const isAuthenticated = Boolean(session);
   const { value: open, onFalse: onClose, onTrue: onOpen } = useBoolean();
 
   const renderHeader = () => {
@@ -83,45 +87,30 @@ export function MainLayout({
               [theme.breakpoints.up(layoutQuery)]: { display: 'flex' },
             })}
           />
-          <Box
-            sx={{
-              display: { xs: 'none', lg: 'flex' },
-              alignItems: 'center',
-              gap: 1,
-              width: 255,
-              height: 40,
-              px: 1.5,
-              border: '1px solid',
-              borderColor: 'divider',
-              borderRadius: 99,
-              color: 'text.secondary',
-            }}
-          >
-            <Iconify icon="carbon:search" width={20} />
-            <Typography variant="body2" sx={{ flex: 1 }}>
-              Cari
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              ⌘ + K
-            </Typography>
-          </Box>
+          <EventSearch />
           <ColorModeButton />
-          <Button
-            component={RouterLink}
-            href={paths.auth.signIn}
-            variant="contained"
-            sx={{ display: { xs: 'none', sm: 'inline-flex' }, ml: 0.5 }}
-          >
-            Masuk
-          </Button>
-          <Button
-            component={RouterLink}
-            href={paths.auth.signUp}
-            variant="contained"
-            sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
-          >
-            Daftar
-          </Button>
+          {session ? (
+            <UserMenu session={session} />
+          ) : (
+            <>
+              <Button
+                component={RouterLink}
+                href={isAuthenticated ? paths.dashboard.root : paths.auth.signIn}
+                variant="contained"
+                sx={{ display: { xs: 'none', sm: 'inline-flex' }, ml: 0.5 }}
+              >
+                {isAuthenticated ? 'Dashboard' : 'Masuk'}
+              </Button>
+              <Button
+                component={RouterLink}
+                href={paths.auth.signUp}
+                variant="contained"
+                sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
+              >
+                Daftar
+              </Button>
+            </>
+          )}
         </Box>
       ),
     };

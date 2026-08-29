@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 
 import { CONFIG } from 'src/global-config';
-import { getPublicCategories, getPublicEvents, getPublicGalleries } from 'src/lib/api/events';
+import { getPublicEvents, getPublicGalleries, getPublicCategories } from 'src/lib/api/events';
 
 import { HomeView } from 'src/sections/home/view/home-view';
+
+import { getServerSession } from 'src/auth/server';
 
 // ----------------------------------------------------------------------
 
@@ -34,6 +36,14 @@ export default async function Page() {
     getPublicCategories().catch(() => []),
     getPublicGalleries().catch(() => []),
   ]);
+  const session = await getServerSession();
 
-  return <HomeView events={events} categories={categories} galleries={galleries} />;
+  return (
+    <HomeView
+      events={events}
+      categories={categories}
+      galleries={galleries}
+      isAuthenticated={Boolean(session)}
+    />
+  );
 }
