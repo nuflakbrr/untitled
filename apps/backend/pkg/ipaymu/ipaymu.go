@@ -5,9 +5,7 @@
 // https://github.com/ipaymu/ipaymu-payment-v2-sample-go
 //
 // The /api/v2/transaction (Check Transaction) endpoint is used to
-// independently re-verify a webhook notification, since iPaymu's webhook
-// payload itself is not cryptographically signed — trusting it blindly
-// would let anyone POST a fake "PAID" notification to our callback URL.
+// independently re-verify a webhook notification before payment state changes.
 package ipaymu
 
 import (
@@ -20,6 +18,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -97,19 +96,36 @@ func (c *Client) CreatePayment(ctx context.Context, req CreatePaymentRequest) (*
 }
 
 type TransactionStatus struct {
-	TransactionID string `json:"TransactionId"`
-	ReferenceID   string `json:"ReferenceId"`
-	Status        int    `json:"Status"`
-	StatusDesc    string `json:"StatusDesc"`
-	Via           string `json:"Via"`
-	Channel       string `json:"Channel"`
-	Amount        string `json:"Amount"`
+	TransactionID         int64  `json:"TransactionId"`
+	ReferenceID           string `json:"ReferenceId"`
+	Status                int    `json:"Status"`
+	TransactionStatusCode any    `json:"transaction_status_code"`
+	StatusDesc            string `json:"StatusDesc"`
+	Via                   string `json:"Via"`
+	Channel               string `json:"Channel"`
+	Amount                int64  `json:"Amount"`
+}
+
+func (s TransactionStatus) EffectiveStatus() int {
+	switch value := s.TransactionStatusCode.(type) {
+	case float64:
+		return int(value)
+	case string:
+		if parsed, err := strconv.Atoi(value); err == nil {
+			return parsed
+		}
+	}
+	return s.Status
 }
 
 // CheckTransaction re-queries iPaymu directly for the authoritative status of
-// a transaction, keyed by the TransactionID iPaymu returned from CreatePayment.
+// a transaction, keyed by the numeric trx_id sent in iPaymu's callback.
 func (c *Client) CheckTransaction(ctx context.Context, transactionID string) (*TransactionStatus, error) {
-	body, err := json.Marshal(map[string]string{"transactionId": transactionID})
+	numericID, err := strconv.ParseInt(transactionID, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("invalid ipaymu transaction id %q: %w", transactionID, err)
+	}
+	body, err := json.Marshal(map[string]int64{"transactionId": numericID})
 	if err != nil {
 		return nil, fmt.Errorf("marshal check transaction request: %w", err)
 	}

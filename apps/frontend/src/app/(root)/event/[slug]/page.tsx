@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 
+import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Link from '@mui/material/Link';
+import Alert from '@mui/material/Alert';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
@@ -18,7 +20,11 @@ import { getPublicEvent } from 'src/lib/api/events';
 import { Iconify } from 'src/components/iconify';
 
 import { getServerSession } from 'src/auth/server';
-import { registerAndCheckoutAction } from 'src/auth/actions';
+import {
+  listMyRegistrationsAction,
+  registerAndCheckoutAction,
+  checkoutRegistrationAction,
+} from 'src/auth/actions';
 
 // ----------------------------------------------------------------------
 
@@ -98,7 +104,7 @@ function getBenefitIcon(iconOrTitle?: string | null): string {
   if (lower.includes('materi') || lower.includes('modul') || lower.includes('book'))
     return 'solar:book-2-bold-duotone';
   if (lower.includes('relasi') || lower.includes('network'))
-    return 'solar:users-group-rounded-bold-duotone';
+    return 'solar:users-group-rounded-outline';
   return 'solar:gift-bold-duotone';
 }
 
@@ -113,10 +119,21 @@ export async function generateMetadata({
   return { title: event?.title ?? 'Event tidak ditemukan', description: event?.description };
 }
 
-export default async function EventDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const event = await getPublicEvent((await params).slug);
+export default async function EventDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, never>>;
+}) {
+  const slug = (await params).slug;
+  await searchParams;
+  const error = (await cookies()).get('registration_error')?.value;
+  const event = await getPublicEvent(slug);
   if (!event) notFound();
   const session = await getServerSession();
+  const registrations = session ? await listMyRegistrationsAction() : null;
+  const registration = registrations?.data?.find((item) => item.event_id === event.id);
 
   const formattedStartDate = formatIndonesianDate(event.start_date);
   const formattedEndDate = event.end_date ? formatIndonesianDate(event.end_date) : '';
@@ -265,6 +282,22 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
           </Box>
         </Box>
 
+        {error && (
+          <Alert
+            severity={
+              error === 'registration_closed' || error === 'quota_full' ? 'warning' : 'error'
+            }
+          >
+            {error === 'registration_closed'
+              ? 'Pendaftaran event ini sudah ditutup.'
+              : error === 'quota_full'
+                ? 'Kuota event ini sudah penuh.'
+                : error === 'already_registered'
+                  ? 'Kamu sudah terdaftar di event ini.'
+                  : 'Registrasi gagal. Silakan coba lagi atau hubungi penyelenggara.'}
+          </Alert>
+        )}
+
         {/* Main Content (2 Columns Grid) */}
         <Box
           sx={{
@@ -316,7 +349,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
 
                 <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.75 }}>
                   <Iconify
-                    icon="solar:clock-circle-bold-duotone"
+                    icon="solar:clock-circle-outline"
                     width={18}
                     sx={{ color: 'primary.main' }}
                   />
@@ -571,7 +604,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
                       textTransform: 'uppercase',
                     }}
                   >
-                    <Iconify icon="solar:users-group-rounded-bold-duotone" width={16} />
+                    <Iconify icon="solar:users-group-rounded-outline" width={16} />
                     <span>Sisa Kuota</span>
                   </Box>
                   <Typography
@@ -602,7 +635,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
                       flexShrink: 0,
                     }}
                   >
-                    <Iconify icon="solar:clock-circle-bold-duotone" width={16} />
+                    <Iconify icon="solar:clock-circle-outline" width={16} />
                     <span>Batas Pendaftaran</span>
                   </Box>
                   <Typography
@@ -620,9 +653,39 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
                 </Box>
               </Stack>
 
-              {session ? (
+              {session && registration?.status === 'WAITING_PAYMENT' ? (
+                <Box component="form" action={checkoutRegistrationAction}>
+                  <input type="hidden" name="registration_id" value={registration.id} />
+                  <input type="hidden" name="return_to" value={paths.event.details(event.slug)} />
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                    sx={{
+                      py: 1.5,
+                      fontWeight: 700,
+                      letterSpacing: 0.5,
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    Lanjutkan Pembayaran
+                  </Button>
+                </Box>
+              ) : session && registration && registration.status !== 'CANCELLED' ? (
+                <Button
+                  variant="outlined"
+                  size="large"
+                  fullWidth
+                  href={paths.participant.dashboard}
+                  sx={{ py: 1.5, fontWeight: 700, letterSpacing: 0.5, textTransform: 'uppercase' }}
+                >
+                  Sudah Terdaftar · Lihat Tiket
+                </Button>
+              ) : session ? (
                 <Box component="form" action={registerAndCheckoutAction}>
                   <input type="hidden" name="event_id" value={event.id} />
+                  <input type="hidden" name="return_to" value={paths.event.details(event.slug)} />
                   <input
                     type="hidden"
                     name="online_attendance"

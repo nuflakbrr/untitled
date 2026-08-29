@@ -143,6 +143,9 @@ func (s *PaymentService) HandleWebhook(ctx context.Context, payload dto.WebhookP
 		return nil
 	}
 	payment, gateway, err := s.repository.GetGatewayByTransactionID(ctx, payload.TransactionID)
+	if errors.Is(err, repository.ErrPaymentNotFound) && payload.ReferenceID != "" {
+		payment, gateway, err = s.repository.GetGatewayByTransactionID(ctx, payload.ReferenceID)
+	}
 	if errors.Is(err, repository.ErrPaymentNotFound) {
 		return nil // unknown transaction — ignore rather than leak/500-loop
 	}
@@ -160,7 +163,10 @@ func (s *PaymentService) HandleWebhook(ctx context.Context, payload dto.WebhookP
 	}
 
 	switch {
-	case status.Status == 1:
+	case status.EffectiveStatus() > 0:
+		// iPaymu may report a successful payment held in escrow as status 7.
+		// It is already paid from the participant's perspective; settlement
+		// status is handled by iPaymu separately.
 		return s.repository.MarkPaid(ctx, payment.ID, nil, strings.ToUpper(status.Via), strings.ToUpper(status.Channel))
 	case status.Status < 0:
 		return s.repository.MarkFailed(ctx, payment.ID, nil)

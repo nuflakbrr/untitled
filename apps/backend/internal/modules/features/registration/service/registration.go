@@ -134,8 +134,12 @@ func toResponses(registrations []*domain.Registration) []dto.RegistrationRespons
 func toResponse(registration *domain.Registration) dto.RegistrationResponse {
 	return dto.RegistrationResponse{
 		ID: registration.ID, EventID: registration.EventID, EventTitle: registration.EventTitle,
-		EventSlug: registration.EventSlug, TenantID: registration.TenantID, TenantCode: registration.TenantCode,
-		UserID: registration.UserID, UserName: registration.UserName, UserEmail: registration.UserEmail,
+		EventSlug: registration.EventSlug, EventBanner: registration.EventBanner,
+		TenantID: registration.TenantID, TenantCode: registration.TenantCode,
+		EventStartDate: registration.EventStartDate, EventLocation: registration.EventLocation,
+		EventType: registration.EventType, AttendanceStatus: registration.AttendanceStatus,
+		CertificateStatus: registration.CertificateStatus,
+		UserID:            registration.UserID, UserName: registration.UserName, UserEmail: registration.UserEmail,
 		RegistrationNumber: registration.RegistrationNumber, QRToken: registration.QRToken,
 		OnlineAttendance: registration.OnlineAttendance, Status: string(registration.Status), Price: registration.Price,
 		CreatedAt: registration.CreatedAt, UpdatedAt: registration.UpdatedAt, DeletedAt: registration.DeletedAt,

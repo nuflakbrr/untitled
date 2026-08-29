@@ -114,6 +114,7 @@ kubectl get all -l app=lakukan-api
 | `SMTP_USER` | SMTP username | `noreply@example.com` |
 | `SMTP_PASSWORD` | SMTP password | `your-smtp-password` |
 | `FRONTEND_URL` | Frontend URL | `https://app.example.com` |
+| `PAYMENT_PUBLIC_BASE_URL` | Public API origin used for iPaymu webhook callbacks | `https://api.example.com` |
 
 ### Optional
 

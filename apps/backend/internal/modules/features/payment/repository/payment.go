@@ -187,7 +187,7 @@ func (r *PaymentRepository) GetGatewayByTransactionID(ctx context.Context, trans
 		JOIN registrations r ON r.id = p.registration_id
 		JOIN events e ON e.id = r.event_id
 		JOIN tenant_payment_gateways g ON g.tenant_id = e.tenant_id
-		WHERE p.transaction_id = $1
+		WHERE p.transaction_id = $1 OR p.id = $1
 	`, transactionID).Scan(
 		&payment.ID, &payment.RegistrationID, &payment.Amount, &status, &payment.Provider, &payment.TransactionID,
 		&payment.PaymentMethod, &payment.PaymentChannel, &payment.PaymentURL, &payment.ProofURL,

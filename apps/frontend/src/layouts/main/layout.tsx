@@ -96,7 +96,7 @@ export function MainLayout({
               <Button
                 component={RouterLink}
                 href={isAuthenticated ? paths.dashboard.root : paths.auth.signIn}
-                variant="contained"
+                variant="text"
                 sx={{ display: { xs: 'none', sm: 'inline-flex' }, ml: 0.5 }}
               >
                 {isAuthenticated ? 'Dashboard' : 'Masuk'}

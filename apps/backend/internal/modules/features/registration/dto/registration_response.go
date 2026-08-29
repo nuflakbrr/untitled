@@ -7,6 +7,12 @@ type RegistrationResponse struct {
 	EventID            string     `json:"event_id"`
 	EventTitle         string     `json:"event_title"`
 	EventSlug          string     `json:"event_slug"`
+	EventBanner        *string    `json:"event_banner,omitempty"`
+	EventStartDate     time.Time  `json:"event_start_date"`
+	EventLocation      string     `json:"event_location"`
+	EventType          string     `json:"event_type"`
+	AttendanceStatus   string     `json:"attendance_status"`
+	CertificateStatus  string     `json:"certificate_status"`
 	TenantID           string     `json:"tenant_id"`
 	TenantCode         string     `json:"tenant_code"`
 	UserID             string     `json:"user_id"`

@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 
 import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
 import Chip from '@mui/material/Chip';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
 import { getPublicEvents, getPublicCategories } from 'src/lib/api/events';
+import { cookies } from 'next/headers';
 
 import { EventCard } from 'src/sections/home/home-event-card';
 
@@ -16,7 +18,8 @@ export default async function EventListPage({
 }: {
   searchParams: Promise<{ category?: string }>;
 }) {
-  const category = (await searchParams).category;
+  const { category } = await searchParams;
+  const error = (await cookies()).get('registration_error')?.value;
   const [events, categories] = await Promise.all([
     getPublicEvents(category),
     getPublicCategories(),
@@ -33,6 +36,20 @@ export default async function EventListPage({
       <Typography color="text.secondary" sx={{ mt: 1, maxWidth: 560 }}>
         Jelajahi agenda kampus dari berbagai fakultas dan pilih event yang paling sesuai untukmu.
       </Typography>
+      {error && (
+        <Alert
+          severity={error === 'registration_closed' || error === 'quota_full' ? 'warning' : 'error'}
+          sx={{ mt: 3 }}
+        >
+          {error === 'registration_closed'
+            ? 'Pendaftaran event ini sudah ditutup.'
+            : error === 'quota_full'
+              ? 'Kuota event ini sudah penuh.'
+              : error === 'already_registered'
+                ? 'Kamu sudah terdaftar di event ini.'
+                : 'Registrasi gagal. Silakan coba lagi atau hubungi penyelenggara.'}
+        </Alert>
+      )}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 4 }}>
         <Chip
           label="Semua"
