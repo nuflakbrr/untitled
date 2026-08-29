@@ -7,6 +7,7 @@ import { useRouter, usePathname } from 'next/navigation';
 
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
+import Chip from '@mui/material/Chip';
 import Alert from '@mui/material/Alert';
 import AppBar from '@mui/material/AppBar';
 import Avatar from '@mui/material/Avatar';
@@ -31,11 +32,15 @@ import { Logo } from 'src/components/logo';
 import { Iconify } from 'src/components/iconify';
 import { ColorModeButton } from 'src/components/color-mode-button';
 
-import { useSession, PermissionGuard } from 'src/auth/session-provider';
 import { isAdminSession } from 'src/auth/types';
+import { useSession, PermissionGuard } from 'src/auth/session-provider';
 import { signOutAction, listTenantsAction, switchTenantAction } from 'src/auth/actions';
 
 const NAV_WIDTH = 280;
+
+function formatRole(role: string) {
+  return role.replaceAll('_', ' ').replace(/\b\w/g, (character) => character.toUpperCase());
+}
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -177,9 +182,13 @@ function DashboardNav({ pathname, onNavigate }: { pathname: string; onNavigate?:
             <Typography variant="subtitle2" noWrap>
               {session.user.name}
             </Typography>
-            <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block' }}>
-              {session.user.role}
-            </Typography>
+            <Chip
+              label={formatRole(session.user.role)}
+              size="small"
+              color="primary"
+              variant="soft"
+              sx={{ maxWidth: '100%', textTransform: 'capitalize' }}
+            />
           </Box>
         </Box>
         <Box component="form" action={signOutAction}>
