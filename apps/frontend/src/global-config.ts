@@ -7,14 +7,14 @@ import packageJson from '../package.json';
 // var wajib hilang). Konsumsi konfigurasi lewat objek ini, bukan process.env.
 
 export const CONFIG = {
-  appName: 'Venturo',
+  appName: 'SITIVENT',
   appVersion: packageJson.version,
   assetsDir: env.NEXT_PUBLIC_ASSETS_DIR,
   /** Tampilkan galeri referensi /components di build production (dev selalu tampil). */
   showComponents: env.NEXT_PUBLIC_SHOW_COMPONENTS,
-  /** Go backend base URL (marketplace-be). */
+  /** Go backend base URL. */
   apiUrl: env.NEXT_PUBLIC_API_URL,
-  /** Tenant slug sent as X-Company-Slug on every public API call. */
+  /** Legacy company slug used by the article/content endpoints. */
   companySlug: env.NEXT_PUBLIC_COMPANY_SLUG,
   /**
    * Whitelabel client slug (level di atas company — lihat core/auth.md:

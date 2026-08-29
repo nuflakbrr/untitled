@@ -23,7 +23,7 @@ export function NavList({ data }: { data: NavItemDataProps }) {
   const pathname = usePathname();
 
   const hasChild = !!data.children?.length;
-  const isActive = isActiveLink(pathname, data.path, hasChild);
+  const isActive = !data.path.includes('#') && isActiveLink(pathname, data.path, hasChild);
 
   const { value: open, onToggle, onFalse } = useBoolean(isActive && hasChild);
 

@@ -10,8 +10,15 @@ import type { LayoutSectionProps } from '../core/layout-section';
 import { useBoolean } from 'minimal-shared/hooks';
 
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+
+import { paths } from 'src/routes/paths';
+import { RouterLink } from 'src/routes/components';
 
 import { Logo } from 'src/components/logo';
+import { Iconify } from 'src/components/iconify';
+import { ColorModeButton } from 'src/components/color-mode-button';
 
 import { Footer } from './footer';
 import { NavMobile } from './nav/mobile';
@@ -76,6 +83,45 @@ export function MainLayout({
               [theme.breakpoints.up(layoutQuery)]: { display: 'flex' },
             })}
           />
+          <Box
+            sx={{
+              display: { xs: 'none', lg: 'flex' },
+              alignItems: 'center',
+              gap: 1,
+              width: 255,
+              height: 40,
+              px: 1.5,
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 99,
+              color: 'text.secondary',
+            }}
+          >
+            <Iconify icon="carbon:search" width={20} />
+            <Typography variant="body2" sx={{ flex: 1 }}>
+              Cari
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              ⌘ + K
+            </Typography>
+          </Box>
+          <ColorModeButton />
+          <Button
+            component={RouterLink}
+            href={paths.auth.signIn}
+            variant="contained"
+            sx={{ display: { xs: 'none', sm: 'inline-flex' }, ml: 0.5 }}
+          >
+            Masuk
+          </Button>
+          <Button
+            component={RouterLink}
+            href={paths.auth.signUp}
+            variant="contained"
+            sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
+          >
+            Daftar
+          </Button>
         </Box>
       ),
     };
@@ -86,7 +132,14 @@ export function MainLayout({
         {...slotProps?.header}
         slots={{ ...headerSlots, ...slotProps?.header?.slots }}
         slotProps={slotProps?.header?.slotProps}
-        sx={slotProps?.header?.sx}
+        sx={[
+          {
+            '--layout-header-mobile-height': '72px',
+            '--layout-header-desktop-height': '84px',
+            borderBottom: '1px solid transparent',
+          },
+          ...(Array.isArray(slotProps?.header?.sx) ? slotProps.header.sx : [slotProps?.header?.sx]),
+        ]}
       />
     );
   };

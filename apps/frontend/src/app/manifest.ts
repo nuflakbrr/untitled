@@ -11,15 +11,11 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: CONFIG.appName,
     short_name: CONFIG.appName,
-    description:
-      'Venturo adalah software house di Malang dengan 130+ talenta dedicated team untuk pengembangan software, outsourcing programmer, dan konsultasi IT.',
+    description: 'Satu pintu untuk menemukan dan mengelola event universitas.',
     start_url: '/',
     display: 'browser',
-    background_color: '#ffffff',
+    background_color: '#F7F8FC',
     theme_color: primary.main,
-    icons: [
-      { src: '/favicon.ico', sizes: 'any' },
-      { src: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
+    icons: [{ src: '/sitivent-mark.svg', sizes: 'any', type: 'image/svg+xml' }],
   };
 }
