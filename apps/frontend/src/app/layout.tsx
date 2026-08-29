@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     template: `%s - ${CONFIG.appName}`,
   },
   description:
-    'Venturo adalah software house di Malang dengan 130+ talenta dedicated team untuk pengembangan software, outsourcing programmer, dan konsultasi IT.',
+    'SITIVENT memudahkan mahasiswa menemukan, mendaftar, dan mengikuti event universitas dalam satu platform.',
   openGraph: {
     type: 'website',
     siteName: CONFIG.appName,
@@ -71,11 +71,7 @@ export const metadata: Metadata = {
   icons: [
     {
       rel: 'icon',
-      url: `${CONFIG.assetsDir}/favicon.ico`,
-    },
-    {
-      rel: 'apple-touch-icon',
-      url: `${CONFIG.assetsDir}/apple-touch-icon.png`,
+      url: `${CONFIG.assetsDir}/sitivent-mark.svg`,
     },
   ],
 };

@@ -3,76 +3,218 @@
 import type { TenantOption } from 'src/auth/types';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
+import List from '@mui/material/List';
+import Alert from '@mui/material/Alert';
 import AppBar from '@mui/material/AppBar';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
+import Drawer from '@mui/material/Drawer';
 import Select from '@mui/material/Select';
-import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
 import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import Container from '@mui/material/Container';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import FormControl from '@mui/material/FormControl';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemButton from '@mui/material/ListItemButton';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
+
+import { Logo } from 'src/components/logo';
+import { Iconify } from 'src/components/iconify';
+import { ColorModeButton } from 'src/components/color-mode-button';
 
 import { useSession, PermissionGuard } from 'src/auth/session-provider';
 import { signOutAction, listTenantsAction, switchTenantAction } from 'src/auth/actions';
 
+const NAV_WIDTH = 280;
+
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const title = pathname.startsWith(paths.dashboard.events) ? 'Event' : 'Ringkasan';
+
+  return (
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <AppBar
+        position="fixed"
+        color="inherit"
+        elevation={0}
+        sx={{
+          ml: { lg: `${NAV_WIDTH}px` },
+          width: { lg: `calc(100% - ${NAV_WIDTH}px)` },
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
+        }}
+      >
+        <Toolbar sx={{ minHeight: { xs: 72, md: 80 }, px: { xs: 2, md: 4 } }}>
+          <IconButton
+            aria-label="Buka navigasi"
+            onClick={() => setMobileOpen(true)}
+            sx={{ display: { lg: 'none' }, mr: 1 }}
+          >
+            <Iconify icon="solar:hamburger-menu-linear" />
+          </IconButton>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="caption" color="text.secondary">
+              Workspace / {title}
+            </Typography>
+            <Typography variant="h5">{title}</Typography>
+          </Box>
+          <ColorModeButton />
+        </Toolbar>
+      </AppBar>
+
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        ModalProps={{ keepMounted: true }}
+        slotProps={{ paper: { sx: { width: NAV_WIDTH } } }}
+        sx={{ display: { xs: 'block', lg: 'none' } }}
+      >
+        <DashboardNav pathname={pathname} onNavigate={() => setMobileOpen(false)} />
+      </Drawer>
+
+      <Box
+        component="aside"
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          width: NAV_WIDTH,
+          position: 'fixed',
+          display: { xs: 'none', lg: 'block' },
+          bgcolor: 'background.paper',
+          borderRight: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <DashboardNav pathname={pathname} />
+      </Box>
+
+      <Box
+        component="main"
+        id="main-content"
+        tabIndex={-1}
+        sx={{
+          ml: { lg: `${NAV_WIDTH}px` },
+          pt: { xs: '72px', md: '80px' },
+          minHeight: '100vh',
+        }}
+      >
+        <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: 1440, mx: 'auto' }}>{children}</Box>
+      </Box>
+    </Box>
+  );
+}
+
+function DashboardNav({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
   const { session } = useSession();
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.neutral' }}>
-      <AppBar
-        position="sticky"
-        color="inherit"
-        elevation={0}
-        sx={{ borderBottom: '1px solid', borderColor: 'divider' }}
-      >
-        <Toolbar sx={{ gap: 2 }}>
-          <Typography variant="h6" color="primary.main" sx={{ fontWeight: 800, mr: { md: 3 } }}>
-            SITIVENT
-          </Typography>
-          <Box component="nav" sx={{ display: { xs: 'none', sm: 'flex' }, gap: 2, flex: 1 }}>
-            <Link component={RouterLink} href="/dashboard" color="text.primary" underline="none">
-              Ringkasan
-            </Link>
-            <PermissionGuard permission="admin.access">
-              <Link
-                component={RouterLink}
-                href="/dashboard/events"
-                color="text.primary"
-                underline="none"
-              >
-                Event
-              </Link>
-            </PermissionGuard>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ px: 3, py: 2.5 }}>
+        <Logo />
+      </Box>
+      <Box sx={{ px: 2.5, pb: 2 }}>
+        {session.is_super_admin ? (
+          <TenantSwitcher />
+        ) : (
+          <Box sx={{ p: 1.75, bgcolor: 'background.neutral', borderRadius: 1.2 }}>
+            <Typography variant="caption" color="text.secondary">
+              Tenant aktif
+            </Typography>
+            <Typography variant="subtitle2" noWrap>
+              {session.tenant?.name ?? 'Universitas'}
+            </Typography>
           </Box>
-          {session.is_super_admin && <TenantSwitcher />}
-          <Avatar
-            src={session.user.image ?? undefined}
-            alt={session.user.name}
-            sx={{ width: 36, height: 36, display: { xs: 'none', md: 'flex' } }}
-          >
+        )}
+      </Box>
+      <Divider />
+      <List sx={{ flex: 1, px: 1.5, py: 2 }}>
+        <NavItem
+          href={paths.dashboard.root}
+          label="Ringkasan"
+          icon="solar:home-angle-linear"
+          active={pathname === paths.dashboard.root || pathname === `${paths.dashboard.root}/`}
+          onClick={onNavigate}
+        />
+        <PermissionGuard permission="admin.access">
+          <NavItem
+            href={paths.dashboard.events}
+            label="Event"
+            icon="solar:calendar-mark-outline"
+            active={pathname.startsWith(paths.dashboard.events)}
+            onClick={onNavigate}
+          />
+        </PermissionGuard>
+      </List>
+      <Divider />
+      <Box sx={{ p: 2 }}>
+        <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', px: 1, pb: 2 }}>
+          <Avatar src={session.user.image ?? undefined} alt={session.user.name}>
             {session.user.name.charAt(0)}
           </Avatar>
-          <Box component="form" action={signOutAction}>
-            <Button type="submit" color="inherit">
-              Keluar
-            </Button>
+          <Box sx={{ minWidth: 0, flex: 1 }}>
+            <Typography variant="subtitle2" noWrap>
+              {session.user.name}
+            </Typography>
+            <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block' }}>
+              {session.user.role}
+            </Typography>
           </Box>
-        </Toolbar>
-      </AppBar>
-      <Container component="main" maxWidth="xl" sx={{ py: { xs: 3, md: 5 } }}>
-        {children}
-      </Container>
+        </Box>
+        <Box component="form" action={signOutAction}>
+          <ListItemButton component="button" type="submit" sx={{ width: '100%', borderRadius: 1 }}>
+            <ListItemIcon sx={{ minWidth: 36 }}>
+              <Iconify icon="carbon:logout" width={19} />
+            </ListItemIcon>
+            <ListItemText primary="Keluar" slotProps={{ primary: { variant: 'body2' } }} />
+          </ListItemButton>
+        </Box>
+      </Box>
     </Box>
+  );
+}
+
+function NavItem({
+  href,
+  label,
+  icon,
+  active,
+  onClick,
+}: {
+  href: string;
+  label: string;
+  icon: 'solar:home-angle-linear' | 'solar:calendar-mark-outline';
+  active: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <ListItemButton
+      component={RouterLink}
+      href={href}
+      selected={active}
+      onClick={onClick}
+      sx={{ mb: 0.5, borderRadius: 1, '&.Mui-selected': { color: 'primary.main' } }}
+    >
+      <ListItemIcon sx={{ minWidth: 38, color: 'inherit' }}>
+        <Iconify icon={icon} width={20} />
+      </ListItemIcon>
+      <ListItemText
+        primary={label}
+        slotProps={{ primary: { variant: 'body2', sx: { fontWeight: 600 } } }}
+      />
+    </ListItemButton>
   );
 }
 
@@ -82,6 +224,10 @@ function TenantSwitcher() {
   const [tenants, setTenants] = useState<TenantOption[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const tenantOptions =
+    session.tenant && !tenants.some((tenant) => tenant.id === session.tenant?.id)
+      ? [session.tenant, ...tenants]
+      : tenants;
 
   useEffect(() => {
     listTenantsAction().then((result) => {
@@ -110,32 +256,42 @@ function TenantSwitcher() {
   }
 
   return (
-    <FormControl size="small" sx={{ minWidth: { xs: 130, sm: 180 } }}>
-      <Tooltip title={error}>
-        <Select
-          error={Boolean(error)}
-          value={session.tenant?.id ?? ''}
-          onChange={(event) => change(event.target.value)}
-          displayEmpty
-          aria-label="Tenant aktif"
-          disabled={loading}
-          renderValue={(value) =>
-            loading ? (
-              <CircularProgress size={18} />
-            ) : (
-              tenants.find((tenant) => tenant.id === value)?.name ||
-              session.tenant?.name ||
-              'Pilih tenant'
-            )
-          }
-        >
-          {tenants.map((tenant) => (
-            <MenuItem key={tenant.id} value={tenant.id}>
-              {tenant.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </Tooltip>
-    </FormControl>
+    <Box>
+      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.75 }}>
+        Tenant aktif
+      </Typography>
+      {error && (
+        <Alert severity="error" sx={{ mb: 1 }}>
+          {error}
+        </Alert>
+      )}
+      <FormControl size="small" fullWidth>
+        <Tooltip title={error}>
+          <Select
+            error={Boolean(error)}
+            value={session.tenant?.id ?? ''}
+            onChange={(event) => change(event.target.value)}
+            displayEmpty
+            aria-label="Tenant aktif"
+            disabled={loading}
+            renderValue={(value) =>
+              loading ? (
+                <CircularProgress size={18} />
+              ) : (
+                tenantOptions.find((tenant) => tenant.id === value)?.name ||
+                session.tenant?.name ||
+                'Pilih tenant'
+              )
+            }
+          >
+            {tenantOptions.map((tenant) => (
+              <MenuItem key={tenant.id} value={tenant.id}>
+                {tenant.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </Tooltip>
+      </FormControl>
+    </Box>
   );
 }

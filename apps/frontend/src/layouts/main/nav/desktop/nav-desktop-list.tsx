@@ -29,7 +29,7 @@ export function NavList({ data }: { data: NavItemDataProps }) {
   const openedByKeyboard = useRef(false);
 
   const hasChild = !!data.children?.length;
-  const isActive = isActiveLink(pathname, data.path, hasChild);
+  const isActive = !data.path.includes('#') && isActiveLink(pathname, data.path, hasChild);
 
   const [open, setOpen] = useState(false);
 
