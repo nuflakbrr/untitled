@@ -1,17 +1,17 @@
 meta {
-  name: Delete Article Category
+  name: Delete Gallery
   type: http
   seq: 13
 }
 
 delete {
-  url: {{baseUrl}}/features/v1/article-categories/{{crudArticleCategoryId}}
+  url: {{baseUrl}}/features/v1/galleries/{{crudGalleryId}}
   body: none
   auth: bearer
 }
 
 auth:bearer {
-  token: {{rootAccessToken}}
+  token: {{fasilkomAccessToken}}
 }
 
 tests {

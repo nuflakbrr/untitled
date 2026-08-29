@@ -59,14 +59,7 @@ func (h *SupportHandler) List(c *gin.Context) {
 		response.Error(c, http.StatusInternalServerError, "Failed to retrieve support messages", err.Error())
 		return
 	}
-	page, limit := query.Page, query.Limit
-	if page <= 0 {
-		page = 1
-	}
-	if limit <= 0 {
-		limit = 10
-	}
-	response.SuccessWithPagination(c, http.StatusOK, "Support messages retrieved successfully", messages, page, limit, total)
+	response.SuccessWithPagination(c, http.StatusOK, "Support messages retrieved successfully", messages, query.Page, query.Limit, total)
 }
 
 func (h *SupportHandler) UpdateStatus(c *gin.Context) {

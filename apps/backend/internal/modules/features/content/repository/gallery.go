@@ -13,6 +13,7 @@ import (
 )
 
 var ErrGalleryNotFound = errors.New("gallery not found")
+var ErrGalleryEventNotFound = errors.New("gallery event not found")
 
 const gallerySelect = `SELECT id, tenant_id, title, description, image_url, featured, event_id, created_at, updated_at FROM galleries`
 
@@ -22,6 +23,22 @@ type GalleryRepository struct {
 
 func NewGalleryRepository(db *pgxpool.Pool) *GalleryRepository {
 	return &GalleryRepository{db: db}
+}
+
+func (r *GalleryRepository) EventAccessible(ctx context.Context, eventID string, scopeTenantID *string) (bool, error) {
+	query := "SELECT EXISTS(SELECT 1 FROM events WHERE id = $1"
+	args := []any{eventID}
+	if scopeTenantID != nil {
+		args = append(args, *scopeTenantID)
+		query += " AND tenant_id = $2"
+	}
+	query += ")"
+
+	var accessible bool
+	if err := r.db.QueryRow(ctx, query, args...).Scan(&accessible); err != nil {
+		return false, fmt.Errorf("check gallery event: %w", err)
+	}
+	return accessible, nil
 }
 
 type GalleryFilter struct {

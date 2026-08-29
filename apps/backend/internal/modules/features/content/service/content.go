@@ -31,6 +31,7 @@ type CategoryRepository interface {
 type GalleryRepository interface {
 	FindAll(ctx context.Context, filter repository.GalleryFilter, page, limit int) ([]*domain.Gallery, int64, error)
 	FindByID(ctx context.Context, id string) (*domain.Gallery, error)
+	EventAccessible(ctx context.Context, eventID string, scopeTenantID *string) (bool, error)
 	Create(ctx context.Context, gallery *domain.Gallery) error
 	Update(ctx context.Context, gallery *domain.Gallery, scopeTenantID *string) error
 	Delete(ctx context.Context, id string, scopeTenantID *string) error
@@ -186,6 +187,9 @@ func (s *ContentService) CreateGallery(ctx context.Context, tenantID string, req
 		TenantID: nilIfEmpty(tenantID), Title: req.Title, Description: nilIfEmpty(req.Description),
 		ImageURL: req.ImageURL, Featured: req.Featured, EventID: nilIfEmpty(req.EventID),
 	}
+	if err := s.validateGalleryEvent(ctx, gallery.EventID, gallery.TenantID); err != nil {
+		return nil, err
+	}
 	if err := s.galleries.Create(ctx, gallery); err != nil {
 		return nil, err
 	}
@@ -198,15 +202,36 @@ func (s *ContentService) UpdateGallery(ctx context.Context, id string, scopeTena
 		ID: id, Title: req.Title, Description: nilIfEmpty(req.Description),
 		ImageURL: req.ImageURL, Featured: req.Featured, EventID: nilIfEmpty(req.EventID),
 	}
+	if err := s.validateGalleryEvent(ctx, gallery.EventID, scopeTenantID); err != nil {
+		return nil, err
+	}
 	if err := s.galleries.Update(ctx, gallery, scopeTenantID); err != nil {
 		return nil, err
 	}
-	response := toGalleryResponse(gallery)
+	updated, err := s.galleries.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	response := toGalleryResponse(updated)
 	return &response, nil
 }
 
 func (s *ContentService) DeleteGallery(ctx context.Context, id string, scopeTenantID *string) error {
 	return s.galleries.Delete(ctx, id, scopeTenantID)
+}
+
+func (s *ContentService) validateGalleryEvent(ctx context.Context, eventID, scopeTenantID *string) error {
+	if eventID == nil {
+		return nil
+	}
+	accessible, err := s.galleries.EventAccessible(ctx, *eventID, scopeTenantID)
+	if err != nil {
+		return err
+	}
+	if !accessible {
+		return repository.ErrGalleryEventNotFound
+	}
+	return nil
 }
 
 // ─── Shared helpers ─────────────────────────────────────────────────────────

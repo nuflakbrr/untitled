@@ -1,0 +1,32 @@
+meta {
+  name: Reject Cross-Tenant Gallery Event
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/features/v1/galleries
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{fasilkomAccessToken}}
+}
+
+body:json {
+  {
+    "title": "Dokumentasi Lintas Tenant",
+    "image_url": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1",
+    "event_id": "2093030b-adb4-4803-9af2-13a6c1ad8b1a"
+  }
+}
+
+tests {
+  test("status 404", function() { expect(res.status).to.equal(404); });
+  test("does not expose another tenant event", function() { expect(res.body.message).to.equal("Gallery event not found"); });
+}
