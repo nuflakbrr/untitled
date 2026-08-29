@@ -1,0 +1,27 @@
+meta {
+  name: Publish Certificate Test Event
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{baseUrl}}/features/v1/events/{{certificateEventId}}/status
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+body:json {
+  {
+    "status": "PUBLISHED"
+  }
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+}

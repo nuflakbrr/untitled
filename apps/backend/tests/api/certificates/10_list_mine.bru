@@ -1,0 +1,29 @@
+meta {
+  name: List Participant Certificates
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{baseUrl}}/features/v1/certificates/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{pesertaAccessToken}}
+}
+
+script:post-response {
+  if (res.status === 200) {
+    const certificate = res.body.data.find((item) => item.event_id === bru.getEnvVar("certificateEventId"));
+    if (certificate) bru.setEnvVar("certificateId", certificate.id);
+  }
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("generated certificate is listed", function() {
+    expect(res.body.data.some((item) => item.event_id === bru.getEnvVar("certificateEventId"))).to.equal(true);
+  });
+}

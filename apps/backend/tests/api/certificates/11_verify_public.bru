@@ -1,0 +1,20 @@
+meta {
+  name: Verify Certificate Publicly
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/features/v1/certificates/verify/{{certificateId}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("certificate is publicly verifiable", function() {
+    expect(res.body.data.id).to.equal(bru.getEnvVar("certificateId"));
+    expect(res.body.data.certificate_number).to.match(/^CERT\//);
+    expect(res.body.data.pdf_url).to.match(/\/files\/certificates\//);
+  });
+}

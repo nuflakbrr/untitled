@@ -127,11 +127,27 @@ vars {
   crudRegistrationId:
   crudPesertaAccessToken:
   crudQrToken:
+  certificateEventId:
+  certificateRegistrationId:
+  certificateQrToken:
+  certificateJobId:
+  certificateId:
 }
 ENVEOF
 
 cleanup() {
   # Remove records created by CRUD suites even when a test fails midway.
+  CERTIFICATE_EVENT_ID=$(grep '^  certificateEventId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  certificateEventId:[[:space:]]*//')
+  if [ -n "${CERTIFICATE_EVENT_ID:-}" ]; then
+    CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+      -X DELETE "$BASE_URL/features/v1/events/$CERTIFICATE_EVENT_ID" \
+      -H "Authorization: Bearer $ACCESS_TOKEN")
+    if [ "$CLEANUP_STATUS" = "200" ] || [ "$CLEANUP_STATUS" = "404" ]; then
+      success "Cleanup completed for certificate event $CERTIFICATE_EVENT_ID"
+    else
+      warn "Cleanup failed for certificate event $CERTIFICATE_EVENT_ID; remove it manually if still present."
+    fi
+  fi
   CRUD_REGISTRATION_ID=$(grep '^  crudRegistrationId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudRegistrationId:[[:space:]]*//')
   if [ -n "${CRUD_REGISTRATION_ID:-}" ]; then
     CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \

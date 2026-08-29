@@ -13,6 +13,7 @@ import (
 	"venturo-skeleton-go/internal/modules/core/tenant"
 	"venturo-skeleton-go/internal/modules/core/user"
 	"venturo-skeleton-go/internal/modules/features/attendance"
+	"venturo-skeleton-go/internal/modules/features/certificate"
 	"venturo-skeleton-go/internal/modules/features/event"
 	"venturo-skeleton-go/internal/modules/features/payment"
 	"venturo-skeleton-go/internal/modules/features/registration"
@@ -120,6 +121,14 @@ func Setup(router *gin.Engine, db *pgxpool.Pool, cfg *config.Config) {
 		paymentModule.SetupRoutes(featuresV1)
 		attendanceModule := attendance.Initialize(db)
 		attendanceModule.SetupRoutes(featuresV1)
+		certificateModule, err := certificate.Initialize(context.Background(), db, cfg)
+		if err != nil {
+			log.Fatal("Failed to initialize certificate module", zap.Error(err))
+		}
+		if certificateModule.LocalRoot != "" {
+			router.StaticFS("/files", gin.Dir(certificateModule.LocalRoot, false))
+		}
+		certificateModule.SetupRoutes(featuresV1)
 	}
 
 	log.Info("Routes setup completed", zap.Int("routes", len(router.Routes())))

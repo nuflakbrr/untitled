@@ -1,0 +1,29 @@
+meta {
+  name: Check In Certificate Participant
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/features/v1/attendances/scan
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+body:json {
+  {
+    "qr_token": "{{certificateQrToken}}",
+    "event_id": "{{certificateEventId}}"
+  }
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("participant checked in", function() { expect(res.body.data.status).to.equal("SUCCESS"); });
+}

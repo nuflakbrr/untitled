@@ -1,0 +1,34 @@
+meta {
+  name: Register Certificate Participant
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/features/v1/registrations
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+auth:bearer {
+  token: {{pesertaAccessToken}}
+}
+body:json {
+  {
+    "event_id": "{{certificateEventId}}"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("certificateRegistrationId", res.body.data.id);
+    bru.setEnvVar("certificateQrToken", res.body.data.qr_token);
+  }
+}
+
+tests {
+  test("status 201", function() { expect(res.status).to.equal(201); });
+}

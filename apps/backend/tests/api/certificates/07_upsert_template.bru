@@ -1,0 +1,41 @@
+meta {
+  name: Upsert Certificate Template
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{baseUrl}}/features/v1/certificates/templates/event/{{certificateEventId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+body:json {
+  {
+    "number_template": "CERT/{TENANT}/{SLUG}/{REG_NO}",
+    "number_mode": "AUTO",
+    "show_issued_date": true,
+    "show_event_date": true,
+    "show_event_location": true,
+    "show_header": true,
+    "header_text": "SITIVENT",
+    "header_subtitle": "Sertifikat Partisipasi Resmi",
+    "header_color": "#232c40",
+    "title_color": "#111827",
+    "content_color": "#374151",
+    "primary_color": "#0f766e",
+    "footer_margin_bottom": 20,
+    "signatures": []
+  }
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("template is tenant scoped", function() { expect(res.body.data.event_id).to.equal(bru.getEnvVar("certificateEventId")); });
+}

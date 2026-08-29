@@ -1285,9 +1285,98 @@ paths:
           description: Payment belum ada untuk registrasi ini
 
   # ============================================================================
-  # MODULES - CERTIFICATES
+  # FEATURES - CERTIFICATES
   # ============================================================================
-  /modules/v1/certificates/verify/{certificate_number}:
+  /features/v1/certificates/templates/event/{eventID}:
+    get:
+      tags: [Modules - Certificates]
+      summary: Lihat Template Sertifikat Event
+      security: [{BearerAuth: []}]
+      parameters:
+        - {in: path, name: eventID, required: true, schema: {type: string, format: uuid}}
+      responses:
+        "200": {description: Template sertifikat event}
+        "404": {description: Template atau event tidak ditemukan}
+    put:
+      tags: [Modules - Certificates]
+      summary: Buat atau Perbarui Template Sertifikat
+      security: [{BearerAuth: []}]
+      parameters:
+        - {in: path, name: eventID, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [number_template, number_mode]
+              properties:
+                background_url: {type: string, format: uri}
+                number_template: {type: string, example: "CERT/{TENANT}/{SLUG}/{REG_NO}"}
+                number_mode: {type: string, enum: [AUTO, MANUAL]}
+                show_issued_date: {type: boolean}
+                show_event_date: {type: boolean}
+                show_event_location: {type: boolean}
+                show_header: {type: boolean}
+                header_text: {type: string}
+                header_subtitle: {type: string}
+                signatures:
+                  type: array
+                  maxItems: 4
+                  items:
+                    type: object
+                    required: [name, signature_url]
+                    properties:
+                      name: {type: string}
+                      title: {type: string}
+                      signature_url: {type: string, format: uri}
+                      order: {type: integer}
+      responses:
+        "200": {description: Template tersimpan}
+        "422": {description: Template nomor tidak valid}
+
+  /features/v1/certificates/event/{eventID}/generate:
+    post:
+      tags: [Modules - Certificates]
+      summary: Antrekan Pembuatan Sertifikat Event
+      description: Memproses peserta CHECKED_IN secara asinkron setelah event COMPLETED.
+      security: [{BearerAuth: []}]
+      parameters:
+        - {in: path, name: eventID, required: true, schema: {type: string, format: uuid}}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                manual_numbers:
+                  type: object
+                  additionalProperties: {type: string}
+      responses:
+        "202": {description: Job pembuatan sertifikat masuk antrean}
+        "409": {description: Job event masih aktif}
+        "422": {description: Event atau peserta tidak memenuhi prasyarat}
+
+  /features/v1/certificates/jobs/{id}:
+    get:
+      tags: [Modules - Certificates]
+      summary: Lihat Status Job Pembuatan Sertifikat
+      security: [{BearerAuth: []}]
+      parameters:
+        - {in: path, name: id, required: true, schema: {type: string, format: uuid}}
+      responses:
+        "200": {description: Status dan progres job}
+        "404": {description: Job tidak ditemukan}
+
+  /features/v1/certificates/me:
+    get:
+      tags: [Modules - Certificates]
+      summary: Daftar Sertifikat Peserta yang Login
+      security: [{BearerAuth: []}]
+      responses:
+        "200": {description: Daftar sertifikat peserta}
+
+  /features/v1/certificates/verify/{identifier}:
     get:
       tags:
         - Modules - Certificates
@@ -1295,11 +1384,11 @@ paths:
       description: Halaman verifikasi publik keaslian sertifikat peserta tanpa perlu login.
       parameters:
         - in: path
-          name: certificate_number
+          name: identifier
           required: true
           schema:
             type: string
-            example: CERT/CS-2026/001
+            description: ID atau nomor sertifikat
       responses:
         "200":
           description: Data sertifikat valid
@@ -1308,7 +1397,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CertificateVerifyResponse"
         "404":
-          description: Nomor sertifikat tidak ditemukan
+          description: Sertifikat tidak ditemukan
 
 # ==============================================================================
 # COMPONENTS & SCHEMAS

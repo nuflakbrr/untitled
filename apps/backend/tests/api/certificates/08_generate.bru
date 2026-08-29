@@ -1,0 +1,30 @@
+meta {
+  name: Queue Certificate Generation
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/features/v1/certificates/event/{{certificateEventId}}/generate
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+body:json {
+  {}
+}
+
+script:post-response {
+  if (res.status === 202) bru.setEnvVar("certificateJobId", res.body.data.id);
+}
+
+tests {
+  test("status 202", function() { expect(res.status).to.equal(202); });
+  test("generation is asynchronous", function() { expect(res.body.data.status).to.equal("PENDING"); });
+}
