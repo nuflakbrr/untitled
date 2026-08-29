@@ -41,7 +41,21 @@ export function Hero({
             <Typography variant="overline" color="primary.main">
               Event kampus
             </Typography>
-            <Typography variant="h1" sx={{ mt: 1.5, maxWidth: 650, letterSpacing: -1.8 }}>
+            <Typography
+              variant="h1"
+              sx={{
+                mt: 1.5,
+                maxWidth: 560,
+                minHeight: { xs: 76, md: 112 },
+                fontSize: { xs: '2.5rem', md: '3.5rem' },
+                lineHeight: 1.08,
+                letterSpacing: -1.2,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
               {event?.title ?? 'Temukan event kampusmu.'}
             </Typography>
             <Typography
