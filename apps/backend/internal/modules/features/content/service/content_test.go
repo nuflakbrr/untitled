@@ -100,19 +100,33 @@ func TestDeleteArticle_ScopedToTenant(t *testing.T) {
 
 type fakeGalleryRepo struct {
 	lastFilter repository.GalleryFilter
+	accessible bool
+	accessErr  error
+	created    *domain.Gallery
+	updated    *domain.Gallery
+	byID       *domain.Gallery
 }
 
 func (f *fakeGalleryRepo) FindAll(_ context.Context, filter repository.GalleryFilter, _, _ int) ([]*domain.Gallery, int64, error) {
 	f.lastFilter = filter
 	return nil, 0, nil
 }
-func (f *fakeGalleryRepo) FindByID(context.Context, string) (*domain.Gallery, error) { return nil, nil }
+func (f *fakeGalleryRepo) FindByID(context.Context, string) (*domain.Gallery, error) {
+	return f.byID, nil
+}
+func (f *fakeGalleryRepo) EventAccessible(context.Context, string, *string) (bool, error) {
+	return f.accessible, f.accessErr
+}
 func (f *fakeGalleryRepo) Create(_ context.Context, g *domain.Gallery) error {
 	g.ID = "gallery-1"
+	f.created = g
 	return nil
 }
-func (f *fakeGalleryRepo) Update(context.Context, *domain.Gallery, *string) error { return nil }
-func (f *fakeGalleryRepo) Delete(context.Context, string, *string) error          { return nil }
+func (f *fakeGalleryRepo) Update(_ context.Context, gallery *domain.Gallery, _ *string) error {
+	f.updated = gallery
+	return nil
+}
+func (f *fakeGalleryRepo) Delete(context.Context, string, *string) error { return nil }
 
 func TestListGalleries_PassesFilterThrough(t *testing.T) {
 	repo := &fakeGalleryRepo{}
@@ -158,7 +172,7 @@ func TestCreateCategory(t *testing.T) {
 }
 
 func TestCreateGallery(t *testing.T) {
-	repo := &fakeGalleryRepo{}
+	repo := &fakeGalleryRepo{accessible: true}
 	svc := NewContentServiceWithInterfaces(nil, nil, repo)
 
 	resp, err := svc.CreateGallery(context.Background(), "tenant-1", dto.CreateGalleryRequest{Title: "Dokumentasi", ImageURL: "https://cdn.local/x.png"})
@@ -167,6 +181,40 @@ func TestCreateGallery(t *testing.T) {
 	}
 	if resp.ID != "gallery-1" || resp.TenantID == nil || *resp.TenantID != "tenant-1" {
 		t.Fatalf("unexpected response: %+v", resp)
+	}
+}
+
+func TestCreateGallery_RejectsEventFromAnotherTenant(t *testing.T) {
+	repo := &fakeGalleryRepo{}
+	svc := NewContentServiceWithInterfaces(nil, nil, repo)
+
+	_, err := svc.CreateGallery(context.Background(), "tenant-1", dto.CreateGalleryRequest{
+		Title: "Dokumentasi", ImageURL: "https://cdn.local/x.png", EventID: "event-tenant-2",
+	})
+	if err != repository.ErrGalleryEventNotFound {
+		t.Fatalf("expected ErrGalleryEventNotFound, got %v", err)
+	}
+	if repo.created != nil {
+		t.Fatal("gallery must not be created for an inaccessible event")
+	}
+}
+
+func TestUpdateGallery_ReturnsPersistedRecord(t *testing.T) {
+	tenantID := "tenant-1"
+	repo := &fakeGalleryRepo{
+		accessible: true,
+		byID:       &domain.Gallery{ID: "gallery-1", TenantID: &tenantID, Title: "Updated", ImageURL: "https://cdn.local/new.png"},
+	}
+	svc := NewContentServiceWithInterfaces(nil, nil, repo)
+
+	resp, err := svc.UpdateGallery(context.Background(), "gallery-1", &tenantID, dto.UpdateGalleryRequest{
+		Title: "Updated", ImageURL: "https://cdn.local/new.png", EventID: "event-1",
+	})
+	if err != nil {
+		t.Fatalf("UpdateGallery: %v", err)
+	}
+	if resp.TenantID == nil || *resp.TenantID != tenantID {
+		t.Fatalf("expected persisted tenant_id, got %+v", resp.TenantID)
 	}
 }
 

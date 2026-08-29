@@ -38,14 +38,7 @@ func (h *GalleryHandler) List(c *gin.Context) {
 		response.Error(c, http.StatusInternalServerError, "Failed to retrieve galleries", err.Error())
 		return
 	}
-	page, limit := query.Page, query.Limit
-	if page <= 0 {
-		page = 1
-	}
-	if limit <= 0 {
-		limit = 10
-	}
-	response.SuccessWithPagination(c, http.StatusOK, "Galleries retrieved successfully", galleries, page, limit, total)
+	response.SuccessWithPagination(c, http.StatusOK, "Galleries retrieved successfully", galleries, query.Page, query.Limit, total)
 }
 
 func (h *GalleryHandler) Create(c *gin.Context) {
@@ -60,7 +53,7 @@ func (h *GalleryHandler) Create(c *gin.Context) {
 	}
 	gallery, err := h.service.CreateGallery(c.Request.Context(), claims.TenantID, req)
 	if err != nil {
-		response.Error(c, http.StatusInternalServerError, "Failed to create gallery", err.Error())
+		writeGalleryError(c, err, "Failed to create gallery")
 		return
 	}
 	response.Success(c, http.StatusCreated, "Gallery created successfully", gallery)
@@ -97,6 +90,10 @@ func (h *GalleryHandler) Delete(c *gin.Context) {
 }
 
 func writeGalleryError(c *gin.Context, err error, fallback string) {
+	if errors.Is(err, repository.ErrGalleryEventNotFound) {
+		response.Error(c, http.StatusNotFound, "Gallery event not found", "")
+		return
+	}
 	if errors.Is(err, repository.ErrGalleryNotFound) {
 		response.Error(c, http.StatusNotFound, "Gallery not found", "")
 		return

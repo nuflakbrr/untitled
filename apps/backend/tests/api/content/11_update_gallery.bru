@@ -1,0 +1,36 @@
+meta {
+  name: Update Gallery
+  type: http
+  seq: 11
+}
+
+put {
+  url: {{baseUrl}}/features/v1/galleries/{{crudGalleryId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{fasilkomAccessToken}}
+}
+
+body:json {
+  {
+    "title": "Dokumentasi Wisuda 2026 Diperbarui",
+    "image_url": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1",
+    "featured": true
+  }
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("returns persisted tenant", function() { expect(res.body.data.tenant_id).to.equal(bru.getEnvVar("tenantFasilkomId")); });
+  test("returns persisted timestamps", function() {
+    expect(res.body.data.created_at).to.be.a("string");
+    expect(res.body.data.updated_at).to.be.a("string");
+  });
+}
