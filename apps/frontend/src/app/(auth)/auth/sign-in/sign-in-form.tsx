@@ -5,11 +5,13 @@ import { useActionState } from 'react';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { signInAction } from 'src/auth/actions';
+import { paths } from 'src/routes/paths';
 
 export function SignInForm({ returnTo }: { returnTo: string }) {
   const [state, action, pending] = useActionState(signInAction, { error: '' });
@@ -45,6 +47,12 @@ export function SignInForm({ returnTo }: { returnTo: string }) {
         <Button type="submit" size="large" variant="contained" disabled={pending}>
           {pending ? <CircularProgress size={24} color="inherit" /> : 'Masuk'}
         </Button>
+        <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+          Belum punya akun?{' '}
+          <Link href={paths.auth.signUp} underline="hover" sx={{ fontWeight: 700 }}>
+            Daftar sekarang
+          </Link>
+        </Typography>
       </Box>
     </Box>
   );
