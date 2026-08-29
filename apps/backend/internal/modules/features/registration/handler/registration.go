@@ -141,7 +141,7 @@ func writeRegistrationError(c *gin.Context, err error, fallback string) {
 	switch {
 	case errors.Is(err, repository.ErrRegistrationNotFound), errors.Is(err, repository.ErrEventNotAvailable):
 		response.Error(c, http.StatusNotFound, "Resource not found", "")
-	case errors.Is(err, repository.ErrDuplicateRegistration), errors.Is(err, repository.ErrQuotaFull):
+	case errors.Is(err, repository.ErrDuplicateRegistration), errors.Is(err, repository.ErrQuotaFull), errors.Is(err, repository.ErrPaymentInProgress):
 		response.Error(c, http.StatusConflict, err.Error(), "")
 	case errors.Is(err, repository.ErrRegistrationClosed), errors.Is(err, repository.ErrOnlineUnavailable):
 		response.Error(c, http.StatusUnprocessableEntity, err.Error(), "")

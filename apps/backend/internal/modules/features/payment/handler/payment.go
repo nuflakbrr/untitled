@@ -146,7 +146,7 @@ func writePaymentError(c *gin.Context, err error, fallback string) {
 	switch {
 	case errors.Is(err, repository.ErrRegistrationNotFound), errors.Is(err, repository.ErrPaymentNotFound), errors.Is(err, repository.ErrGatewayNotConfigured):
 		response.Error(c, http.StatusNotFound, "Resource not found", "")
-	case errors.Is(err, repository.ErrAlreadyPaid):
+	case errors.Is(err, repository.ErrAlreadyPaid), errors.Is(err, repository.ErrCheckoutInProgress):
 		response.Error(c, http.StatusConflict, err.Error(), "")
 	case errors.Is(err, repository.ErrNotPayable):
 		response.Error(c, http.StatusUnprocessableEntity, err.Error(), "")

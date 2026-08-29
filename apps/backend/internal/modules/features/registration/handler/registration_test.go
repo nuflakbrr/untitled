@@ -204,6 +204,7 @@ func TestRegistrationErrorMappings(t *testing.T) {
 		{repository.ErrEventNotAvailable, http.StatusNotFound},
 		{repository.ErrDuplicateRegistration, http.StatusConflict},
 		{repository.ErrQuotaFull, http.StatusConflict},
+		{repository.ErrPaymentInProgress, http.StatusConflict},
 		{repository.ErrRegistrationClosed, http.StatusUnprocessableEntity},
 		{repository.ErrOnlineUnavailable, http.StatusUnprocessableEntity},
 		{errors.New("database unavailable"), http.StatusInternalServerError},

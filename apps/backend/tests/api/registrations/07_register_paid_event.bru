@@ -28,6 +28,7 @@ body:json {
 script:post-response {
   if (res.status === 201) {
     bru.setEnvVar("crudRegistrationId", res.body.data.id);
+    bru.setEnvVar("crudRegistrationPrice", String(res.body.data.price));
   }
 }
 
@@ -38,4 +39,3 @@ tests {
     expect(res.body.data.price).to.be.greaterThan(0);
   });
 }
-

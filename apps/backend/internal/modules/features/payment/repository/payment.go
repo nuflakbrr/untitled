@@ -18,6 +18,7 @@ var (
 	ErrAlreadyPaid          = errors.New("payment has already been completed")
 	ErrGatewayNotConfigured = errors.New("tenant payment gateway is not configured")
 	ErrPaymentNotFound      = errors.New("payment not found")
+	ErrCheckoutInProgress   = errors.New("payment checkout is already being created")
 )
 
 const paymentColumns = `
@@ -45,9 +46,10 @@ type RegistrationForCheckout struct {
 func (r *PaymentRepository) GetRegistrationForCheckout(ctx context.Context, registrationID string) (*RegistrationForCheckout, error) {
 	reg := &RegistrationForCheckout{}
 	err := r.db.QueryRow(ctx, `
-		SELECT r.user_id, e.tenant_id, e.price, r.status::text
+		SELECT r.user_id, e.tenant_id, COALESCE(p.amount, e.price), r.status::text
 		FROM registrations r
 		JOIN events e ON e.id = r.event_id
+		LEFT JOIN payments p ON p.registration_id = r.id AND p.deleted_at IS NULL
 		WHERE r.id = $1 AND r.deleted_at IS NULL
 	`, registrationID).Scan(&reg.UserID, &reg.TenantID, &reg.Amount, &reg.Status)
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -79,38 +81,77 @@ func (r *PaymentRepository) GetActiveGateway(ctx context.Context, tenantID strin
 	return gateway, nil
 }
 
-// UpsertPendingPayment creates the payment row for a registration, or reuses
-// the existing one if the participant re-opens checkout before paying.
-// It refuses to touch a payment that is no longer WAITING.
-func (r *PaymentRepository) UpsertPendingPayment(ctx context.Context, registrationID, provider string, amount int64) (*domain.Payment, error) {
+// ClaimPendingPayment atomically reserves one checkout attempt. A recent
+// claim prevents parallel requests from creating multiple gateway sessions;
+// stale claims can be recovered after a crashed or timed-out request.
+func (r *PaymentRepository) ClaimPendingPayment(ctx context.Context, registrationID, provider string, amount int64) (*domain.Payment, string, error) {
+	checkoutToken := uuid.NewString()
 	row := r.db.QueryRow(ctx, `
-		INSERT INTO payments (id, registration_id, amount, status, provider)
-		VALUES ($1, $2, $3, 'WAITING', $4)
+		WITH active_registration AS (
+			SELECT id FROM registrations
+			WHERE id = $2 AND status = 'WAITING_PAYMENT' AND deleted_at IS NULL
+			FOR UPDATE
+		)
+		INSERT INTO payments (id, registration_id, amount, status, provider, checkout_token, checkout_claimed_at)
+		SELECT $1, $2, $3, 'WAITING', $4, $5, NOW()
+		FROM active_registration
 		ON CONFLICT (registration_id) DO UPDATE
-			SET provider = EXCLUDED.provider, updated_at = NOW()
+			SET provider = EXCLUDED.provider, checkout_token = EXCLUDED.checkout_token,
+			    checkout_claimed_at = NOW(), updated_at = NOW()
 			WHERE payments.status = 'WAITING'
-		RETURNING `+paymentColumns, uuid.NewString(), registrationID, amount, provider)
+			  AND payments.transaction_id IS NULL
+			  AND (payments.checkout_token IS NULL OR payments.checkout_claimed_at < NOW() - INTERVAL '5 minutes')
+		RETURNING `+paymentColumns, uuid.NewString(), registrationID, amount, provider, checkoutToken)
 	payment, err := scanPayment(row)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, ErrAlreadyPaid
+		registration, registrationErr := r.GetRegistrationForCheckout(ctx, registrationID)
+		if registrationErr != nil {
+			return nil, "", registrationErr
+		}
+		if registration.Status != "WAITING_PAYMENT" {
+			return nil, "", ErrNotPayable
+		}
+		existing, findErr := r.GetByRegistrationID(ctx, registrationID)
+		if findErr != nil {
+			return nil, "", findErr
+		}
+		if existing.Status != domain.StatusWaiting {
+			return nil, "", ErrAlreadyPaid
+		}
+		if existing.TransactionID != "" && existing.PaymentURL != "" {
+			return existing, "", nil
+		}
+		return nil, "", ErrCheckoutInProgress
 	}
 	if err != nil {
-		return nil, fmt.Errorf("upsert pending payment: %w", err)
+		return nil, "", fmt.Errorf("claim pending payment: %w", err)
 	}
-	return payment, nil
+	return payment, checkoutToken, nil
 }
 
-func (r *PaymentRepository) UpdateAfterGatewayResponse(ctx context.Context, id, transactionID, paymentURL, method, channel string) error {
+func (r *PaymentRepository) CompleteCheckout(ctx context.Context, id, checkoutToken, transactionID, paymentURL, method, channel string) error {
 	tag, err := r.db.Exec(ctx, `
 		UPDATE payments
-		SET transaction_id = $2, payment_url = $3, payment_method = $4, payment_channel = $5, updated_at = NOW()
-		WHERE id = $1
-	`, id, transactionID, paymentURL, method, channel)
+		SET transaction_id = $3, payment_url = $4, payment_method = $5, payment_channel = $6,
+		    checkout_token = NULL, checkout_claimed_at = NULL, updated_at = NOW()
+		WHERE id = $1 AND checkout_token = $2 AND status = 'WAITING'
+	`, id, checkoutToken, transactionID, paymentURL, method, channel)
 	if err != nil {
 		return fmt.Errorf("update payment after gateway response: %w", err)
 	}
 	if tag.RowsAffected() == 0 {
 		return ErrPaymentNotFound
+	}
+	return nil
+}
+
+func (r *PaymentRepository) ReleaseCheckout(ctx context.Context, id, checkoutToken string) error {
+	_, err := r.db.Exec(ctx, `
+		UPDATE payments SET checkout_token = NULL, checkout_claimed_at = NULL, updated_at = NOW()
+		WHERE id = $1 AND checkout_token = $2 AND status = 'WAITING'
+	`, id, checkoutToken)
+	if err != nil {
+		return fmt.Errorf("release payment checkout: %w", err)
 	}
 	return nil
 }
@@ -187,28 +228,40 @@ func (r *PaymentRepository) MarkPaid(ctx context.Context, paymentID string, veri
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 
-	var registrationID string
-	err = tx.QueryRow(ctx, `
+	var registrationID, paymentStatus string
+	err = tx.QueryRow(ctx, `SELECT registration_id, status::text FROM payments WHERE id = $1 FOR UPDATE`, paymentID).Scan(&registrationID, &paymentStatus)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return ErrPaymentNotFound
+	}
+	if err != nil {
+		return fmt.Errorf("lock payment for settlement: %w", err)
+	}
+	if paymentStatus == string(domain.StatusPaid) {
+		return nil
+	}
+	if paymentStatus != string(domain.StatusWaiting) {
+		return ErrNotPayable
+	}
+
+	tag, err := tx.Exec(ctx, `
+		UPDATE registrations SET status = 'REGISTERED', updated_at = NOW()
+		WHERE id = $1 AND status = 'WAITING_PAYMENT'
+	`, registrationID)
+	if err != nil {
+		return fmt.Errorf("activate registration after payment: %w", err)
+	}
+	if tag.RowsAffected() == 0 {
+		return ErrNotPayable
+	}
+	if _, err := tx.Exec(ctx, `
 		UPDATE payments
 		SET status = 'PAID', verified_at = NOW(), verified_by_id = $2, updated_at = NOW(),
 		    payment_method = CASE WHEN $3 <> '' THEN $3 ELSE payment_method END,
-		    payment_channel = CASE WHEN $4 <> '' THEN $4 ELSE payment_channel END
+		    payment_channel = CASE WHEN $4 <> '' THEN $4 ELSE payment_channel END,
+		    checkout_token = NULL, checkout_claimed_at = NULL
 		WHERE id = $1 AND status = 'WAITING'
-		RETURNING registration_id
-	`, paymentID, verifiedByID, method, channel).Scan(&registrationID)
-	if errors.Is(err, pgx.ErrNoRows) {
-		// Already processed (paid/failed) — treat as a no-op success for idempotency.
-		return nil
-	}
-	if err != nil {
+	`, paymentID, verifiedByID, method, channel); err != nil {
 		return fmt.Errorf("mark payment paid: %w", err)
-	}
-
-	if _, err := tx.Exec(ctx, `
-		UPDATE registrations SET status = 'REGISTERED', updated_at = NOW()
-		WHERE id = $1 AND status = 'WAITING_PAYMENT'
-	`, registrationID); err != nil {
-		return fmt.Errorf("activate registration after payment: %w", err)
 	}
 	return tx.Commit(ctx)
 }
@@ -251,7 +304,7 @@ func (r *PaymentRepository) SubmitProof(ctx context.Context, paymentID, userID, 
 // payment before the service decides to approve or reject it. scopeTenantID
 // nil means the caller is a root superadmin with no tenant restriction.
 func (r *PaymentRepository) VerifyProofScope(ctx context.Context, paymentID string, scopeTenantID *string) error {
-	conditions := "p.id = $1"
+	conditions := "p.id = $1 AND p.provider = 'MANUAL' AND p.status = 'WAITING' AND p.proof_url IS NOT NULL"
 	args := []any{paymentID}
 	if scopeTenantID != nil {
 		args = append(args, *scopeTenantID)
