@@ -274,13 +274,40 @@ function TenantSwitcher() {
             displayEmpty
             aria-label="Tenant aktif"
             disabled={loading}
+            sx={{
+              height: 48,
+              display: 'flex',
+              alignItems: 'center',
+              '& .MuiSelect-select': {
+                display: 'flex',
+                alignItems: 'center',
+                height: '48px',
+                boxSizing: 'border-box',
+                pr: 5,
+                py: 0,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              },
+              '& .MuiSelect-icon': {
+                top: '50%',
+                transform: 'translateY(-50%)',
+              },
+            }}
             renderValue={(value) =>
               loading ? (
-                <CircularProgress size={18} />
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <CircularProgress size={18} />
+                </Box>
               ) : (
-                tenantOptions.find((tenant) => tenant.id === value)?.name ||
-                session.tenant?.name ||
-                'Pilih tenant'
+                <Box
+                  component="span"
+                  sx={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.4 }}
+                >
+                  {tenantOptions.find((tenant) => tenant.id === value)?.name ||
+                    session.tenant?.name ||
+                    'Pilih tenant'}
+                </Box>
               )
             }
           >
