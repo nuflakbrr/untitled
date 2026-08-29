@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 
+import { notFound } from 'next/navigation';
+
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
@@ -7,7 +9,6 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { CONFIG } from 'src/global-config';
-import { notFound } from 'next/navigation';
 
 type Certificate = {
   certificate_number: string;
@@ -48,7 +49,15 @@ export default async function CertificateVerifyPage({
   if (!certificate) notFound();
 
   return (
-    <Box sx={{ maxWidth: 760, mx: 'auto', px: { xs: 2, md: 4 }, py: { xs: 5, md: 10 } }}>
+    <Box
+      sx={{
+        maxWidth: 760,
+        mx: 'auto',
+        px: { xs: 2, md: 4 },
+        pt: { xs: 10, md: 14 },
+        pb: { xs: 5, md: 10 },
+      }}
+    >
       <Paper variant="outlined" sx={{ p: { xs: 3, md: 6 }, borderRadius: 3 }}>
         <Stack spacing={3}>
           <Box>

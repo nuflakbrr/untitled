@@ -23,7 +23,7 @@ export default async function EventListPage({
   ]);
 
   return (
-    <Container sx={{ py: { xs: 5, md: 9 } }}>
+    <Container sx={{ pt: { xs: 10, md: 14 }, pb: { xs: 5, md: 9 } }}>
       <Typography variant="overline" color="primary.main">
         Temukan pengalaman berikutnya
       </Typography>

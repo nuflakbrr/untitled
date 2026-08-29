@@ -32,7 +32,7 @@ type ArticleDetailsViewProps = {
 
 export function ArticleDetailsView({ article, relatedArticles = [] }: ArticleDetailsViewProps) {
   return (
-    <Container sx={{ pt: { xs: 3, md: 5 }, pb: { xs: 10, md: 15 } }}>
+    <Container sx={{ pt: { xs: 10, md: 14 }, pb: { xs: 10, md: 15 } }}>
       <CustomBreadcrumbs
         links={[
           { name: 'Home', href: '/' },
