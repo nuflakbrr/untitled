@@ -87,7 +87,7 @@ export function ArticleListView() {
   const isEmpty = !isPending && !isError && articles.length === 0;
 
   return (
-    <Container sx={{ pt: { xs: 5, md: 8 } }}>
+    <Container sx={{ pt: { xs: 10, md: 14 } }}>
       <Typography variant="h2" component="h1">
         Article
       </Typography>

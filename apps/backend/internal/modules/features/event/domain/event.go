@@ -51,9 +51,27 @@ type Benefit struct {
 	Order       int
 }
 
+type Tenant struct {
+	ID      string
+	Name    string
+	Slug    string
+	Code    string
+	Type    string
+	LogoURL *string
+	Website *string
+}
+
+type Creator struct {
+	ID        string
+	Name      string
+	Email     string
+	AvatarURL *string
+}
+
 type Event struct {
 	ID                   string
 	TenantID             string
+	Tenant               *Tenant
 	CategoryID           *string
 	Category             *Category
 	Title                string
@@ -78,6 +96,7 @@ type Event struct {
 	UpdatedAt            time.Time
 	DeletedAt            *time.Time
 	CreatedByID          *string
+	Creator              *Creator
 	Speakers             []Speaker
 	Benefits             []Benefit
 }

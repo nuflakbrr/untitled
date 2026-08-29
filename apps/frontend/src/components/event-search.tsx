@@ -67,6 +67,11 @@ export function EventSearch() {
       value ? `${paths.event.root}?search=${encodeURIComponent(value)}` : paths.event.root
     );
   }
+  function openEvent(slug: string) {
+    setOpen(false);
+    setQuery('');
+    router.push(paths.event.details(slug));
+  }
   return (
     <>
       <Box
@@ -149,7 +154,7 @@ export function EventSearch() {
                 key={event.id}
                 component="button"
                 type="button"
-                onClick={() => router.push(`${paths.event.root}/${event.slug}`)}
+                onClick={() => openEvent(event.slug)}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',

@@ -2,6 +2,24 @@ export default {
   /**
    * @set Solar icons
    */
+  'solar:map-point-bold': {
+    body: '<path fill="currentColor" fill-rule="evenodd" d="M12 2C7.582 2 4 5.582 4 10c0 5.25 7.105 11.414 7.408 11.674a.9.9 0 0 0 1.184 0C12.895 21.414 20 15.25 20 10c0-4.418-3.582-8-8-8m0 11a3 3 0 1 0 0-6a3 3 0 0 0 0 6" clip-rule="evenodd"/>',
+  },
+  'solar:videocamera-record-bold': {
+    body: '<path fill="currentColor" fill-rule="evenodd" d="M2 7.75A3.75 3.75 0 0 1 5.75 4h7.5A3.75 3.75 0 0 1 17 7.75v8.5A3.75 3.75 0 0 1 13.25 20h-7.5A3.75 3.75 0 0 1 2 16.25zM18.5 8.78l2.96-1.974A1 1 0 0 1 23 7.638v8.724a1 1 0 0 1-1.54.832L18.5 15.22zM7.5 12a2 2 0 1 1 4 0a2 2 0 0 1-4 0" clip-rule="evenodd"/>',
+  },
+  'solar:diploma-verified-bold-duotone': {
+    body: '<path fill="currentColor" d="M19 19.5v-7.25c0-.69-.56-1.25-1.25-1.25h-11.5C5.56 11 5 11.56 5 12.25V19.5c0 .69.56 1.25 1.25 1.25h11.5c.69 0 1.25-.56 1.25-1.25" opacity="0.4"/><path fill="currentColor" fill-rule="evenodd" d="M12 2a4.5 4.5 0 0 0-4.5 4.5c0 .762.19 1.48.524 2.106L3.44 11.23a1.25 1.25 0 0 0-.19 1.442l1.5 2.6a1.25 1.25 0 0 0 1.34.613l2.875-.544a4.5 4.5 0 0 0 6.07 0l2.875.544a1.25 1.25 0 0 0 1.34-.613l1.5-2.6a1.25 1.25 0 0 0-.19-1.442l-4.584-2.624A4.5 4.5 0 0 0 16.5 6.5A4.5 4.5 0 0 0 12 2m0 2a2.5 2.5 0 1 1 0 5a2.5 2.5 0 0 1 0-5" clip-rule="evenodd"/>',
+  },
+  'solar:user-id-bold': {
+    body: '<path fill="currentColor" fill-rule="evenodd" d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12S6.477 2 12 2m0 4a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7m-5.5 11.25c.34-2.52 2.47-4.25 5.5-4.25s5.16 1.73 5.5 4.25c-1.52 1.39-3.48 2.25-5.5 2.25s-3.98-.86-5.5-2.25" clip-rule="evenodd"/>',
+  },
+  'solar:buildings-bold': {
+    body: '<path fill="currentColor" fill-rule="evenodd" d="M2 19.25V6.75A2.75 2.75 0 0 1 4.75 4h5.5A2.75 2.75 0 0 1 13 6.75v12.5h8.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75M14.5 9.75A2.75 2.75 0 0 1 17.25 7h2A2.75 2.75 0 0 1 22 9.75v9.5h-7.5zM6 7.75a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5A.75.75 0 0 1 6 7.75m0 3.5a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75m0 3.5a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75m11-4a.75.75 0 0 1 .75-.75h1a.75.75 0 0 1 0 1.5h-1a.75.75 0 0 1-.75-.75m0 3.5a.75.75 0 0 1 .75-.75h1a.75.75 0 0 1 0 1.5h-1a.75.75 0 0 1-.75-.75" clip-rule="evenodd"/>',
+  },
+  'solar:arrow-right-up-linear': {
+    body: '<path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6m0 0H9m9 0v9"/>',
+  },
   'solar:double-alt-arrow-up-bold-duotone': {
     body: '<path fill="currentColor" d="M5 17.75a.75.75 0 0 1-.488-1.32l7-6a.75.75 0 0 1 .976 0l7 6A.75.75 0 0 1 19 17.75z" opacity="0.4"/><path fill="currentColor" fill-rule="evenodd" d="M4.43 13.488a.75.75 0 0 0 1.058.081L12 7.988l6.512 5.581a.75.75 0 1 0 .976-1.138l-7-6a.75.75 0 0 0-.976 0l-7 6a.75.75 0 0 0-.081 1.057" clip-rule="evenodd"/>',
   },
