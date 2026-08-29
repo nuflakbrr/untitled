@@ -103,6 +103,29 @@ func TestParseToken_TamperedToken(t *testing.T) {
 	}
 }
 
+func TestRefreshToken_ExpiredToken(t *testing.T) {
+	setupTestSecret(t)
+	os.Setenv("JWT_EXPIRATION", "-1s")
+
+	token, err := GenerateToken(
+		"user-123", "tenant-456", "Test Uni", "test", "TU", "ROOT",
+		"test@test.com", "Test", "superadmin", "role-1",
+		false, []string{"superadmin"},
+	)
+	if err != nil {
+		t.Fatalf("GenerateToken() error = %v", err)
+	}
+
+	os.Setenv("JWT_EXPIRATION", "1h")
+	refreshed, err := RefreshToken(token)
+	if err != nil {
+		t.Fatalf("RefreshToken(expired) error = %v", err)
+	}
+	if _, err := ParseToken(refreshed); err != nil {
+		t.Fatalf("ParseToken(refreshed) error = %v", err)
+	}
+}
+
 func TestValidateSecret_Development(t *testing.T) {
 	// dev mode: short secret should just warn, not fail
 	os.Setenv("JWT_SECRET", "short")

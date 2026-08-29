@@ -123,10 +123,14 @@ func ParseToken(tokenString string) (*Claims, error) {
 		}
 		return GetSecret(), nil
 	})
+	var claims *Claims
+	if token != nil {
+		claims, _ = token.Claims.(*Claims)
+	}
 
 	if err != nil {
 		if errors.Is(err, jwt.ErrTokenExpired) {
-			return nil, ErrExpiredToken
+			return claims, ErrExpiredToken
 		}
 		if errors.Is(err, jwt.ErrSignatureInvalid) {
 			return nil, ErrInvalidSignature
@@ -134,8 +138,7 @@ func ParseToken(tokenString string) (*Claims, error) {
 		return nil, fmt.Errorf("%w: %v", ErrInvalidToken, err)
 	}
 
-	claims, ok := token.Claims.(*Claims)
-	if !ok || !token.Valid {
+	if claims == nil || !token.Valid {
 		return nil, ErrInvalidToken
 	}
 
@@ -154,6 +157,9 @@ func RefreshToken(oldTokenString string) (string, error) {
 		if !errors.Is(err, ErrExpiredToken) {
 			return "", err
 		}
+	}
+	if claims == nil {
+		return "", ErrInvalidToken
 	}
 
 	return GenerateToken(

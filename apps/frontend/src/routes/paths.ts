@@ -10,6 +10,13 @@ export const pathWithSlash = (path: string) => (path.endsWith('/') ? path : `${p
 
 export const paths = {
   home: '/',
+  auth: {
+    signIn: '/auth/sign-in',
+  },
+  dashboard: {
+    root: '/dashboard',
+    events: '/dashboard/events',
+  },
   /**
    * Article
    */
