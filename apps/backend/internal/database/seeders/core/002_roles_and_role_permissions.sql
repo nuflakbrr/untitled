@@ -48,7 +48,16 @@ JOIN core.permissions p ON p.name IN (
     'certificates.read',
     'certificates.create',
     'support.read',
-    'support.update'
+    'support.update',
+    'articles.read',
+    'articles.create',
+    'articles.update',
+    'articles.delete',
+    'article_categories.read',
+    'galleries.read',
+    'galleries.create',
+    'galleries.update',
+    'galleries.delete'
 )
 WHERE r.name = 'panitia'
 ON CONFLICT (role_id, permission_id) DO NOTHING;
