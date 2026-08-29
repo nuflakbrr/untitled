@@ -1,0 +1,45 @@
+meta {
+  name: Create Certificate Test Event
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/features/v1/events
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+
+body:json {
+  {
+    "title": "Certificate API Test {{$randomInt}}",
+    "category_id": "83780fb3-7c86-48f7-aeac-4e169a2ef760",
+    "description": "Disposable event for certificate endpoint testing",
+    "start_date": "2027-12-10T00:00:00Z",
+    "end_date": "2027-12-10T00:00:00Z",
+    "start_time": "09:00",
+    "end_time": "11:00",
+    "location": "API Test Hall",
+    "event_type": "OFFLINE",
+    "quota": 2,
+    "price": 0,
+    "registration_deadline": "2027-12-09T23:59:59Z",
+    "certificate_enabled": true
+  }
+}
+
+script:post-response {
+  if (res.status === 201) bru.setEnvVar("certificateEventId", res.body.data.id);
+}
+
+tests {
+  test("status 201", function() { expect(res.status).to.equal(201); });
+}

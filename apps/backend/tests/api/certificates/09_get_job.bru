@@ -1,0 +1,28 @@
+meta {
+  name: Get Certificate Generation Job
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/features/v1/certificates/jobs/{{certificateJobId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{rootAccessToken}}
+}
+
+script:pre-request {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("generation completed", function() {
+    expect(res.body.data.status).to.equal("COMPLETED");
+    expect(res.body.data.processed).to.equal(1);
+    expect(res.body.data.failed).to.equal(0);
+  });
+}

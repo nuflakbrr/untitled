@@ -2335,13 +2335,13 @@
         ]
       }
     },
-    "/modules/v1/certificates/verify/{certificate_number}": {
+    "/features/v1/certificates/verify/{identifier}": {
       "get": {
         "description": "Halaman verifikasi publik keaslian sertifikat peserta tanpa perlu login.",
         "parameters": [
           {
             "in": "path",
-            "name": "certificate_number",
+            "name": "identifier",
             "required": true,
             "schema": {
               "example": "CERT/CS-2026/001",
@@ -2361,7 +2361,7 @@
             "description": "Data sertifikat valid"
           },
           "404": {
-            "description": "Nomor sertifikat tidak ditemukan"
+            "description": "Sertifikat tidak ditemukan"
           }
         },
         "summary": "Verifikasi Sertifikat Publik",
