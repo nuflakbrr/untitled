@@ -16,10 +16,12 @@ export function HomeView({
   events,
   categories,
   galleries,
+  isAuthenticated = false,
 }: {
   events: PublicEvent[];
   categories: PublicCategory[];
   galleries: PublicGallery[];
+  isAuthenticated?: boolean;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const activeEvent = events[activeIndex % Math.max(events.length, 1)];
@@ -35,6 +37,7 @@ export function HomeView({
     <>
       <Hero
         event={activeEvent}
+        isAuthenticated={isAuthenticated}
         total={events.length}
         activeIndex={activeIndex}
         onChange={setActiveIndex}

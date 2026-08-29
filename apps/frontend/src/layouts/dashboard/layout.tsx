@@ -302,7 +302,12 @@ function TenantSwitcher() {
               ) : (
                 <Box
                   component="span"
-                  sx={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.4 }}
+                  sx={{
+                    display: 'block',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    lineHeight: 1.4,
+                  }}
                 >
                   {tenantOptions.find((tenant) => tenant.id === value)?.name ||
                     session.tenant?.name ||

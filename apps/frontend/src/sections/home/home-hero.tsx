@@ -15,11 +15,13 @@ import { Meta, formatDate } from './home-meta';
 
 export function Hero({
   event,
+  isAuthenticated = false,
   total,
   activeIndex,
   onChange,
 }: {
   event?: PublicEvent;
+  isAuthenticated?: boolean;
   total: number;
   activeIndex: number;
   onChange: (index: number) => void;
@@ -53,16 +55,25 @@ export function Hero({
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mt: 4 }}>
               <Button
                 component={RouterLink}
-                href={paths.auth.signUp}
+                href={
+                  isAuthenticated && event ? paths.event.details(event.slug) : paths.auth.signUp
+                }
                 variant="contained"
                 size="large"
                 disabled={!event}
               >
-                Daftar sekarang
+                {isAuthenticated ? 'Lihat detail event' : 'Daftar sekarang'}
               </Button>
-              <Button component="a" href="#events" variant="outlined" size="large">
-                Lihat semua event
-              </Button>
+              {!isAuthenticated && (
+                <Button
+                  component={RouterLink}
+                  href={paths.event.root}
+                  variant="outlined"
+                  size="large"
+                >
+                  Lihat semua event
+                </Button>
+              )}
             </Stack>
             {event && (
               <Stack direction="row" spacing={2.5} sx={{ mt: 4 }}>

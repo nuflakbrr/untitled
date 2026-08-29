@@ -11,6 +11,7 @@ import { fetchBackend, SESSION_COOKIE, sessionFromToken } from './server';
 
 export type AuthActionState = { error: string };
 export type AuthActionResult<T> = { data: T; error: null } | { data: null; error: string };
+export type EventSearchResult = { id: string; title: string; slug: string; banner?: string | null };
 
 const credentialsSchema = z.object({
   email: z.email(),
@@ -29,6 +30,12 @@ const signUpSchema = z
     path: ['confirmation'],
   });
 const switchSchema = z.uuid();
+const eventSearchSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  slug: z.string(),
+  banner: z.string().nullish(),
+});
 
 async function responseJson<T>(response: Response) {
   return (await response.json().catch(() => ({
@@ -121,6 +128,19 @@ export async function signUpAction(
 export async function signOutAction() {
   (await cookies()).delete(SESSION_COOKIE);
   redirect('/auth/sign-in');
+}
+
+export async function searchEventsAction(
+  query: string
+): Promise<AuthActionResult<EventSearchResult[]>> {
+  const value = query.trim();
+  const search = value ? `&search=${encodeURIComponent(value)}` : '';
+  const backend = await fetchBackend(`features/v1/events?status=PUBLISHED${search}&page=1&limit=5`);
+  const payload = await responseJson<unknown[]>(backend);
+  const results = z.array(eventSearchSchema).safeParse(payload.data);
+  if (!backend.ok || !results.success)
+    return { data: null, error: payload.message || 'Pencarian event gagal' };
+  return { data: results.data, error: null };
 }
 
 export async function listTenantsAction(): Promise<AuthActionResult<TenantOption[]>> {

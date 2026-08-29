@@ -47,7 +47,13 @@ export function FinalCta() {
             >
               Buat Akun Gratis
             </Button>
-            <Button component="a" href="#events" color="white" variant="outlined" size="large">
+            <Button
+              component={RouterLink}
+              href={paths.event.root}
+              color="white"
+              variant="outlined"
+              size="large"
+            >
               Jelajahi Event
             </Button>
           </Stack>
