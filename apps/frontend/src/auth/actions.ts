@@ -14,8 +14,17 @@ export type AuthActionResult<T> = { data: T; error: null } | { data: null; error
 export type EventSearchResult = { id: string; title: string; slug: string; banner?: string | null };
 export type ParticipantRegistration = {
   id: string;
+  event_id: string;
+  qr_token: string;
+  registration_number: string;
   event_title: string;
   event_slug: string;
+  event_banner?: string | null;
+  event_start_date: string;
+  event_location: string;
+  event_type: string;
+  attendance_status: string;
+  certificate_status: string;
   status: string;
   created_at: string;
 };
@@ -37,7 +46,11 @@ const signUpSchema = z
     path: ['confirmation'],
   });
 const switchSchema = z.uuid();
-const registrationSchema = z.object({ event_id: z.uuid(), online_attendance: z.boolean() });
+const registrationSchema = z.object({
+  event_id: z.uuid(),
+  online_attendance: z.boolean(),
+  return_to: z.string().startsWith('/event/').optional(),
+});
 const eventSearchSchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -46,11 +59,30 @@ const eventSearchSchema = z.object({
 });
 const participantRegistrationSchema = z.object({
   id: z.string(),
+  event_id: z.string(),
+  qr_token: z.string(),
+  registration_number: z.string(),
   event_title: z.string(),
   event_slug: z.string(),
+  event_banner: z.string().nullish(),
+  event_start_date: z.string(),
+  event_location: z.string(),
+  event_type: z.string(),
+  attendance_status: z.string(),
+  certificate_status: z.string(),
   status: z.string(),
   created_at: z.string(),
 });
+
+async function setRegistrationError(error: string) {
+  (await cookies()).set('registration_error', error, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 10,
+  });
+}
 
 async function responseJson<T>(response: Response) {
   return (await response.json().catch(() => ({
@@ -188,8 +220,12 @@ export async function registerAndCheckoutAction(formData: FormData) {
   const input = registrationSchema.safeParse({
     event_id: formData.get('event_id'),
     online_attendance: formData.get('online_attendance') === 'true',
+    return_to: formData.get('return_to'),
   });
-  if (!input.success) redirect('/event');
+  if (!input.success) {
+    await setRegistrationError('registration_invalid');
+    redirect('/event');
+  }
   const auth = await authenticatedSession();
   if (!auth) redirect('/auth/sign-in');
 
@@ -198,16 +234,53 @@ export async function registerAndCheckoutAction(formData: FormData) {
     body: JSON.stringify(input.data),
   });
   const registration = await responseJson<{ id?: string }>(registrationResponse);
-  if (!registrationResponse.ok || !registration.data?.id) redirect('/event?error=registration');
+  if (!registrationResponse.ok || !registration.data?.id) {
+    const errorCode = registration.message.toLowerCase().includes('closed')
+      ? 'registration_closed'
+      : registration.message.toLowerCase().includes('quota')
+        ? 'quota_full'
+        : registration.message.toLowerCase().includes('already registered')
+          ? 'already_registered'
+          : 'registration';
+    await setRegistrationError(errorCode);
+    redirect(input.data.return_to ?? '/event');
+  }
 
   const checkoutResponse = await fetchBackend('features/v1/payments/checkout', auth.token, {
     method: 'POST',
     body: JSON.stringify({ registration_id: registration.data.id }),
   });
   const checkout = await responseJson<{ payment_url?: string }>(checkoutResponse);
-  if (!checkoutResponse.ok) redirect('/participant/dashboard?error=checkout');
+  if (!checkoutResponse.ok) {
+    await setRegistrationError('checkout');
+    redirect('/participant/dashboard');
+  }
   if (checkout.data?.payment_url) redirect(checkout.data.payment_url);
   redirect('/participant/dashboard');
+}
+
+export async function checkoutRegistrationAction(formData: FormData) {
+  const registrationID = z.uuid().safeParse(formData.get('registration_id'));
+  const returnToValue = formData.get('return_to');
+  const returnTo = safeReturnTo(typeof returnToValue === 'string' ? returnToValue : null);
+  if (!registrationID.success) {
+    await setRegistrationError('checkout');
+    redirect(returnTo);
+  }
+
+  const auth = await authenticatedSession();
+  if (!auth) redirect(`/auth/sign-in?returnTo=${encodeURIComponent(returnTo)}`);
+
+  const response = await fetchBackend('features/v1/payments/checkout', auth.token, {
+    method: 'POST',
+    body: JSON.stringify({ registration_id: registrationID.data }),
+  });
+  const checkout = await responseJson<{ payment_url?: string }>(response);
+  if (!response.ok || !checkout.data?.payment_url) {
+    await setRegistrationError('checkout');
+    redirect(returnTo);
+  }
+  redirect(checkout.data.payment_url);
 }
 
 export async function listTenantsAction(): Promise<AuthActionResult<TenantOption[]>> {

@@ -1,19 +1,35 @@
+import { cookies } from 'next/headers';
+
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
+import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
-import Alert from '@mui/material/Alert';
+import Table from '@mui/material/Table';
+import Button from '@mui/material/Button';
+import TableRow from '@mui/material/TableRow';
+import TableHead from '@mui/material/TableHead';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
+import TableContainer from '@mui/material/TableContainer';
 
 import { paths } from 'src/routes/paths';
 
+import { Iconify } from 'src/components/iconify';
+
 import { listMyRegistrationsAction } from 'src/auth/actions';
+
+import { ParticipantTicketQR } from './participant-ticket-qr';
 
 export default async function ParticipantDashboardPage() {
   const result = await listMyRegistrationsAction();
+  const checkoutError = (await cookies()).get('registration_error')?.value === 'checkout';
   const registrations = result.data ?? [];
   const activeCount = registrations.filter((item) => item.status !== 'CANCELLED').length;
+  const releasedTickets = registrations.filter((item) =>
+    ['REGISTERED', 'CHECKED_IN'].includes(item.status)
+  );
 
   return (
     <Stack
@@ -82,68 +98,159 @@ export default async function ParticipantDashboardPage() {
         ))}
       </Box>
 
-      <Box>
-        <Typography variant="h4">Registrasi terbaru</Typography>
-        <Typography color="text.secondary" sx={{ mt: 0.5 }}>
-          Semua event yang terhubung dengan akunmu.
-        </Typography>
-      </Box>
-      {result.error ? <Alert severity="error">{result.error}</Alert> : null}
-      {!result.error && !registrations.length ? (
-        <Paper
-          variant="outlined"
-          sx={{ p: { xs: 3, md: 5 }, borderRadius: 2, textAlign: 'center' }}
-        >
-          <Typography variant="h5">Belum ada event di sini</Typography>
-          <Typography color="text.secondary" sx={{ mt: 1 }}>
-            Jelajahi event publik untuk mulai berpartisipasi.
-          </Typography>
-          <Button component="a" href={paths.event.root} variant="outlined" sx={{ mt: 3 }}>
-            Lihat katalog event
-          </Button>
-        </Paper>
-      ) : null}
-      {registrations.map((registration) => (
-        <Paper
-          key={registration.id}
-          variant="outlined"
-          sx={{
-            p: { xs: 2.5, md: 3 },
-            borderRadius: 2,
-            display: 'flex',
-            alignItems: { xs: 'flex-start', md: 'center' },
-            justifyContent: 'space-between',
-            gap: 2,
-            flexDirection: { xs: 'column', md: 'row' },
-          }}
-        >
-          <Box>
-            <Typography variant="h5">{registration.event_title}</Typography>
-            <Typography color="text.secondary" variant="body2" sx={{ mt: 1 }}>
-              Terdaftar{' '}
-              {new Date(registration.created_at).toLocaleDateString('id-ID', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-              })}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: '4fr 8fr' },
+          gap: 3,
+          alignItems: 'start',
+        }}
+      >
+        {releasedTickets.length ? (
+          <Paper
+            variant="outlined"
+            sx={{
+              position: 'sticky',
+              top: { xs: 72, md: 88 },
+              zIndex: 2,
+              p: { xs: 2, md: 2.5 },
+              borderRadius: 2,
+              bgcolor: 'background.paper',
+              boxShadow: 3,
+            }}
+          >
+            <Typography variant="overline" color="primary.main">
+              Tiket siap digunakan
             </Typography>
+            {releasedTickets.map((ticket) => (
+              <Stack key={ticket.id} spacing={1.5} sx={{ mt: 1 }}>
+                <Box
+                  component="img"
+                  src={ticket.event_banner || '/assets/illustrations/illustration-dashboard.webp'}
+                  alt={`Banner ${ticket.event_title}`}
+                  sx={{
+                    width: '100%',
+                    aspectRatio: '16 / 9',
+                    objectFit: 'cover',
+                    borderRadius: 1.5,
+                  }}
+                />
+                <Typography variant="h6">{ticket.event_title}</Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}
+                >
+                  <Iconify icon="solar:calendar-date-linear" width={16} />
+                  {new Date(ticket.event_start_date).toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </Typography>
+                <Stack direction="row" spacing={1.5} useFlexGap sx={{ flexWrap: 'wrap' }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}
+                  >
+                    <Iconify icon="solar:map-point-bold" width={16} />
+                    {ticket.event_location || 'Lokasi belum ditentukan'}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}
+                  >
+                    <Iconify icon="solar:monitor-smartphone-outline" width={16} />
+                    {ticket.event_type}
+                  </Typography>
+                </Stack>
+                <ParticipantTicketQR
+                  eventTitle={ticket.event_title}
+                  qrToken={ticket.qr_token}
+                  registrationNumber={ticket.registration_number}
+                />
+              </Stack>
+            ))}
+          </Paper>
+        ) : null}
+        <Stack spacing={3} sx={{ gridColumn: { xs: 'auto', md: '2' }, minWidth: 0 }}>
+          <Box>
+            <Typography variant="h4">Registrasi terbaru</Typography>
           </Box>
-          <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
-            <Chip
-              label={registration.status}
-              size="small"
-              color={registration.status === 'CONFIRMED' ? 'success' : 'default'}
-            />
-            <Button
-              component="a"
-              href={paths.event.details(registration.event_slug)}
-              variant="text"
+          {checkoutError ? (
+            <Alert severity="error">
+              Registrasi berhasil, tetapi halaman pembayaran iPaymu belum dapat dibuka. Silakan coba
+              lagi dari event tersebut atau hubungi penyelenggara.
+            </Alert>
+          ) : null}
+          {result.error ? <Alert severity="error">{result.error}</Alert> : null}
+          {!result.error && !registrations.length ? (
+            <Paper
+              variant="outlined"
+              sx={{ p: { xs: 3, md: 5 }, borderRadius: 2, textAlign: 'center' }}
             >
-              Lihat event
-            </Button>
-          </Box>
-        </Paper>
-      ))}
+              <Typography variant="h5">Belum ada event di sini</Typography>
+              <Typography color="text.secondary" sx={{ mt: 1 }}>
+                Jelajahi event publik untuk mulai berpartisipasi.
+              </Typography>
+              <Button component="a" href={paths.event.root} variant="outlined" sx={{ mt: 3 }}>
+                Lihat katalog event
+              </Button>
+            </Paper>
+          ) : null}
+          {registrations.length ? (
+            <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
+              <Table sx={{ minWidth: 860 }}>
+                <TableHead>
+                  <TableRow>
+                    {[
+                      'Event',
+                      'Tanggal',
+                      'Lokasi',
+                      'Tipe',
+                      'Kehadiran',
+                      'Sertifikat',
+                      'Status',
+                    ].map((heading) => (
+                      <TableCell key={heading}>{heading}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {registrations.map((registration) => (
+                    <TableRow key={registration.id} hover>
+                      <TableCell>
+                        <Button
+                          href={paths.event.details(registration.event_slug)}
+                          sx={{ p: 0, justifyContent: 'flex-start', textAlign: 'left' }}
+                        >
+                          {registration.event_title}
+                        </Button>
+                      </TableCell>
+                      <TableCell>
+                        {new Date(registration.event_start_date).toLocaleDateString('id-ID')}
+                      </TableCell>
+                      <TableCell>{registration.event_location || '-'}</TableCell>
+                      <TableCell>{registration.event_type}</TableCell>
+                      <TableCell>{registration.attendance_status}</TableCell>
+                      <TableCell>{registration.certificate_status}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={registration.status}
+                          size="small"
+                          color={registration.status === 'REGISTERED' ? 'success' : 'default'}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          ) : null}
+        </Stack>
+      </Box>
     </Stack>
   );
 }
