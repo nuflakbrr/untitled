@@ -30,7 +30,7 @@ const principles = [
     'Terhubung',
     'Mempertemukan mahasiswa, penyelenggara, dan komunitas kampus.',
   ],
-];
+] as const;
 
 export default function AboutPage() {
   return (
