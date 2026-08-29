@@ -1,0 +1,23 @@
+meta {
+  name: Get Paid Registration Payment
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/features/v1/payments/registration/{{crudRegistrationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{pesertaAccessToken}}
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("payment is created atomically with snapshotted price", function() {
+    expect(res.body.data.status).to.equal("WAITING");
+    expect(res.body.data.amount).to.equal(Number(bru.getEnvVar("crudRegistrationPrice")));
+  });
+}

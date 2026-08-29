@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"sync"
 	"testing"
 
 	"venturo-skeleton-go/internal/modules/features/payment/domain"
@@ -12,6 +13,7 @@ import (
 )
 
 type fakeRepo struct {
+	mu            sync.Mutex
 	registrations map[string]*repository.RegistrationForCheckout
 	gateways      map[string]*domain.Gateway
 	payments      map[string]*domain.Payment
@@ -20,6 +22,7 @@ type fakeRepo struct {
 	verifyScopeErr error
 	markPaidCalls  []markPaidCall
 	markFailedIDs  []string
+	checkoutClaims map[string]string
 }
 
 type markPaidCall struct {
@@ -30,10 +33,11 @@ type markPaidCall struct {
 
 func newFakeRepo() *fakeRepo {
 	return &fakeRepo{
-		registrations: map[string]*repository.RegistrationForCheckout{},
-		gateways:      map[string]*domain.Gateway{},
-		payments:      map[string]*domain.Payment{},
-		byTxn:         map[string]string{},
+		registrations:  map[string]*repository.RegistrationForCheckout{},
+		gateways:       map[string]*domain.Gateway{},
+		payments:       map[string]*domain.Payment{},
+		byTxn:          map[string]string{},
+		checkoutClaims: map[string]string{},
 	}
 }
 
@@ -53,29 +57,56 @@ func (f *fakeRepo) GetActiveGateway(_ context.Context, tenantID string) (*domain
 	return gw, nil
 }
 
-func (f *fakeRepo) UpsertPendingPayment(_ context.Context, registrationID, provider string, amount int64) (*domain.Payment, error) {
+func (f *fakeRepo) ClaimPendingPayment(_ context.Context, registrationID, provider string, amount int64) (*domain.Payment, string, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	if existing, ok := f.payments[registrationID]; ok {
 		if existing.Status != domain.StatusWaiting {
-			return nil, repository.ErrAlreadyPaid
+			return nil, "", repository.ErrAlreadyPaid
+		}
+		if existing.TransactionID != "" && existing.PaymentURL != "" {
+			return existing, "", nil
+		}
+		if f.checkoutClaims[existing.ID] != "" {
+			return nil, "", repository.ErrCheckoutInProgress
 		}
 		existing.Provider = provider
-		return existing, nil
+		token := "claim-" + existing.ID
+		f.checkoutClaims[existing.ID] = token
+		return existing, token, nil
 	}
 	payment := &domain.Payment{ID: "pay-" + registrationID, RegistrationID: registrationID, Amount: amount, Status: domain.StatusWaiting, Provider: provider}
 	f.payments[registrationID] = payment
-	return payment, nil
+	token := "claim-" + payment.ID
+	f.checkoutClaims[payment.ID] = token
+	return payment, token, nil
 }
 
-func (f *fakeRepo) UpdateAfterGatewayResponse(_ context.Context, id, transactionID, paymentURL, method, channel string) error {
+func (f *fakeRepo) CompleteCheckout(_ context.Context, id, checkoutToken, transactionID, paymentURL, method, channel string) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.checkoutClaims[id] != checkoutToken {
+		return repository.ErrPaymentNotFound
+	}
 	for _, p := range f.payments {
 		if p.ID == id {
 			p.TransactionID = transactionID
 			p.PaymentURL = paymentURL
 			f.byTxn[transactionID] = p.ID
+			delete(f.checkoutClaims, id)
 			return nil
 		}
 	}
 	return repository.ErrPaymentNotFound
+}
+
+func (f *fakeRepo) ReleaseCheckout(_ context.Context, id, checkoutToken string) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.checkoutClaims[id] == checkoutToken {
+		delete(f.checkoutClaims, id)
+	}
+	return nil
 }
 
 func (f *fakeRepo) GetByRegistrationID(_ context.Context, registrationID string) (*domain.Payment, error) {
@@ -143,11 +174,15 @@ type fakeClient struct {
 	env, va, apiKey string
 	createResp      *ipaymu.CreatePaymentData
 	createErr       error
+	createFn        func(context.Context, ipaymu.CreatePaymentRequest) (*ipaymu.CreatePaymentData, error)
 	statusResp      *ipaymu.TransactionStatus
 	statusErr       error
 }
 
-func (c *fakeClient) CreatePayment(context.Context, ipaymu.CreatePaymentRequest) (*ipaymu.CreatePaymentData, error) {
+func (c *fakeClient) CreatePayment(ctx context.Context, req ipaymu.CreatePaymentRequest) (*ipaymu.CreatePaymentData, error) {
+	if c.createFn != nil {
+		return c.createFn(ctx, req)
+	}
 	return c.createResp, c.createErr
 }
 
@@ -216,6 +251,7 @@ func TestCheckout_AlreadyRegisteredIsRejected(t *testing.T) {
 func TestCheckout_ManualProviderSkipsGatewayCall(t *testing.T) {
 	repo := newFakeRepo()
 	repo.registrations["reg-1"] = &repository.RegistrationForCheckout{UserID: "user-1", TenantID: "tenant-1", Amount: 10000, Status: "WAITING_PAYMENT"}
+	repo.payments["reg-1"] = &domain.Payment{ID: "pay-reg-1", RegistrationID: "reg-1", Amount: 7500, Status: domain.StatusWaiting, Provider: domain.ProviderManual}
 	repo.gateways["tenant-1"] = &domain.Gateway{TenantID: "tenant-1", Provider: domain.ProviderManual, BankName: "Bank Mandiri", BankAccountNumber: "12345", BankAccountHolder: "Fakultas Ilmu Komputer"}
 
 	called := false
@@ -229,8 +265,73 @@ func TestCheckout_ManualProviderSkipsGatewayCall(t *testing.T) {
 	if called {
 		t.Fatal("MANUAL provider must never call the iPaymu gateway")
 	}
-	if resp.BankAccountNumber != "12345" || resp.Provider != domain.ProviderManual {
+	if resp.BankAccountNumber != "12345" || resp.Provider != domain.ProviderManual || resp.Amount != 7500 {
 		t.Fatalf("unexpected manual checkout response: %+v", resp)
+	}
+}
+
+func TestCheckout_ConcurrentRequestDoesNotCreateSecondGatewaySession(t *testing.T) {
+	repo := newFakeRepo()
+	repo.registrations["reg-1"] = &repository.RegistrationForCheckout{UserID: "user-1", TenantID: "tenant-1", Amount: 10000, Status: "WAITING_PAYMENT"}
+	repo.gateways["tenant-1"] = &domain.Gateway{TenantID: "tenant-1", Provider: domain.ProviderIPaymu}
+
+	started := make(chan struct{})
+	release := make(chan struct{})
+	client := &fakeClient{createFn: func(context.Context, ipaymu.CreatePaymentRequest) (*ipaymu.CreatePaymentData, error) {
+		close(started)
+		<-release
+		return &ipaymu.CreatePaymentData{TransactionID: "trx-1", URL: "https://checkout.example/trx-1"}, nil
+	}}
+	svc := NewPaymentServiceWithInterfaces(repo, func(string, string, string) IpaymuClient { return client }, "", "")
+
+	firstDone := make(chan error, 1)
+	go func() {
+		_, err := svc.Checkout(context.Background(), "user-1", dto.CheckoutRequest{RegistrationID: "reg-1"})
+		firstDone <- err
+	}()
+	<-started
+
+	_, err := svc.Checkout(context.Background(), "user-1", dto.CheckoutRequest{RegistrationID: "reg-1"})
+	if !errors.Is(err, repository.ErrCheckoutInProgress) {
+		t.Fatalf("second checkout error = %v, want ErrCheckoutInProgress", err)
+	}
+	close(release)
+	if err := <-firstDone; err != nil {
+		t.Fatalf("first checkout: %v", err)
+	}
+}
+
+func TestCheckout_ReleasesClaimAfterGatewayFailure(t *testing.T) {
+	repo := newFakeRepo()
+	repo.registrations["reg-1"] = &repository.RegistrationForCheckout{UserID: "user-1", TenantID: "tenant-1", Amount: 10000, Status: "WAITING_PAYMENT"}
+	repo.gateways["tenant-1"] = &domain.Gateway{TenantID: "tenant-1", Provider: domain.ProviderIPaymu}
+	gatewayErr := errors.New("gateway unavailable")
+	svc := NewPaymentServiceWithInterfaces(repo, func(string, string, string) IpaymuClient {
+		return &fakeClient{createErr: gatewayErr}
+	}, "", "")
+
+	for attempt := 0; attempt < 2; attempt++ {
+		_, err := svc.Checkout(context.Background(), "user-1", dto.CheckoutRequest{RegistrationID: "reg-1"})
+		if !errors.Is(err, gatewayErr) {
+			t.Fatalf("attempt %d error = %v, want gateway error", attempt+1, err)
+		}
+	}
+}
+
+func TestCheckout_ResumesExistingGatewaySession(t *testing.T) {
+	repo := newFakeRepo()
+	repo.registrations["reg-1"] = &repository.RegistrationForCheckout{UserID: "user-1", TenantID: "tenant-1", Amount: 10000, Status: "WAITING_PAYMENT"}
+	repo.payments["reg-1"] = &domain.Payment{ID: "pay-1", RegistrationID: "reg-1", Amount: 10000, Status: domain.StatusWaiting, Provider: domain.ProviderIPaymu, TransactionID: "trx-1", PaymentURL: "https://checkout.example/trx-1"}
+	repo.gateways["tenant-1"] = &domain.Gateway{TenantID: "tenant-1", Provider: domain.ProviderIPaymu}
+	called := false
+	svc := NewPaymentServiceWithInterfaces(repo, func(string, string, string) IpaymuClient {
+		called = true
+		return &fakeClient{}
+	}, "", "")
+
+	response, err := svc.Checkout(context.Background(), "user-1", dto.CheckoutRequest{RegistrationID: "reg-1"})
+	if err != nil || called || response.TransactionID != "trx-1" {
+		t.Fatalf("response = %+v, gateway called = %v, error = %v", response, called, err)
 	}
 }
 
