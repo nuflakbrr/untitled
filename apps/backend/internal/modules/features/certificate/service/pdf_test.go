@@ -67,6 +67,17 @@ func TestPublicIP(t *testing.T) {
 	}
 }
 
+func TestAssetDialerRejectsInvalidAndPrivateAddresses(t *testing.T) {
+	generator := NewGoPDFGenerator(100 * time.Millisecond)
+	dial := generator.client.Transport.(*http.Transport).DialContext
+	if _, err := dial(context.Background(), "tcp", "invalid-address"); err == nil {
+		t.Fatal("DialContext() expected malformed address error")
+	}
+	if _, err := dial(context.Background(), "tcp", "127.0.0.1:80"); err == nil {
+		t.Fatal("DialContext() expected private address error")
+	}
+}
+
 func TestGoPDFGeneratorWithRemoteAssets(t *testing.T) {
 	png, err := base64.StdEncoding.DecodeString("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=")
 	if err != nil {

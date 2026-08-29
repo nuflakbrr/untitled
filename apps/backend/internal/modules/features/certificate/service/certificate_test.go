@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 	"time"
@@ -17,6 +18,8 @@ type repositoryStub struct {
 	participants []*domain.IssueData
 	saved        *domain.Certificate
 	finished     string
+	errAt        string
+	err          error
 }
 
 func (r *repositoryStub) UpsertTemplate(_ context.Context, _ string, _ *string, template *domain.Template) error {
@@ -25,17 +28,36 @@ func (r *repositoryStub) UpsertTemplate(_ context.Context, _ string, _ *string, 
 	return nil
 }
 func (r *repositoryStub) GetTemplate(context.Context, string, *string) (*domain.Template, error) {
+	if r.errAt == "template" {
+		return nil, r.err
+	}
 	return r.template, nil
 }
 func (r *repositoryStub) CreateJob(context.Context, string, *string, string, map[string]string) (*domain.GenerationJob, error) {
 	return r.job, nil
 }
 func (r *repositoryStub) ClaimJob(context.Context, string) (*domain.GenerationJob, error) {
+	if r.errAt == "claim" {
+		return nil, r.err
+	}
 	return r.job, nil
 }
-func (r *repositoryStub) PendingJobIDs(context.Context, int) ([]string, error) { return nil, nil }
-func (r *repositoryStub) RecoverInterruptedJobs(context.Context) error         { return nil }
+func (r *repositoryStub) PendingJobIDs(context.Context, int) ([]string, error) {
+	if r.errAt == "pending" {
+		return nil, r.err
+	}
+	return nil, nil
+}
+func (r *repositoryStub) RecoverInterruptedJobs(context.Context) error {
+	if r.errAt == "recover" {
+		return r.err
+	}
+	return nil
+}
 func (r *repositoryStub) ListEligible(context.Context, string, string) ([]*domain.IssueData, error) {
+	if r.errAt == "eligible" {
+		return nil, r.err
+	}
 	return r.participants, nil
 }
 func (r *repositoryStub) SaveCertificate(_ context.Context, certificate *domain.Certificate) error {
@@ -43,6 +65,9 @@ func (r *repositoryStub) SaveCertificate(_ context.Context, certificate *domain.
 	return nil
 }
 func (r *repositoryStub) RecordJobResult(_ context.Context, _ string, failed bool, _ error) error {
+	if r.errAt == "record" {
+		return r.err
+	}
 	r.job.Processed++
 	if failed {
 		r.job.Failed++
@@ -54,6 +79,9 @@ func (r *repositoryStub) FinishJob(_ context.Context, _ string, status string, _
 	return nil
 }
 func (r *repositoryStub) GetJob(context.Context, string, *string) (*domain.GenerationJob, error) {
+	if r.errAt == "get_job" {
+		return nil, r.err
+	}
 	return r.job, nil
 }
 func (r *repositoryStub) FindPublic(context.Context, string) (*domain.Certificate, error) {
@@ -227,5 +255,37 @@ func TestProcessJobGeneratesBatchOfOneHundred(t *testing.T) {
 	}
 	if repo.finished != domain.JobCompleted || repo.job.Processed != 100 || repo.job.Failed != 0 {
 		t.Fatalf("batch job = status %q, processed %d, failed %d", repo.finished, repo.job.Processed, repo.job.Failed)
+	}
+}
+
+func TestProcessJobInfrastructureFailures(t *testing.T) {
+	for _, stage := range []string{"claim", "template", "eligible", "record", "get_job"} {
+		t.Run(stage, func(t *testing.T) {
+			repo := &repositoryStub{
+				template: &domain.Template{NumberMode: domain.NumberModeAuto, NumberTemplate: "CERT/{TENANT}/{SLUG}/{REG_NO}"},
+				job:      &domain.GenerationJob{ID: "job-id", EventID: "event-id", TenantID: "tenant-id", Total: 1},
+				participants: []*domain.IssueData{{
+					RegistrationID: "registration-id", RegistrationNumber: "REG-1",
+					UserID: "user-id", EventID: "event-id", EventSlug: "event", TenantCode: "FT",
+				}},
+				errAt: stage, err: errors.New("infrastructure failure"),
+			}
+			files, err := storage.NewLocalClient(t.TempDir(), "http://localhost")
+			if err != nil {
+				t.Fatal(err)
+			}
+			service := NewCertificateService(repo, &generatorStub{}, files, "http://localhost", 1)
+			if err := service.processJob(context.Background(), "job-id"); err == nil {
+				t.Fatalf("processJob() expected %s failure", stage)
+			}
+		})
+	}
+}
+
+func TestStartReturnsRecoveryFailure(t *testing.T) {
+	want := errors.New("recovery failed")
+	service := NewCertificateService(&repositoryStub{errAt: "recover", err: want}, &generatorStub{}, nil, "http://localhost", 1)
+	if err := service.Start(context.Background()); !errors.Is(err, want) {
+		t.Fatalf("Start() error = %v", err)
 	}
 }
