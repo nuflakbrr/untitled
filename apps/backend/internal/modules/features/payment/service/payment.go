@@ -32,8 +32,9 @@ type ClientFactory func(env, virtualAccount, apiKey string) IpaymuClient
 type Repository interface {
 	GetRegistrationForCheckout(ctx context.Context, registrationID string) (*repository.RegistrationForCheckout, error)
 	GetActiveGateway(ctx context.Context, tenantID string) (*domain.Gateway, error)
-	UpsertPendingPayment(ctx context.Context, registrationID, provider string, amount int64) (*domain.Payment, error)
-	UpdateAfterGatewayResponse(ctx context.Context, id, transactionID, paymentURL, method, channel string) error
+	ClaimPendingPayment(ctx context.Context, registrationID, provider string, amount int64) (*domain.Payment, string, error)
+	CompleteCheckout(ctx context.Context, id, checkoutToken, transactionID, paymentURL, method, channel string) error
+	ReleaseCheckout(ctx context.Context, id, checkoutToken string) error
 	GetByRegistrationID(ctx context.Context, registrationID string) (*domain.Payment, error)
 	GetGatewayByTransactionID(ctx context.Context, transactionID string) (*domain.Payment, *domain.Gateway, error)
 	MarkPaid(ctx context.Context, paymentID string, verifiedByID *string, method, channel string) error
@@ -88,12 +89,19 @@ func (s *PaymentService) Checkout(ctx context.Context, userID string, req dto.Ch
 		return nil, err
 	}
 
-	payment, err := s.repository.UpsertPendingPayment(ctx, req.RegistrationID, gateway.Provider, reg.Amount)
+	payment, checkoutToken, err := s.repository.ClaimPendingPayment(ctx, req.RegistrationID, gateway.Provider, reg.Amount)
 	if err != nil {
 		return nil, err
 	}
+	if checkoutToken == "" {
+		response := toResponse(payment)
+		return &response, nil
+	}
 
 	if gateway.Provider == domain.ProviderManual {
+		if err := s.repository.ReleaseCheckout(ctx, payment.ID, checkoutToken); err != nil {
+			return nil, err
+		}
 		response := toResponse(payment)
 		response.Provider = domain.ProviderManual
 		response.BankName = gateway.BankName
@@ -113,9 +121,12 @@ func (s *PaymentService) Checkout(ctx context.Context, userID string, req dto.Ch
 		ReferenceID: payment.ID,
 	})
 	if err != nil {
+		if releaseErr := s.repository.ReleaseCheckout(ctx, payment.ID, checkoutToken); releaseErr != nil {
+			return nil, errors.Join(fmt.Errorf("open ipaymu checkout: %w", err), releaseErr)
+		}
 		return nil, fmt.Errorf("open ipaymu checkout: %w", err)
 	}
-	if err := s.repository.UpdateAfterGatewayResponse(ctx, payment.ID, created.TransactionID, created.URL, "", ""); err != nil {
+	if err := s.repository.CompleteCheckout(ctx, payment.ID, checkoutToken, created.TransactionID, created.URL, "", ""); err != nil {
 		return nil, err
 	}
 	payment.TransactionID = created.TransactionID

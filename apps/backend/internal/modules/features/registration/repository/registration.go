@@ -25,6 +25,7 @@ var (
 	ErrQuotaFull             = errors.New("event quota is full")
 	ErrOnlineUnavailable     = errors.New("online attendance is not available for this event")
 	ErrQRTokenExists         = errors.New("registration QR token already exists")
+	ErrPaymentInProgress     = errors.New("registration cannot be cancelled after payment has started")
 )
 
 const registrationSelect = `
@@ -134,6 +135,21 @@ func (r *RegistrationRepository) Create(ctx context.Context, userID, eventID str
 		}
 		return nil, fmt.Errorf("insert registration: %w", err)
 	}
+	if registration.Price > 0 {
+		_, err = tx.Exec(ctx, `
+			INSERT INTO payments (id, registration_id, amount, status, provider)
+			VALUES (
+				$1, $2, $3, 'WAITING',
+				COALESCE((
+					SELECT provider FROM tenant_payment_gateways
+					WHERE tenant_id = $4 AND is_active = TRUE
+				), 'MANUAL')
+			)
+		`, uuid.NewString(), registration.ID, registration.Price, registration.TenantID)
+		if err != nil {
+			return nil, fmt.Errorf("insert registration payment: %w", err)
+		}
+	}
 	if err := tx.Commit(ctx); err != nil {
 		return nil, fmt.Errorf("commit registration: %w", err)
 	}
@@ -175,15 +191,35 @@ func (r *RegistrationRepository) ListForExport(ctx context.Context, eventID stri
 
 func (r *RegistrationRepository) CancelMine(ctx context.Context, id, userID string) error {
 	tag, err := r.db.Exec(ctx, `
-		UPDATE registrations
+		UPDATE registrations r
 		SET status = 'CANCELLED', deleted_at = NOW(), updated_at = NOW()
-		WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL
-		  AND status IN ('WAITING_PAYMENT', 'REGISTERED')
+		WHERE r.id = $1 AND r.user_id = $2 AND r.deleted_at IS NULL
+		  AND r.status IN ('WAITING_PAYMENT', 'REGISTERED')
+		  AND NOT EXISTS (
+			SELECT 1 FROM payments p
+			WHERE p.registration_id = r.id
+			  AND (p.checkout_token IS NOT NULL OR p.transaction_id IS NOT NULL OR p.proof_url IS NOT NULL)
+		  )
 	`, id, userID)
 	if err != nil {
 		return fmt.Errorf("cancel registration: %w", err)
 	}
 	if tag.RowsAffected() == 0 {
+		var paymentInProgress bool
+		if err := r.db.QueryRow(ctx, `
+			SELECT EXISTS(
+				SELECT 1 FROM registrations r
+				JOIN payments p ON p.registration_id = r.id
+				WHERE r.id = $1 AND r.user_id = $2 AND r.deleted_at IS NULL
+				  AND r.status IN ('WAITING_PAYMENT', 'REGISTERED')
+				  AND (p.checkout_token IS NOT NULL OR p.transaction_id IS NOT NULL OR p.proof_url IS NOT NULL)
+			)
+		`, id, userID).Scan(&paymentInProgress); err != nil {
+			return fmt.Errorf("check registration payment progress: %w", err)
+		}
+		if paymentInProgress {
+			return ErrPaymentInProgress
+		}
 		return ErrRegistrationNotFound
 	}
 	return nil
