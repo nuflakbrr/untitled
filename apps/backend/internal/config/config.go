@@ -93,6 +93,7 @@ type PaymentConfig struct {
 }
 
 type CertificateConfig struct {
+	StorageDriver   string
 	PublicBaseURL   string
 	LocalStorageDir string
 	WorkerCount     int
@@ -113,6 +114,7 @@ type RedisConfig struct {
 func Load() *Config {
 	// Attempt to load .env from current directory, or apps/backend/.env, or root .env
 	_ = godotenv.Load(".env", "apps/backend/.env", "../../apps/backend/.env", "../.env")
+	environment := getEnv("ENV", "development")
 
 	return &Config{
 		Database: DatabaseConfig{
@@ -125,7 +127,7 @@ func Load() *Config {
 		},
 		Server: ServerConfig{
 			Port: getEnv("SERVER_PORT", "8000"),
-			Env:  getEnv("ENV", "development"),
+			Env:  environment,
 		},
 		Security: SecurityConfig{
 			EmailVerificationRequired: getEnvBool("EMAIL_VERIFICATION_REQUIRED", true),
@@ -168,12 +170,20 @@ func Load() *Config {
 			HTTPTimeout:   getEnvInt("PAYMENT_HTTP_TIMEOUT", 30),
 		},
 		Certificate: CertificateConfig{
+			StorageDriver:   getEnv("CERTIFICATE_STORAGE_DRIVER", defaultCertificateStorageDriver(environment)),
 			PublicBaseURL:   getEnv("CERTIFICATE_PUBLIC_BASE_URL", "http://localhost:8000"),
 			LocalStorageDir: getEnv("CERTIFICATE_LOCAL_STORAGE_DIR", "./tmp/certificates"),
 			WorkerCount:     getEnvInt("CERTIFICATE_WORKER_COUNT", 4),
 			AssetTimeout:    getEnvDuration("CERTIFICATE_ASSET_TIMEOUT", 10*time.Second),
 		},
 	}
+}
+
+func defaultCertificateStorageDriver(environment string) string {
+	if environment == "production" {
+		return "gcs"
+	}
+	return "local"
 }
 
 func (c *DatabaseConfig) GetDSN() string {

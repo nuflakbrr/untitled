@@ -41,6 +41,29 @@ func TestGoPDFGeneratorGenerate(t *testing.T) {
 	}
 }
 
+func TestGoPDFGeneratorAppliesFooterMargin(t *testing.T) {
+	generator := NewGoPDFGenerator(time.Second)
+	input := PDFInput{
+		CertificateNumber: "CERT/FT/test/REG-001",
+		VerificationURL:   "https://example.com/verify/id",
+		IssuedAt:          time.Date(2026, 8, 29, 0, 0, 0, 0, time.UTC),
+		Issue:             &domain.IssueData{ParticipantName: "Participant", EventTitle: "Event"},
+		Template:          &domain.Template{ShowIssuedDate: true},
+	}
+	withoutMargin, err := generator.Generate(context.Background(), input)
+	if err != nil {
+		t.Fatal(err)
+	}
+	input.Template.FooterMarginBottom = 100
+	withMargin, err := generator.Generate(context.Background(), input)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bytes.Equal(withoutMargin, withMargin) {
+		t.Fatal("FooterMarginBottom did not change the generated PDF")
+	}
+}
+
 func TestColor(t *testing.T) {
 	if got := color("#0f766e", 0, 0, 0); got != [3]uint8{15, 118, 110} {
 		t.Fatalf("color() = %v", got)
