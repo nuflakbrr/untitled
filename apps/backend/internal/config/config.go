@@ -10,16 +10,17 @@ import (
 )
 
 type Config struct {
-	Database DatabaseConfig
-	Server   ServerConfig
-	Security SecurityConfig
-	Auth     AuthConfig
-	WAHA     WAHAConfig
-	OpenAI   OpenAIConfig
-	Redis    RedisConfig
-	GCS      GCSConfig
-	Firebase FirebaseConfig
-	Payment  PaymentConfig
+	Database    DatabaseConfig
+	Server      ServerConfig
+	Security    SecurityConfig
+	Auth        AuthConfig
+	WAHA        WAHAConfig
+	OpenAI      OpenAIConfig
+	Redis       RedisConfig
+	GCS         GCSConfig
+	Firebase    FirebaseConfig
+	Payment     PaymentConfig
+	Certificate CertificateConfig
 }
 
 type GCSConfig struct {
@@ -91,6 +92,13 @@ type PaymentConfig struct {
 	HTTPTimeout   int    // HTTP timeout in seconds for calls to iPaymu
 }
 
+type CertificateConfig struct {
+	PublicBaseURL   string
+	LocalStorageDir string
+	WorkerCount     int
+	AssetTimeout    time.Duration
+}
+
 type RedisConfig struct {
 	Host     string
 	Port     string
@@ -158,6 +166,12 @@ func Load() *Config {
 		Payment: PaymentConfig{
 			PublicBaseURL: getEnv("PAYMENT_PUBLIC_BASE_URL", "http://localhost:8000"),
 			HTTPTimeout:   getEnvInt("PAYMENT_HTTP_TIMEOUT", 30),
+		},
+		Certificate: CertificateConfig{
+			PublicBaseURL:   getEnv("CERTIFICATE_PUBLIC_BASE_URL", "http://localhost:8000"),
+			LocalStorageDir: getEnv("CERTIFICATE_LOCAL_STORAGE_DIR", "./tmp/certificates"),
+			WorkerCount:     getEnvInt("CERTIFICATE_WORKER_COUNT", 4),
+			AssetTimeout:    getEnvDuration("CERTIFICATE_ASSET_TIMEOUT", 10*time.Second),
 		},
 	}
 }
