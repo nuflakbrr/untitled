@@ -1,45 +1,50 @@
 'use client';
 
-import type { FaqGroup } from 'src/lib/api';
+import type { PublicEvent, PublicGallery, PublicCategory } from 'src/lib/api/events';
 
-import { HomeCta } from '../home-cta';
-import { HomeHero } from '../home-hero';
-import { HomeFaqs } from '../home-faqs';
-import { HomeFocus } from '../home-focus';
-import { HomeClients } from '../home-clients';
-import { HomeProblem } from '../home-problem';
-import { HomeSolution } from '../home-solution';
-import { HomeResource } from '../home-resource';
-import { HomeTechStack } from '../home-tech-stack';
-import { HomeManagement } from '../home-management';
-import { HomeFloatingCta } from '../home-floating-cta';
-import { HomeSpecialOffer } from '../home-special-offer';
+import { useState, useEffect } from 'react';
 
-// ----------------------------------------------------------------------
-// Data: RSC props dari src/app/(home)/page.tsx — faqGroups (FAQ API) + waLink
-// (site-content API), keduanya ISR 300 dtk. Prop null = backend mati → tiap
-// section jatuh ke konten statis home-data.ts; home tidak pernah pecah.
+import { Hero } from '../home-hero';
+import { Stats } from '../home-stats';
+import { Gallery } from '../home-gallery';
+import { Benefits } from '../home-benefits';
+import { FinalCta } from '../home-final-cta';
+import { CategoryFilter } from '../home-category-filter';
+import { FeaturedEvents } from '../home-featured-events';
 
-type HomeViewProps = {
-  faqGroups?: FaqGroup[] | null;
-  waLink?: string | null;
-};
-
-export function HomeView({ faqGroups, waLink }: HomeViewProps) {
+export function HomeView({
+  events,
+  categories,
+  galleries,
+}: {
+  events: PublicEvent[];
+  categories: PublicCategory[];
+  galleries: PublicGallery[];
+}) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeEvent = events[activeIndex % Math.max(events.length, 1)];
+  useEffect(() => {
+    if (events.length < 2) return undefined;
+    const timer = window.setInterval(
+      () => setActiveIndex((index) => (index + 1) % events.length),
+      7000
+    );
+    return () => window.clearInterval(timer);
+  }, [events.length]);
   return (
     <>
-      <HomeHero waLink={waLink} />
-      <HomeClients />
-      <HomeProblem />
-      <HomeSolution />
-      <HomeFocus />
-      <HomeManagement />
-      <HomeResource />
-      <HomeSpecialOffer waLink={waLink} />
-      <HomeTechStack />
-      <HomeFaqs groups={faqGroups} />
-      <HomeCta waLink={waLink} />
-      <HomeFloatingCta waLink={waLink} />
+      <Hero
+        event={activeEvent}
+        total={events.length}
+        activeIndex={activeIndex}
+        onChange={setActiveIndex}
+      />
+      <CategoryFilter categories={categories} />
+      <FeaturedEvents events={events} />
+      <Stats events={events} />
+      <Gallery galleries={galleries} />
+      <Benefits />
+      <FinalCta />
     </>
   );
 }

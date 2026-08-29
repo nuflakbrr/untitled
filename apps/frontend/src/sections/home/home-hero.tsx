@@ -1,151 +1,161 @@
-'use client';
-
-import { Fragment } from 'react';
-import { varAlpha } from 'minimal-shared/utils';
+import type { PublicEvent } from 'src/lib/api/events';
 
 import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
-import { Image } from 'src/components/image';
+import { paths } from 'src/routes/paths';
+import { RouterLink } from 'src/routes/components';
+
 import { Iconify } from 'src/components/iconify';
-import { AnimateCountUp } from 'src/components/animate';
 
-import { HERO, asset, CONTACT } from './home-data';
+import { Meta, formatDate } from './home-meta';
 
-// Above-the-fold = LCP: no entry animations here — SSR HTML must ship the
-// heading and the <img> fully visible (crawlers + LCP can't wait for JS).
-
-// ----------------------------------------------------------------------
-
-type HomeHeroProps = {
-  waLink?: string | null;
-};
-
-export function HomeHero({ waLink }: HomeHeroProps) {
+export function Hero({
+  event,
+  total,
+  activeIndex,
+  onChange,
+}: {
+  event?: PublicEvent;
+  total: number;
+  activeIndex: number;
+  onChange: (index: number) => void;
+}) {
   return (
-    <Box
-      component="section"
-      sx={(theme) => ({
-        overflow: 'hidden',
-        position: 'relative',
-        py: { xs: 8, md: 14 },
-        background: `linear-gradient(180deg, ${varAlpha(theme.vars.palette.primary.lighterChannel, 0.4)}, ${varAlpha(theme.vars.palette.primary.lighterChannel, 0)})`,
-      })}
-    >
+    <Box component="section" sx={{ pt: { xs: 13, md: 16 }, pb: { xs: 8, md: 10 } }}>
       <Container>
         <Box
           sx={{
-            gap: { xs: 5, md: 8 },
-            display: 'flex',
+            display: 'grid',
+            gap: { xs: 5, md: 7 },
             alignItems: 'center',
-            flexDirection: { xs: 'column', md: 'row' },
+            gridTemplateColumns: { md: 'minmax(0, .85fr) minmax(440px, 1.15fr)' },
           }}
         >
-          <Box sx={{ flex: 1 }}>
-            <Box
-              sx={{
-                px: 1.5,
-                py: 0.5,
-                mb: 3,
-                borderRadius: 1,
-                typography: 'subtitle2',
-                color: 'primary.dark',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 0.75,
-                bgcolor: 'primary.lighter',
-              }}
+          <Box>
+            <Typography variant="overline" color="primary.main">
+              Event kampus
+            </Typography>
+            <Typography variant="h1" sx={{ mt: 1.5, maxWidth: 650, letterSpacing: -1.8 }}>
+              {event?.title ?? 'Temukan event kampusmu.'}
+            </Typography>
+            <Typography
+              variant="h5"
+              color="text.secondary"
+              sx={{ mt: 2.5, maxWidth: 560, fontWeight: 400, lineHeight: 1.6 }}
             >
-              <Iconify width={18} icon="solar:check-circle-bold" />
-              {HERO.badge}
-            </Box>
-
-            <Typography component="h1" variant="h1" sx={{ mb: 3 }}>
-              {HERO.title}
+              {event?.description ??
+                'Belum ada event yang tersedia saat ini. Kembali lagi untuk melihat agenda terbaru.'}
             </Typography>
-
-            <Typography sx={{ mb: 4, maxWidth: 520, color: 'text.secondary' }}>
-              {HERO.description}
-            </Typography>
-
-            <Box sx={{ mb: 5 }}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mt: 4 }}>
               <Button
-                size="large"
-                color="primary"
+                component={RouterLink}
+                href={paths.auth.signUp}
                 variant="contained"
-                href={waLink ?? CONTACT.wa}
-                target="_blank"
-                rel="noopener noreferrer"
-                endIcon={<Iconify icon="eva:arrow-ios-forward-fill" />}
+                size="large"
+                disabled={!event}
               >
-                {HERO.cta}
+                Daftar sekarang
               </Button>
-            </Box>
+              <Button component="a" href="#events" variant="outlined" size="large">
+                Lihat semua event
+              </Button>
+            </Stack>
+            {event && (
+              <Stack direction="row" spacing={2.5} sx={{ mt: 4 }}>
+                <Meta icon="solar:calendar-date-linear" value={formatDate(event.start_date)} />
+                <Meta
+                  icon="solar:clock-circle-outline"
+                  value={`${event.start_time.slice(0, 5)} WIB`}
+                />
+              </Stack>
+            )}
+            {total > 1 && (
+              <Stack direction="row" spacing={1} sx={{ mt: 4 }}>
+                {Array.from({ length: total }).map((_, index) => (
+                  <Box
+                    key={index}
+                    component="button"
+                    aria-label={`Tampilkan event ${index + 1}`}
+                    onClick={() => onChange(index)}
+                    sx={{
+                      width: index === activeIndex ? 36 : 10,
+                      height: 10,
+                      p: 0,
+                      border: 0,
+                      cursor: 'pointer',
+                      borderRadius: 10,
+                      bgcolor: index === activeIndex ? 'primary.main' : 'divider',
+                    }}
+                  />
+                ))}
+              </Stack>
+            )}
           </Box>
-
-          <Box sx={{ flex: 1, width: 1 }}>
-            <Box sx={{ width: 1, position: 'relative' }}>
+          <Box sx={{ minHeight: { xs: 300, md: 570 }, position: 'relative' }}>
+            {event?.banner ? (
+              <>
+                <Box
+                  component="img"
+                  src={event.banner}
+                  alt={`Poster ${event.title}`}
+                  sx={{
+                    width: '100%',
+                    height: { xs: 390, md: 570 },
+                    display: 'block',
+                    objectFit: 'cover',
+                    borderRadius: 2.5,
+                    boxShadow: '0 30px 80px rgba(31, 49, 105, .2)',
+                  }}
+                />
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    left: { xs: 16, md: -28 },
+                    bottom: { xs: 16, md: 28 },
+                    px: 2.5,
+                    py: 2,
+                    color: 'common.white',
+                    bgcolor: 'grey.900',
+                    borderRadius: 1.5,
+                  }}
+                >
+                  <Typography variant="caption" sx={{ color: 'primary.light' }}>
+                    {event.event_type === 'ONLINE' ? 'Online event' : 'Offline event'}
+                  </Typography>
+                  <Typography variant="subtitle1" sx={{ mt: 0.5 }}>
+                    {event.location}
+                  </Typography>
+                </Box>
+              </>
+            ) : (
               <Box
-                aria-hidden
                 sx={{
-                  inset: 0,
-                  borderRadius: 3,
-                  position: 'absolute',
-                  bgcolor: 'primary.lighter',
-                  transform: 'translate(16px, 16px)',
+                  height: { xs: 300, md: 500 },
+                  display: 'grid',
+                  placeItems: 'center',
+                  textAlign: 'center',
+                  bgcolor: 'background.neutral',
+                  border: '1px dashed',
+                  borderColor: 'divider',
+                  borderRadius: 2.5,
                 }}
-              />
-              <Image
-                alt={HERO.title}
-                src={asset('hero-team.webp')}
-                ratio="16/9"
-                visibleByDefault
-                slotProps={{ img: { fetchPriority: 'high' } }}
-                sx={{
-                  position: 'relative',
-                  borderRadius: 3,
-                  boxShadow: (theme) => theme.customShadows.z16,
-                }}
-              />
-            </Box>
-
-            <Box
-              sx={{
-                mt: 4,
-                gap: 4,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              {HERO.stats.map((stat, index) => (
-                <Fragment key={stat.label}>
-                  {index > 0 && (
-                    <Box sx={{ width: '1px', alignSelf: 'stretch', bgcolor: 'divider' }} />
-                  )}
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Box
-                      sx={{
-                        color: 'primary.main',
-                        display: 'flex',
-                        alignItems: 'baseline',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <AnimateCountUp to={stat.value} sx={{ typography: 'h2' }} />
-                      <Typography component="span" variant="h3">
-                        {stat.suffix}
-                      </Typography>
-                    </Box>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      {stat.label}
-                    </Typography>
-                  </Box>
-                </Fragment>
-              ))}
-            </Box>
+              >
+                <Box>
+                  <Iconify
+                    icon="solar:calendar-date-linear"
+                    width={44}
+                    sx={{ color: 'text.disabled' }}
+                  />
+                  <Typography color="text.secondary" sx={{ mt: 1 }}>
+                    Event baru segera hadir
+                  </Typography>
+                </Box>
+              </Box>
+            )}
           </Box>
         </Box>
       </Container>
