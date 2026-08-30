@@ -27,9 +27,13 @@ export default async function ParticipantDashboardPage() {
   const checkoutError = (await cookies()).get('registration_error')?.value === 'checkout';
   const registrations = result.data ?? [];
   const activeCount = registrations.filter((item) => item.status !== 'CANCELLED').length;
-  const releasedTickets = registrations.filter((item) =>
-    ['REGISTERED', 'CHECKED_IN'].includes(item.status)
-  );
+  const releasedTickets = registrations
+    .filter((item) => ['REGISTERED', 'CHECKED_IN'].includes(item.status))
+    .sort(
+      (first, second) =>
+        new Date(first.event_start_date).getTime() - new Date(second.event_start_date).getTime()
+    )
+    .slice(0, 1);
 
   return (
     <Stack
@@ -101,81 +105,85 @@ export default async function ParticipantDashboardPage() {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: '4fr 8fr' },
+          gridTemplateColumns: { xs: '1fr', md: releasedTickets.length ? '4fr 8fr' : '1fr' },
           gap: 3,
           alignItems: 'start',
         }}
       >
         {releasedTickets.length ? (
-          <Paper
-            variant="outlined"
+          <Box
             sx={{
-              position: 'sticky',
-              top: { xs: 72, md: 88 },
-              zIndex: 2,
-              p: { xs: 2, md: 2.5 },
-              borderRadius: 2,
-              bgcolor: 'background.paper',
-              boxShadow: 3,
+              position: { xs: 'static', md: 'sticky' },
+              top: { md: 88 },
+              zIndex: { md: 2 },
             }}
           >
             <Typography variant="overline" color="primary.main">
               Tiket siap digunakan
             </Typography>
-            {releasedTickets.map((ticket) => (
-              <Stack key={ticket.id} spacing={1.5} sx={{ mt: 1 }}>
-                <Box
-                  component="img"
-                  src={ticket.event_banner || '/assets/illustrations/illustration-dashboard.webp'}
-                  alt={`Banner ${ticket.event_title}`}
-                  sx={{
-                    width: '100%',
-                    aspectRatio: '16 / 9',
-                    objectFit: 'cover',
-                    borderRadius: 1.5,
-                  }}
-                />
-                <Typography variant="h6">{ticket.event_title}</Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}
-                >
-                  <Iconify icon="solar:calendar-date-linear" width={16} />
-                  {new Date(ticket.event_start_date).toLocaleDateString('id-ID', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                  })}
-                </Typography>
-                <Stack direction="row" spacing={1.5} useFlexGap sx={{ flexWrap: 'wrap' }}>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}
-                  >
-                    <Iconify icon="solar:map-point-bold" width={16} />
-                    {ticket.event_location || 'Lokasi belum ditentukan'}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}
-                  >
-                    <Iconify icon="solar:monitor-smartphone-outline" width={16} />
-                    {ticket.event_type}
-                  </Typography>
-                </Stack>
-                <ParticipantTicketQR
-                  eventTitle={ticket.event_title}
-                  qrToken={ticket.qr_token}
-                  registrationNumber={ticket.registration_number}
-                />
-              </Stack>
-            ))}
-          </Paper>
+            <Stack spacing={2} sx={{ mt: 2 }}>
+              {releasedTickets.map((ticket) => (
+                <Paper key={ticket.id} variant="outlined" sx={{ p: 1.5, borderRadius: 2 }}>
+                  <Stack spacing={1.5}>
+                    <Box
+                      component="img"
+                      src={
+                        ticket.event_banner || '/assets/illustrations/illustration-dashboard.webp'
+                      }
+                      alt={`Banner ${ticket.event_title}`}
+                      sx={{
+                        width: '100%',
+                        aspectRatio: '16 / 9',
+                        objectFit: 'cover',
+                        borderRadius: 1.5,
+                      }}
+                    />
+                    <Typography variant="h6">{ticket.event_title}</Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}
+                    >
+                      <Iconify icon="solar:calendar-date-linear" width={16} />
+                      {new Date(ticket.event_start_date).toLocaleDateString('id-ID', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      })}
+                    </Typography>
+                    <Stack direction="row" spacing={1.5} useFlexGap sx={{ flexWrap: 'wrap' }}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}
+                      >
+                        <Iconify icon="solar:map-point-bold" width={16} />
+                        {ticket.event_location || 'Lokasi belum ditentukan'}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}
+                      >
+                        <Iconify icon="solar:monitor-smartphone-outline" width={16} />
+                        {ticket.event_type}
+                      </Typography>
+                    </Stack>
+                    <ParticipantTicketQR
+                      eventTitle={ticket.event_title}
+                      qrToken={ticket.qr_token}
+                      registrationNumber={ticket.registration_number}
+                    />
+                  </Stack>
+                </Paper>
+              ))}
+            </Stack>
+          </Box>
         ) : null}
-        <Stack spacing={3} sx={{ gridColumn: { xs: 'auto', md: '2' }, minWidth: 0 }}>
+        <Stack
+          spacing={3}
+          sx={{ gridColumn: { xs: 'auto', md: releasedTickets.length ? '2' : '1' }, minWidth: 0 }}
+        >
           <Box>
             <Typography variant="h4">Registrasi terbaru</Typography>
           </Box>
