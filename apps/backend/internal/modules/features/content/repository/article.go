@@ -28,17 +28,26 @@ func NewArticleRepository(db *pgxpool.Pool) *ArticleRepository {
 
 // FindAll returns global (tenant_id NULL), ROOT-tenant, and the caller's own
 // tenant articles — same visibility rule as event_categories.
-func (r *ArticleRepository) FindAll(ctx context.Context, scopeTenantID *string, page, limit int) ([]*domain.Article, int64, error) {
+func (r *ArticleRepository) FindAll(ctx context.Context, scopeTenantID *string, page, limit int, search, categoryID string) ([]*domain.Article, int64, error) {
 	conditions := "a.tenant_id IS NULL OR t.type = 'ROOT'"
 	args := []any{}
 	if scopeTenantID != nil && *scopeTenantID != "" {
 		args = append(args, *scopeTenantID)
 		conditions += fmt.Sprintf(" OR a.tenant_id = $%d", len(args))
 	}
-	base := articleSelect + " LEFT JOIN core.tenants t ON t.id = a.tenant_id WHERE (" + conditions + ")"
+	where := "(" + conditions + ")"
+	if search != "" {
+		args = append(args, "%"+search+"%")
+		where += fmt.Sprintf(" AND a.title ILIKE $%d", len(args))
+	}
+	if categoryID != "" {
+		args = append(args, categoryID)
+		where += fmt.Sprintf(" AND EXISTS (SELECT 1 FROM _article_to_article_category atc WHERE atc.\"A\" = a.id AND atc.\"B\" = $%d)", len(args))
+	}
+	base := articleSelect + " LEFT JOIN core.tenants t ON t.id = a.tenant_id WHERE " + where
 
 	var total int64
-	if err := r.db.QueryRow(ctx, "SELECT COUNT(*) FROM articles a LEFT JOIN core.tenants t ON t.id = a.tenant_id WHERE ("+conditions+")", args...).Scan(&total); err != nil {
+	if err := r.db.QueryRow(ctx, "SELECT COUNT(*) FROM articles a LEFT JOIN core.tenants t ON t.id = a.tenant_id WHERE "+where, args...).Scan(&total); err != nil {
 		return nil, 0, fmt.Errorf("count articles: %w", err)
 	}
 

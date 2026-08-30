@@ -12,7 +12,7 @@ import (
 )
 
 type ArticleRepository interface {
-	FindAll(ctx context.Context, scopeTenantID *string, page, limit int) ([]*domain.Article, int64, error)
+	FindAll(ctx context.Context, scopeTenantID *string, page, limit int, search, categoryID string) ([]*domain.Article, int64, error)
 	FindByID(ctx context.Context, id string) (*domain.Article, error)
 	FindBySlug(ctx context.Context, slug string) (*domain.Article, error)
 	SlugExists(ctx context.Context, slug string) (bool, error)
@@ -59,7 +59,7 @@ func (s *ContentService) ListArticles(ctx context.Context, scopeTenantID *string
 	if query.TenantID != "" {
 		tenantFilter = &query.TenantID
 	}
-	articles, total, err := s.articles.FindAll(ctx, tenantFilter, page, limit)
+	articles, total, err := s.articles.FindAll(ctx, tenantFilter, page, limit, query.Search, query.CategoryID)
 	if err != nil {
 		return nil, 0, err
 	}

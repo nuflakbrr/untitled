@@ -13,7 +13,7 @@ import (
 var errCoverage = errors.New("coverage error")
 
 type coverageArticleRepo struct {
-	findAllFn    func(context.Context, *string, int, int) ([]*domain.Article, int64, error)
+	findAllFn    func(context.Context, *string, int, int, string, string) ([]*domain.Article, int64, error)
 	findByIDFn   func(context.Context, string) (*domain.Article, error)
 	findBySlugFn func(context.Context, string) (*domain.Article, error)
 	slugExistsFn func(context.Context, string) (bool, error)
@@ -22,8 +22,8 @@ type coverageArticleRepo struct {
 	deleteFn     func(context.Context, string, *string) error
 }
 
-func (r *coverageArticleRepo) FindAll(ctx context.Context, scope *string, page, limit int) ([]*domain.Article, int64, error) {
-	return r.findAllFn(ctx, scope, page, limit)
+func (r *coverageArticleRepo) FindAll(ctx context.Context, scope *string, page, limit int, search, categoryID string) ([]*domain.Article, int64, error) {
+	return r.findAllFn(ctx, scope, page, limit, search, categoryID)
 }
 func (r *coverageArticleRepo) FindByID(ctx context.Context, id string) (*domain.Article, error) {
 	return r.findByIDFn(ctx, id)
@@ -100,7 +100,7 @@ func TestContentServiceArticleCoverage(t *testing.T) {
 	NewContentService(nil, nil, nil)
 
 	repo := &coverageArticleRepo{
-		findAllFn: func(_ context.Context, scope *string, page, limit int) ([]*domain.Article, int64, error) {
+		findAllFn: func(_ context.Context, scope *string, page, limit int, _, _ string) ([]*domain.Article, int64, error) {
 			if scope == nil || *scope != tenant || page != 2 || limit != 5 {
 				t.Fatalf("unexpected list arguments: scope=%v page=%d limit=%d", scope, page, limit)
 			}
@@ -127,7 +127,7 @@ func TestContentServiceArticleCoverage(t *testing.T) {
 		t.Fatalf("DeleteArticle() error = %v", err)
 	}
 
-	repo.findAllFn = func(context.Context, *string, int, int) ([]*domain.Article, int64, error) { return nil, 0, errCoverage }
+	repo.findAllFn = func(context.Context, *string, int, int, string, string) ([]*domain.Article, int64, error) { return nil, 0, errCoverage }
 	if _, _, err := svc.ListArticles(ctx, nil, dto.ArticleQuery{}); !errors.Is(err, errCoverage) {
 		t.Fatalf("ListArticles() error = %v", err)
 	}
