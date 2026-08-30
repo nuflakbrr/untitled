@@ -19,6 +19,7 @@ import (
 	"venturo-skeleton-go/internal/modules/features/payment"
 	"venturo-skeleton-go/internal/modules/features/registration"
 	"venturo-skeleton-go/internal/modules/features/support"
+	"venturo-skeleton-go/internal/modules/features/testimonial"
 
 	"venturo-skeleton-go/internal/shared/audit"
 	"venturo-skeleton-go/internal/shared/authz"
@@ -136,6 +137,7 @@ func Setup(router *gin.Engine, db *pgxpool.Pool, cfg *config.Config) {
 		contentModule.SetupRoutes(featuresV1)
 		supportModule := support.Initialize(db)
 		supportModule.SetupRoutes(featuresV1)
+		testimonial.SetupRoutes(featuresV1, db)
 	}
 
 	log.Info("Routes setup completed", zap.Int("routes", len(router.Routes())))
