@@ -38,7 +38,7 @@ export default async function ParticipantDashboardPage() {
   return (
     <Stack
       spacing={{ xs: 3, md: 4 }}
-      sx={{ maxWidth: 1120, mx: 'auto', py: { xs: 3, md: 6 }, px: { xs: 2, md: 3 } }}
+      sx={{ maxWidth: 1220, mx: 'auto', py: { xs: 3, md: 6 }, px: { xs: 2, md: 3 } }}
     >
       <Paper
         elevation={0}

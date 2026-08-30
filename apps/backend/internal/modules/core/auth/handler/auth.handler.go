@@ -22,6 +22,15 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 	return &AuthHandler{service: service}
 }
 
+func (h *AuthHandler) Logout(c *gin.Context) {
+	claims, _ := middleware.GetUserFromContext(c)
+	if err := middleware.RevokeToken(c.Request.Context(), claims); err != nil {
+		response.Error(c, http.StatusInternalServerError, "Failed to revoke session", "")
+		return
+	}
+	response.Success(c, http.StatusOK, "Logged out successfully", nil)
+}
+
 // SignIn handles POST /core/v1/auth/signin
 func (h *AuthHandler) SignIn(c *gin.Context) {
 	var req dto.SignInRequest

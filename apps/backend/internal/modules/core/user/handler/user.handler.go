@@ -154,6 +154,21 @@ func (h *UserHandler) UpdateMe(c *gin.Context) {
 	response.Success(c, http.StatusOK, "Profile updated successfully", user)
 }
 
+// DeleteMe handles DELETE /core/v1/users/me.
+func (h *UserHandler) DeleteMe(c *gin.Context) {
+	claims, err := middleware.GetUserFromContext(c)
+	if err != nil || claims == nil {
+		response.Error(c, http.StatusUnauthorized, "Unauthorized", "")
+		return
+	}
+
+	if err := h.service.Delete(c.Request.Context(), claims.UserID); err != nil {
+		response.Error(c, http.StatusInternalServerError, "Failed to delete account", err.Error())
+		return
+	}
+	response.Success(c, http.StatusOK, "Account deleted successfully", nil)
+}
+
 // ChangePassword handles POST /core/v1/users/change-password
 func (h *UserHandler) ChangePassword(c *gin.Context) {
 	claims, err := middleware.GetUserFromContext(c)
@@ -174,6 +189,10 @@ func (h *UserHandler) ChangePassword(c *gin.Context) {
 			return
 		}
 		response.Error(c, http.StatusInternalServerError, "Failed to change password", err.Error())
+		return
+	}
+	if err := middleware.RevokeToken(c.Request.Context(), claims); err != nil {
+		response.Error(c, http.StatusInternalServerError, "Failed to revoke session", "")
 		return
 	}
 

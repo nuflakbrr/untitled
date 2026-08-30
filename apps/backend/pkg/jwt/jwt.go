@@ -3,6 +3,7 @@ package jwt
 import (
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"os"
 	"time"
 
@@ -94,6 +95,7 @@ func GenerateToken(
 		IsSuperAdmin: isSuperAdmin,
 		Roles:        roles,
 		RegisteredClaims: jwt.RegisteredClaims{
+			ID:        uuid.NewString(),
 			ExpiresAt: jwt.NewNumericDate(now.Add(expirationTime)),
 			IssuedAt:  jwt.NewNumericDate(now),
 			NotBefore: jwt.NewNumericDate(now),
