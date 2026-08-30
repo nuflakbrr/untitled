@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
 
+import { cookies } from 'next/headers';
+
 import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
 import Chip from '@mui/material/Chip';
+import Alert from '@mui/material/Alert';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 
 import { getPublicEvents, getPublicCategories } from 'src/lib/api/events';
-import { cookies } from 'next/headers';
 
 import { EventCard } from 'src/sections/home/home-event-card';
 

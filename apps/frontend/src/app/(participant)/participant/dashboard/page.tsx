@@ -24,7 +24,10 @@ import { ReviewForm } from './review-form';
 import { ParticipantTicketQR } from './participant-ticket-qr';
 
 export default async function ParticipantDashboardPage() {
-  const [result, reviewsResult] = await Promise.all([listMyRegistrationsAction(), listMyReviewsAction()]);
+  const [result, reviewsResult] = await Promise.all([
+    listMyRegistrationsAction(),
+    listMyReviewsAction(),
+  ]);
   const checkoutError = (await cookies()).get('registration_error')?.value === 'checkout';
   const registrations = result.data ?? [];
   const reviewed = new Set((reviewsResult.data ?? []).map((review) => review.registration_id));
@@ -243,7 +246,11 @@ export default async function ParticipantDashboardPage() {
                       <TableCell>
                         {registration.status === 'CHECKED_IN' && !reviewed.has(registration.id) ? (
                           <ReviewForm registrationID={registration.id} />
-                        ) : reviewed.has(registration.id) ? 'Sudah diulas' : '-'}
+                        ) : reviewed.has(registration.id) ? (
+                          'Sudah diulas'
+                        ) : (
+                          '-'
+                        )}
                       </TableCell>
                       <TableCell>
                         {new Date(registration.event_start_date).toLocaleDateString('id-ID')}

@@ -1,7 +1,6 @@
 'use client';
 
 import type { AuthSession } from 'src/auth/types';
-import { isAdminSession } from 'src/auth/types';
 
 import { useState } from 'react';
 
@@ -17,6 +16,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { Iconify } from 'src/components/iconify';
 
+import { isAdminSession } from 'src/auth/types';
 import { signOutAction } from 'src/auth/actions';
 
 export function UserMenu({ session }: { session: AuthSession }) {
