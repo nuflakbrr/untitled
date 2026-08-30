@@ -27,6 +27,18 @@ type User struct {
 	TenantType   *string  `json:"tenant_type,omitempty" db:"tenant_type"`
 }
 
+// TenantAccess is one row of core.user_has_tenants joined with tenant and role
+// names, used to tell a signed-in user which tenants they can switch into.
+type TenantAccess struct {
+	TenantID   string  `json:"tenant_id" db:"tenant_id"`
+	TenantName string  `json:"tenant_name" db:"tenant_name"`
+	TenantSlug string  `json:"tenant_slug" db:"tenant_slug"`
+	TenantCode string  `json:"tenant_code" db:"tenant_code"`
+	TenantType string  `json:"tenant_type" db:"tenant_type"`
+	RoleID     *string `json:"role_id,omitempty" db:"role_id"`
+	RoleName   *string `json:"role_name,omitempty" db:"role_name"`
+}
+
 // IsBanned checks if user is currently banned
 func (u *User) IsBanned() bool {
 	if !u.Banned {

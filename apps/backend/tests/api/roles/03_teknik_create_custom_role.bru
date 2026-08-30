@@ -1,0 +1,38 @@
+meta {
+  name: Teknik Creates Own Custom Role
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/core/v1/roles
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{teknikAccessToken}}
+}
+
+body:json {
+  {
+    "name": "Koordinator Teknik {{$randomInt}}",
+    "description": "Role custom milik Fakultas Teknik"
+  }
+}
+
+script:post-response {
+  bru.setEnvVar("crudTeknikRoleId", res.body.data.id);
+  bru.setEnvVar("crudTeknikRoleName", res.body.data.name);
+}
+
+tests {
+  test("status 201", function() { expect(res.status).to.equal(201); });
+  test("role is scoped to Teknik tenant", function() {
+    expect(res.body.data.tenant_id).to.equal(bru.getEnvVar("tenantTeknikId"));
+  });
+}

@@ -4,21 +4,23 @@ import "time"
 
 // CreateUserRequest represents request to create a new user
 type CreateUserRequest struct {
-	Email    string  `json:"email" binding:"required,email"`
-	Name     string  `json:"name" binding:"required,min=2,max=255"`
-	Password string  `json:"password" binding:"required,min=8"`
-	TenantID *string `json:"tenant_id" binding:"omitempty,uuid"`
-	Role     string  `json:"role" binding:"required,oneof=root_superadmin superadmin panitia scanner peserta"`
-	RoleID   *string `json:"role_id" binding:"omitempty,uuid"`
+	Email     string   `json:"email" binding:"required,email"`
+	Name      string   `json:"name" binding:"required,min=2,max=255"`
+	Password  string   `json:"password" binding:"required,min=8"`
+	TenantID  *string  `json:"tenant_id" binding:"omitempty,uuid"`
+	TenantIDs []string `json:"tenant_ids" binding:"omitempty,dive,uuid"`
+	Role      string   `json:"role" binding:"required,oneof=root_superadmin superadmin panitia scanner peserta"`
+	RoleID    *string  `json:"role_id" binding:"omitempty,uuid"`
 }
 
 // UpdateUserRequest represents request to update a user
 type UpdateUserRequest struct {
-	Name     *string `json:"name" binding:"omitempty,min=2,max=255"`
-	Image    *string `json:"image" binding:"omitempty,url"`
-	TenantID *string `json:"tenant_id" binding:"omitempty,uuid"`
-	Role     *string `json:"role" binding:"omitempty,oneof=root_superadmin superadmin panitia scanner peserta"`
-	RoleID   *string `json:"role_id" binding:"omitempty,uuid"`
+	Name      *string  `json:"name" binding:"omitempty,min=2,max=255"`
+	Image     *string  `json:"image" binding:"omitempty,url"`
+	TenantID  *string  `json:"tenant_id" binding:"omitempty,uuid"`
+	TenantIDs []string `json:"tenant_ids" binding:"omitempty,dive,uuid"`
+	Role      *string  `json:"role" binding:"omitempty,oneof=root_superadmin superadmin panitia scanner peserta"`
+	RoleID    *string  `json:"role_id" binding:"omitempty,uuid"`
 }
 
 // BanUserRequest represents request to ban or suspend a user
@@ -43,6 +45,7 @@ type ChangePasswordRequest struct {
 type UserResponse struct {
 	ID            string     `json:"id"`
 	TenantID      *string    `json:"tenant_id,omitempty"`
+	TenantIDs     []string   `json:"tenant_ids,omitempty"`
 	TenantName    *string    `json:"tenant_name,omitempty"`
 	TenantCode    *string    `json:"tenant_code,omitempty"`
 	Email         string     `json:"email"`

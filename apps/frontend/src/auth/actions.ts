@@ -1,15 +1,16 @@
 'use server';
 
-import type { AuthSession, ApiEnvelope, TenantOption } from './types';
+import type { MyTenant, AuthSession, ApiEnvelope, TenantOption } from './types';
 
 import { z } from 'zod';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
 import { paths } from 'src/routes/paths';
 
 import { fetchBackend, SESSION_COOKIE, sessionFromToken } from './server';
-import { safeReturnTo, isAdminSession, tenantOptionSchema } from './types';
+import { safeReturnTo, isAdminSession, myTenantSchema, tenantOptionSchema } from './types';
 
 export type AuthActionState = { error: string };
 export type AuthActionResult<T> = { data: T; error: null } | { data: null; error: string };
@@ -45,7 +46,13 @@ export type ParticipantCertificate = {
   download_url: string;
   issued_at: string;
 };
-export type ParticipantReview = { id: string; registration_id: string; event_id: string; rating: number; comment: string };
+export type ParticipantReview = {
+  id: string;
+  registration_id: string;
+  event_id: string;
+  rating: number;
+  comment: string;
+};
 
 const credentialsSchema = z.object({
   email: z.email(),
@@ -110,7 +117,13 @@ const profileSchema = z.object({
   name: z.string().trim().min(2, 'Nama minimal 2 karakter').max(255),
   image: z.string().trim().url('URL foto profil tidak valid').or(z.literal('')),
 });
-const participantReviewSchema = z.object({ id: z.string(), registration_id: z.string(), event_id: z.string(), rating: z.number(), comment: z.string() });
+const participantReviewSchema = z.object({
+  id: z.string(),
+  registration_id: z.string(),
+  event_id: z.string(),
+  rating: z.number(),
+  comment: z.string(),
+});
 
 async function setRegistrationError(error: string) {
   (await cookies()).set('registration_error', error, {
@@ -297,19 +310,34 @@ export async function listMyReviewsAction(): Promise<AuthActionResult<Participan
   const backend = await fetchBackend('features/v1/testimonials/me', auth.token);
   const payload = await responseJson<unknown[]>(backend);
   const reviews = z.array(participantReviewSchema).safeParse(payload.data);
-  if (!backend.ok || !reviews.success) return { data: null, error: payload.message || 'Review gagal dimuat' };
+  if (!backend.ok || !reviews.success)
+    return { data: null, error: payload.message || 'Review gagal dimuat' };
   return { data: reviews.data, error: null };
 }
 
-export async function createReviewAction(_state: ProfileActionState, formData: FormData): Promise<ProfileActionState> {
+export async function createReviewAction(
+  _state: ProfileActionState,
+  formData: FormData
+): Promise<ProfileActionState> {
   const rating = Number(formData.get('rating'));
   const comment = formData.get('comment');
   const registrationID = formData.get('registration_id');
-  if (!Number.isInteger(rating) || rating < 1 || rating > 5 || typeof comment !== 'string' || comment.trim().length < 3 || typeof registrationID !== 'string')
+  if (
+    !Number.isInteger(rating) ||
+    rating < 1 ||
+    rating > 5 ||
+    typeof comment !== 'string' ||
+    comment.trim().length < 3 ||
+    typeof registrationID !== 'string'
+  )
     return { error: 'Rating dan ulasan wajib diisi dengan benar', success: '' };
   const auth = await authenticatedSession();
   if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
-  const backend = await fetchBackend(`features/v1/testimonials/registration/${registrationID}`, auth.token, { method: 'POST', body: JSON.stringify({ rating, comment: comment.trim() }) });
+  const backend = await fetchBackend(
+    `features/v1/testimonials/registration/${registrationID}`,
+    auth.token,
+    { method: 'POST', body: JSON.stringify({ rating, comment: comment.trim() }) }
+  );
   const payload = await responseJson<unknown>(backend);
   if (!backend.ok) return { error: payload.message || 'Review gagal disimpan', success: '' };
   return { error: '', success: 'Review berhasil disimpan' };
@@ -429,6 +457,42 @@ export async function checkoutRegistrationAction(formData: FormData) {
   redirect(checkout.data.payment_url);
 }
 
+// listMyTenantsAction returns only the tenants the signed-in user may switch
+// into (root superadmin sees every tenant; everyone else sees whatever was
+// granted through core.user_has_tenants). Backend enforces this — this is
+// just what feeds the tenant switcher, not an access-control check.
+export async function listMyTenantsAction(): Promise<AuthActionResult<MyTenant[]>> {
+  const auth = await authenticatedSession();
+  if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
+
+  const backend = await fetchBackend('core/v1/auth/my-tenants', auth.token);
+  const payload = await responseJson<unknown[]>(backend);
+  if (!backend.ok || !Array.isArray(payload.data)) return { data: null, error: payload.message };
+
+  const tenants = z.array(myTenantSchema).safeParse(payload.data);
+  return tenants.success
+    ? { data: tenants.data, error: null }
+    : { data: null, error: 'Data tenant tidak valid' };
+}
+
+// getTenantAction fetches a single tenant by id (the backend route is public,
+// but we still require a session — this is only used from the admin edit
+// form). Unlike listTenantsAction this works for a non-superadmin tenant
+// admin editing their own tenant.
+export async function getTenantAction(id: string): Promise<AuthActionResult<TenantOption>> {
+  const auth = await authenticatedSession();
+  if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
+
+  const backend = await fetchBackend(`core/v1/tenants/${id}`, auth.token);
+  const payload = await responseJson<unknown>(backend);
+  if (!backend.ok) return { data: null, error: payload.message };
+
+  const tenant = tenantOptionSchema.safeParse(payload.data);
+  return tenant.success
+    ? { data: tenant.data, error: null }
+    : { data: null, error: 'Data tenant tidak valid' };
+}
+
 export async function listTenantsAction(): Promise<AuthActionResult<TenantOption[]>> {
   const auth = await authenticatedSession();
   if (!auth?.session.is_super_admin) return { data: null, error: 'Akses ditolak' };
@@ -443,12 +507,154 @@ export async function listTenantsAction(): Promise<AuthActionResult<TenantOption
     : { data: null, error: 'Data tenant tidak valid' };
 }
 
+export type AdminRole = { id: string; name: string; description?: string | null };
+export type AdminPermission = { id: string; name: string; description?: string | null };
+export type AdminUser = { id: string; name: string; email: string; role: string; banned: boolean };
+async function listAdminResource<T>(
+  path: string,
+  schema: z.ZodType<T>
+): Promise<AuthActionResult<T>> {
+  const auth = await authenticatedSession();
+  if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
+  const backend = await fetchBackend(path, auth.token);
+  const payload = await responseJson<unknown>(backend);
+  const parsed = schema.safeParse(payload.data);
+  if (!backend.ok || !parsed.success)
+    return { data: null, error: payload.message || 'Data gagal dimuat' };
+  return { data: parsed.data, error: null };
+}
+export async function listAdminRolesAction() {
+  return listAdminResource(
+    'core/v1/roles',
+    z.array(z.object({ id: z.string(), name: z.string(), description: z.string().nullish() }))
+  );
+}
+export async function listAdminPermissionsAction() {
+  return listAdminResource(
+    'core/v1/roles/permissions',
+    z.array(z.object({ id: z.string(), name: z.string(), description: z.string().nullish() }))
+  );
+}
+export async function listRolePermissionIDsAction(roleID: string) {
+  return listAdminResource(`core/v1/roles/${roleID}/permissions`, z.array(z.string()));
+}
+export async function listAdminUsersAction() {
+  return listAdminResource(
+    'core/v1/users?page=1&limit=100',
+    z.array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        email: z.string(),
+        tenant_id: z.string().nullable().optional(),
+        role: z.string(),
+        banned: z.boolean(),
+      })
+    )
+  );
+}
+
+export async function adminCrudAction(
+  _state: { error: string; success: string },
+  formData: FormData
+) {
+  const auth = await authenticatedSession();
+  if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
+  const resource = String(formData.get('resource'));
+  const id = String(formData.get('id') || '');
+  const method = id ? 'PUT' : 'POST';
+  const payload: Record<string, unknown> = {};
+  for (const key of [
+    'name',
+    'description',
+    'email',
+    'password',
+    'role',
+    'type',
+    'slug',
+    'code',
+    'tenant_id',
+    'role_id',
+    'parent_id',
+    'logo_url',
+    'website',
+  ]) {
+    const value = formData.get(key);
+    if (typeof value === 'string' && value) payload[key] = value;
+  }
+  if (resource === 'users') {
+    const tenantIDs = formData
+      .getAll('tenant_ids')
+      .filter((value): value is string => typeof value === 'string');
+    if (tenantIDs.length) payload.tenant_ids = tenantIDs;
+  }
+  const backend = await fetchBackend(`core/v1/${resource}${id ? `/${id}` : ''}`, auth.token, {
+    method,
+    body: JSON.stringify(payload),
+  });
+  const result = await responseJson<unknown>(backend);
+  if (!backend.ok) return { error: result.message || 'Data gagal disimpan', success: '' };
+  if (resource === 'roles' && !id) {
+    const roleID = z.object({ id: z.string() }).safeParse(result.data).data?.id;
+    const permissionIDs = formData
+      .getAll('permission_ids')
+      .filter((value): value is string => typeof value === 'string');
+    if (roleID && permissionIDs.length)
+      await fetchBackend(`core/v1/roles/${roleID}/permissions`, auth.token, {
+        method: 'PUT',
+        body: JSON.stringify({ permission_ids: permissionIDs }),
+      });
+  }
+  revalidatePath(
+    `/dashboard/access/${resource === 'roles/permissions' ? 'permissions' : resource}`
+  );
+  return { error: '', success: 'Data berhasil disimpan' };
+}
+
+export async function deleteAdminResourceAction(formData: FormData) {
+  const auth = await authenticatedSession();
+  if (!auth) return;
+  const resource = String(formData.get('resource'));
+  const id = String(formData.get('id'));
+  await fetchBackend(`core/v1/${resource}/${id}`, auth.token, { method: 'DELETE' });
+  revalidatePath(
+    `/dashboard/access/${resource === 'roles/permissions' ? 'permissions' : resource}`
+  );
+}
+
+export async function toggleUserBanAction(formData: FormData) {
+  const auth = await authenticatedSession();
+  if (!auth) return;
+  const id = z.uuid().safeParse(formData.get('id'));
+  const banned = formData.get('banned') === 'true';
+  if (!id.success) return;
+  await fetchBackend(`core/v1/users/${id.data}/${banned ? 'unban' : 'ban'}`, auth.token, {
+    method: 'POST',
+    body: banned ? undefined : JSON.stringify({ reason: 'Dinonaktifkan oleh administrator' }),
+  });
+  revalidatePath('/dashboard/access/users');
+}
+
+export async function updateRolePermissionsAction(formData: FormData) {
+  const auth = await authenticatedSession();
+  if (!auth) return;
+  const roleID = String(formData.get('role_id'));
+  const permissionIDs = formData
+    .getAll('permission_ids')
+    .filter((value): value is string => typeof value === 'string');
+  await fetchBackend(`core/v1/roles/${roleID}/permissions`, auth.token, {
+    method: 'PUT',
+    body: JSON.stringify({ permission_ids: permissionIDs }),
+  });
+  revalidatePath(`/dashboard/access/roles/${roleID}/edit`);
+}
+
 export async function switchTenantAction(tenantId: string): Promise<AuthActionResult<AuthSession>> {
   const parsedTenantId = switchSchema.safeParse(tenantId);
   if (!parsedTenantId.success) return { data: null, error: 'Tenant tidak valid' };
 
   const auth = await authenticatedSession();
-  if (!auth?.session.is_super_admin) return { data: null, error: 'Akses ditolak' };
+  if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
 
   const backend = await fetchBackend('core/v1/auth/switch-tenant', auth.token, {
     method: 'POST',

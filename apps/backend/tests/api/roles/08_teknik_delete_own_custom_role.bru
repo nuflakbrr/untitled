@@ -1,0 +1,19 @@
+meta {
+  name: Teknik Deletes Own Custom Role (Cleanup)
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{baseUrl}}/core/v1/roles/{{crudTeknikRoleId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{teknikAccessToken}}
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+}

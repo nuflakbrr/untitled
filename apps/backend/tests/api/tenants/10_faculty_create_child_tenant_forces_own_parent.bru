@@ -1,0 +1,40 @@
+meta {
+  name: Faculty Create Child Tenant Forces Own Parent
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/core/v1/tenants
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{fasilkomAccessToken}}
+}
+
+body:json {
+  {
+    "name": "Departemen API Test",
+    "slug": "dept-api-{{$randomInt}}",
+    "code": "DEPT{{$randomInt}}",
+    "type": "DEPARTMENT",
+    "parent_id": "{{tenantRektoratId}}"
+  }
+}
+
+script:post-response {
+  bru.setEnvVar("crudFacultyChildTenantId", res.body.data.id);
+}
+
+tests {
+  test("status 201", function() { expect(res.status).to.equal(201); });
+  test("parent_id is forced to caller's own tenant, not the requested one", function() {
+    expect(res.body.data.parent_id).to.equal(bru.getEnvVar("tenantFasilkomId"));
+  });
+}

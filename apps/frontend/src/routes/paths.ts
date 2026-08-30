@@ -25,6 +25,10 @@ export const paths = {
   dashboard: {
     root: '/dashboard',
     events: '/dashboard/events',
+    permissions: '/dashboard/access/permissions',
+    roles: '/dashboard/access/roles',
+    tenants: '/dashboard/access/tenants',
+    users: '/dashboard/access/users',
   },
   participant: {
     dashboard: '/participant/dashboard',

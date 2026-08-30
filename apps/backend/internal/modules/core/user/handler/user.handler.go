@@ -57,16 +57,25 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 		return
 	}
 
-	// Tenant boundary check for non-root admins
-	claims, _ := middleware.GetUserFromContext(c)
-	if claims != nil && !claims.IsSuperAdmin && claims.TenantID != "" {
-		if user.TenantID == nil || *user.TenantID != claims.TenantID {
-			response.Error(c, http.StatusForbidden, "You do not have access to users outside your tenant", "")
-			return
-		}
+	if !h.checkTenantBoundary(c, user.TenantID) {
+		return
 	}
 
 	response.Success(c, http.StatusOK, "User retrieved successfully", user)
+}
+
+// checkTenantBoundary enforces that a non-root admin can only act on users
+// inside their own tenant. Writes a 403 response and returns false if blocked.
+func (h *UserHandler) checkTenantBoundary(c *gin.Context, targetTenantID *string) bool {
+	claims, _ := middleware.GetUserFromContext(c)
+	if claims == nil || claims.IsSuperAdmin || claims.TenantID == "" {
+		return true
+	}
+	if targetTenantID == nil || *targetTenantID != claims.TenantID {
+		response.Error(c, http.StatusForbidden, "You do not have access to users outside your tenant", "")
+		return false
+	}
+	return true
 }
 
 // Create handles POST /core/v1/users
@@ -105,6 +114,30 @@ func (h *UserHandler) Update(c *gin.Context) {
 		return
 	}
 
+	existing, err := h.service.GetByID(c.Request.Context(), id)
+	if err != nil {
+		if errors.Is(err, repository.ErrUserNotFound) {
+			response.Error(c, http.StatusNotFound, "User not found", "")
+			return
+		}
+		response.Error(c, http.StatusInternalServerError, "Failed to update user", err.Error())
+		return
+	}
+	if !h.checkTenantBoundary(c, existing.TenantID) {
+		return
+	}
+
+	// Non-root admins cannot move a user out of their tenant or grant root_superadmin
+	claims, _ := middleware.GetUserFromContext(c)
+	if claims != nil && !claims.IsSuperAdmin && claims.TenantID != "" {
+		req.TenantID = &claims.TenantID
+		req.TenantIDs = nil
+		if req.Role != nil && *req.Role == "root_superadmin" {
+			response.Error(c, http.StatusForbidden, "You cannot grant root_superadmin", "")
+			return
+		}
+	}
+
 	user, err := h.service.Update(c.Request.Context(), id, req)
 	if err != nil {
 		if errors.Is(err, repository.ErrUserNotFound) {
@@ -120,7 +153,21 @@ func (h *UserHandler) Update(c *gin.Context) {
 
 // Delete handles DELETE /core/v1/users/:id
 func (h *UserHandler) Delete(c *gin.Context) {
-	if err := h.service.Delete(c.Request.Context(), c.Param("id")); err != nil {
+	id := c.Param("id")
+	existing, err := h.service.GetByID(c.Request.Context(), id)
+	if err != nil {
+		if errors.Is(err, repository.ErrUserNotFound) {
+			response.Error(c, http.StatusNotFound, "User not found", "")
+			return
+		}
+		response.Error(c, http.StatusInternalServerError, "Failed to delete user", err.Error())
+		return
+	}
+	if !h.checkTenantBoundary(c, existing.TenantID) {
+		return
+	}
+
+	if err := h.service.Delete(c.Request.Context(), id); err != nil {
 		if errors.Is(err, repository.ErrUserNotFound) {
 			response.Error(c, http.StatusNotFound, "User not found", "")
 			return
@@ -210,6 +257,19 @@ func (h *UserHandler) BanUser(c *gin.Context) {
 		return
 	}
 
+	existing, err := h.service.GetByID(c.Request.Context(), targetID)
+	if err != nil {
+		if errors.Is(err, repository.ErrUserNotFound) {
+			response.Error(c, http.StatusNotFound, "User not found", "")
+			return
+		}
+		response.Error(c, http.StatusInternalServerError, "Failed to ban user", err.Error())
+		return
+	}
+	if !h.checkTenantBoundary(c, existing.TenantID) {
+		return
+	}
+
 	actorID := ""
 	if claims != nil {
 		actorID = claims.UserID
@@ -234,6 +294,19 @@ func (h *UserHandler) BanUser(c *gin.Context) {
 // UnbanUser handles POST /core/v1/users/:id/unban
 func (h *UserHandler) UnbanUser(c *gin.Context) {
 	targetID := c.Param("id")
+	existing, err := h.service.GetByID(c.Request.Context(), targetID)
+	if err != nil {
+		if errors.Is(err, repository.ErrUserNotFound) {
+			response.Error(c, http.StatusNotFound, "User not found", "")
+			return
+		}
+		response.Error(c, http.StatusInternalServerError, "Failed to unban user", err.Error())
+		return
+	}
+	if !h.checkTenantBoundary(c, existing.TenantID) {
+		return
+	}
+
 	if err := h.service.UnbanUser(c.Request.Context(), targetID); err != nil {
 		if errors.Is(err, repository.ErrUserNotFound) {
 			response.Error(c, http.StatusNotFound, "User not found", "")

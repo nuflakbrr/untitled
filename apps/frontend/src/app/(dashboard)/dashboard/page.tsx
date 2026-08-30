@@ -11,12 +11,14 @@ import { paths } from 'src/routes/paths';
 
 import { Iconify } from 'src/components/iconify';
 
+import { hasPermission } from 'src/auth/types';
 import { requireSession } from 'src/auth/server';
 
 export const metadata: Metadata = { title: 'Dashboard' };
 
 export default async function DashboardPage() {
-  const session = await requireSession();
+  const session = await requireSession('admin.access');
+  const canManageEvents = hasPermission(session, 'events.read');
 
   return (
     <Stack spacing={3}>
@@ -43,9 +45,11 @@ export default async function DashboardPage() {
             Kelola agenda kampus, pantau alur peserta, dan jaga setiap proses event tetap rapi dari
             satu workspace.
           </Typography>
-          <Button component="a" href={paths.dashboard.events} variant="contained" sx={{ mt: 3 }}>
-            Buka modul event
-          </Button>
+          {canManageEvents ? (
+            <Button component="a" href={paths.dashboard.events} variant="contained" sx={{ mt: 3 }}>
+              Buka modul event
+            </Button>
+          ) : null}
         </Box>
         <Box
           aria-hidden="true"
@@ -71,18 +75,27 @@ export default async function DashboardPage() {
       </Box>
 
       <Box sx={{ display: 'grid', gap: 2.5, gridTemplateColumns: { md: '1.2fr 0.8fr' } }}>
-        <Paper variant="outlined" sx={{ p: { xs: 3, md: 4 } }}>
-          <Iconify icon="solar:calendar-mark-outline" width={28} sx={{ color: 'primary.main' }} />
-          <Typography variant="h4" sx={{ mt: 2 }}>
-            Manajemen event
-          </Typography>
-          <Typography color="text.secondary" sx={{ mt: 1, maxWidth: 560 }}>
-            Siapkan informasi, jadwal, kuota, pembicara, benefit, dan status publikasi event.
-          </Typography>
-          <Button component="a" href={paths.dashboard.events} variant="outlined" sx={{ mt: 3 }}>
-            Kelola event
-          </Button>
-        </Paper>
+        {canManageEvents ? (
+          <Paper variant="outlined" sx={{ p: { xs: 3, md: 4 } }}>
+            <Iconify icon="solar:calendar-mark-outline" width={28} sx={{ color: 'primary.main' }} />
+            <Typography variant="h4" sx={{ mt: 2 }}>
+              Manajemen event
+            </Typography>
+            <Typography color="text.secondary" sx={{ mt: 1, maxWidth: 560 }}>
+              Siapkan informasi, jadwal, kuota, pembicara, benefit, dan status publikasi event.
+            </Typography>
+            <Button component="a" href={paths.dashboard.events} variant="outlined" sx={{ mt: 3 }}>
+              Kelola event
+            </Button>
+          </Paper>
+        ) : (
+          <Paper variant="outlined" sx={{ p: { xs: 3, md: 4 } }}>
+            <Typography variant="h5">Akses terbatas</Typography>
+            <Typography color="text.secondary" sx={{ mt: 1 }}>
+              Akunmu belum memiliki izin untuk mengelola event di tenant ini.
+            </Typography>
+          </Paper>
+        )}
         <Paper variant="outlined" sx={{ p: { xs: 3, md: 4 }, bgcolor: 'background.neutral' }}>
           <Typography variant="overline" color="primary.main">
             Konteks akses

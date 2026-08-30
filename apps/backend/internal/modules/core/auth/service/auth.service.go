@@ -9,6 +9,7 @@ import (
 	"venturo-skeleton-go/internal/config"
 	"venturo-skeleton-go/internal/modules/core/auth/dto"
 	tenantDomain "venturo-skeleton-go/internal/modules/core/tenant/domain"
+	tenantDto "venturo-skeleton-go/internal/modules/core/tenant/dto"
 	tenantRepo "venturo-skeleton-go/internal/modules/core/tenant/repository"
 	userDomain "venturo-skeleton-go/internal/modules/core/user/domain"
 	userRepo "venturo-skeleton-go/internal/modules/core/user/repository"
@@ -40,10 +41,16 @@ type UserRepository interface {
 	Create(ctx context.Context, user *userDomain.User, password string) error
 }
 
+type TenantAccessReader interface {
+	HasTenantAccess(ctx context.Context, userID, tenantID string) (bool, error)
+	ListAccessibleTenants(ctx context.Context, userID string) ([]*userDomain.TenantAccess, error)
+}
+
 // TenantRepository is satisfied by *tenantRepo.TenantRepository (and mocks in tests).
 type TenantRepository interface {
 	FindByID(ctx context.Context, id string) (*tenantDomain.Tenant, error)
 	FindBySlug(ctx context.Context, slug string) (*tenantDomain.Tenant, error)
+	FindAll(ctx context.Context, filter tenantDto.TenantQueryFilter) ([]*tenantDomain.Tenant, int64, error)
 }
 
 type AuthService struct {
@@ -78,7 +85,6 @@ func NewAuthServiceWithInterfaces(uRepo UserRepository, tRepo TenantRepository, 
 func (s *AuthService) SetPermissionReader(pr PermissionReader) {
 	s.permissionReader = pr
 }
-
 
 // SignIn authenticates a user and returns a multi-tenant JWT
 func (s *AuthService) SignIn(ctx context.Context, req dto.SignInRequest) (*dto.SignInResponse, error) {
@@ -261,7 +267,12 @@ func (s *AuthService) SwitchTenant(ctx context.Context, userID, targetTenantID s
 
 	// Only Root Superadmin can switch tenant arbitrarily
 	if user.Role != "root_superadmin" {
-		if user.TenantID == nil || *user.TenantID != targetTenantID {
+		accessReader, ok := s.userRepo.(TenantAccessReader)
+		if !ok {
+			return nil, ErrUnauthorizedSwitch
+		}
+		allowed, accessErr := accessReader.HasTenantAccess(ctx, userID, targetTenantID)
+		if accessErr != nil || !allowed {
 			return nil, ErrUnauthorizedSwitch
 		}
 	}
@@ -304,4 +315,40 @@ func (s *AuthService) SwitchTenant(ctx context.Context, userID, targetTenantID s
 		},
 		Permissions: perms,
 	}, nil
+}
+
+// MyTenants lists tenants the caller can switch into: every tenant for a
+// Root Superadmin, or only the tenants explicitly granted via
+// user_has_tenants for everyone else.
+func (s *AuthService) MyTenants(ctx context.Context, userID, role string) ([]*userDomain.TenantAccess, error) {
+	if role == "root_superadmin" {
+		tenants, _, err := s.tenantRepo.FindAll(ctx, tenantDto.TenantQueryFilter{Page: 1, Limit: 500})
+		if err != nil {
+			return nil, err
+		}
+		result := make([]*userDomain.TenantAccess, 0, len(tenants))
+		for _, t := range tenants {
+			result = append(result, &userDomain.TenantAccess{
+				TenantID:   t.ID,
+				TenantName: t.Name,
+				TenantSlug: t.Slug,
+				TenantCode: t.Code,
+				TenantType: string(t.Type),
+			})
+		}
+		return result, nil
+	}
+
+	accessReader, ok := s.userRepo.(TenantAccessReader)
+	if !ok {
+		return []*userDomain.TenantAccess{}, nil
+	}
+	tenants, err := accessReader.ListAccessibleTenants(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	if tenants == nil {
+		tenants = []*userDomain.TenantAccess{}
+	}
+	return tenants, nil
 }

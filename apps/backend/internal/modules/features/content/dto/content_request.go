@@ -15,9 +15,11 @@ type UpdateArticleRequest struct {
 }
 
 type ArticleQuery struct {
-	TenantID string `form:"tenant_id" binding:"omitempty,uuid4"`
-	Page     int    `form:"page,default=1" binding:"min=1"`
-	Limit    int    `form:"limit,default=10" binding:"min=1,max=100"`
+	TenantID   string `form:"tenant_id" binding:"omitempty,uuid4"`
+	Search     string `form:"search" binding:"omitempty,max=255"`
+	CategoryID string `form:"category" binding:"omitempty,uuid4"`
+	Page       int    `form:"page,default=1" binding:"min=1"`
+	Limit      int    `form:"limit,default=10" binding:"min=1,max=100"`
 }
 
 type CreateCategoryRequest struct {

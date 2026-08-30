@@ -4,10 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"venturo-skeleton-go/internal/modules/core/role/domain"
+	"venturo-skeleton-go/internal/modules/core/role/dto"
 	"venturo-skeleton-go/pkg/logger"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -24,14 +27,103 @@ func NewRoleRepository(db *pgxpool.Pool) *RoleRepository {
 	return &RoleRepository{db: db}
 }
 
-// FindAll retrieves all roles
-func (r *RoleRepository) FindAll(ctx context.Context) ([]domain.Role, error) {
+func (r *RoleRepository) Create(ctx context.Context, req dto.CreateRoleRequest, tenantID *string) (*domain.Role, error) {
+	role := &domain.Role{ID: uuid.NewString(), Name: req.Name, Description: req.Description, TenantID: tenantID, CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	err := r.db.QueryRow(ctx, `INSERT INTO roles (id,name,description,tenant_id) VALUES ($1,$2,$3,$4) RETURNING created_at,updated_at`, role.ID, role.Name, role.Description, role.TenantID).Scan(&role.CreatedAt, &role.UpdatedAt)
+	return role, err
+}
+
+func (r *RoleRepository) Update(ctx context.Context, id string, req dto.UpdateRoleRequest) error {
+	_, err := r.db.Exec(ctx, `UPDATE roles SET name=COALESCE($2,name), description=COALESCE($3,description), updated_at=NOW() WHERE id=$1`, id, req.Name, req.Description)
+	return err
+}
+
+func (r *RoleRepository) Delete(ctx context.Context, id string) error {
+	_, err := r.db.Exec(ctx, `DELETE FROM roles WHERE id=$1`, id)
+	return err
+}
+
+func (r *RoleRepository) ListPermissions(ctx context.Context) ([]domain.Permission, error) {
+	rows, err := r.db.Query(ctx, `SELECT id,name,description,created_at,updated_at FROM permissions ORDER BY name`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var result []domain.Permission
+	for rows.Next() {
+		var p domain.Permission
+		if err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.CreatedAt, &p.UpdatedAt); err != nil {
+			return nil, err
+		}
+		result = append(result, p)
+	}
+	return result, rows.Err()
+}
+
+func (r *RoleRepository) CreatePermission(ctx context.Context, req dto.CreatePermissionRequest) (*domain.Permission, error) {
+	p := &domain.Permission{ID: uuid.NewString(), Name: req.Name, Description: &req.Description}
+	err := r.db.QueryRow(ctx, `INSERT INTO permissions (id,name,description) VALUES ($1,$2,$3) RETURNING created_at,updated_at`, p.ID, p.Name, p.Description).Scan(&p.CreatedAt, &p.UpdatedAt)
+	return p, err
+}
+func (r *RoleRepository) UpdatePermission(ctx context.Context, id string, req dto.UpdatePermissionRequest) error {
+	_, err := r.db.Exec(ctx, `UPDATE permissions SET name=COALESCE($2,name),description=COALESCE($3,description),updated_at=NOW() WHERE id=$1`, id, req.Name, req.Description)
+	return err
+}
+func (r *RoleRepository) DeletePermission(ctx context.Context, id string) error {
+	_, err := r.db.Exec(ctx, `DELETE FROM permissions WHERE id=$1`, id)
+	return err
+}
+
+func (r *RoleRepository) SetPermissions(ctx context.Context, roleID string, permissionIDs []string) error {
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	if _, err = tx.Exec(ctx, `DELETE FROM role_has_permissions WHERE role_id=$1`, roleID); err != nil {
+		return err
+	}
+	for _, permissionID := range permissionIDs {
+		if _, err = tx.Exec(ctx, `INSERT INTO role_has_permissions (role_id,permission_id) VALUES ($1,$2)`, roleID, permissionID); err != nil {
+			return err
+		}
+	}
+	return tx.Commit(ctx)
+}
+
+func (r *RoleRepository) GetPermissionIDs(ctx context.Context, roleID string) ([]string, error) {
+	rows, err := r.db.Query(ctx, `SELECT permission_id FROM role_has_permissions WHERE role_id=$1`, roleID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var ids []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+	return ids, rows.Err()
+}
+
+// FindAll retrieves roles visible to the caller: every role when scopeTenantID
+// is nil (root superadmin), otherwise global template roles (tenant_id IS
+// NULL) plus that tenant's own custom roles.
+func (r *RoleRepository) FindAll(ctx context.Context, scopeTenantID *string) ([]domain.Role, error) {
 	query := `
-		SELECT id, name, COALESCE(description, ''), created_at, updated_at
+		SELECT id, name, COALESCE(description, ''), tenant_id, created_at, updated_at
 		FROM roles
-		ORDER BY created_at ASC
 	`
-	rows, err := r.db.Query(ctx, query)
+	args := []interface{}{}
+	if scopeTenantID != nil {
+		query += ` WHERE tenant_id IS NULL OR tenant_id = $1`
+		args = append(args, *scopeTenantID)
+	}
+	query += ` ORDER BY created_at ASC`
+
+	rows, err := r.db.Query(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query roles: %w", err)
 	}
@@ -40,7 +132,7 @@ func (r *RoleRepository) FindAll(ctx context.Context) ([]domain.Role, error) {
 	var roles []domain.Role
 	for rows.Next() {
 		var role domain.Role
-		if err := rows.Scan(&role.ID, &role.Name, &role.Description, &role.CreatedAt, &role.UpdatedAt); err != nil {
+		if err := rows.Scan(&role.ID, &role.Name, &role.Description, &role.TenantID, &role.CreatedAt, &role.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("failed to scan role: %w", err)
 		}
 		roles = append(roles, role)
@@ -51,12 +143,12 @@ func (r *RoleRepository) FindAll(ctx context.Context) ([]domain.Role, error) {
 // FindByID retrieves a role by ID
 func (r *RoleRepository) FindByID(ctx context.Context, id string) (*domain.Role, error) {
 	query := `
-		SELECT id, name, COALESCE(description, ''), created_at, updated_at
+		SELECT id, name, COALESCE(description, ''), tenant_id, created_at, updated_at
 		FROM roles
 		WHERE id = $1
 	`
 	var role domain.Role
-	err := r.db.QueryRow(ctx, query, id).Scan(&role.ID, &role.Name, &role.Description, &role.CreatedAt, &role.UpdatedAt)
+	err := r.db.QueryRow(ctx, query, id).Scan(&role.ID, &role.Name, &role.Description, &role.TenantID, &role.CreatedAt, &role.UpdatedAt)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, ErrRoleNotFound

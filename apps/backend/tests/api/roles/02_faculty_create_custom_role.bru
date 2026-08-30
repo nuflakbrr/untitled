@@ -1,0 +1,38 @@
+meta {
+  name: Faculty Creates Own Custom Role
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/core/v1/roles
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{fasilkomAccessToken}}
+}
+
+body:json {
+  {
+    "name": "Koordinator FASILKOM {{$randomInt}}",
+    "description": "Role custom milik FASILKOM"
+  }
+}
+
+script:post-response {
+  bru.setEnvVar("crudFasilkomRoleId", res.body.data.id);
+  bru.setEnvVar("crudFasilkomRoleName", res.body.data.name);
+}
+
+tests {
+  test("status 201", function() { expect(res.status).to.equal(201); });
+  test("role is scoped to FASILKOM tenant", function() {
+    expect(res.body.data.tenant_id).to.equal(bru.getEnvVar("tenantFasilkomId"));
+  });
+}

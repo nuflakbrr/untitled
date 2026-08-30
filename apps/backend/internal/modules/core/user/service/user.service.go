@@ -76,6 +76,27 @@ func (s *UserService) Create(ctx context.Context, req dto.CreateUserRequest) (*d
 		return nil, err
 	}
 
+	// A user always becomes a member of their own home tenant, plus whatever
+	// extra tenants the creator explicitly granted access to.
+	tenantIDs := req.TenantIDs
+	if user.TenantID != nil {
+		alreadyIncluded := false
+		for _, id := range tenantIDs {
+			if id == *user.TenantID {
+				alreadyIncluded = true
+				break
+			}
+		}
+		if !alreadyIncluded {
+			tenantIDs = append(tenantIDs, *user.TenantID)
+		}
+	}
+	if len(tenantIDs) > 0 {
+		if err := s.repo.SetTenantAccess(ctx, user.ID, tenantIDs, roleID); err != nil {
+			return nil, err
+		}
+	}
+
 	resp := toUserResponse(user)
 	return &resp, nil
 }
@@ -105,6 +126,11 @@ func (s *UserService) Update(ctx context.Context, id string, req dto.UpdateUserR
 
 	if err := s.repo.Update(ctx, user); err != nil {
 		return nil, err
+	}
+	if len(req.TenantIDs) > 0 {
+		if err := s.repo.SetTenantAccess(ctx, user.ID, req.TenantIDs, user.RoleID); err != nil {
+			return nil, err
+		}
 	}
 
 	resp := toUserResponse(user)

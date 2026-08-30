@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 
 import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { paths } from 'src/routes/paths';
+
 import { Iconify } from 'src/components/iconify';
 
 export const metadata: Metadata = {

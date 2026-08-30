@@ -1,0 +1,40 @@
+meta {
+  name: Faculty Create User Auto-Joins Own Tenant
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/core/v1/users
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{fasilkomAccessToken}}
+}
+
+body:json {
+  {
+    "email": "membership.api.test.{{$randomInt}}@example.com",
+    "name": "Membership API Test",
+    "password": "password123",
+    "role": "peserta"
+  }
+}
+
+script:post-response {
+  bru.setEnvVar("crudMembershipUserId", res.body.data.id);
+  bru.setEnvVar("crudMembershipUserEmail", res.body.data.email);
+}
+
+tests {
+  test("status 201", function() { expect(res.status).to.equal(201); });
+  test("user is homed in creator's tenant", function() {
+    expect(res.body.data.tenant_id).to.equal(bru.getEnvVar("tenantFasilkomId"));
+  });
+}

@@ -84,6 +84,18 @@ fi
 success "FASILKOM login successful."
 echo ""
 
+log "Authenticating as Teknik superadmin..."
+TEKNIK_LOGIN_RESP=$(curl -sf -X POST "$BASE_URL/core/v1/auth/signin" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"superadmin.teknik@gmail.com","password":"password"}' 2>&1)
+TEKNIK_ACCESS_TOKEN=$(echo "$TEKNIK_LOGIN_RESP" | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
+if [ -z "$TEKNIK_ACCESS_TOKEN" ]; then
+  error "Could not extract Teknik access_token. Check if DB is seeded (make seed)."
+  exit 1
+fi
+success "Teknik login successful."
+echo ""
+
 log "Authenticating as participant..."
 PESERTA_LOGIN_RESP=$(curl -sf -X POST "$BASE_URL/core/v1/auth/signin" \
   -H "Content-Type: application/json" \
@@ -108,6 +120,7 @@ vars {
   accessToken: $ACCESS_TOKEN
   rootAccessToken: $ACCESS_TOKEN
   fasilkomAccessToken: $FASILKOM_ACCESS_TOKEN
+  teknikAccessToken: $TEKNIK_ACCESS_TOKEN
   pesertaAccessToken: $PESERTA_ACCESS_TOKEN
   superadminEmail: superadmin.univ@gmail.com
   superadminPassword: password
@@ -119,7 +132,13 @@ vars {
   pesertaPassword: password
   tenantRektoratId: c9711506-d356-4704-a32e-0543dfe3e104
   tenantFasilkomId: 20492a21-59c3-4edf-bb64-1eaa6cf11deb
+  tenantTeknikId: 0ae41d16-bc49-4a88-b079-94def1b5b3ff
   crudTenantId:
+  crudFacultyChildTenantId:
+  crudFasilkomRoleId:
+  crudTeknikRoleId:
+  crudMembershipUserId:
+  crudMembershipUserAccessToken:
   crudUserId:
   crudEventCategoryId:
   crudEventId:
@@ -228,6 +247,50 @@ cleanup() {
       success "Cleanup completed for tenant $CRUD_TENANT_ID"
     else
       warn "Cleanup failed for tenant $CRUD_TENANT_ID; remove it manually if still present."
+    fi
+  fi
+  CRUD_FACULTY_CHILD_TENANT_ID=$(grep '^  crudFacultyChildTenantId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudFacultyChildTenantId:[[:space:]]*//')
+  if [ -n "${CRUD_FACULTY_CHILD_TENANT_ID:-}" ]; then
+    CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+      -X DELETE "$BASE_URL/core/v1/tenants/$CRUD_FACULTY_CHILD_TENANT_ID" \
+      -H "Authorization: Bearer $ACCESS_TOKEN")
+    if [ "$CLEANUP_STATUS" = "200" ] || [ "$CLEANUP_STATUS" = "404" ]; then
+      success "Cleanup completed for faculty child tenant $CRUD_FACULTY_CHILD_TENANT_ID"
+    else
+      warn "Cleanup failed for faculty child tenant $CRUD_FACULTY_CHILD_TENANT_ID; remove it manually if still present."
+    fi
+  fi
+  CRUD_FASILKOM_ROLE_ID=$(grep '^  crudFasilkomRoleId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudFasilkomRoleId:[[:space:]]*//')
+  if [ -n "${CRUD_FASILKOM_ROLE_ID:-}" ]; then
+    CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+      -X DELETE "$BASE_URL/core/v1/roles/$CRUD_FASILKOM_ROLE_ID" \
+      -H "Authorization: Bearer $ACCESS_TOKEN")
+    if [ "$CLEANUP_STATUS" = "200" ] || [ "$CLEANUP_STATUS" = "404" ]; then
+      success "Cleanup completed for FASILKOM custom role $CRUD_FASILKOM_ROLE_ID"
+    else
+      warn "Cleanup failed for FASILKOM custom role $CRUD_FASILKOM_ROLE_ID; remove it manually if still present."
+    fi
+  fi
+  CRUD_TEKNIK_ROLE_ID=$(grep '^  crudTeknikRoleId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudTeknikRoleId:[[:space:]]*//')
+  if [ -n "${CRUD_TEKNIK_ROLE_ID:-}" ]; then
+    CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+      -X DELETE "$BASE_URL/core/v1/roles/$CRUD_TEKNIK_ROLE_ID" \
+      -H "Authorization: Bearer $ACCESS_TOKEN")
+    if [ "$CLEANUP_STATUS" = "200" ] || [ "$CLEANUP_STATUS" = "404" ]; then
+      success "Cleanup completed for Teknik custom role $CRUD_TEKNIK_ROLE_ID"
+    else
+      warn "Cleanup failed for Teknik custom role $CRUD_TEKNIK_ROLE_ID; remove it manually if still present."
+    fi
+  fi
+  CRUD_MEMBERSHIP_USER_ID=$(grep '^  crudMembershipUserId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudMembershipUserId:[[:space:]]*//')
+  if [ -n "${CRUD_MEMBERSHIP_USER_ID:-}" ]; then
+    CLEANUP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+      -X DELETE "$BASE_URL/core/v1/users/$CRUD_MEMBERSHIP_USER_ID" \
+      -H "Authorization: Bearer $ACCESS_TOKEN")
+    if [ "$CLEANUP_STATUS" = "200" ] || [ "$CLEANUP_STATUS" = "404" ]; then
+      success "Cleanup completed for membership test user $CRUD_MEMBERSHIP_USER_ID"
+    else
+      warn "Cleanup failed for membership test user $CRUD_MEMBERSHIP_USER_ID; remove it manually if still present."
     fi
   fi
   CRUD_USER_ID=$(grep '^  crudUserId:' "$RUNTIME_ENV_FILE" 2>/dev/null | sed 's/^  crudUserId:[[:space:]]*//')

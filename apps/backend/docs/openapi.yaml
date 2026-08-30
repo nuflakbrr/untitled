@@ -203,6 +203,24 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
 
+  /core/v1/auth/my-tenants:
+    get:
+      tags:
+        - Core - Auth
+      summary: List Tenant Yang Bisa Diakses Pengguna
+      description: "Mengambil daftar tenant yang boleh dijadikan konteks aktif oleh pengguna: seluruh tenant untuk Root Superadmin, atau hanya tenant yang tercatat di core.user_has_tenants untuk pengguna lain. Dipakai untuk mengisi pilihan tenant-switcher di frontend, bukan endpoint otorisasi tersendiri."
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Daftar tenant yang bisa diakses berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MyTenantsResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+
   # ============================================================================
   # CORE - TENANT MANAGEMENT
   # ============================================================================
@@ -235,7 +253,7 @@ paths:
       tags:
         - Core - Tenants
       summary: Tambah Tenant Fakultas Baru
-      description: "Menambahkan fakultas atau unit kerja baru ke dalam sistem. Wajib memiliki izin 'tenant.create'."
+      description: "Menambahkan fakultas atau unit kerja baru ke dalam sistem. Wajib memiliki izin 'tenant.create'. Root Superadmin bebas menentukan `type` dan `parent_id`; pengguna non-root selalu di-paksa membuat anak tenant di bawah tenant mereka sendiri (`parent_id` dari body diabaikan) dan tidak boleh membuat tenant bertipe ROOT."
       security:
         - BearerAuth: []
       requestBody:
@@ -283,6 +301,7 @@ paths:
       tags:
         - Core - Tenants
       summary: Update Data Tenant Fakultas
+      description: "Root Superadmin dapat mengubah tenant manapun. Pengguna non-root hanya boleh mengubah tenant miliknya sendiri atau anak langsungnya; selain itu akan menerima 403."
       security:
         - BearerAuth: []
       parameters:
@@ -307,12 +326,15 @@ paths:
                 $ref: "#/components/schemas/TenantDetailResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
     delete:
       tags:
         - Core - Tenants
       summary: Hapus Tenant Fakultas
+      description: "Wajib memiliki izin 'tenant.delete' (hanya diberikan ke Root Superadmin secara default). Pengguna non-root selain itu hanya boleh menghapus tenant miliknya sendiri atau anak langsungnya."
       security:
         - BearerAuth: []
       parameters:
@@ -329,6 +351,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BaseResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
 
@@ -377,6 +401,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaymentGatewayDetailResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
     put:
       tags:
         - Core - Tenants
@@ -404,6 +430,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaymentGatewayDetailResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
 
   # ============================================================================
   # CORE - USER MANAGEMENT
@@ -620,7 +648,8 @@ paths:
     get:
       tags:
         - Core - Roles & Permissions
-      summary: List Master Jabatan (Roles)
+      summary: List Role Yang Bisa Diakses Pengguna
+      description: "Root Superadmin melihat seluruh role (global + custom semua tenant). Pengguna lain hanya melihat role global bersama (tenant_id null, mis. superadmin/panitia/scanner/peserta) ditambah role custom milik tenant aktifnya sendiri."
       security:
         - BearerAuth: []
       responses:
@@ -630,12 +659,99 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RoleListResponse"
+    post:
+      tags:
+        - Core - Roles & Permissions
+      summary: Buat Role Custom
+      description: "Wajib izin 'role.create'. Root Superadmin membuat role global (tenant_id null). Pengguna non-root selalu membuat role yang di-scope ke tenant aktifnya sendiri, terlepas dari body request."
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRoleRequest"
+      responses:
+        "201":
+          description: Role berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleDetailResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "409":
+          description: Nama role sudah dipakai pada scope yang sama
 
-  /core/v1/roles/{id}:
+  /core/v1/roles/permissions:
     get:
       tags:
         - Core - Roles & Permissions
-      summary: Detail Role & Permissions
+      summary: List Master Permission
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Daftar permission berhasil diambil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PermissionListResponse"
+    post:
+      tags:
+        - Core - Roles & Permissions
+      summary: Buat Permission Baru
+      description: "Wajib izin 'permission.create'. Dipakai untuk menambah kode permission baru ke katalog master (jarang dipakai di luar seeding)."
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePermissionRequest"
+      responses:
+        "201":
+          description: Permission berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PermissionDetailResponse"
+        "409":
+          description: Nama permission sudah dipakai
+
+  /core/v1/roles/permissions/{id}:
+    put:
+      tags:
+        - Core - Roles & Permissions
+      summary: Update Permission
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePermissionRequest"
+      responses:
+        "200":
+          description: Permission berhasil diubah
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+    delete:
+      tags:
+        - Core - Roles & Permissions
+      summary: Hapus Permission
       security:
         - BearerAuth: []
       parameters:
@@ -647,11 +763,149 @@ paths:
             format: uuid
       responses:
         "200":
-          description: Detail role dengan daftar permissions
+          description: Permission berhasil dihapus
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+
+  /core/v1/roles/{id}:
+    get:
+      tags:
+        - Core - Roles & Permissions
+      summary: Detail Role
+      description: "Pengguna non-root menerima 403 saat mengakses role global atau role custom milik tenant lain."
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Detail role
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/RoleDetailResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+    put:
+      tags:
+        - Core - Roles & Permissions
+      summary: Update Role
+      description: "Pengguna non-root hanya boleh mengubah role custom miliknya sendiri; menyentuh role global atau role tenant lain menghasilkan 403."
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRoleRequest"
+      responses:
+        "200":
+          description: Role berhasil diubah
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+    delete:
+      tags:
+        - Core - Roles & Permissions
+      summary: Hapus Role
+      description: "Batasan tenant sama seperti update role."
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Role berhasil dihapus
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /core/v1/roles/{id}/permissions:
+    get:
+      tags:
+        - Core - Roles & Permissions
+      summary: Get Daftar Permission ID Milik Role
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Daftar permission_id yang dimiliki role
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+    put:
+      tags:
+        - Core - Roles & Permissions
+      summary: Set Daftar Permission Role
+      description: "Mengganti seluruh daftar permission milik role (replace, bukan merge). Batasan tenant sama seperti update role."
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetRolePermissionsRequest"
+      responses:
+        "200":
+          description: Permission role berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
 
   # ============================================================================
   # CORE - AUDIT LOGS
@@ -695,7 +949,7 @@ paths:
   # ============================================================================
   # MODULES - EVENTS & CATEGORIES
   # ============================================================================
-/features/v1/events:
+  /features/v1/events:
     get:
       tags:
         - Modules - Events
@@ -760,7 +1014,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/EventDetailResponse"
 
-/features/v1/events/{id}:
+  /features/v1/events/{id}:
     get:
       tags:
         - Modules - Events
@@ -828,7 +1082,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/BaseResponse"
 
-/features/v1/events/{slug}:
+  /features/v1/events/{slug}:
     get:
       tags:
         - Modules - Events
@@ -850,7 +1104,7 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
 
-/features/v1/event-categories:
+  /features/v1/event-categories:
     get:
       tags:
         - Modules - Event Categories
@@ -1414,6 +1668,18 @@ paths:
           schema:
             type: string
             format: uuid
+        - in: query
+          name: search
+          schema:
+            type: string
+            maxLength: 255
+          description: Filter judul artikel (ILIKE, case-insensitive)
+        - in: query
+          name: category
+          schema:
+            type: string
+            format: uuid
+          description: Filter berdasarkan ID kategori artikel (bukan slug — article_categories tidak punya kolom slug)
         - in: query
           name: page
           schema:
@@ -2375,6 +2641,11 @@ components:
         description:
           type: string
           example: Panitia event dengan akses manajemen event dan absensi fakultas
+        tenant_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: Null untuk role global/bersama (root_superadmin, superadmin, panitia, scanner, peserta); terisi untuk role custom milik satu tenant.
         created_at:
           type: string
           format: date-time
@@ -2400,15 +2671,130 @@ components:
           type: integer
           example: 200
         data:
-          type: object
-          properties:
-            role:
-              $ref: "#/components/schemas/Role"
-            permissions:
-              type: array
-              items:
-                type: string
-              example: ["events.read", "events.create", "attendance.scan"]
+          $ref: "#/components/schemas/Role"
+
+    CreateRoleRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Koordinator Fakultas
+        description:
+          type: string
+          nullable: true
+
+    UpdateRoleRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+
+    SetRolePermissionsRequest:
+      type: object
+      properties:
+        permission_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    Permission:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: events.create
+        description:
+          type: string
+
+    PermissionListResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Permission"
+
+    PermissionDetailResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 201
+        data:
+          $ref: "#/components/schemas/Permission"
+
+    CreatePermissionRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 150
+          example: events.archive
+        description:
+          type: string
+          maxLength: 500
+
+    UpdatePermissionRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 150
+        description:
+          type: string
+          maxLength: 500
+
+    MyTenant:
+      type: object
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+        tenant_name:
+          type: string
+        tenant_slug:
+          type: string
+        tenant_code:
+          type: string
+        tenant_type:
+          type: string
+          enum: [ROOT, FACULTY, DEPARTMENT, UNIT]
+        role_id:
+          type: string
+          format: uuid
+          nullable: true
+        role_name:
+          type: string
+          nullable: true
+
+    MyTenantsResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/MyTenant"
 
     # ─── Audit Log Schemas ────────────────────────────────────────────────────
     AuditLog:

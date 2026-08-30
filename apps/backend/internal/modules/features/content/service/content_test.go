@@ -21,7 +21,7 @@ func newFakeArticleRepo() *fakeArticleRepo {
 	return &fakeArticleRepo{slugs: map[string]bool{}, byID: map[string]*domain.Article{}}
 }
 
-func (f *fakeArticleRepo) FindAll(context.Context, *string, int, int) ([]*domain.Article, int64, error) {
+func (f *fakeArticleRepo) FindAll(context.Context, *string, int, int, string, string) ([]*domain.Article, int64, error) {
 	return nil, 0, nil
 }
 func (f *fakeArticleRepo) FindByID(_ context.Context, id string) (*domain.Article, error) {
