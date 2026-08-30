@@ -13,6 +13,10 @@ export const paths = {
   event: { root: '/event', details: (slug: string) => `/event/${slug}` },
   gallery: '/gallery',
   about: '/about',
+  certificates: {
+    root: '/certificates',
+    verify: '/certificates',
+  },
   profile: '/profile',
   auth: {
     signIn: '/auth/sign-in',

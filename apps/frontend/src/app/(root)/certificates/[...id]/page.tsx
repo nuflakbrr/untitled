@@ -23,7 +23,10 @@ type Certificate = {
 async function verifyCertificate(identifier: string) {
   const baseUrl = (CONFIG.serverApiUrl ?? CONFIG.apiUrl).replace(/\/+$/, '');
   const response = await fetch(
-    `${baseUrl}/features/v1/certificates/verify/${encodeURIComponent(identifier)}`,
+    `${baseUrl}/features/v1/certificates/verify/${identifier
+      .split('/')
+      .map(encodeURIComponent)
+      .join('/')}`,
     { cache: 'no-store' }
   );
   if (response.status === 404) return null;
@@ -35,17 +38,17 @@ async function verifyCertificate(identifier: string) {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string[] }>;
 }): Promise<Metadata> {
-  return { title: `Verifikasi Sertifikat ${(await params).id}` };
+  return { title: `Verifikasi Sertifikat ${(await params).id.join('/')}` };
 }
 
 export default async function CertificateVerifyPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string[] }>;
 }) {
-  const certificate = await verifyCertificate((await params).id);
+  const certificate = await verifyCertificate((await params).id.join('/'));
   if (!certificate) notFound();
 
   return (
