@@ -132,7 +132,7 @@ func (r *PaymentRepository) ClaimPendingPayment(ctx context.Context, registratio
 func (r *PaymentRepository) CompleteCheckout(ctx context.Context, id, checkoutToken, transactionID, paymentURL, method, channel string) error {
 	tag, err := r.db.Exec(ctx, `
 		UPDATE payments
-		SET transaction_id = $3, payment_url = $4, payment_method = $5, payment_channel = $6,
+		SET transaction_id = NULLIF($3, ''), payment_url = $4, payment_method = $5, payment_channel = $6,
 		    checkout_token = NULL, checkout_claimed_at = NULL, updated_at = NOW()
 		WHERE id = $1 AND checkout_token = $2 AND status = 'WAITING'
 	`, id, checkoutToken, transactionID, paymentURL, method, channel)

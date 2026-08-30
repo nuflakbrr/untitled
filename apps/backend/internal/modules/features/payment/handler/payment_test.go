@@ -108,6 +108,26 @@ func TestPaymentHandlerHappyPaths(t *testing.T) {
 	}
 }
 
+func TestWebhookAcceptsJSONBodyWithFormContentType(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	called := false
+	handler := NewPaymentHandler(&mockService{
+		handleWebhookFn: func(_ context.Context, payload dto.WebhookPayload) error {
+			called = payload.TransactionID == "228214" && payload.ReferenceID == "payment-id"
+			return nil
+		},
+	})
+	router := gin.New()
+	router.POST("/payments/webhook/ipaymu", handler.Webhook)
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodPost, "/payments/webhook/ipaymu", strings.NewReader(`{"trx_id":228214,"reference_id":"payment-id","status_code":1}`))
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	router.ServeHTTP(recorder, request)
+	if recorder.Code != http.StatusOK || !called {
+		t.Fatalf("status = %d, called = %v, body = %s", recorder.Code, called, recorder.Body.String())
+	}
+}
+
 func TestPaymentHandlerValidationAndAuthentication(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	handler := NewPaymentHandler(&mockService{})

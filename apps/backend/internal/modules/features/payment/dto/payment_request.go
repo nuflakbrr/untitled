@@ -17,7 +17,7 @@ type VerifyProofRequest struct {
 // lookup key and calls Client.CheckTransaction for authoritative status before
 // mutating anything.
 type WebhookPayload struct {
-	TransactionID string `form:"trx_id"`
-	ReferenceID   string `form:"reference_id"`
-	StatusCode    string `form:"status_code"`
+	TransactionID string `form:"trx_id" json:"trx_id"`
+	ReferenceID   string `form:"reference_id" json:"reference_id"`
+	StatusCode    string `form:"status_code" json:"status_code"`
 }

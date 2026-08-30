@@ -2,8 +2,11 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
+	"net/url"
 
 	"venturo-skeleton-go/internal/middleware"
 	"venturo-skeleton-go/internal/modules/features/payment/dto"
@@ -51,8 +54,8 @@ func (h *PaymentHandler) Checkout(c *gin.Context) {
 // server-to-server. The service independently re-verifies the transaction
 // with iPaymu before trusting anything from this body (see HandleWebhook).
 func (h *PaymentHandler) Webhook(c *gin.Context) {
-	var payload dto.WebhookPayload
-	if err := c.ShouldBind(&payload); err != nil {
+	payload, err := parseWebhookPayload(c)
+	if err != nil {
 		response.Error(c, http.StatusBadRequest, "Invalid webhook payload", err.Error())
 		return
 	}
@@ -61,6 +64,39 @@ func (h *PaymentHandler) Webhook(c *gin.Context) {
 		return
 	}
 	response.Success(c, http.StatusOK, "Webhook processed", nil)
+}
+
+func parseWebhookPayload(c *gin.Context) (dto.WebhookPayload, error) {
+	raw, err := c.GetRawData()
+	if err != nil {
+		return dto.WebhookPayload{}, err
+	}
+	values, _ := url.ParseQuery(string(raw))
+	payload := dto.WebhookPayload{
+		TransactionID: values.Get("trx_id"),
+		ReferenceID:   values.Get("reference_id"),
+		StatusCode:    values.Get("status_code"),
+	}
+	if payload.TransactionID == "" {
+		var values map[string]any
+		if err := json.Unmarshal(raw, &values); err != nil {
+			return dto.WebhookPayload{}, err
+		}
+		payload.TransactionID = webhookValue(values["trx_id"])
+		payload.ReferenceID = webhookValue(values["reference_id"])
+		payload.StatusCode = webhookValue(values["status_code"])
+	}
+	if payload.TransactionID == "" {
+		return dto.WebhookPayload{}, errors.New("trx_id is required")
+	}
+	return payload, nil
+}
+
+func webhookValue(value any) string {
+	if value == nil {
+		return ""
+	}
+	return fmt.Sprint(value)
 }
 
 func (h *PaymentHandler) SubmitProof(c *gin.Context) {

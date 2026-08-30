@@ -115,8 +115,8 @@ func (s *PaymentService) Checkout(ctx context.Context, userID string, req dto.Ch
 		Product:     []string{"Event Registration"},
 		Qty:         []int{1},
 		Price:       []int64{reg.Amount},
-		ReturnURL:   s.frontendURL + "/my-tickets",
-		CancelURL:   s.frontendURL + "/my-tickets",
+		ReturnURL:   strings.TrimRight(s.frontendURL, "/") + "/registration/success/" + req.RegistrationID,
+		CancelURL:   strings.TrimRight(s.frontendURL, "/") + "/participant/dashboard",
 		NotifyURL:   strings.TrimRight(s.publicBaseURL, "/") + "/features/v1/payments/webhook/ipaymu",
 		ReferenceID: payment.ID,
 	})
@@ -127,6 +127,9 @@ func (s *PaymentService) Checkout(ctx context.Context, userID string, req dto.Ch
 		return nil, fmt.Errorf("open ipaymu checkout: %w", err)
 	}
 	if err := s.repository.CompleteCheckout(ctx, payment.ID, checkoutToken, created.TransactionID, created.URL, "", ""); err != nil {
+		if releaseErr := s.repository.ReleaseCheckout(context.WithoutCancel(ctx), payment.ID, checkoutToken); releaseErr != nil {
+			return nil, errors.Join(err, releaseErr)
+		}
 		return nil, err
 	}
 	payment.TransactionID = created.TransactionID
