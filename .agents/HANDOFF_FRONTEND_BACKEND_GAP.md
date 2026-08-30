@@ -8,8 +8,8 @@ User directive: "aku gamau frontend ada gap dengan backend, berlaku untuk semua 
 
 - [x] **#1 — Fix article/faq/site-content backend mismatch** (DONE, verified live in browser)
 - [ ] #2 — Admin UI: Event + Event Category CRUD
-- [ ] #3 — Admin UI: user ban/unban controls
-- [ ] #4 — Admin UI: permission master-data CRUD
+- [x] **#3 — Admin UI: user ban/unban controls** (DONE: server action + controls in user table)
+- [x] **#4 — Admin UI: permission master-data CRUD** (DONE on this branch)
 - [ ] #5 — Admin UI: tenant payment gateway config
 - [ ] #6 — Admin UI: audit log viewer
 - [ ] #7 — Feature: attendance scan + stats UI
@@ -39,7 +39,13 @@ Work through in this order (roughly cheapest/highest-value first) unless a task 
   - `category` ← resolved from `category_ids[0]` against a `Map<id,name>` built from `getArticleCategories()`, fetched alongside the article list/detail request. `ArticleCategory.slug` is populated with the category **id** (backend has no slug column) — safe because nothing routes on it, it's only used as the `?category=` filter value and a React key.
 - Verified live: created a real category + article via the API, loaded `/article` and `/article/[slug]` in a browser, confirmed cover image / excerpt / category badge / category-filter chip all work against real data, then deleted the test records.
 
-## #2–#12 — not started, context to save re-discovery
+## Remaining gaps and audit context
+
+### Re-audit 2026-08-30
+
+- Confirmed gap: backend `POST /core/v1/users/:id/ban` and `/:id/unban` had no frontend caller although user rows already expose `banned`. Added admin controls backed by server actions; ban requests use a server-owned audit reason and both paths revalidate the user list.
+- Stale item corrected: permission master-data CRUD and role-permission linking are already integrated under `/dashboard/access/permissions` and `/dashboard/access/roles`.
+- Verified: full Bruno API suite passed (104 requests, 204 tests); a temporary account completed ban → status read → unban → cleanup; browser smoke test completed the same UI toggle without console errors.
 
 From the original audit (module → backend routes unused by frontend):
 
