@@ -45,6 +45,7 @@ export type ParticipantCertificate = {
   download_url: string;
   issued_at: string;
 };
+export type ParticipantReview = { id: string; registration_id: string; event_id: string; rating: number; comment: string };
 
 const credentialsSchema = z.object({
   email: z.email(),
@@ -109,6 +110,7 @@ const profileSchema = z.object({
   name: z.string().trim().min(2, 'Nama minimal 2 karakter').max(255),
   image: z.string().trim().url('URL foto profil tidak valid').or(z.literal('')),
 });
+const participantReviewSchema = z.object({ id: z.string(), registration_id: z.string(), event_id: z.string(), rating: z.number(), comment: z.string() });
 
 async function setRegistrationError(error: string) {
   (await cookies()).set('registration_error', error, {
@@ -287,6 +289,30 @@ export async function listMyRegistrationsAction(): Promise<
   if (!backend.ok || !registrations.success)
     return { data: null, error: payload.message || 'Registrasi gagal dimuat' };
   return { data: registrations.data, error: null };
+}
+
+export async function listMyReviewsAction(): Promise<AuthActionResult<ParticipantReview[]>> {
+  const auth = await authenticatedSession();
+  if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
+  const backend = await fetchBackend('features/v1/testimonials/me', auth.token);
+  const payload = await responseJson<unknown[]>(backend);
+  const reviews = z.array(participantReviewSchema).safeParse(payload.data);
+  if (!backend.ok || !reviews.success) return { data: null, error: payload.message || 'Review gagal dimuat' };
+  return { data: reviews.data, error: null };
+}
+
+export async function createReviewAction(_state: ProfileActionState, formData: FormData): Promise<ProfileActionState> {
+  const rating = Number(formData.get('rating'));
+  const comment = formData.get('comment');
+  const registrationID = formData.get('registration_id');
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5 || typeof comment !== 'string' || comment.trim().length < 3 || typeof registrationID !== 'string')
+    return { error: 'Rating dan ulasan wajib diisi dengan benar', success: '' };
+  const auth = await authenticatedSession();
+  if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
+  const backend = await fetchBackend(`features/v1/testimonials/registration/${registrationID}`, auth.token, { method: 'POST', body: JSON.stringify({ rating, comment: comment.trim() }) });
+  const payload = await responseJson<unknown>(backend);
+  if (!backend.ok) return { error: payload.message || 'Review gagal disimpan', success: '' };
+  return { error: '', success: 'Review berhasil disimpan' };
 }
 
 export async function listMyCertificatesAction(): Promise<

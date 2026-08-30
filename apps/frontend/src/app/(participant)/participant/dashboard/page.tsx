@@ -18,14 +18,16 @@ import { paths } from 'src/routes/paths';
 
 import { Iconify } from 'src/components/iconify';
 
-import { listMyRegistrationsAction } from 'src/auth/actions';
+import { listMyReviewsAction, listMyRegistrationsAction } from 'src/auth/actions';
 
+import { ReviewForm } from './review-form';
 import { ParticipantTicketQR } from './participant-ticket-qr';
 
 export default async function ParticipantDashboardPage() {
-  const result = await listMyRegistrationsAction();
+  const [result, reviewsResult] = await Promise.all([listMyRegistrationsAction(), listMyReviewsAction()]);
   const checkoutError = (await cookies()).get('registration_error')?.value === 'checkout';
   const registrations = result.data ?? [];
+  const reviewed = new Set((reviewsResult.data ?? []).map((review) => review.registration_id));
   const activeCount = registrations.filter((item) => item.status !== 'CANCELLED').length;
   const releasedTickets = registrations
     .filter((item) => ['REGISTERED', 'CHECKED_IN'].includes(item.status))
@@ -215,6 +217,7 @@ export default async function ParticipantDashboardPage() {
                   <TableRow>
                     {[
                       'Event',
+                      'Review',
                       'Tanggal',
                       'Lokasi',
                       'Tipe',
@@ -236,6 +239,11 @@ export default async function ParticipantDashboardPage() {
                         >
                           {registration.event_title}
                         </Button>
+                      </TableCell>
+                      <TableCell>
+                        {registration.status === 'CHECKED_IN' && !reviewed.has(registration.id) ? (
+                          <ReviewForm registrationID={registration.id} />
+                        ) : reviewed.has(registration.id) ? 'Sudah diulas' : '-'}
                       </TableCell>
                       <TableCell>
                         {new Date(registration.event_start_date).toLocaleDateString('id-ID')}
