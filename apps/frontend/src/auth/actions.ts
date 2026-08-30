@@ -622,6 +622,19 @@ export async function deleteAdminResourceAction(formData: FormData) {
   );
 }
 
+export async function toggleUserBanAction(formData: FormData) {
+  const auth = await authenticatedSession();
+  if (!auth) return;
+  const id = z.uuid().safeParse(formData.get('id'));
+  const banned = formData.get('banned') === 'true';
+  if (!id.success) return;
+  await fetchBackend(`core/v1/users/${id.data}/${banned ? 'unban' : 'ban'}`, auth.token, {
+    method: 'POST',
+    body: banned ? undefined : JSON.stringify({ reason: 'Dinonaktifkan oleh administrator' }),
+  });
+  revalidatePath('/dashboard/access/users');
+}
+
 export async function updateRolePermissionsAction(formData: FormData) {
   const auth = await authenticatedSession();
   if (!auth) return;

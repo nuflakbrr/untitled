@@ -16,7 +16,7 @@ import TableContainer from '@mui/material/TableContainer';
 
 import { RouterLink } from 'src/routes/components';
 
-import { deleteAdminResourceAction } from 'src/auth/actions';
+import { toggleUserBanAction, deleteAdminResourceAction } from 'src/auth/actions';
 
 export type Row = {
   id: string;
@@ -27,6 +27,7 @@ export type Row = {
   type?: string;
   slug?: string;
   code?: string;
+  banned?: boolean;
 };
 export function AdminCrud({ resource, rows }: { resource: string; rows: Row[] }) {
   const routeResource = resource === 'roles/permissions' ? 'permissions' : resource;
@@ -88,6 +89,19 @@ export function AdminCrud({ resource, rows }: { resource: string; rows: Row[] })
                     >
                       Edit
                     </Button>
+                    {resource === 'users' ? (
+                      <Box component="form" action={toggleUserBanAction}>
+                        <input type="hidden" name="id" value={row.id} />
+                        <input type="hidden" name="banned" value={String(Boolean(row.banned))} />
+                        <Button
+                          type="submit"
+                          color={row.banned ? 'success' : 'warning'}
+                          size="small"
+                        >
+                          {row.banned ? 'Aktifkan' : 'Nonaktifkan'}
+                        </Button>
+                      </Box>
+                    ) : null}
                     <Box component="form" action={deleteAdminResourceAction}>
                       <input type="hidden" name="resource" value={resource} />
                       <input type="hidden" name="id" value={row.id} />
