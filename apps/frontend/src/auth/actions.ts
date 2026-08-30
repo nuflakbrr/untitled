@@ -28,7 +28,22 @@ export type ParticipantRegistration = {
   attendance_status: string;
   certificate_status: string;
   status: string;
+  price: number;
   created_at: string;
+};
+export type ParticipantCertificate = {
+  id: string;
+  registration_id: string;
+  event_id: string;
+  certificate_number: string;
+  participant_name: string;
+  participant_email?: string;
+  event_title: string;
+  issuer_faculty: string;
+  event_date: string;
+  pdf_url: string;
+  download_url: string;
+  issued_at: string;
 };
 
 const credentialsSchema = z.object({
@@ -73,7 +88,26 @@ const participantRegistrationSchema = z.object({
   attendance_status: z.string(),
   certificate_status: z.string(),
   status: z.string(),
+  price: z.number(),
   created_at: z.string(),
+});
+const participantCertificateSchema = z.object({
+  id: z.string(),
+  registration_id: z.string(),
+  event_id: z.string(),
+  certificate_number: z.string(),
+  participant_name: z.string(),
+  participant_email: z.string().optional(),
+  event_title: z.string(),
+  issuer_faculty: z.string(),
+  event_date: z.string(),
+  pdf_url: z.string(),
+  download_url: z.string(),
+  issued_at: z.string(),
+});
+const profileSchema = z.object({
+  name: z.string().trim().min(2, 'Nama minimal 2 karakter').max(255),
+  image: z.string().trim().url('URL foto profil tidak valid').or(z.literal('')),
 });
 
 async function setRegistrationError(error: string) {
@@ -187,8 +221,45 @@ export async function signUpAction(
 }
 
 export async function signOutAction() {
+  const token = (await cookies()).get(SESSION_COOKIE)?.value;
+  if (token) await fetchBackend('core/v1/auth/logout', token, { method: 'POST' });
   (await cookies()).delete(SESSION_COOKIE);
   redirect('/auth/sign-in');
+}
+
+export async function changePasswordAction(
+  _state: ProfileActionState,
+  formData: FormData
+): Promise<ProfileActionState> {
+  const currentPassword = formData.get('current_password');
+  const newPassword = formData.get('new_password');
+  const confirmation = formData.get('confirmation');
+  if (typeof currentPassword !== 'string' || currentPassword.length === 0)
+    return { error: 'Kata sandi saat ini wajib diisi', success: '' };
+  if (typeof newPassword !== 'string' || newPassword.length < 8)
+    return { error: 'Kata sandi baru minimal 8 karakter', success: '' };
+  if (newPassword !== confirmation)
+    return { error: 'Konfirmasi kata sandi baru tidak cocok', success: '' };
+
+  const auth = await authenticatedSession();
+  if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
+  const backend = await fetchBackend('core/v1/users/change-password', auth.token, {
+    method: 'POST',
+    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+  });
+  const payload = await responseJson<unknown>(backend);
+  if (!backend.ok) return { error: payload.message || 'Kata sandi gagal diperbarui', success: '' };
+  await fetchBackend('core/v1/auth/logout', auth.token, { method: 'POST' });
+  (await cookies()).delete(SESSION_COOKIE);
+  return { error: '', success: 'Kata sandi berhasil diperbarui' };
+}
+
+export async function deleteMyAccountAction() {
+  const auth = await authenticatedSession();
+  if (!auth) return redirect('/auth/sign-in');
+  await fetchBackend('core/v1/users/me', auth.token, { method: 'DELETE' });
+  (await cookies()).delete(SESSION_COOKIE);
+  return redirect('/auth/sign-in?deleted=1');
 }
 
 export async function searchEventsAction(
@@ -216,6 +287,46 @@ export async function listMyRegistrationsAction(): Promise<
   if (!backend.ok || !registrations.success)
     return { data: null, error: payload.message || 'Registrasi gagal dimuat' };
   return { data: registrations.data, error: null };
+}
+
+export async function listMyCertificatesAction(): Promise<
+  AuthActionResult<ParticipantCertificate[]>
+> {
+  const auth = await authenticatedSession();
+  if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
+
+  const backend = await fetchBackend('features/v1/certificates/me', auth.token);
+  const payload = await responseJson<unknown[]>(backend);
+  const certificates = z.array(participantCertificateSchema).safeParse(payload.data);
+  if (!backend.ok || !certificates.success)
+    return { data: null, error: payload.message || 'Sertifikat gagal dimuat' };
+  return { data: certificates.data, error: null };
+}
+
+export type ProfileActionState = { error: string; success: string };
+
+export async function updateMyProfileAction(
+  _state: ProfileActionState,
+  formData: FormData
+): Promise<ProfileActionState> {
+  const input = profileSchema.safeParse({
+    name: formData.get('name'),
+    image: formData.get('image'),
+  });
+  if (!input.success)
+    return { error: input.error.issues[0]?.message ?? 'Data profil tidak valid', success: '' };
+
+  const auth = await authenticatedSession();
+  if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
+
+  const body = { name: input.data.name, ...(input.data.image ? { image: input.data.image } : {}) };
+  const backend = await fetchBackend('core/v1/users/me', auth.token, {
+    method: 'PUT',
+    body: JSON.stringify(body),
+  });
+  const payload = await responseJson<unknown>(backend);
+  if (!backend.ok) return { error: payload.message || 'Profil gagal diperbarui', success: '' };
+  return { error: '', success: 'Profil berhasil diperbarui' };
 }
 
 export async function registerAndCheckoutAction(formData: FormData) {

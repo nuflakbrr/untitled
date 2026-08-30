@@ -30,6 +30,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { Logo } from 'src/components/logo';
 import { Iconify } from 'src/components/iconify';
+import { ConfirmAction } from 'src/components/confirm-action';
 import { ColorModeButton } from 'src/components/color-mode-button';
 
 import { isAdminSession } from 'src/auth/types';
@@ -49,7 +50,13 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     ? 'Event'
     : pathname.startsWith(paths.participant.dashboard)
       ? 'Dashboard peserta'
-      : 'Ringkasan';
+      : pathname.startsWith(paths.participant.transactions)
+        ? 'Riwayat transaksi'
+        : pathname.startsWith(paths.participant.certificates)
+          ? 'Sertifikat saya'
+          : pathname.startsWith(paths.participant.profile)
+            ? 'Profil saya'
+            : 'Ringkasan';
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -171,6 +178,31 @@ function DashboardNav({ pathname, onNavigate }: { pathname: string; onNavigate?:
             onClick={onNavigate}
           />
         </PermissionGuard>
+        {!isAdmin ? (
+          <>
+            <NavItem
+              href={paths.participant.transactions}
+              label="Riwayat transaksi"
+              icon="solar:card-outline"
+              active={pathname.startsWith(paths.participant.transactions)}
+              onClick={onNavigate}
+            />
+            <NavItem
+              href={paths.participant.certificates}
+              label="Sertifikat"
+              icon="solar:diploma-verified-bold-duotone"
+              active={pathname.startsWith(paths.participant.certificates)}
+              onClick={onNavigate}
+            />
+            <NavItem
+              href={paths.participant.profile}
+              label="Profil saya"
+              icon="solar:user-id-bold"
+              active={pathname.startsWith(paths.participant.profile)}
+              onClick={onNavigate}
+            />
+          </>
+        ) : null}
       </List>
       <Divider />
       <Box sx={{ p: 2 }}>
@@ -191,13 +223,14 @@ function DashboardNav({ pathname, onNavigate }: { pathname: string; onNavigate?:
             />
           </Box>
         </Box>
-        <Box component="form" action={signOutAction}>
-          <ListItemButton component="button" type="submit" sx={{ width: '100%', borderRadius: 1 }}>
-            <ListItemIcon sx={{ minWidth: 36 }}>
-              <Iconify icon="carbon:logout" width={19} />
-            </ListItemIcon>
-            <ListItemText primary="Keluar" slotProps={{ primary: { variant: 'body2' } }} />
-          </ListItemButton>
+        <Box>
+          <ConfirmAction
+            label="Keluar"
+            title="Keluar dari akun?"
+            description="Kamu perlu login kembali untuk mengakses dashboard."
+            action={signOutAction}
+            startIcon={<Iconify icon="carbon:logout" width={19} />}
+          />
         </Box>
       </Box>
     </Box>
@@ -213,7 +246,12 @@ function NavItem({
 }: {
   href: string;
   label: string;
-  icon: 'solar:home-angle-linear' | 'solar:calendar-mark-outline';
+  icon:
+    | 'solar:home-angle-linear'
+    | 'solar:calendar-mark-outline'
+    | 'solar:card-outline'
+    | 'solar:diploma-verified-bold-duotone'
+    | 'solar:user-id-bold';
   active: boolean;
   onClick?: () => void;
 }) {
