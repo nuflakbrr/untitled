@@ -4,211 +4,104 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Untitled Backend is a modular application platform built with Go, Gin web framework, and PostgreSQL. It features role-based access control (RBAC).
+**Untitled Backend** (internal codename **SITIVENT**) is a university event/attendance/certificate platform built with Go, Gin, and PostgreSQL (`pgx/v5`). It implements a **hierarchical multi-tenancy** model (Universitas → Fakultas → Jurusan → Unit) with RBAC, JWT auth, event registration/payment, attendance scanning, and certificate issuance.
+
+This package is also wired into the root Turborepo (`bun run dev|build|test|lint` from the monorepo root delegate here via `package.json`), but Go tooling (`go`, `make`) is the primary interface for day-to-day work in this directory.
 
 ## Development Commands
 
-### Setup & Development
-
 ```bash
 cp .env.example .env           # Configure environment variables
-make db-setup                  # Run migrations and seeders
-make dev                       # Start with hot reload
-
-# Alternative modes
-make run                       # Run without hot reload
-make build                     # Build production binary (outputs to bin/)
+make db-setup                  # Run migrations and seeders (fresh setup)
+make dev                       # Start with hot reload (Air)
+make run                       # Run without hot reload (go run cmd/api/main.go)
+make build                     # Build production binary -> bin/untitled-api
 ```
 
-### Database Operations
+### Database
+
+Migrations and seeders are split into **two independently-versioned tracks**, `core` and `features`, each tracked in its own `schema_migrations_<module>` table:
 
 ```bash
-# Migrations — core module (app data), tracked in schema_migrations_core
-make migrate-up                # Run all pending migrations
-make migrate-down MODULE=core  # Rollback last migration in a module
-make migrate-version           # Show current version
-make migrate-create NAME=create_foo MODULE=core   # Create new core migration
+make migrate-up                        # Run all pending migrations (both tracks)
+make migrate-down MODULE=core          # Rollback last migration for one track (core|features)
+make migrate-create NAME=x MODULE=core # New migration file under internal/database/migrations/<module>
+make migrate-force V=1 MODULE=core     # Force a track to a specific version if the migrate state is stuck
+make migrate-version                   # Show current version of both tracks
 
-# Force migration version (if stuck)
-make migrate-force V=1 MODULE=core
-
-# Seeding
-make seed                      # Run all seeders
-make seed-core                 # Run core module seeders only
-
-# Complete reset
-make db-reset                  # Drop database, recreate, migrate, and seed
+make seed-core                         # Run internal/database/seeders/core/*.sql in filename order (via psql)
+make seed-features                     # Same, for seeders/features
+make seed                              # Both
+make db-reset                          # DROP + recreate DB, then db-setup (destructive)
 ```
+
+Seeders are plain `.sql` files executed in lexical filename order by `psql` (see `Makefile`) — not a migration framework. When a migration adds a table that another table/query depends on (e.g. a join table meant to be derived from existing rows), the corresponding seeder must populate it too; the migration's own backfill only runs once, against whatever data existed at migration time.
 
 ### Testing
 
 ```bash
-go test ./internal/modules/core/auth/...  # Specific package
-go test ./...                              # All tests
-go test -cover ./...                       # With coverage
+go test ./internal/modules/core/auth/...   # One package
+go test -run TestName ./path/to/pkg        # One test
+make test                                  # go test -v -race -count=1 ./...
+make test-coverage                         # + coverprofile, then `go tool cover -func`
+make test-short                            # go test -short (skips integration-tagged tests)
+make test-api BASE_URL=... [BAIL=--bail]   # Black-box API tests against a running server (tests/run-api-tests.sh)
 ```
 
-## Architecture & Patterns
+`make test-api` requires the server running (default `http://localhost:8000`) and a seeded database — it drives real HTTP requests, not Go tests.
 
-### Module Structure
+## Architecture
 
-Every feature module follows this pattern:
+### Multi-tenancy is hierarchical, not flat company_id
+
+Tenants (`core.tenants`) form a tree via `parent_id`, typed by `tenant_type`: `ROOT` (Rektorat/Universitas) → `FACULTY` → `DEPARTMENT` → `UNIT`. A user's home tenant is `users.tenant_id`; a JWT is scoped to one **active** tenant at a time (`claims.TenantID`), switched via `POST /core/v1/auth/switch-tenant`.
+
+- `root_superadmin` bypasses tenant scoping entirely and can switch into any tenant.
+- Every other user can only switch into tenants they have a row for in `core.user_has_tenants` (`user_id, tenant_id, role_id`) — checked server-side by `UserRepository.HasTenantAccess`. This table is **not** auto-populated by migrations alone; the `003_users_and_accounts.sql` core seeder must insert into it whenever it inserts/updates a user's `tenant_id`, or switch-tenant silently breaks for every non-root account after a fresh `db-reset`.
+- `GET /core/v1/auth/my-tenants` returns the tenants a caller may switch into (all tenants for root, or their `user_has_tenants` rows otherwise) — this is what feeds a tenant-switcher UI; it is not an authorization check by itself.
+- Repository queries that return tenant-scoped data must filter by `tenant_id` derived from JWT claims (`middleware.GetUserFromContext`), never from client-supplied input (header/body) — an `X-Tenant-ID` header exists for a few explicitly-public listing endpoints and the superadmin switcher path only.
+- `middleware.TenantContext()` (global) and `middleware.RequireTenantContext()` (opt-in) manage a separate context-key-based tenant value (`ContextKeyTenantID` etc.) used by very little code today; prefer reading tenant scope from JWT claims directly unless you've confirmed a handler actually consumes those context keys.
+
+### Module structure
+
+Every domain module (`internal/modules/{core,features}/<name>/`) follows:
 
 ```
-module_name/
-├── domain/              # Business entities
-├── dto/                 # Request/Response DTOs with validation tags
-├── handler/             # HTTP handlers (Gin handlers)
-├── repository/          # Data access layer
-├── service/             # Business logic
-└── main.{module}.go     # Module initialization with Initialize() and SetupRoutes()
+<name>/
+├── domain/              # Entities (plain structs, `db`/`json` tags)
+├── dto/                 # Request/response DTOs with `binding` validation tags
+├── handler/              # Gin handlers
+├── repository/          # pgx queries
+├── service/              # Business logic, defines narrow interfaces over repos for testability/mocking
+└── main.<name>.go        # Initialize(db, ...) *Module + SetupRoutes(router *gin.RouterGroup)
 ```
 
-Each `main.{module}.go` exports:
+`core` modules: `auth`, `user`, `role`, `tenant`. `features` modules: `event` (+ categories), `registration`, `payment`, `attendance`, `certificate`, `content` (articles/galleries), `support`, `testimonial`. All modules are wired in [internal/router/router.go](internal/router/router.go) under two route groups: `/core/v1/...` and `/features/v1/...`. A few `Initialize()` signatures differ (e.g. `certificate.Initialize` takes a `context.Context` and returns an error) — check the module's `main.*.go` before assuming the common `Initialize(db)` shape.
 
-- `Initialize(db *pgxpool.Pool, ...) *Module` - Dependency injection
-- `SetupRoutes(router *gin.RouterGroup)` - Route registration
+Service layers commonly declare a local interface (e.g. `TenantRepository`, `UserRepository` in `auth/service`) satisfied by the concrete repository *and* a test mock, rather than depending on the concrete repo type directly — follow this pattern when adding cross-module service dependencies.
 
-### Versioned API Routes
+### Auth & RBAC
 
-Routes are organized by domain and version:
+- Chain: `middleware.JWTAuth()` (validates JWT, populates request context via `middleware.SetUserContext`) → `middleware.RequireRole(...)` and/or `middleware.RequirePermission(...)` for authorization. There is no `RequireAllRoles`/`RequireAnyPermission`/`RequireAllPermissions` — only `RequireRole(roles ...string)` (any-of) and `RequirePermission(permission string)` exist; don't assume the richer set without checking `internal/middleware/role.go`.
+- Permissions are resolved and cached per `(userID, tenantID)` by `internal/shared/authz.Service`, Redis-backed with a TTL (`cfg.Redis.PermissionTTL`); if Redis is unreachable at boot, the app falls back to direct DB lookups (dev-only fallback — production requires Redis, see `router.Setup`).
+- `POST /core/v1/auth/switch-tenant` issues a new JWT scoped to the target tenant with fresh permissions for that tenant.
+- Read claims via `middleware.GetUserFromContext(c)` / `middleware.MustGetUserFromContext(c)`, not by re-parsing the Authorization header.
 
-- **Core**: `/core/v1/...` (auth, users, companies, roles, branches, approvals, translation overrides, API keys)
+### Responses & errors
 
-All modules are initialized in [internal/router/router.go](internal/router/router.go).
-
-### Multi-Tenancy Pattern
-
-Company-based data isolation:
-
-1. **JWT Claims** include `company_id` after user switches company
-2. **Middleware Chain**: `JWTAuth()` → `CompanyContext()` → `RequirePermission()`
-3. **Repository Pattern**: Always filter by `company_id` in WHERE clauses
-4. **Company Switching**: `POST /core/v1/auth/switch-company`
-
-### RBAC Middleware
-
-Located in [internal/middleware/](internal/middleware/):
-
-```go
-// Role-based
-middleware.RequireRole("admin", "manager")       // Has any role
-middleware.RequireAllRoles("admin", "manager")   // Has all roles
-
-// Permission-based
-middleware.RequirePermission("users:create")           // Has specific permission
-middleware.RequireAnyPermission("users:create", "users:update")  // Has any
-middleware.RequireAllPermissions("users:read", "users:write")    // Has all
-```
-
-### Authentication Flow
-
-1. **Sign Up**: `POST /core/v1/auth/signup`
-2. **Sign In**: `POST /core/v1/auth/signin` → Returns access + refresh tokens
-3. **Switch Company**: `POST /core/v1/auth/switch-company` → New JWT with company_id
-4. **Refresh Token**: `POST /core/v1/auth/refresh` → New access token
-5. **Logout**: `POST /core/v1/auth/logout` or `POST /core/v1/auth/logout-all`
-
-JWT claims include: `user_id`, `email`, `company_id`, `roles`, `permissions`
-
-## Adding New Features
-
-### Creating a New Module
-
-1. Create module directory: `internal/modules/{domain}/{module_name}/`
-2. Create subdirectories: `domain/`, `dto/`, `handler/`, `repository/`, `service/`
-3. Create `main.{module_name}.go` with `Initialize()` and `SetupRoutes()`
-4. Register in [internal/router/router.go](internal/router/router.go)
-
-### Creating Database Migrations
-
-```bash
-make migrate-create NAME=create_customers_table MODULE=core
-```
-
-Migration conventions:
-
-- Include `company_id UUID NOT NULL` for multi-tenant tables
-- Add indexes on `company_id` and foreign keys
-- Use `TIMESTAMP WITH TIME ZONE` for timestamps (stored in UTC)
-- Use `id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
-
-## Important Conventions
-
-### Error Handling
-
-Use helpers from [internal/shared/response/](internal/shared/response/):
-
-```go
-response.Success(c, http.StatusOK, "Success", data)
-response.Error(c, http.StatusBadRequest, "Validation failed", errors)
-response.Paginated(c, data, totalCount, page, limit)
-```
+Use [internal/shared/response/](internal/shared/response/): `response.Success`, `response.SuccessWithPagination` (not `Paginated`), `response.Error`, `response.ValidationError`. Handlers should not build the JSON envelope by hand.
 
 ### Logging
 
-Use structured logging from [pkg/logger/](pkg/logger/):
+Structured logging via `pkg/logger` (Zap + Ginzap middleware): colored console/Debug in development, JSON/Info in production. Fatal logger calls in `cmd/api/main.go` intentionally crash boot (missing JWT secret, DB connection failure).
 
-```go
-logger.Info("User created", logger.String("user_id", userID))
-logger.Error("Failed to create user", logger.Err(err))
-```
+### OpenAPI contract
 
-### Validation
-
-Use `binding` tags with Gin's validation:
-
-```go
-type CreateUserRequest struct {
-    Name   string `json:"name" binding:"required,min=2,max=100"`
-    Email  string `json:"email" binding:"required,email"`
-}
-```
-
-Custom validators in [pkg/validator/](pkg/validator/).
-
-### Company Context in Repositories
-
-Always filter by company_id for multi-tenant data:
-
-```go
-func (r *Repository) GetByID(ctx context.Context, id, companyID string) (*domain.Entity, error) {
-    query := `SELECT * FROM table WHERE id = $1 AND company_id = $2`
-    // ...
-}
-```
+`docs/openapi.yaml`/`docs/openapi.json` are served statically at `/openapi.yaml`/`/openapi.json` and are the source of truth consumed by other repos in the monorepo (e.g. frontend's `api-contract-reader`). Keep them in sync when changing request/response shapes — `docs/api-contract/` and `docs/features/` hold supporting contract docs per module.
 
 ## Common Gotchas
 
-### Migration Issues
-
-- Check current version with `make migrate-version`
-- Use `make migrate-force V=X MODULE=core` to force version if stuck
-- Core migrations live under `internal/database/migrations/core` and are tracked in `schema_migrations_core`
-
-### Multi-Tenancy
-
-- User must switch company to get `company_id` in JWT
-- Always filter by `company_id` in repository queries
-- Use `CompanyContext()` middleware for tenant-isolated endpoints
-
-### Hot Reload (Air)
-
-- Configured in `.air.toml`
-- Build errors logged to `build-errors.log`
-
-## Testing Endpoints
-
-```bash
-# Health check
-curl http://localhost:8080/health
-
-# Sign in
-curl -X POST http://localhost:8080/core/v1/auth/signin \
-  -H "Content-Type: application/json" \
-  -d '{"login": "super.admin@gmail.com", "password": "password"}'
-
-# Authenticated request
-curl http://localhost:8080/core/v1/users \
-  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
-```
+- **Migration tracks are independent**: `make migrate-version`/`migrate-down`/`migrate-force` all require `MODULE=core` or `MODULE=features`; forgetting it fails fast with an explicit error from the Makefile target.
+- **Seeder/migration drift**: a migration's one-time `INSERT ... SELECT` backfill (e.g. `000012_create_user_tenant_access.up.sql`) only sees rows that exist *at migration time* — on a fresh `db-reset`, migrations run before seeders populate any users, so that backfill is a no-op. If a table is meant to always mirror seeded user data, the seeder must populate it explicitly (see `user_has_tenants` above).
+- **`.env`** is loaded both by the app config and directly by `make` (`include .env`) — keep `DB_*` vars there in sync with `config.Load()`'s expectations.
+- Hot reload is Air (`.air.toml`), build errors logged to `build-errors.log`.
