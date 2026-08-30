@@ -29,6 +29,10 @@ export const paths = {
   participant: {
     dashboard: '/participant/dashboard',
   },
+  registration: {
+    success: (id: string) => `/registration/success/${id}`,
+    failed: '/registration/failed',
+  },
   /**
    * Article
    */

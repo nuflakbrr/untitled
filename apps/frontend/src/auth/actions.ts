@@ -6,8 +6,10 @@ import { z } from 'zod';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { isAdminSession, safeReturnTo, tenantOptionSchema } from './types';
+import { paths } from 'src/routes/paths';
+
 import { fetchBackend, SESSION_COOKIE, sessionFromToken } from './server';
+import { safeReturnTo, isAdminSession, tenantOptionSchema } from './types';
 
 export type AuthActionState = { error: string };
 export type AuthActionResult<T> = { data: T; error: null } | { data: null; error: string };
@@ -224,7 +226,7 @@ export async function registerAndCheckoutAction(formData: FormData) {
   });
   if (!input.success) {
     await setRegistrationError('registration_invalid');
-    redirect('/event');
+    redirect(paths.registration.failed);
   }
   const auth = await authenticatedSession();
   if (!auth) redirect('/auth/sign-in');
@@ -233,7 +235,9 @@ export async function registerAndCheckoutAction(formData: FormData) {
     method: 'POST',
     body: JSON.stringify(input.data),
   });
-  const registration = await responseJson<{ id?: string }>(registrationResponse);
+  const registration = await responseJson<{ id?: string; status?: string; price?: number }>(
+    registrationResponse
+  );
   if (!registrationResponse.ok || !registration.data?.id) {
     const errorCode = registration.message.toLowerCase().includes('closed')
       ? 'registration_closed'
@@ -243,7 +247,11 @@ export async function registerAndCheckoutAction(formData: FormData) {
           ? 'already_registered'
           : 'registration';
     await setRegistrationError(errorCode);
-    redirect(input.data.return_to ?? '/event');
+    redirect(paths.registration.failed);
+  }
+
+  if (registration.data.status === 'REGISTERED' || registration.data.price === 0) {
+    redirect(paths.registration.success(registration.data.id));
   }
 
   const checkoutResponse = await fetchBackend('features/v1/payments/checkout', auth.token, {
@@ -253,10 +261,11 @@ export async function registerAndCheckoutAction(formData: FormData) {
   const checkout = await responseJson<{ payment_url?: string }>(checkoutResponse);
   if (!checkoutResponse.ok) {
     await setRegistrationError('checkout');
-    redirect('/participant/dashboard');
+    redirect(paths.registration.failed);
   }
   if (checkout.data?.payment_url) redirect(checkout.data.payment_url);
-  redirect('/participant/dashboard');
+  await setRegistrationError('checkout');
+  redirect(paths.registration.failed);
 }
 
 export async function checkoutRegistrationAction(formData: FormData) {
@@ -265,7 +274,7 @@ export async function checkoutRegistrationAction(formData: FormData) {
   const returnTo = safeReturnTo(typeof returnToValue === 'string' ? returnToValue : null);
   if (!registrationID.success) {
     await setRegistrationError('checkout');
-    redirect(returnTo);
+    redirect(paths.registration.failed);
   }
 
   const auth = await authenticatedSession();
@@ -278,7 +287,7 @@ export async function checkoutRegistrationAction(formData: FormData) {
   const checkout = await responseJson<{ payment_url?: string }>(response);
   if (!response.ok || !checkout.data?.payment_url) {
     await setRegistrationError('checkout');
-    redirect(returnTo);
+    redirect(paths.registration.failed);
   }
   redirect(checkout.data.payment_url);
 }
