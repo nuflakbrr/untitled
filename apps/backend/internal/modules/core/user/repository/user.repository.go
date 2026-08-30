@@ -23,6 +23,58 @@ type UserRepository struct {
 	db *pgxpool.Pool
 }
 
+// HasTenantAccess verifies membership server-side before a tenant context is issued.
+func (r *UserRepository) HasTenantAccess(ctx context.Context, userID, tenantID string) (bool, error) {
+	var exists bool
+	err := r.db.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM user_has_tenants WHERE user_id=$1 AND tenant_id=$2)`, userID, tenantID).Scan(&exists)
+	return exists, err
+}
+
+// ListAccessibleTenants returns every tenant a user was explicitly granted
+// access to via user_has_tenants, along with the role assigned for that tenant.
+func (r *UserRepository) ListAccessibleTenants(ctx context.Context, userID string) ([]*domain.TenantAccess, error) {
+	query := `
+		SELECT t.id, t.name, t.slug, t.code, t.type::text, uht.role_id, r.name
+		FROM user_has_tenants uht
+		JOIN tenants t ON t.id = uht.tenant_id
+		LEFT JOIN roles r ON r.id = uht.role_id
+		WHERE uht.user_id = $1
+		ORDER BY t.name
+	`
+	rows, err := r.db.Query(ctx, query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list accessible tenants: %w", err)
+	}
+	defer rows.Close()
+
+	var tenants []*domain.TenantAccess
+	for rows.Next() {
+		t := &domain.TenantAccess{}
+		if err := rows.Scan(&t.TenantID, &t.TenantName, &t.TenantSlug, &t.TenantCode, &t.TenantType, &t.RoleID, &t.RoleName); err != nil {
+			return nil, fmt.Errorf("failed to scan accessible tenant: %w", err)
+		}
+		tenants = append(tenants, t)
+	}
+	return tenants, nil
+}
+
+func (r *UserRepository) SetTenantAccess(ctx context.Context, userID string, tenantIDs []string, roleID string) error {
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	if _, err = tx.Exec(ctx, `DELETE FROM user_has_tenants WHERE user_id=$1`, userID); err != nil {
+		return err
+	}
+	for _, tenantID := range tenantIDs {
+		if _, err = tx.Exec(ctx, `INSERT INTO user_has_tenants (user_id, tenant_id, role_id) VALUES ($1,$2,NULLIF($3,''))`, userID, tenantID, roleID); err != nil {
+			return err
+		}
+	}
+	return tx.Commit(ctx)
+}
+
 func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 	return &UserRepository{db: db}
 }

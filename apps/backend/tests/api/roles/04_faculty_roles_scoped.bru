@@ -1,0 +1,35 @@
+meta {
+  name: Faculty Role List Is Scoped To Own Tenant + Global
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/core/v1/roles
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{fasilkomAccessToken}}
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+
+  test("includes own custom role", function() {
+    const names = res.body.data.map(r => r.name);
+    expect(names).to.include(bru.getEnvVar("crudFasilkomRoleName"));
+  });
+
+  test("excludes another tenant's custom role", function() {
+    const names = res.body.data.map(r => r.name);
+    expect(names).to.not.include(bru.getEnvVar("crudTeknikRoleName"));
+  });
+
+  test("still includes shared global roles", function() {
+    const names = res.body.data.map(r => r.name);
+    expect(names).to.include("superadmin");
+    expect(names).to.include("peserta");
+  });
+}

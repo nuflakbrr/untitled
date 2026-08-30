@@ -62,6 +62,13 @@ INSERT INTO core._role_to_user ("A", "B") VALUES
 ('096401d0-a130-4d9b-a596-d0cb26554402', '44b29e55-b172-4aa6-8f7a-229b0ff558e2')
 ON CONFLICT ("A", "B") DO NOTHING;
 
+-- 4. Populate user_has_tenants (multi-tenant access map) from the seeded users.
+-- Without this, HasTenantAccess() always returns false for non-root users and
+-- switch-tenant is rejected for every seeded account.
+INSERT INTO core.user_has_tenants (user_id, tenant_id, role_id)
+SELECT id, tenant_id, role_id FROM core.users WHERE tenant_id IS NOT NULL
+ON CONFLICT (user_id, tenant_id) DO UPDATE SET role_id = EXCLUDED.role_id, updated_at = NOW();
+
 -- Keep every seeded login account on the same Gmail domain.
 UPDATE core.users
 SET email = regexp_replace(email, '@untitled\.ac\.id$', '@gmail.com')

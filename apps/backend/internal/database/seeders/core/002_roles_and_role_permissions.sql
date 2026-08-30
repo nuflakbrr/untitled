@@ -9,7 +9,7 @@ INSERT INTO core.roles (id, name, description, created_at, updated_at) VALUES
 ('96866579-bb48-4eb8-8e60-003ab562f8e1', 'panitia', 'Panitia event dengan akses manajemen event dan absensi fakultas', NOW(), NOW()),
 ('6e08eba3-e925-45e8-82ef-86103816567b', 'scanner', 'Petugas pemindaian kehadiran peserta fakultas', NOW(), NOW()),
 ('096401d0-a130-4d9b-a596-d0cb26554402', 'peserta', 'Peserta universal (mahasiswa & umum) dengan akses pendaftaran lintas fakultas', NOW(), NOW())
-ON CONFLICT (name) DO UPDATE SET
+ON CONFLICT (name) WHERE tenant_id IS NULL DO UPDATE SET
     description = EXCLUDED.description,
     updated_at = NOW();
 
@@ -21,12 +21,14 @@ CROSS JOIN core.permissions p
 WHERE r.name = 'root_superadmin'
 ON CONFLICT (role_id, permission_id) DO NOTHING;
 
--- 3. Role Permissions: Superadmin (Fakultas - All permissions except root tenant management)
+-- 3. Role Permissions: Superadmin (Fakultas - All permissions except deleting
+-- tenants; tenant.create is allowed so a faculty tenant can create its own
+-- child tenants (department/unit), scoped server-side to its own subtree)
 INSERT INTO core.role_has_permissions (role_id, permission_id, created_at, updated_at)
 SELECT r.id, p.id, NOW(), NOW()
 FROM core.roles r
 CROSS JOIN core.permissions p
-WHERE r.name = 'superadmin' AND p.name NOT IN ('tenant.create', 'tenant.delete')
+WHERE r.name = 'superadmin' AND p.name NOT IN ('tenant.delete')
 ON CONFLICT (role_id, permission_id) DO NOTHING;
 
 -- 4. Role Permissions: Panitia

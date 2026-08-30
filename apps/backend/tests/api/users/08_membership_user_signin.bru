@@ -1,0 +1,33 @@
+meta {
+  name: Membership Test User Signs In
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/core/v1/auth/signin
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "{{crudMembershipUserEmail}}",
+    "password": "password123"
+  }
+}
+
+script:post-response {
+  bru.setEnvVar("crudMembershipUserAccessToken", res.body.data.access_token);
+}
+
+tests {
+  test("status 200", function() { expect(res.status).to.equal(200); });
+  test("returns access token", function() {
+    expect(res.body.data.access_token).to.be.a("string");
+  });
+}

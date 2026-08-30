@@ -1,0 +1,29 @@
+meta {
+  name: Cross-Tenant Update Of Child Tenant Is Forbidden
+  type: http
+  seq: 12
+}
+
+put {
+  url: {{baseUrl}}/core/v1/tenants/{{crudFacultyChildTenantId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{teknikAccessToken}}
+}
+
+body:json {
+  {
+    "name": "Diambil alih Teknik"
+  }
+}
+
+tests {
+  test("status 403", function() { expect(res.status).to.equal(403); });
+}

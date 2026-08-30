@@ -1,0 +1,29 @@
+meta {
+  name: Faculty Cannot Update A Global Template Role
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/core/v1/roles/096401d0-a130-4d9b-a596-d0cb26554402
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{fasilkomAccessToken}}
+}
+
+body:json {
+  {
+    "description": "Diambil alih FASILKOM"
+  }
+}
+
+tests {
+  test("status 403", function() { expect(res.status).to.equal(403); });
+}

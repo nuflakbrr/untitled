@@ -41,5 +41,6 @@ func (m *AuthModule) SetupRoutes(router *gin.RouterGroup) {
 		auth.GET("/me", middleware.JWTAuth(), m.Handler.GetMe)
 		auth.POST("/logout", middleware.JWTAuth(), m.Handler.Logout)
 		auth.POST("/switch-tenant", middleware.JWTAuth(), m.Handler.SwitchTenant)
+		auth.GET("/my-tenants", middleware.JWTAuth(), m.Handler.MyTenants)
 	}
 }

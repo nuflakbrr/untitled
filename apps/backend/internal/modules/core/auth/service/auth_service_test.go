@@ -9,6 +9,7 @@ import (
 
 	authDto "venturo-skeleton-go/internal/modules/core/auth/dto"
 	tenantDomain "venturo-skeleton-go/internal/modules/core/tenant/domain"
+	tenantDto "venturo-skeleton-go/internal/modules/core/tenant/dto"
 	userDomain "venturo-skeleton-go/internal/modules/core/user/domain"
 
 	"golang.org/x/crypto/bcrypt"
@@ -46,6 +47,7 @@ func (m *mockUserRepo) Create(ctx context.Context, user *userDomain.User, passwo
 type mockTenantRepo struct {
 	findByIDFn   func(ctx context.Context, id string) (*tenantDomain.Tenant, error)
 	findBySlugFn func(ctx context.Context, slug string) (*tenantDomain.Tenant, error)
+	findAllFn    func(ctx context.Context, filter tenantDto.TenantQueryFilter) ([]*tenantDomain.Tenant, int64, error)
 }
 
 func (m *mockTenantRepo) FindByID(ctx context.Context, id string) (*tenantDomain.Tenant, error) {
@@ -60,6 +62,13 @@ func (m *mockTenantRepo) FindBySlug(ctx context.Context, slug string) (*tenantDo
 		return m.findBySlugFn(ctx, slug)
 	}
 	return nil, errors.New("not found")
+}
+
+func (m *mockTenantRepo) FindAll(ctx context.Context, filter tenantDto.TenantQueryFilter) ([]*tenantDomain.Tenant, int64, error) {
+	if m.findAllFn != nil {
+		return m.findAllFn(ctx, filter)
+	}
+	return nil, 0, nil
 }
 
 type mockPermReader struct {

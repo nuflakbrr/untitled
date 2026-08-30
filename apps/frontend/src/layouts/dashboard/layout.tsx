@@ -1,6 +1,6 @@
 'use client';
 
-import type { TenantOption } from 'src/auth/types';
+import type { MyTenant } from 'src/auth/types';
 
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
@@ -35,7 +35,7 @@ import { ColorModeButton } from 'src/components/color-mode-button';
 
 import { isAdminSession } from 'src/auth/types';
 import { useSession, PermissionGuard } from 'src/auth/session-provider';
-import { signOutAction, listTenantsAction, switchTenantAction } from 'src/auth/actions';
+import { signOutAction, switchTenantAction, listMyTenantsAction } from 'src/auth/actions';
 
 const NAV_WIDTH = 280;
 
@@ -48,15 +48,23 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const title = pathname.startsWith(paths.dashboard.events)
     ? 'Event'
-    : pathname.startsWith(paths.participant.dashboard)
-      ? 'Dashboard peserta'
-      : pathname.startsWith(paths.participant.transactions)
-        ? 'Riwayat transaksi'
-        : pathname.startsWith(paths.participant.certificates)
-          ? 'Sertifikat saya'
-          : pathname.startsWith(paths.participant.profile)
-            ? 'Profil saya'
-            : 'Ringkasan';
+    : pathname.startsWith(paths.dashboard.permissions)
+      ? 'Permission'
+      : pathname.startsWith(paths.dashboard.roles)
+        ? 'Role'
+        : pathname.startsWith(paths.dashboard.tenants)
+          ? 'Organisasi'
+          : pathname.startsWith(paths.dashboard.users)
+            ? 'Akun pengguna'
+            : pathname.startsWith(paths.participant.dashboard)
+              ? 'Dashboard peserta'
+              : pathname.startsWith(paths.participant.transactions)
+                ? 'Riwayat transaksi'
+                : pathname.startsWith(paths.participant.certificates)
+                  ? 'Sertifikat saya'
+                  : pathname.startsWith(paths.participant.profile)
+                    ? 'Profil saya'
+                    : 'Ringkasan';
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -82,7 +90,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </IconButton>
           <Box sx={{ flex: 1 }}>
             <Typography variant="caption" color="text.secondary">
-              Workspace / {title}
+              Beranda / {title}
             </Typography>
             <Typography variant="h5">{title}</Typography>
           </Box>
@@ -146,22 +154,18 @@ function DashboardNav({ pathname, onNavigate }: { pathname: string; onNavigate?:
       </Box>
       {isAdmin ? (
         <Box sx={{ px: 2.5, pb: 2 }}>
-          {session.is_super_admin ? (
-            <TenantSwitcher />
-          ) : (
-            <Box sx={{ p: 1.75, bgcolor: 'background.neutral', borderRadius: 1.2 }}>
-              <Typography variant="caption" color="text.secondary">
-                Tenant aktif
-              </Typography>
-              <Typography variant="subtitle2" noWrap>
-                {session.tenant?.name ?? 'Universitas'}
-              </Typography>
-            </Box>
-          )}
+          <TenantSwitcher />
         </Box>
       ) : null}
       <Divider />
       <List sx={{ flex: 1, px: 1.5, py: 2 }}>
+        <Typography
+          variant="overline"
+          color="text.disabled"
+          sx={{ px: 1.5, display: 'block', mb: 1 }}
+        >
+          Menu utama
+        </Typography>
         <NavItem
           href={dashboardPath}
           label={isAdmin ? 'Ringkasan' : 'Dashboard peserta'}
@@ -175,6 +179,49 @@ function DashboardNav({ pathname, onNavigate }: { pathname: string; onNavigate?:
             label="Event"
             icon="solar:calendar-mark-outline"
             active={pathname.startsWith(paths.dashboard.events)}
+            onClick={onNavigate}
+          />
+        </PermissionGuard>
+        <Typography
+          variant="overline"
+          color="text.disabled"
+          sx={{ px: 1.5, display: 'block', mt: 2.5, mb: 1 }}
+        >
+          Pengaturan akses
+        </Typography>
+        <PermissionGuard permission="permission.read">
+          <NavItem
+            href={paths.dashboard.permissions}
+            label="Hak akses"
+            icon="solar:user-id-bold"
+            active={pathname.startsWith(paths.dashboard.permissions)}
+            onClick={onNavigate}
+          />
+        </PermissionGuard>
+        <PermissionGuard permission="role.read">
+          <NavItem
+            href={paths.dashboard.roles}
+            label="Peran pengguna"
+            icon="solar:user-id-bold"
+            active={pathname.startsWith(paths.dashboard.roles)}
+            onClick={onNavigate}
+          />
+        </PermissionGuard>
+        <PermissionGuard permission="tenant.read">
+          <NavItem
+            href={paths.dashboard.tenants}
+            label="Organisasi"
+            icon="solar:user-id-bold"
+            active={pathname.startsWith(paths.dashboard.tenants)}
+            onClick={onNavigate}
+          />
+        </PermissionGuard>
+        <PermissionGuard permission="user.read">
+          <NavItem
+            href={paths.dashboard.users}
+            label="Akun pengguna"
+            icon="solar:user-id-bold"
+            active={pathname.startsWith(paths.dashboard.users)}
             onClick={onNavigate}
           />
         </PermissionGuard>
@@ -277,18 +324,29 @@ function NavItem({
 function TenantSwitcher() {
   const router = useRouter();
   const { session, setSession } = useSession();
-  const [tenants, setTenants] = useState<TenantOption[]>([]);
+  const [tenants, setTenants] = useState<MyTenant[]>([]);
+  const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const tenantOptions =
-    session.tenant && !tenants.some((tenant) => tenant.id === session.tenant?.id)
-      ? [session.tenant, ...tenants]
+    session.tenant && !tenants.some((tenant) => tenant.tenant_id === session.tenant?.id)
+      ? [
+          {
+            tenant_id: session.tenant.id,
+            tenant_name: session.tenant.name,
+            tenant_slug: session.tenant.slug,
+            tenant_code: session.tenant.code,
+            tenant_type: session.tenant.type,
+          },
+          ...tenants,
+        ]
       : tenants;
 
   useEffect(() => {
-    listTenantsAction().then((result) => {
+    listMyTenantsAction().then((result) => {
       setTenants(result.data ?? []);
       setError(result.error ?? '');
+      setReady(true);
     });
   }, []);
 
@@ -311,10 +369,24 @@ function TenantSwitcher() {
     }
   }
 
+  // Only one organization to be in: show it as plain text, no picker needed.
+  if (ready && tenantOptions.length <= 1) {
+    return (
+      <Box sx={{ p: 1.75, bgcolor: 'background.neutral', borderRadius: 1.2 }}>
+        <Typography variant="caption" color="text.secondary">
+          Organisasi aktif
+        </Typography>
+        <Typography variant="subtitle2" noWrap>
+          {session.tenant?.name ?? 'Universitas'}
+        </Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box>
       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.75 }}>
-        Tenant aktif
+        Organisasi aktif
       </Typography>
       {error && (
         <Alert severity="error" sx={{ mb: 1 }}>
@@ -365,16 +437,16 @@ function TenantSwitcher() {
                     lineHeight: 1.4,
                   }}
                 >
-                  {tenantOptions.find((tenant) => tenant.id === value)?.name ||
+                  {tenantOptions.find((tenant) => tenant.tenant_id === value)?.tenant_name ||
                     session.tenant?.name ||
-                    'Pilih tenant'}
+                    'Pilih organisasi'}
                 </Box>
               )
             }
           >
             {tenantOptions.map((tenant) => (
-              <MenuItem key={tenant.id} value={tenant.id}>
-                {tenant.name}
+              <MenuItem key={tenant.tenant_id} value={tenant.tenant_id}>
+                {tenant.tenant_name}
               </MenuItem>
             ))}
           </Select>

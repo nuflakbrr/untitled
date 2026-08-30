@@ -125,6 +125,23 @@ func (h *AuthHandler) SwitchTenant(c *gin.Context) {
 	response.Success(c, http.StatusOK, "Tenant context switched successfully", resp)
 }
 
+// MyTenants handles GET /core/v1/auth/my-tenants
+func (h *AuthHandler) MyTenants(c *gin.Context) {
+	claims, err := middleware.GetUserFromContext(c)
+	if err != nil || claims == nil {
+		response.Error(c, http.StatusUnauthorized, "Unauthorized", "")
+		return
+	}
+
+	tenants, err := h.service.MyTenants(c.Request.Context(), claims.UserID, claims.Role)
+	if err != nil {
+		response.Error(c, http.StatusInternalServerError, "Failed to load tenants", err.Error())
+		return
+	}
+
+	response.Success(c, http.StatusOK, "Tenants retrieved successfully", tenants)
+}
+
 // Refresh handles POST /core/v1/auth/refresh
 func (h *AuthHandler) Refresh(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")

@@ -1,0 +1,32 @@
+meta {
+  name: Faculty Cannot Create ROOT Tenant
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{baseUrl}}/core/v1/tenants
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{fasilkomAccessToken}}
+}
+
+body:json {
+  {
+    "name": "Universitas Bayangan",
+    "slug": "universitas-bayangan-{{$randomInt}}",
+    "code": "UB{{$randomInt}}",
+    "type": "ROOT"
+  }
+}
+
+tests {
+  test("status 403", function() { expect(res.status).to.equal(403); });
+}

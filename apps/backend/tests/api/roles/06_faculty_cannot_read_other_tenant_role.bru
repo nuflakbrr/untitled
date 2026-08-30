@@ -1,0 +1,19 @@
+meta {
+  name: Faculty Cannot Read Another Tenant's Custom Role
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/core/v1/roles/{{crudTeknikRoleId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{fasilkomAccessToken}}
+}
+
+tests {
+  test("status 403", function() { expect(res.status).to.equal(403); });
+}
