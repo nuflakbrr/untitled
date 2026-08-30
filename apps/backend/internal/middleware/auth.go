@@ -1,15 +1,29 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 	"strings"
+	"time"
 
 	"venturo-skeleton-go/internal/shared/response"
 	jwtpkg "venturo-skeleton-go/pkg/jwt"
 	"venturo-skeleton-go/pkg/logger"
 
 	"github.com/gin-gonic/gin"
+	goredis "github.com/redis/go-redis/v9"
 )
+
+var revocationStore *goredis.Client
+
+func SetRevocationStore(client *goredis.Client) { revocationStore = client }
+
+func RevokeToken(ctx context.Context, claims *jwtpkg.Claims) error {
+	if revocationStore == nil || claims == nil || claims.ID == "" || claims.ExpiresAt == nil {
+		return nil
+	}
+	return revocationStore.Set(ctx, "auth:revoked:"+claims.ID, "1", time.Until(claims.ExpiresAt.Time)).Err()
+}
 
 // JWTAuth is a middleware that validates JWT access tokens
 func JWTAuth() gin.HandlerFunc {
@@ -47,6 +61,14 @@ func JWTAuth() gin.HandlerFunc {
 			response.Error(c, http.StatusUnauthorized, message, "")
 			c.Abort()
 			return
+		}
+		if revocationStore != nil && claims.ID != "" {
+			revoked, redisErr := revocationStore.Exists(context.Background(), "auth:revoked:"+claims.ID).Result()
+			if redisErr == nil && revoked > 0 {
+				response.Error(c, http.StatusUnauthorized, "Token has been revoked", "")
+				c.Abort()
+				return
+			}
 		}
 
 		SetUserContext(c, claims)

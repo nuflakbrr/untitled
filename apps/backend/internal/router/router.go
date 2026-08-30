@@ -52,6 +52,7 @@ func Setup(router *gin.Engine, db *pgxpool.Pool, cfg *config.Config) {
 			zap.Duration("permission_ttl", cfg.Redis.PermissionTTL),
 		)
 	}
+	middleware.SetRevocationStore(redisClient)
 
 	// Logging & Recovery middleware
 	router.Use(ginzap.Ginzap(log, time.RFC3339, true))

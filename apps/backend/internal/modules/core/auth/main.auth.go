@@ -39,6 +39,7 @@ func (m *AuthModule) SetupRoutes(router *gin.RouterGroup) {
 
 		// Protected routes
 		auth.GET("/me", middleware.JWTAuth(), m.Handler.GetMe)
+		auth.POST("/logout", middleware.JWTAuth(), m.Handler.Logout)
 		auth.POST("/switch-tenant", middleware.JWTAuth(), m.Handler.SwitchTenant)
 	}
 }

@@ -35,6 +35,7 @@ func (m *UserModule) SetupRoutes(router *gin.RouterGroup) {
 	{
 		// Self profile endpoints
 		users.PUT("/me", m.Handler.UpdateMe)
+		users.DELETE("/me", m.Handler.DeleteMe)
 		users.POST("/change-password", m.Handler.ChangePassword)
 
 		// Administrative user management endpoints
