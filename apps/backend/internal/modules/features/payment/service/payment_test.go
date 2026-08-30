@@ -250,7 +250,7 @@ func TestCheckout_AlreadyRegisteredIsRejected(t *testing.T) {
 
 func TestCheckout_ManualProviderSkipsGatewayCall(t *testing.T) {
 	repo := newFakeRepo()
-	repo.registrations["reg-1"] = &repository.RegistrationForCheckout{UserID: "user-1", TenantID: "tenant-1", Amount: 10000, Status: "WAITING_PAYMENT"}
+	repo.registrations["reg-1"] = &repository.RegistrationForCheckout{UserID: "user-1", TenantID: "tenant-1", Amount: 7500, Status: "WAITING_PAYMENT"}
 	repo.payments["reg-1"] = &domain.Payment{ID: "pay-reg-1", RegistrationID: "reg-1", Amount: 7500, Status: domain.StatusWaiting, Provider: domain.ProviderManual}
 	repo.gateways["tenant-1"] = &domain.Gateway{TenantID: "tenant-1", Provider: domain.ProviderManual, BankName: "Bank Mandiri", BankAccountNumber: "12345", BankAccountHolder: "Fakultas Ilmu Komputer"}
 
