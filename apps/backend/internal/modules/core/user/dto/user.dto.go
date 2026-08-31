@@ -9,7 +9,7 @@ type CreateUserRequest struct {
 	Password  string   `json:"password" binding:"required,min=8"`
 	TenantID  *string  `json:"tenant_id" binding:"omitempty,uuid"`
 	TenantIDs []string `json:"tenant_ids" binding:"omitempty,dive,uuid"`
-	Role      string   `json:"role" binding:"required,oneof=root_superadmin superadmin panitia scanner peserta"`
+	Role      string   `json:"role" binding:"required,min=2,max=100"`
 	RoleID    *string  `json:"role_id" binding:"omitempty,uuid"`
 }
 
@@ -19,7 +19,7 @@ type UpdateUserRequest struct {
 	Image     *string  `json:"image" binding:"omitempty,url"`
 	TenantID  *string  `json:"tenant_id" binding:"omitempty,uuid"`
 	TenantIDs []string `json:"tenant_ids" binding:"omitempty,dive,uuid"`
-	Role      *string  `json:"role" binding:"omitempty,oneof=root_superadmin superadmin panitia scanner peserta"`
+	Role      *string  `json:"role" binding:"omitempty,min=2,max=100"`
 	RoleID    *string  `json:"role_id" binding:"omitempty,uuid"`
 }
 

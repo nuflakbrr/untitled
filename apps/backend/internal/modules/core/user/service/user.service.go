@@ -132,6 +132,11 @@ func (s *UserService) Update(ctx context.Context, id string, req dto.UpdateUserR
 			return nil, err
 		}
 	}
+	if req.Role != nil {
+		if err := s.repo.UpdateTenantAccessRole(ctx, user.ID, user.Role); err != nil {
+			return nil, err
+		}
+	}
 
 	resp := toUserResponse(user)
 	return &resp, nil
