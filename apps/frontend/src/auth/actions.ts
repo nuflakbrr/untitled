@@ -604,7 +604,13 @@ export async function getAdminDashboardDataAction(): Promise<AuthActionResult<Ad
   const auth = await authenticatedSession();
   if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
 
-  const eventsResponse = await fetchBackend('features/v1/events?page=1&limit=100', auth.token);
+  const tenantQuery = auth.session.tenant?.id
+    ? `&tenant_id=${encodeURIComponent(auth.session.tenant.id)}`
+    : '';
+  const eventsResponse = await fetchBackend(
+    `features/v1/events?page=1&limit=100${tenantQuery}`,
+    auth.token
+  );
   const eventsPayload = await responseJson<unknown>(eventsResponse);
   const events = z
     .array(
