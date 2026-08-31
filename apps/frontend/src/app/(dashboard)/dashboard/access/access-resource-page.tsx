@@ -62,6 +62,8 @@ export async function AccessResourcePage({
         <AdminCrud
           resource={resource === 'permissions' ? 'roles/permissions' : resource}
           rows={result.data}
+          currentUserId={session.user.id}
+          currentUserRoleId={session.user.role === 'root_superadmin' ? undefined : session.user.role_id}
         />
       ) : null}
     </Stack>
