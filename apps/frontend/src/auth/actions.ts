@@ -578,6 +578,105 @@ export async function listAdminUsersAction() {
   );
 }
 
+export type AdminDashboardData = {
+  events: {
+    id: string;
+    title: string;
+    status: string;
+    quota: number;
+    start_date: string;
+    registrations: number;
+    tenant_name: string;
+    tenant_type: string;
+    tenant_id: string;
+  }[];
+  registrations: number;
+  recentRegistrations: {
+    id: string;
+    participant: string;
+    email: string;
+    event: string;
+    created_at: string;
+  }[];
+};
+
+export async function getAdminDashboardDataAction(): Promise<AuthActionResult<AdminDashboardData>> {
+  const auth = await authenticatedSession();
+  if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
+
+  const eventsResponse = await fetchBackend('features/v1/events?page=1&limit=100', auth.token);
+  const eventsPayload = await responseJson<unknown>(eventsResponse);
+  const events = z
+    .array(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        status: z.string().nullish(),
+        quota: z.number(),
+        start_date: z.string(),
+        tenant: z
+          .object({ id: z.string(), name: z.string(), type: z.string().nullish() })
+          .nullish(),
+      })
+    )
+    .safeParse(eventsPayload.data);
+  if (!eventsResponse.ok || !events.success)
+    return { data: null, error: eventsPayload.message || 'Data event gagal dimuat' };
+
+  const registrationResults = await Promise.all(
+    events.data.map(async (event) => {
+      const response = await fetchBackend(
+        `features/v1/registrations/event/${event.id}?page=1&limit=5`,
+        auth.token
+      );
+      const payload = await responseJson<unknown>(response);
+      const total = z
+        .object({ pagination: z.object({ total: z.number() }).optional() })
+        .safeParse((payload as { meta?: unknown }).meta).data?.pagination?.total;
+      const registrations =
+        z
+          .array(
+            z.object({
+              id: z.string(),
+              user_name: z.string().nullish(),
+              user_email: z.string().nullish(),
+              event_title: z.string().nullish(),
+              created_at: z.string(),
+            })
+          )
+          .safeParse(payload.data).data ?? [];
+      return { total: total ?? 0, registrations, event: event.title };
+    })
+  );
+  const recentRegistrations = registrationResults
+    .flatMap((result) =>
+      result.registrations.map((registration) => ({
+        id: registration.id,
+        participant: registration.user_name || 'Peserta',
+        email: registration.user_email || '-',
+        event: registration.event_title || result.event,
+        created_at: registration.created_at,
+      }))
+    )
+    .sort((a, b) => b.created_at.localeCompare(a.created_at))
+    .slice(0, 50);
+  return {
+    data: {
+      events: events.data.map((event, index) => ({
+        ...event,
+        status: event.status ?? 'PUBLISHED',
+        registrations: registrationResults[index]?.total ?? 0,
+        tenant_name: event.tenant?.name ?? 'Universitas',
+        tenant_type: event.tenant?.type ?? 'ROOT',
+        tenant_id: event.tenant?.id ?? '',
+      })),
+      registrations: registrationResults.reduce((sum, result) => sum + result.total, 0),
+      recentRegistrations,
+    },
+    error: null,
+  };
+}
+
 export async function adminCrudAction(
   _state: { error: string; success: string },
   formData: FormData
