@@ -129,6 +129,23 @@ func (s *AuthService) SignIn(ctx context.Context, req dto.SignInRequest) (*dto.S
 	}
 
 	isSuperAdmin := user.Role == "root_superadmin"
+	activeRole := user.Role
+	activeRoleID := user.RoleID
+	if !isSuperAdmin && tenantID != "" {
+		if accessReader, ok := s.userRepo.(TenantAccessReader); ok {
+			if accesses, accessErr := accessReader.ListAccessibleTenants(ctx, user.ID); accessErr == nil {
+				for _, access := range accesses {
+					if access.TenantID == tenantID && access.RoleID != nil && *access.RoleID != "" {
+						activeRoleID = *access.RoleID
+						if access.RoleName != nil && *access.RoleName != "" {
+							activeRole = *access.RoleName
+						}
+						break
+					}
+				}
+			}
+		}
+	}
 
 	// Fetch permissions
 	var perms []string
@@ -144,7 +161,7 @@ func (s *AuthService) SignIn(ctx context.Context, req dto.SignInRequest) (*dto.S
 	// Generate JWT Access Token
 	token, err := jwt.GenerateToken(
 		user.ID, tenantID, tenantName, tenantSlug, tenantCode, tenantType,
-		user.Email, user.Name, user.Role, user.RoleID, isSuperAdmin, roles,
+		user.Email, user.Name, activeRole, activeRoleID, isSuperAdmin, roles,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate token: %w", err)
@@ -162,8 +179,8 @@ func (s *AuthService) SignIn(ctx context.Context, req dto.SignInRequest) (*dto.S
 			TenantID:      user.TenantID,
 			EmailVerified: user.EmailVerified,
 			Image:         user.Image,
-			Role:          user.Role,
-			RoleID:        user.RoleID,
+			Role:          activeRole,
+			RoleID:        activeRoleID,
 		},
 		Tenant:      tenantInfo,
 		Role:        user.Role,
@@ -240,6 +257,26 @@ func (s *AuthService) GetMe(ctx context.Context, userID, activeTenantID string) 
 		perms = []string{}
 	}
 
+	activeRole := user.Role
+	activeRoleID := user.RoleID
+	if user.Role != "root_superadmin" && targetTenantID != "" {
+		if accessReader, ok := s.userRepo.(TenantAccessReader); ok {
+			if accesses, accessErr := accessReader.ListAccessibleTenants(ctx, user.ID); accessErr == nil {
+				for _, access := range accesses {
+					if access.TenantID == targetTenantID {
+						if access.RoleID != nil && *access.RoleID != "" {
+							activeRoleID = *access.RoleID
+						}
+						if access.RoleName != nil && *access.RoleName != "" {
+							activeRole = *access.RoleName
+						}
+						break
+					}
+				}
+			}
+		}
+	}
+
 	return &dto.MeResponse{
 		User: dto.UserInfo{
 			ID:            user.ID,
@@ -248,11 +285,11 @@ func (s *AuthService) GetMe(ctx context.Context, userID, activeTenantID string) 
 			TenantID:      user.TenantID,
 			EmailVerified: user.EmailVerified,
 			Image:         user.Image,
-			Role:          user.Role,
-			RoleID:        user.RoleID,
+			Role:          activeRole,
+			RoleID:        activeRoleID,
 		},
 		Tenant:       tenantInfo,
-		Role:         user.Role,
+		Role:         activeRole,
 		Permissions:  perms,
 		IsSuperAdmin: user.Role == "root_superadmin",
 	}, nil
@@ -283,6 +320,27 @@ func (s *AuthService) SwitchTenant(ctx context.Context, userID, targetTenantID s
 	}
 
 	isSuperAdmin := user.Role == "root_superadmin"
+	activeRole := user.Role
+	activeRoleID := user.RoleID
+	if !isSuperAdmin {
+		if accessReader, ok := s.userRepo.(TenantAccessReader); ok {
+			accesses, accessErr := accessReader.ListAccessibleTenants(ctx, userID)
+			if accessErr != nil {
+				return nil, accessErr
+			}
+			for _, access := range accesses {
+				if access.TenantID == targetTenant.ID {
+					if access.RoleID != nil && *access.RoleID != "" {
+						activeRoleID = *access.RoleID
+					}
+					if access.RoleName != nil && *access.RoleName != "" {
+						activeRole = *access.RoleName
+					}
+					break
+				}
+			}
+		}
+	}
 	roles := []string{user.Role}
 
 	var perms []string
@@ -295,7 +353,7 @@ func (s *AuthService) SwitchTenant(ctx context.Context, userID, targetTenantID s
 
 	token, err := jwt.GenerateToken(
 		user.ID, targetTenant.ID, targetTenant.Name, targetTenant.Slug, targetTenant.Code, string(targetTenant.Type),
-		user.Email, user.Name, user.Role, user.RoleID, isSuperAdmin, roles,
+		user.Email, user.Name, activeRole, activeRoleID, isSuperAdmin, roles,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate token: %w", err)

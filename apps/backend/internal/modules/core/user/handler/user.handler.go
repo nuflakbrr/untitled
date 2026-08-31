@@ -89,7 +89,13 @@ func (h *UserHandler) Create(c *gin.Context) {
 	claims, _ := middleware.GetUserFromContext(c)
 	// If tenant admin creates a user, lock the tenant_id to their tenant
 	if claims != nil && !claims.IsSuperAdmin && claims.TenantID != "" {
+		if req.Role == "root_superadmin" {
+			response.Error(c, http.StatusForbidden, "You cannot grant root_superadmin", "")
+			return
+		}
 		req.TenantID = &claims.TenantID
+		// A tenant administrator can only grant memberships in the active tenant.
+		req.TenantIDs = []string{claims.TenantID}
 	}
 
 	user, err := h.service.Create(c.Request.Context(), req)
@@ -267,6 +273,11 @@ func (h *UserHandler) BanUser(c *gin.Context) {
 		return
 	}
 	if !h.checkTenantBoundary(c, existing.TenantID) {
+		return
+	}
+	if claims != nil && !claims.IsSuperAdmin &&
+		(existing.Role == "root_superadmin" || existing.Role == "superadmin") {
+		response.Error(c, http.StatusForbidden, "Tenant administrators cannot ban administrator accounts", "")
 		return
 	}
 

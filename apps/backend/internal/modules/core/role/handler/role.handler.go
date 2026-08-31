@@ -49,6 +49,10 @@ func (h *RoleHandler) checkRoleBoundary(c *gin.Context, id string) bool {
 	if err != nil {
 		return true // let the caller's own not-found handling report it
 	}
+	if role.Name == "root_superadmin" || role.ID == claims.RoleID {
+		response.Error(c, http.StatusForbidden, "You cannot modify this administrator role", "")
+		return false
+	}
 	if role.TenantID == nil || *role.TenantID != claims.TenantID {
 		response.Error(c, http.StatusForbidden, "You do not have access to this role", "")
 		return false
@@ -137,7 +141,7 @@ func (h *RoleHandler) SetPermissions(c *gin.Context) {
 	response.Success(c, 200, "Role permissions updated successfully", nil)
 }
 func (h *RoleHandler) PermissionIDs(c *gin.Context) {
-	if !h.checkRoleBoundary(c, c.Param("id")) {
+	if !h.checkRoleReadBoundary(c, c.Param("id")) {
 		return
 	}
 	ids, err := h.service.PermissionIDs(c, c.Param("id"))
@@ -146,6 +150,24 @@ func (h *RoleHandler) PermissionIDs(c *gin.Context) {
 		return
 	}
 	response.Success(c, 200, "Role permissions retrieved successfully", ids)
+}
+
+// checkRoleReadBoundary lets tenant admins inspect shared role templates while
+// keeping all mutations protected by checkRoleBoundary.
+func (h *RoleHandler) checkRoleReadBoundary(c *gin.Context, id string) bool {
+	claims, _ := middleware.GetUserFromContext(c)
+	if claims == nil || claims.IsSuperAdmin || claims.TenantID == "" {
+		return true
+	}
+	role, err := h.service.GetByID(c.Request.Context(), id)
+	if err != nil {
+		return true
+	}
+	if role.TenantID != nil && *role.TenantID != claims.TenantID {
+		response.Error(c, http.StatusForbidden, "You do not have access to this role", "")
+		return false
+	}
+	return true
 }
 
 func NewRoleHandler(service *service.RoleService) *RoleHandler {
