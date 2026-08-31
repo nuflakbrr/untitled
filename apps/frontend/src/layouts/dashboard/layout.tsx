@@ -153,9 +153,69 @@ function DashboardNav({ pathname, onNavigate }: { pathname: string; onNavigate?:
     { permission: 'user.read', href: paths.dashboard.users, label: 'Akun pengguna' },
   ];
   const hasAccessMenu = isAdmin && accessMenuItems.some((item) => can(item.permission));
+  const menuGroups = [
+    {
+      label: 'Data master',
+      items: [
+        ['events.read', paths.dashboard.eventCategories, 'Kategori Event', 'solar:tag-linear'],
+        ['events.read', paths.dashboard.events, 'Event', 'solar:calendar-mark-outline'],
+        [
+          'certificates.read',
+          paths.dashboard.certificates,
+          'Sertifikat',
+          'solar:diploma-verified-linear',
+        ],
+        ['galleries.read', paths.dashboard.galleries, 'Galeri', 'solar:gallery-linear'],
+      ],
+    },
+    {
+      label: 'Transaksi',
+      items: [
+        [
+          'registrations.read',
+          paths.dashboard.registrations,
+          'Pendaftaran',
+          'solar:clipboard-list-linear',
+        ],
+        ['payments.read', paths.dashboard.payments, 'Pembayaran', 'solar:card-outline'],
+      ],
+    },
+    {
+      label: 'Kehadiran',
+      items: [['attendance.read', paths.dashboard.attendance, 'Scan QR', 'solar:qr-code-linear']],
+    },
+    {
+      label: 'Publikasi',
+      items: [
+        ['article.read', paths.dashboard.articles, 'Artikel', 'solar:document-text-linear'],
+        ['testimonies.read', paths.dashboard.testimonials, 'Testimoni', 'solar:chat-round-linear'],
+      ],
+    },
+    {
+      label: 'Bantuan pelanggan',
+      items: [['support.read', paths.dashboard.inbox, 'Inbox', 'solar:inbox-linear']],
+    },
+    {
+      label: 'Manajemen',
+      items: [
+        ['permission.read', paths.dashboard.permissions, 'Hak Akses', 'solar:lock-keyhole-linear'],
+        ['role.read', paths.dashboard.roles, 'Jabatan', 'solar:users-group-rounded-linear'],
+        ['tenant.read', paths.dashboard.tenants, 'Organisasi', 'solar:buildings-2-linear'],
+        ['user.read', paths.dashboard.users, 'Akun Pengguna', 'solar:user-id-linear'],
+      ],
+    },
+  ] as const;
 
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Box
+      sx={{
+        height: '100%',
+        minHeight: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}
+    >
       <Box sx={{ px: 3, py: 2.5 }}>
         <Logo />
       </Box>
@@ -165,7 +225,22 @@ function DashboardNav({ pathname, onNavigate }: { pathname: string; onNavigate?:
         </Box>
       ) : null}
       <Divider />
-      <List sx={{ flex: 1, px: 1.5, py: 2 }}>
+      <List
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          px: 1.5,
+          py: 2,
+          scrollbarWidth: 'thin',
+          '&::-webkit-scrollbar': { width: 6 },
+          '&::-webkit-scrollbar-thumb': {
+            bgcolor: 'action.disabled',
+            borderRadius: 3,
+          },
+        }}
+      >
         <Typography
           variant="overline"
           color="text.disabled"
@@ -180,16 +255,34 @@ function DashboardNav({ pathname, onNavigate }: { pathname: string; onNavigate?:
           active={pathname === dashboardPath || pathname === `${dashboardPath}/`}
           onClick={onNavigate}
         />
-        <PermissionGuard permission="admin.access">
-          <NavItem
-            href={paths.dashboard.events}
-            label="Event"
-            icon="solar:calendar-mark-outline"
-            active={pathname.startsWith(paths.dashboard.events)}
-            onClick={onNavigate}
-          />
-        </PermissionGuard>
-        {hasAccessMenu ? (
+        {isAdmin
+          ? menuGroups.map((group) => {
+              const visibleItems = group.items.filter(([permission]) => can(permission));
+              if (!visibleItems.length) return null;
+              return (
+                <Box key={group.label} sx={{ mt: 2.5 }}>
+                  <Typography
+                    variant="overline"
+                    color="text.disabled"
+                    sx={{ px: 1.5, display: 'block', mb: 1 }}
+                  >
+                    {group.label}
+                  </Typography>
+                  {visibleItems.map(([permission, href, label, icon]) => (
+                    <NavItem
+                      key={permission + href}
+                      href={href}
+                      label={label}
+                      icon={icon}
+                      active={pathname.startsWith(href)}
+                      onClick={onNavigate}
+                    />
+                  ))}
+                </Box>
+              );
+            })
+          : null}
+        {false && hasAccessMenu ? (
           <>
             <Typography
               variant="overline"
@@ -279,12 +372,7 @@ function NavItem({
 }: {
   href: string;
   label: string;
-  icon:
-    | 'solar:home-angle-linear'
-    | 'solar:calendar-mark-outline'
-    | 'solar:card-outline'
-    | 'solar:diploma-verified-bold-duotone'
-    | 'solar:user-id-bold';
+  icon: string;
   active: boolean;
   onClick?: () => void;
 }) {
