@@ -118,7 +118,7 @@ func (r *RoleRepository) FindAll(ctx context.Context, scopeTenantID *string) ([]
 	`
 	args := []interface{}{}
 	if scopeTenantID != nil {
-		query += ` WHERE tenant_id IS NULL OR tenant_id = $1`
+		query += ` WHERE (tenant_id IS NULL AND name <> 'root_superadmin') OR tenant_id = $1`
 		args = append(args, *scopeTenantID)
 	}
 	query += ` ORDER BY created_at ASC`
@@ -182,16 +182,30 @@ func (r *RoleRepository) GetUserPermissions(ctx context.Context, userID string, 
 		SELECT DISTINCT p.name
 		FROM permissions p
 		JOIN role_has_permissions rhp ON p.id = rhp.permission_id
-		JOIN _role_to_user rtu ON rhp.role_id = rtu."A"
-		WHERE rtu."B" = $1
+		JOIN user_has_tenants uht ON rhp.role_id = uht.role_id
+		WHERE uht.user_id = $1
+		  AND ($2::text IS NULL OR uht.tenant_id = $2)
 		UNION
 		SELECT DISTINCT p.name
 		FROM permissions p
 		JOIN role_has_permissions rhp ON p.id = rhp.permission_id
 		JOIN users u ON rhp.role_id = u.role_id
+		JOIN roles r ON r.id = rhp.role_id
 		WHERE u.id = $1
+		  AND ($2::text IS NULL OR r.tenant_id IS NULL)
+		UNION
+		SELECT DISTINCT p.name
+		FROM permissions p
+		JOIN role_has_permissions rhp ON p.id = rhp.permission_id
+		JOIN _role_to_user rtu ON rhp.role_id = rtu."A"
+		WHERE rtu."B" = $1
+		  AND $2::text IS NULL
 	`
-	rows, err := r.db.Query(ctx, query, userID)
+	var activeTenantID any
+	if tenantID != nil && *tenantID != "" {
+		activeTenantID = *tenantID
+	}
+	rows, err := r.db.Query(ctx, query, userID, activeTenantID)
 	if err != nil {
 		logger.Error("Failed to query user permissions", logger.Err(err))
 		return nil, err

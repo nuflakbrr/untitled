@@ -28,6 +28,10 @@ func (h *TenantHandler) GetAll(c *gin.Context) {
 		response.Error(c, http.StatusBadRequest, "Invalid query parameters", err.Error())
 		return
 	}
+	claims, _ := middleware.GetUserFromContext(c)
+	if claims != nil && !claims.IsSuperAdmin && claims.TenantID != "" {
+		filter.ScopeTenantID = &claims.TenantID
+	}
 
 	tenants, total, err := h.service.GetAll(c.Request.Context(), filter)
 	if err != nil {
@@ -134,6 +138,23 @@ func (h *TenantHandler) Update(c *gin.Context) {
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.Error(c, http.StatusBadRequest, "Validation error", err.Error())
 		return
+	}
+
+	claims, _ := middleware.GetUserFromContext(c)
+	if claims != nil && !claims.IsSuperAdmin && claims.TenantID != "" {
+		if req.Type != nil && *req.Type == "ROOT" {
+			response.Error(c, http.StatusForbidden, "You cannot change a tenant to ROOT", "")
+			return
+		}
+		// A child administrator cannot detach or re-parent its own tenant or
+		// any direct child outside the active tenant subtree.
+		if id != claims.TenantID {
+			parentID := claims.TenantID
+			req.ParentID = &parentID
+		} else {
+			// Keep the tenant's existing parent unchanged.
+			req.ParentID = nil
+		}
 	}
 
 	tenant, err := h.service.Update(c.Request.Context(), id, req)

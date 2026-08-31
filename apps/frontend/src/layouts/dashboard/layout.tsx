@@ -143,9 +143,16 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 }
 
 function DashboardNav({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
-  const { session } = useSession();
+  const { session, can } = useSession();
   const isAdmin = isAdminSession(session);
   const dashboardPath = isAdmin ? paths.dashboard.root : paths.participant.dashboard;
+  const accessMenuItems = [
+    { permission: 'permission.read', href: paths.dashboard.permissions, label: 'Hak akses' },
+    { permission: 'role.read', href: paths.dashboard.roles, label: 'Peran pengguna' },
+    { permission: 'tenant.read', href: paths.dashboard.tenants, label: 'Organisasi' },
+    { permission: 'user.read', href: paths.dashboard.users, label: 'Akun pengguna' },
+  ];
+  const hasAccessMenu = isAdmin && accessMenuItems.some((item) => can(item.permission));
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -182,49 +189,28 @@ function DashboardNav({ pathname, onNavigate }: { pathname: string; onNavigate?:
             onClick={onNavigate}
           />
         </PermissionGuard>
-        <Typography
-          variant="overline"
-          color="text.disabled"
-          sx={{ px: 1.5, display: 'block', mt: 2.5, mb: 1 }}
-        >
-          Pengaturan akses
-        </Typography>
-        <PermissionGuard permission="permission.read">
-          <NavItem
-            href={paths.dashboard.permissions}
-            label="Hak akses"
-            icon="solar:user-id-bold"
-            active={pathname.startsWith(paths.dashboard.permissions)}
-            onClick={onNavigate}
-          />
-        </PermissionGuard>
-        <PermissionGuard permission="role.read">
-          <NavItem
-            href={paths.dashboard.roles}
-            label="Peran pengguna"
-            icon="solar:user-id-bold"
-            active={pathname.startsWith(paths.dashboard.roles)}
-            onClick={onNavigate}
-          />
-        </PermissionGuard>
-        <PermissionGuard permission="tenant.read">
-          <NavItem
-            href={paths.dashboard.tenants}
-            label="Organisasi"
-            icon="solar:user-id-bold"
-            active={pathname.startsWith(paths.dashboard.tenants)}
-            onClick={onNavigate}
-          />
-        </PermissionGuard>
-        <PermissionGuard permission="user.read">
-          <NavItem
-            href={paths.dashboard.users}
-            label="Akun pengguna"
-            icon="solar:user-id-bold"
-            active={pathname.startsWith(paths.dashboard.users)}
-            onClick={onNavigate}
-          />
-        </PermissionGuard>
+        {hasAccessMenu ? (
+          <>
+            <Typography
+              variant="overline"
+              color="text.disabled"
+              sx={{ px: 1.5, display: 'block', mt: 2.5, mb: 1 }}
+            >
+              Pengaturan akses
+            </Typography>
+            {accessMenuItems.map((item) => (
+              <PermissionGuard key={item.permission} permission={item.permission}>
+                <NavItem
+                  href={item.href}
+                  label={item.label}
+                  icon="solar:user-id-bold"
+                  active={pathname.startsWith(item.href)}
+                  onClick={onNavigate}
+                />
+              </PermissionGuard>
+            ))}
+          </>
+        ) : null}
         {!isAdmin ? (
           <>
             <NavItem

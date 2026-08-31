@@ -495,19 +495,36 @@ export async function getTenantAction(id: string): Promise<AuthActionResult<Tena
 
 export async function listTenantsAction(): Promise<AuthActionResult<TenantOption[]>> {
   const auth = await authenticatedSession();
-  if (!auth?.session.is_super_admin) return { data: null, error: 'Akses ditolak' };
+  if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
 
   const backend = await fetchBackend('core/v1/tenants?page=1&limit=100', auth.token);
   const payload = await responseJson<unknown[]>(backend);
   if (!backend.ok || !Array.isArray(payload.data)) return { data: null, error: payload.message };
 
   const tenants = z.array(tenantOptionSchema).safeParse(payload.data);
-  return tenants.success
-    ? { data: tenants.data, error: null }
-    : { data: null, error: 'Data tenant tidak valid' };
+  if (!tenants.success) return { data: null, error: 'Data tenant tidak valid' };
+
+  if (!auth.session.is_super_admin) {
+    const activeTenantID = auth.session.tenant?.id;
+    if (!activeTenantID) return { data: null, error: 'Tenant aktif tidak ditemukan' };
+
+    return {
+      data: tenants.data.filter(
+        (tenant) => tenant.id === activeTenantID || tenant.parent_id === activeTenantID
+      ),
+      error: null,
+    };
+  }
+
+  return { data: tenants.data, error: null };
 }
 
-export type AdminRole = { id: string; name: string; description?: string | null };
+export type AdminRole = {
+  id: string;
+  name: string;
+  description?: string | null;
+  tenant_id?: string | null;
+};
 export type AdminPermission = { id: string; name: string; description?: string | null };
 export type AdminUser = { id: string; name: string; email: string; role: string; banned: boolean };
 async function listAdminResource<T>(
@@ -526,7 +543,14 @@ async function listAdminResource<T>(
 export async function listAdminRolesAction() {
   return listAdminResource(
     'core/v1/roles',
-    z.array(z.object({ id: z.string(), name: z.string(), description: z.string().nullish() }))
+    z.array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        description: z.string().nullish(),
+        tenant_id: z.string().nullish(),
+      })
+    )
   );
 }
 export async function listAdminPermissionsAction() {
@@ -599,11 +623,20 @@ export async function adminCrudAction(
     const permissionIDs = formData
       .getAll('permission_ids')
       .filter((value): value is string => typeof value === 'string');
-    if (roleID && permissionIDs.length)
-      await fetchBackend(`core/v1/roles/${roleID}/permissions`, auth.token, {
-        method: 'PUT',
-        body: JSON.stringify({ permission_ids: permissionIDs }),
-      });
+    if (roleID && permissionIDs.length) {
+      const permissionResponse = await fetchBackend(
+        `core/v1/roles/${roleID}/permissions`,
+        auth.token,
+        {
+          method: 'PUT',
+          body: JSON.stringify({ permission_ids: permissionIDs }),
+        }
+      );
+      if (!permissionResponse.ok) {
+        const permissionResult = await responseJson<unknown>(permissionResponse);
+        return { error: permissionResult.message || 'Hak akses gagal disimpan', success: '' };
+      }
+    }
   }
   revalidatePath(
     `/dashboard/access/${resource === 'roles/permissions' ? 'permissions' : resource}`
@@ -611,15 +644,21 @@ export async function adminCrudAction(
   return { error: '', success: 'Data berhasil disimpan' };
 }
 
-export async function deleteAdminResourceAction(formData: FormData) {
+export async function deleteAdminResourceAction(
+  _state: { error: string; success: string },
+  formData: FormData
+) {
   const auth = await authenticatedSession();
-  if (!auth) return;
+  if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
   const resource = String(formData.get('resource'));
   const id = String(formData.get('id'));
-  await fetchBackend(`core/v1/${resource}/${id}`, auth.token, { method: 'DELETE' });
+  const backend = await fetchBackend(`core/v1/${resource}/${id}`, auth.token, { method: 'DELETE' });
+  const result = await responseJson<unknown>(backend);
+  if (!backend.ok) return { error: result.message || 'Data gagal dihapus', success: '' };
   revalidatePath(
     `/dashboard/access/${resource === 'roles/permissions' ? 'permissions' : resource}`
   );
+  return { error: '', success: 'Data berhasil dihapus' };
 }
 
 export async function toggleUserBanAction(formData: FormData) {
@@ -635,18 +674,24 @@ export async function toggleUserBanAction(formData: FormData) {
   revalidatePath('/dashboard/access/users');
 }
 
-export async function updateRolePermissionsAction(formData: FormData) {
+export async function updateRolePermissionsAction(
+  _state: { error: string; success: string },
+  formData: FormData
+) {
   const auth = await authenticatedSession();
-  if (!auth) return;
+  if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
   const roleID = String(formData.get('role_id'));
   const permissionIDs = formData
     .getAll('permission_ids')
     .filter((value): value is string => typeof value === 'string');
-  await fetchBackend(`core/v1/roles/${roleID}/permissions`, auth.token, {
+  const backend = await fetchBackend(`core/v1/roles/${roleID}/permissions`, auth.token, {
     method: 'PUT',
     body: JSON.stringify({ permission_ids: permissionIDs }),
   });
+  const result = await responseJson<unknown>(backend);
+  if (!backend.ok) return { error: result.message || 'Hak akses gagal disimpan', success: '' };
   revalidatePath(`/dashboard/access/roles/${roleID}/edit`);
+  return { error: '', success: 'Hak akses berhasil disimpan' };
 }
 
 export async function switchTenantAction(tenantId: string): Promise<AuthActionResult<AuthSession>> {

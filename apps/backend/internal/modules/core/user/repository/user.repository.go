@@ -297,6 +297,26 @@ func (r *UserRepository) Update(ctx context.Context, user *domain.User) error {
 	).Scan(&user.UpdatedAt)
 }
 
+// UpdateTenantAccessRole keeps the user's effective role aligned with the
+// primary role when an administrator changes it from the user management UI.
+func (r *UserRepository) UpdateTenantAccessRole(ctx context.Context, userID, roleName string) error {
+	if _, err := r.db.Exec(ctx, `
+		UPDATE users u
+		SET role_id = r.id
+		FROM roles r
+		WHERE u.id = $1 AND r.name = $2
+		  AND (r.tenant_id IS NULL OR r.tenant_id = u.tenant_id)`, userID, roleName); err != nil {
+		return err
+	}
+	_, err := r.db.Exec(ctx, `
+		UPDATE user_has_tenants uht
+		SET role_id = r.id
+		FROM roles r
+		WHERE uht.user_id = $1 AND r.name = $2
+		  AND (r.tenant_id IS NULL OR r.tenant_id = uht.tenant_id)`, userID, roleName)
+	return err
+}
+
 // Delete removes a user; related accounts, sessions, and role links cascade.
 func (r *UserRepository) Delete(ctx context.Context, id string) error {
 	cmdTag, err := r.db.Exec(ctx, `DELETE FROM users WHERE id = $1`, id)

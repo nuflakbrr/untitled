@@ -33,7 +33,7 @@ func (m *TenantModule) SetupRoutes(router *gin.RouterGroup) {
 	tenants := router.Group("/tenants")
 	{
 		// Public routes (Katalog publik butuh list fakultas)
-		tenants.GET("", m.Handler.GetAll)
+		tenants.GET("", middleware.OptionalAuth(), m.Handler.GetAll)
 		tenants.GET("/:id", m.Handler.GetByID)
 		tenants.GET("/by-slug/:slug", m.Handler.GetBySlug)
 
@@ -47,4 +47,3 @@ func (m *TenantModule) SetupRoutes(router *gin.RouterGroup) {
 		tenants.PUT("/:id/payment-gateway", middleware.JWTAuth(), middleware.RequirePermission("tenant.update"), m.Handler.UpdatePaymentGateway)
 	}
 }
-

@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -9,10 +9,12 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 
 import { RouterLink } from 'src/routes/components';
+import { useRouter } from 'next/navigation';
 
 import { adminCrudAction, updateRolePermissionsAction } from 'src/auth/actions';
 
@@ -26,6 +28,7 @@ export function AdminResourceForm({
   tenants = [],
   roles = [],
   isSuperAdmin = true,
+  readOnly = false,
 }: {
   resource: string;
   routeResource?: string;
@@ -38,17 +41,34 @@ export function AdminResourceForm({
   /** Non-superadmin tenant admins get a trimmed tenant form: no ROOT option,
    * no parent picker (the backend always forces parent to their own tenant). */
   isSuperAdmin?: boolean;
+  readOnly?: boolean;
 }) {
+  const router = useRouter();
+  const [roleValue, setRoleValue] = useState(String(initial.role || 'peserta'));
   const [state, action, pending] = useActionState(adminCrudAction, { error: '', success: '' });
+  const [permissionState, permissionAction, permissionPending] = useActionState(
+    updateRolePermissionsAction,
+    { error: '', success: '' }
+  );
+  useEffect(() => {
+    if (!state.success && !permissionState.success) return;
+    const timer = window.setTimeout(() => router.push(`/dashboard/access/${routeResource}`), 700);
+    return () => window.clearTimeout(timer);
+  }, [permissionState.success, routeResource, router, state.success]);
   return (
     <Paper variant="outlined" sx={{ p: 3, maxWidth: 900 }}>
       <Typography variant="h5" sx={{ mb: 3 }}>
         {id ? 'Edit data' : 'Tambah data'}
       </Typography>
       {state.error ? (
-        <Typography color="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
           {state.error}
-        </Typography>
+        </Alert>
+      ) : null}
+      {state.success ? (
+        <Alert severity="success" sx={{ mb: 2 }}>
+          {state.success}
+        </Alert>
       ) : null}
       <Box
         component="form"
@@ -69,7 +89,8 @@ export function AdminResourceForm({
                 labelId="user-role-label"
                 name="role"
                 label="Role"
-                defaultValue={initial.role || 'peserta'}
+                value={roleValue}
+                onChange={(event) => setRoleValue(event.target.value)}
               >
                 {roles.map((role) => (
                   <MenuItem key={role.id} value={role.name}>
@@ -157,6 +178,7 @@ export function AdminResourceForm({
                     name="permission_ids"
                     value={permission.id}
                     defaultChecked={assignedPermissionIDs.includes(permission.id)}
+                    disabled={readOnly}
                   />{' '}
                   {permission.name}
                 </label>
@@ -174,7 +196,7 @@ export function AdminResourceForm({
         </Box>
       </Box>
       {resource === 'roles' && id ? (
-        <Box component="form" action={updateRolePermissionsAction} sx={{ mt: 4 }}>
+        <Box component="form" action={permissionAction} sx={{ mt: 4 }}>
           <input type="hidden" name="role_id" value={id} />
           <Typography variant="h6" sx={{ mb: 2 }}>
             Hak akses peran
@@ -187,14 +209,27 @@ export function AdminResourceForm({
                   name="permission_ids"
                   value={permission.id}
                   defaultChecked={assignedPermissionIDs.includes(permission.id)}
+                  disabled={readOnly}
                 />{' '}
                 {permission.name}
               </label>
             ))}
           </Box>
-          <Button type="submit" variant="outlined" sx={{ mt: 2 }}>
-            Simpan hak akses
-          </Button>
+          {permissionState.error ? (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {permissionState.error}
+            </Alert>
+          ) : null}
+          {permissionState.success ? (
+            <Alert severity="success" sx={{ mt: 2 }}>
+              {permissionState.success}
+            </Alert>
+          ) : null}
+          {!readOnly ? (
+            <Button type="submit" variant="outlined" disabled={permissionPending} sx={{ mt: 2 }}>
+              Simpan hak akses
+            </Button>
+          ) : null}
         </Box>
       ) : null}
     </Paper>

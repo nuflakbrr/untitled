@@ -51,6 +51,12 @@ func (r *TenantRepository) FindAll(ctx context.Context, filter dto.TenantQueryFi
 		argIdx++
 	}
 
+	if filter.ScopeTenantID != nil && *filter.ScopeTenantID != "" {
+		conditions = append(conditions, fmt.Sprintf("(id = $%d OR parent_id = $%d)", argIdx, argIdx))
+		args = append(args, *filter.ScopeTenantID)
+		argIdx++
+	}
+
 	whereClause := strings.Join(conditions, " AND ")
 
 	// Count total
@@ -239,4 +245,3 @@ func (r *TenantRepository) UpsertPaymentGateway(ctx context.Context, pg *domain.
 		pg.BankName, pg.BankAccountNumber, pg.BankAccountHolder,
 	).Scan(&pg.ID, &pg.CreatedAt, &pg.UpdatedAt)
 }
-

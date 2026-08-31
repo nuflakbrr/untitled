@@ -42,11 +42,12 @@ type TenantResponse struct {
 
 // TenantQueryFilter represents query params for listing tenants
 type TenantQueryFilter struct {
-	Search   string `form:"search"`
-	Type     string `form:"type"`
-	ParentID string `form:"parent_id"`
-	Page     int    `form:"page,default=1"`
-	Limit    int    `form:"limit,default=20"`
+	Search        string  `form:"search"`
+	Type          string  `form:"type"`
+	ParentID      string  `form:"parent_id"`
+	Page          int     `form:"page,default=1"`
+	Limit         int     `form:"limit,default=20"`
+	ScopeTenantID *string `form:"-" json:"-"`
 }
 
 // UpdatePaymentGatewayRequest represents payload to configure iPaymu / Bank settings
@@ -74,4 +75,3 @@ type TenantPaymentGatewayResponse struct {
 	BankAccountHolder *string `json:"bank_account_holder,omitempty"`
 	HasAPIKey         bool    `json:"has_api_key"`
 }
-
