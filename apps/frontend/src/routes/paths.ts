@@ -26,6 +26,7 @@ export const paths = {
     root: '/dashboard',
     events: '/dashboard/events',
     eventCategories: '/dashboard/event-categories',
+    eventCategoriesCreate: '/dashboard/event-categories/create',
     certificates: '/dashboard/certificates',
     galleries: '/dashboard/galleries',
     registrations: '/dashboard/registrations',

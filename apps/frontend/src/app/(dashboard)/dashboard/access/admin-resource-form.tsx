@@ -1,20 +1,22 @@
 'use client';
 
-import { useActionState, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect, useActionState } from 'react';
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import Alert from '@mui/material/Alert';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 
 import { RouterLink } from 'src/routes/components';
-import { useRouter } from 'next/navigation';
+
+import { ConfirmSubmitButton } from 'src/components/confirm-submit-button';
 
 import { adminCrudAction, updateRolePermissionsAction } from 'src/auth/actions';
 
@@ -51,7 +53,7 @@ export function AdminResourceForm({
     { error: '', success: '' }
   );
   useEffect(() => {
-    if (!state.success && !permissionState.success) return;
+    if (!state.success && !permissionState.success) return undefined;
     const timer = window.setTimeout(() => router.push(`/dashboard/access/${routeResource}`), 700);
     return () => window.clearTimeout(timer);
   }, [permissionState.success, routeResource, router, state.success]);
@@ -187,9 +189,19 @@ export function AdminResourceForm({
           </Box>
         ) : null}
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button type="submit" variant="contained" disabled={pending}>
-            Simpan
-          </Button>
+          {id ? (
+            <ConfirmSubmitButton
+              title="Simpan perubahan?"
+              description="Perubahan data akan langsung diterapkan."
+              disabled={pending}
+            >
+              Simpan
+            </ConfirmSubmitButton>
+          ) : (
+            <Button type="submit" variant="contained" disabled={pending}>
+              Simpan
+            </Button>
+          )}
           <Button component={RouterLink} href={`/dashboard/access/${routeResource}`}>
             Batal
           </Button>
@@ -226,9 +238,14 @@ export function AdminResourceForm({
             </Alert>
           ) : null}
           {!readOnly ? (
-            <Button type="submit" variant="outlined" disabled={permissionPending} sx={{ mt: 2 }}>
+            <ConfirmSubmitButton
+              title="Simpan hak akses?"
+              description="Assignment permission role akan diperbarui."
+              variant="outlined"
+              disabled={permissionPending}
+            >
               Simpan hak akses
-            </Button>
+            </ConfirmSubmitButton>
           ) : null}
         </Box>
       ) : null}

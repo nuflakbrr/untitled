@@ -135,6 +135,24 @@ async function setRegistrationError(error: string) {
   });
 }
 
+async function setEventCategoryFlash(message: string) {
+  (await cookies()).set('event_category_flash', message, {
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/dashboard/event-categories',
+    maxAge: 10,
+  });
+}
+
+async function setAdminFlash(message: string) {
+  (await cookies()).set('admin_flash', message, {
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/dashboard',
+    maxAge: 10,
+  });
+}
+
 async function responseJson<T>(response: Response) {
   return (await response.json().catch(() => ({
     data: null,
@@ -578,6 +596,74 @@ export async function listAdminUsersAction() {
   );
 }
 
+export async function listEventCategoriesAction() {
+  const auth = await authenticatedSession();
+  if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
+  const tenantID = auth.session.tenant?.id;
+  if (!tenantID) return { data: [], error: null };
+  const response = await fetchBackend(
+    `features/v1/event-categories?tenant_id=${encodeURIComponent(tenantID)}`,
+    auth.token
+  );
+  const payload = await responseJson<unknown>(response);
+  const parsed = z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        slug: z.string(),
+        description: z.string().nullish(),
+        tenant_id: z.string().nullish(),
+      })
+    )
+    .safeParse(payload.data);
+  if (!response.ok || !parsed.success)
+    return { data: null, error: payload.message || 'Data kategori gagal dimuat' };
+  return { data: parsed.data, error: null };
+}
+
+export async function eventCategoryCrudAction(
+  _state: { error: string; success: string },
+  formData: FormData
+) {
+  const auth = await authenticatedSession();
+  if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
+  const id = String(formData.get('id') || '');
+  const name = String(formData.get('name') || '').trim();
+  const description = String(formData.get('description') || '').trim();
+  if (!name) return { error: 'Nama kategori wajib diisi', success: '' };
+  const response = await fetchBackend(
+    `features/v1/event-categories${id ? `/${id}` : ''}`,
+    auth.token,
+    {
+      method: id ? 'PUT' : 'POST',
+      body: JSON.stringify({ name, description: description || null }),
+    }
+  );
+  const result = await responseJson<unknown>(response);
+  if (!response.ok) return { error: result.message || 'Kategori gagal disimpan', success: '' };
+  revalidatePath('/dashboard/event-categories');
+  await setEventCategoryFlash(id ? 'Kategori berhasil diperbarui' : 'Kategori berhasil dibuat');
+  return redirect('/dashboard/event-categories');
+}
+
+export async function deleteEventCategoryAction(
+  _state: { error: string; success: string },
+  formData: FormData
+) {
+  const auth = await authenticatedSession();
+  if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
+  const id = String(formData.get('id') || '');
+  const response = await fetchBackend(`features/v1/event-categories/${id}`, auth.token, {
+    method: 'DELETE',
+  });
+  const result = await responseJson<unknown>(response);
+  if (!response.ok) return { error: result.message || 'Kategori gagal dihapus', success: '' };
+  revalidatePath('/dashboard/event-categories');
+  await setEventCategoryFlash('Kategori berhasil dihapus');
+  return redirect('/dashboard/event-categories');
+}
+
 export type AdminDashboardData = {
   events: {
     id: string;
@@ -799,7 +885,10 @@ export async function deleteAdminResourceAction(
   revalidatePath(
     `/dashboard/access/${resource === 'roles/permissions' ? 'permissions' : resource}`
   );
-  return { error: '', success: 'Data berhasil dihapus' };
+  await setAdminFlash('Data berhasil dihapus');
+  return redirect(
+    `/dashboard/access/${resource === 'roles/permissions' ? 'permissions' : resource}`
+  );
 }
 
 export async function toggleUserBanAction(formData: FormData) {

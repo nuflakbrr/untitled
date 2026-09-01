@@ -27,9 +27,7 @@ func (r *CategoryRepository) FindAll(ctx context.Context, tenantID *string) ([]*
 		FROM event_categories ec`
 	args := []any{}
 	if tenantID != nil && *tenantID != "" {
-		query += `
-			LEFT JOIN core.tenants t ON t.id = ec.tenant_id
-			WHERE (ec.tenant_id IS NULL OR t.type = 'ROOT' OR ec.tenant_id = $1)`
+		query += ` WHERE ec.tenant_id = $1`
 		args = append(args, *tenantID)
 	} else {
 		// Public listing without a tenant must expose every active category.
