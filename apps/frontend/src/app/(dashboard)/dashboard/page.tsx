@@ -23,13 +23,12 @@ export default async function DashboardPage() {
   const dashboardResult = await getAdminDashboardDataAction();
   const dashboard = dashboardResult.data;
   const activeEvents =
-    dashboard?.events.filter((event) => event.status === 'PUBLISHED').length ?? 0;
-  const draftEvents = dashboard?.events.filter((event) => event.status === 'DRAFT').length ?? 0;
+    dashboard?.tenantEvents.filter((event) => event.status === 'PUBLISHED').length ?? 0;
+  const draftEvents = dashboard?.tenantEvents.filter((event) => event.status === 'DRAFT').length ?? 0;
   const popularEvents = [...(dashboard?.events ?? [])]
     .sort((a, b) => b.registrations - a.registrations)
     .slice(0, 10);
-  const tenantPopularEvents = [...(dashboard?.events ?? [])]
-    .filter((event) => event.tenant_id === session.tenant?.id)
+  const tenantPopularEvents = [...(dashboard?.tenantEvents ?? [])]
     .sort((a, b) => b.registrations - a.registrations)
     .slice(0, 50);
 
