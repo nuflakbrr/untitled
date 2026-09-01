@@ -177,6 +177,7 @@ export default async function ParticipantDashboardPage() {
                     <ParticipantTicketQR
                       eventTitle={ticket.event_title}
                       qrToken={ticket.qr_token}
+                      eventID={ticket.event_id}
                       registrationNumber={ticket.registration_number}
                     />
                   </Stack>

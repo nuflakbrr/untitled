@@ -4,7 +4,6 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { requireSession } from 'src/auth/server';
-import { listAdminEventsAction } from 'src/auth/actions';
 
 import { AttendanceScanner } from './attendance-scanner';
 
@@ -12,7 +11,6 @@ export const metadata: Metadata = { title: 'Scan QR' };
 
 export default async function AttendancePage() {
   await requireSession('attendance.read');
-  const result = await listAdminEventsAction();
   return (
     <Stack spacing={3}>
       <div>
@@ -21,11 +19,7 @@ export default async function AttendancePage() {
           Verifikasi tiket peserta saat check-in event.
         </Typography>
       </div>
-      {result.data ? (
-        <AttendanceScanner events={result.data} />
-      ) : (
-        <Typography color="error">{result.error}</Typography>
-      )}
+      <AttendanceScanner />
     </Stack>
   );
 }

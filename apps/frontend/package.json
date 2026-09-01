@@ -54,6 +54,7 @@
     "es-toolkit": "^1.46.1",
     "exceljs": "^4.4.0",
     "framer-motion": "^12.38.0",
+    "html5-qrcode": "^2.3.8",
     "isomorphic-dompurify": "^3.18.0",
     "ky": "^2.0.2",
     "minimal-shared": "^1.1.6",
