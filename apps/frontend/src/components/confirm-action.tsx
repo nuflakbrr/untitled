@@ -33,7 +33,7 @@ export function ConfirmAction({
         color={color}
         onClick={() => setOpen(true)}
         startIcon={startIcon}
-        sx={{ justifyContent: 'flex-start', width: '100%' }}
+        sx={{ justifyContent: 'flex-start', width: 'fit-content' }}
       >
         {label}
       </Button>

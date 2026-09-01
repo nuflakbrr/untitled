@@ -26,6 +26,7 @@ export type ParticipantRegistration = {
   event_start_date: string;
   event_location: string;
   event_type: string;
+  event_status: string;
   attendance_status: string;
   certificate_status: string;
   status: string;
@@ -98,6 +99,7 @@ const participantRegistrationSchema = z.object({
   event_start_date: z.string(),
   event_location: z.string(),
   event_type: z.string(),
+  event_status: z.string(),
   attendance_status: z.string(),
   certificate_status: z.string(),
   status: z.string(),

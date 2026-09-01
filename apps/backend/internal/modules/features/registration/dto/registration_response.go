@@ -11,6 +11,7 @@ type RegistrationResponse struct {
 	EventStartDate     time.Time  `json:"event_start_date"`
 	EventLocation      string     `json:"event_location"`
 	EventType          string     `json:"event_type"`
+	EventStatus        string     `json:"event_status"`
 	AttendanceStatus   string     `json:"attendance_status"`
 	CertificateStatus  string     `json:"certificate_status"`
 	TenantID           string     `json:"tenant_id"`
