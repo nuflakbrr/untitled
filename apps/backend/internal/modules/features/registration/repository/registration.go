@@ -232,7 +232,9 @@ func (r *RegistrationRepository) CancelMine(ctx context.Context, id, userID stri
 }
 
 func (r *RegistrationRepository) list(ctx context.Context, conditions []string, args []any, query dto.RegistrationQuery) ([]*domain.Registration, int64, error) {
-	conditions = append(conditions, "r.deleted_at IS NULL")
+	if !query.IncludeDeleted {
+		conditions = append(conditions, "r.deleted_at IS NULL")
+	}
 	if query.Status != "" {
 		args = append(args, query.Status)
 		conditions = append(conditions, fmt.Sprintf("r.status = $%d::registration_status", len(args)))

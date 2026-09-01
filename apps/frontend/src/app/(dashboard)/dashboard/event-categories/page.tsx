@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -18,7 +17,7 @@ import { EventCategoryFlash } from './event-category-flash';
 export const metadata: Metadata = { title: 'Kategori Event' };
 
 export default async function EventCategoriesPage() {
-  const session = await requireSession('events.read');
+  await requireSession('event.categories.read');
   const result = await listEventCategoriesAction();
   return (
     <Stack spacing={3}>
@@ -37,7 +36,6 @@ export default async function EventCategoriesPage() {
         </Button>
       </Box>
       <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, borderRadius: 2, overflow: 'hidden' }}>
-        <Chip label={session.tenant?.name ?? 'Universitas'} size="small" sx={{ mb: 2 }} />
         {result.data ? (
           <EventCategoryTable rows={result.data} />
         ) : (

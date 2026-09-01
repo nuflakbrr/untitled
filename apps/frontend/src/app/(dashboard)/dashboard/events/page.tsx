@@ -15,7 +15,7 @@ import { EventTable } from './event-table';
 export const metadata: Metadata = { title: 'Event' };
 
 export default async function EventsPage() {
-  await requireSession('admin.access');
+  await requireSession('events.read');
   const result = await listAdminEventsAction();
 
   return (

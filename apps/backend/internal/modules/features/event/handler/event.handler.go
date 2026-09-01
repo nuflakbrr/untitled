@@ -53,6 +53,24 @@ func (h *EventHandler) GetAll(c *gin.Context) {
 	response.SuccessWithPagination(c, http.StatusOK, "Events retrieved successfully", events, filter.Page, filter.Limit, total)
 }
 
+func (h *EventHandler) GetAdminAll(c *gin.Context) {
+	var filter dto.EventQuery
+	if err := c.ShouldBindQuery(&filter); err != nil {
+		response.Error(c, http.StatusBadRequest, "Invalid query parameters", err.Error())
+		return
+	}
+	filter.IncludeDeleted = true
+	if filter.TenantID == "" {
+		filter.TenantID = c.GetHeader("X-Tenant-ID")
+	}
+	events, total, err := h.service.ListPublicEvents(c.Request.Context(), filter)
+	if err != nil {
+		response.Error(c, http.StatusInternalServerError, "Failed to retrieve events", err.Error())
+		return
+	}
+	response.SuccessWithPagination(c, http.StatusOK, "Events retrieved successfully", events, filter.Page, filter.Limit, total)
+}
+
 func (h *EventHandler) GetBySlug(c *gin.Context) {
 	event, err := h.service.GetPublicEvent(c.Request.Context(), c.Param("slug"))
 	if err != nil {
@@ -128,6 +146,25 @@ func (h *EventHandler) Delete(c *gin.Context) {
 		return
 	}
 	response.Success(c, http.StatusOK, "Event deleted successfully", nil)
+}
+
+func (h *EventHandler) PermanentDelete(c *gin.Context) {
+	_, scope, _, ok := actorScope(c)
+	if !ok {
+		return
+	}
+	deleter, ok := h.service.(interface {
+		PermanentDeleteEvent(context.Context, string, *string) error
+	})
+	if !ok {
+		response.Error(c, http.StatusNotImplemented, "Permanent event deletion is unavailable", "")
+		return
+	}
+	if err := deleter.PermanentDeleteEvent(c.Request.Context(), c.Param("id"), scope); err != nil {
+		writeEventError(c, err, "Failed to permanently delete event")
+		return
+	}
+	response.Success(c, http.StatusOK, "Event permanently deleted", nil)
 }
 
 func actorScope(c *gin.Context) (tenantID string, scopeTenantID *string, userID string, ok bool) {

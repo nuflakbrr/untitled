@@ -43,7 +43,10 @@ func NewEventRepository(db *pgxpool.Pool) *EventRepository {
 }
 
 func (r *EventRepository) FindPublic(ctx context.Context, filter dto.EventQuery) ([]*domain.Event, int64, error) {
-	conditions := []string{"e.deleted_at IS NULL"}
+	conditions := []string{}
+	if !filter.IncludeDeleted {
+		conditions = append(conditions, "e.deleted_at IS NULL")
+	}
 	args := make([]any, 0, 8)
 	add := func(condition string, value any) {
 		args = append(args, value)
@@ -244,18 +247,76 @@ func (r *EventRepository) UpdateStatus(ctx context.Context, id string, current, 
 }
 
 func (r *EventRepository) Delete(ctx context.Context, id string, scopeTenantID *string) error {
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("begin delete event: %w", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+
 	query := "UPDATE events SET deleted_at = NOW(), updated_at = NOW() WHERE id = $1 AND deleted_at IS NULL"
 	args := []any{id}
 	if scopeTenantID != nil {
 		query += " AND tenant_id = $2"
 		args = append(args, *scopeTenantID)
 	}
-	tag, err := r.db.Exec(ctx, query, args...)
+	tag, err := tx.Exec(ctx, query, args...)
 	if err != nil {
 		return fmt.Errorf("delete event: %w", err)
 	}
 	if tag.RowsAffected() == 0 {
 		return ErrEventNotFound
+	}
+	if _, err := tx.Exec(ctx, `
+		UPDATE payments p
+		SET status = CASE WHEN p.status IN ('PAID', 'WAITING') THEN 'REFUND_PENDING'::payment_status ELSE p.status END,
+			updated_at = NOW()
+		FROM registrations r
+		WHERE r.event_id = $1 AND p.registration_id = r.id AND r.deleted_at IS NULL
+		  AND p.deleted_at IS NULL AND p.status <> 'REFUNDED'
+	`, id); err != nil {
+		return fmt.Errorf("mark event payments for refund: %w", err)
+	}
+	if _, err := tx.Exec(ctx, `
+		UPDATE registrations
+		SET status = 'CANCELLED', deleted_at = NOW(), updated_at = NOW()
+		WHERE event_id = $1 AND deleted_at IS NULL
+	`, id); err != nil {
+		return fmt.Errorf("cancel event registrations: %w", err)
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("commit delete event: %w", err)
+	}
+	return nil
+}
+
+func (r *EventRepository) PermanentDelete(ctx context.Context, id string, scopeTenantID *string) error {
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("begin permanent delete event: %w", err)
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+	query := "DELETE FROM registrations WHERE event_id = $1 AND EXISTS (SELECT 1 FROM events WHERE id = $1 AND deleted_at IS NOT NULL)"
+	args := []any{id}
+	if scopeTenantID != nil {
+		query += " AND EXISTS (SELECT 1 FROM events WHERE id = $1 AND tenant_id = $2)"
+		args = append(args, *scopeTenantID)
+	}
+	if _, err := tx.Exec(ctx, query, args...); err != nil {
+		return fmt.Errorf("delete event registrations permanently: %w", err)
+	}
+	query = "DELETE FROM events WHERE id = $1 AND deleted_at IS NOT NULL"
+	if scopeTenantID != nil {
+		query += " AND tenant_id = $2"
+	}
+	tag, err := tx.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("delete event permanently: %w", err)
+	}
+	if tag.RowsAffected() == 0 {
+		return ErrEventNotFound
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("commit permanent delete event: %w", err)
 	}
 	return nil
 }

@@ -17,6 +17,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 
 import { Iconify } from 'src/components/iconify';
+import { RefreshButton } from 'src/components/refresh-button';
 
 import { downloadExcel } from '../excel-export';
 
@@ -164,6 +165,7 @@ export function RegistrationTable({ rows }: { rows: Row[] }) {
         >
           Export Excel
         </Button>
+        <RefreshButton />
       </Box>
       <TableContainer sx={{ borderRadius: 1.5, overflow: 'hidden' }}>
         <Table>

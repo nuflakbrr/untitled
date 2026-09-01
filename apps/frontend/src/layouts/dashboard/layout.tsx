@@ -157,7 +157,12 @@ function DashboardNav({ pathname, onNavigate }: { pathname: string; onNavigate?:
     {
       label: 'Data master',
       items: [
-        ['events.read', paths.dashboard.eventCategories, 'Kategori Event', 'solar:tag-linear'],
+        [
+          'event.categories.read',
+          paths.dashboard.eventCategories,
+          'Kategori Event',
+          'solar:tag-linear',
+        ],
         ['events.read', paths.dashboard.events, 'Event', 'solar:calendar-mark-outline'],
         [
           'certificates.read',

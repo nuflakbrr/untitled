@@ -6,9 +6,9 @@ import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import Paper from '@mui/material/Paper';
 import Alert from '@mui/material/Alert';
-import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import TableRow from '@mui/material/TableRow';
+import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
@@ -21,8 +21,14 @@ import TableContainer from '@mui/material/TableContainer';
 import { RouterLink } from 'src/routes/components';
 
 import { Iconify } from 'src/components/iconify';
+import { RefreshButton } from 'src/components/refresh-button';
+import { ConfirmSubmitButton } from 'src/components/confirm-submit-button';
 
-import { toggleUserBanAction, deleteAdminResourceAction } from 'src/auth/actions';
+import {
+  toggleUserBanAction,
+  deleteAdminResourceAction,
+  bulkDeleteAdminResourceAction,
+} from 'src/auth/actions';
 
 export type Row = {
   id: string;
@@ -54,6 +60,7 @@ export function AdminCrud({
     error: '',
     success: '',
   });
+  const [selected, setSelected] = useState<string[]>([]);
   useEffect(() => {
     const timer = window.setTimeout(() => setDebouncedQuery(query), 300);
     return () => window.clearTimeout(timer);
@@ -78,19 +85,46 @@ export function AdminCrud({
             setQuery(event.target.value);
             setPage(1);
           }}
+          sx={{ flex: 1, minWidth: 220 }}
         />
-        <Button
-          component={RouterLink}
-          href={`/dashboard/access/${routeResource}/create`}
-          variant="contained"
-        >
-          Tambah data
-        </Button>
+        <RefreshButton />
       </Box>
-      <TableContainer component={Paper} variant="outlined">
+      <TableContainer
+        component={Paper}
+        variant="outlined"
+        sx={{ borderRadius: 1.5, overflow: 'hidden' }}
+      >
+        {selected.length ? (
+          <Box
+            component="form"
+            action={bulkDeleteAdminResourceAction}
+            sx={{ p: 1.5, bgcolor: 'background.paper' }}
+          >
+            {selected.map((id) => (
+              <input key={id} type="hidden" name="ids" value={id} />
+            ))}
+            <input type="hidden" name="resource" value={resource} />
+            <ConfirmSubmitButton
+              title="Hapus data terpilih?"
+              description="Data yang dipilih akan dihapus dan tidak dapat dipulihkan."
+              color="error"
+              variant="outlined"
+            >
+              Hapus {selected.length} data
+            </ConfirmSubmitButton>
+          </Box>
+        ) : null}
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell padding="checkbox">
+                <Checkbox
+                  checked={selected.length === pageRows.length && pageRows.length > 0}
+                  onChange={(event) =>
+                    setSelected(event.target.checked ? pageRows.map((row) => row.id) : [])
+                  }
+                />
+              </TableCell>
               <TableCell>Nama</TableCell>
               <TableCell>Detail</TableCell>
               <TableCell align="right">Aksi</TableCell>
@@ -104,6 +138,18 @@ export function AdminCrud({
                   (row.id === currentUserRoleId || row.name === 'root_superadmin');
                 return (
                   <TableRow key={row.id}>
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={selected.includes(row.id)}
+                        onChange={(event) =>
+                          setSelected((current) =>
+                            event.target.checked
+                              ? [...current, row.id]
+                              : current.filter((id) => id !== row.id)
+                          )
+                        }
+                      />
+                    </TableCell>
                     <TableCell>{row.name}</TableCell>
                     <TableCell>
                       {row.email || row.description || row.type || row.code || '-'}
@@ -172,7 +218,7 @@ export function AdminCrud({
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={3} align="center" sx={{ py: 6 }}>
+                <TableCell colSpan={4} align="center" sx={{ py: 6 }}>
                   <Typography color="text.secondary">
                     {debouncedQuery ? 'Data tidak ditemukan.' : 'Belum ada data.'}
                   </Typography>

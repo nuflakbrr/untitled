@@ -38,7 +38,12 @@ export function NavMobile({ data, open, onClose, slots, sx }: NavMobileProps) {
     <Drawer
       open={open}
       onClose={onClose}
+      variant="temporary"
+      ModalProps={{ keepMounted: true }}
       slotProps={{
+        root: {
+          sx: (theme) => ({ zIndex: theme.zIndex.drawer + 2 }),
+        },
         paper: {
           sx: [
             {

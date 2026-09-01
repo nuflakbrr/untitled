@@ -50,8 +50,8 @@ export function LoadingScreen({ portal, slots, slotsProps, sx, ...other }: Loadi
 const LoadingContent = styled('div')(({ theme }) => ({
   flexGrow: 1,
   width: '100%',
+  minHeight: '100dvh',
   display: 'flex',
-  minHeight: '100%',
   alignItems: 'center',
   justifyContent: 'center',
   paddingLeft: theme.spacing(5),

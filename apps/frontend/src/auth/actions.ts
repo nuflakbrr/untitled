@@ -576,6 +576,7 @@ export async function listAdminRolesAction() {
         name: z.string(),
         description: z.string().nullish(),
         tenant_id: z.string().nullish(),
+        deleted_at: z.string().nullish(),
       })
     )
   );
@@ -647,6 +648,7 @@ const adminEventSchema = z.object({
   quota: z.number(),
   price: z.number(),
   status: z.string(),
+  deleted_at: z.string().nullish(),
   category: z.object({ name: z.string() }).nullish(),
 });
 
@@ -657,8 +659,8 @@ export async function listAdminEventsAction() {
   if (!tenantID) return { data: [], error: null };
   const base = `tenant_id=${encodeURIComponent(tenantID)}&page=1&limit=100`;
   const [draftResponse, publishedResponse] = await Promise.all([
-    fetchBackend(`features/v1/events?${base}&status=DRAFT`, auth.token),
-    fetchBackend(`features/v1/events?${base}`, auth.token),
+    fetchBackend(`features/v1/events/admin?${base}&status=DRAFT`, auth.token),
+    fetchBackend(`features/v1/events/admin?${base}`, auth.token),
   ]);
   const [draftPayload, publishedPayload] = await Promise.all([
     responseJson<unknown>(draftResponse),
@@ -677,6 +679,41 @@ export async function listAdminEventsAction() {
   return { data: [...draftParsed.data, ...publishedParsed.data], error: null };
 }
 
+export type AttendanceScanResult = {
+  registration_id: string;
+  registration_number: string;
+  participant_name: string;
+  participant_email: string;
+  event_title: string;
+  scan_time: string;
+  status: string;
+};
+
+const attendanceScanSchema = z.object({
+  registration_id: z.string(),
+  registration_number: z.string(),
+  participant_name: z.string(),
+  participant_email: z.string(),
+  event_title: z.string(),
+  scan_time: z.string(),
+  status: z.string(),
+});
+
+export async function scanAttendanceAction(eventID: string, qrToken: string) {
+  const auth = await authenticatedSession();
+  if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
+  const response = await fetchBackend('features/v1/attendances/scan', auth.token, {
+    method: 'POST',
+    body: JSON.stringify({ event_id: eventID, qr_token: qrToken }),
+  });
+  const payload = await responseJson<unknown>(response);
+  const parsed = attendanceScanSchema.safeParse(payload.data);
+  if (!response.ok || !parsed.success) {
+    return { data: null, error: payload.message || 'QR code tidak dapat diproses' };
+  }
+  return { data: parsed.data, error: null };
+}
+
 export async function listAdminRegistrationsAction() {
   const auth = await authenticatedSession();
   if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
@@ -685,7 +722,7 @@ export async function listAdminRegistrationsAction() {
   const results = await Promise.all(
     events.data.map(async (event) => {
       const response = await fetchBackend(
-        `features/v1/registrations/event/${event.id}?page=1&limit=100`,
+        `features/v1/registrations/event/${event.id}?page=1&limit=100&include_deleted=true`,
         auth.token
       );
       const result = await responseJson<unknown>(response);
@@ -881,6 +918,40 @@ export async function deleteEventAction(
   return redirect('/dashboard/events');
 }
 
+export async function permanentlyDeleteEventAction(
+  _state: { error: string; success: string },
+  formData: FormData
+) {
+  const auth = await authenticatedSession();
+  if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
+  const id = String(formData.get('id') || '');
+  const response = await fetchBackend(`features/v1/events/${id}/permanent`, auth.token, {
+    method: 'DELETE',
+  });
+  const result = await responseJson<unknown>(response);
+  if (!response.ok) return { error: result.message || 'Event gagal dihapus permanen', success: '' };
+  revalidatePath('/dashboard/events');
+  return redirect('/dashboard/events');
+}
+
+export async function bulkDeleteEventsAction(formData: FormData) {
+  const auth = await authenticatedSession();
+  if (!auth) return;
+  const permanent = formData.get('permanent') === 'true';
+  await Promise.all(
+    formData
+      .getAll('ids')
+      .map((id) =>
+        fetchBackend(
+          `features/v1/events/${String(id)}${permanent ? '/permanent' : ''}`,
+          auth.token,
+          { method: 'DELETE' }
+        )
+      )
+  );
+  revalidatePath('/dashboard/events');
+}
+
 export async function eventCategoryCrudAction(
   _state: { error: string; success: string },
   formData: FormData
@@ -921,6 +992,18 @@ export async function deleteEventCategoryAction(
   revalidatePath('/dashboard/event-categories');
   await setEventCategoryFlash('Kategori berhasil dihapus');
   return redirect('/dashboard/event-categories');
+}
+
+export async function permanentDeleteEventCategoryAction(formData: FormData) {
+  const auth = await authenticatedSession();
+  if (!auth) return;
+  const id = String(formData.get('id') || '');
+  const response = await fetchBackend(`features/v1/event-categories/${id}/permanent`, auth.token, {
+    method: 'DELETE',
+  });
+  if (!response.ok) return;
+  revalidatePath('/dashboard/event-categories');
+  redirect('/dashboard/event-categories');
 }
 
 export type AdminDashboardData = {
@@ -1127,6 +1210,7 @@ export async function adminCrudAction(
   revalidatePath(
     `/dashboard/access/${resource === 'roles/permissions' ? 'permissions' : resource}`
   );
+  redirect(`/dashboard/access/${resource === 'roles/permissions' ? 'permissions' : resource}`);
   return { error: '', success: 'Data berhasil disimpan' };
 }
 
@@ -1148,6 +1232,42 @@ export async function deleteAdminResourceAction(
   return redirect(
     `/dashboard/access/${resource === 'roles/permissions' ? 'permissions' : resource}`
   );
+}
+
+export async function bulkDeleteAdminResourceAction(formData: FormData) {
+  const auth = await authenticatedSession();
+  if (!auth) return;
+  const resource = String(formData.get('resource') || '');
+  await Promise.all(
+    formData
+      .getAll('ids')
+      .map((id) =>
+        fetchBackend(`core/v1/${resource}/${String(id)}`, auth.token, { method: 'DELETE' })
+      )
+  );
+  revalidatePath(
+    `/dashboard/access/${resource === 'roles/permissions' ? 'permissions' : resource}`
+  );
+}
+
+export async function bulkDeleteFeatureResourceAction(formData: FormData) {
+  const auth = await authenticatedSession();
+  if (!auth) return;
+  const resource = String(formData.get('resource') || '');
+  const permanent = formData.get('permanent') === 'true';
+  await Promise.all(
+    formData
+      .getAll('ids')
+      .map((id) =>
+        fetchBackend(
+          `features/v1/${resource}/${String(id)}${permanent ? '/permanent' : ''}`,
+          auth.token,
+          { method: 'DELETE' }
+        )
+      )
+  );
+  revalidatePath(`/dashboard/${resource}`);
+  redirect(`/dashboard/${resource}`);
 }
 
 export async function toggleUserBanAction(formData: FormData) {

@@ -13,12 +13,14 @@ import DialogContent from '@mui/material/DialogContent';
 type ParticipantTicketQRProps = {
   eventTitle: string;
   qrToken: string;
+  eventID: string;
   registrationNumber: string;
 };
 
 export function ParticipantTicketQR({
   eventTitle,
   qrToken,
+  eventID,
   registrationNumber,
 }: ParticipantTicketQRProps) {
   const [open, setOpen] = useState(false);
@@ -38,7 +40,7 @@ export function ParticipantTicketQR({
           <Box
             sx={{ display: 'inline-flex', p: 2, mt: 3, bgcolor: 'common.white', borderRadius: 2 }}
           >
-            <QRCodeSVG value={qrToken} size={220} level="M" includeMargin />
+            <QRCodeSVG value={`${eventID}|${qrToken}`} size={220} level="M" includeMargin />
           </Box>
           <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
             {registrationNumber}

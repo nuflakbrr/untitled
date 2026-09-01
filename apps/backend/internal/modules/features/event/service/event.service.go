@@ -134,6 +134,17 @@ func (s *EventService) DeleteCategory(ctx context.Context, id string, scopeTenan
 	return s.categories.Delete(ctx, id, scopeTenantID)
 }
 
+func (s *EventService) PermanentDeleteCategory(ctx context.Context, id string, scopeTenantID *string) error {
+	category, err := s.categories.FindByID(ctx, id, scopeTenantID)
+	if err != nil {
+		return err
+	}
+	if category.TenantID == nil {
+		return fmt.Errorf("%w: global categories are seed-managed", ErrInvalidEvent)
+	}
+	return s.categories.(*repository.CategoryRepository).PermanentDelete(ctx, id, scopeTenantID)
+}
+
 func (s *EventService) ListPublicEvents(ctx context.Context, filter dto.EventQuery) ([]dto.EventResponse, int64, error) {
 	events, total, err := s.events.FindPublic(ctx, filter)
 	if err != nil {
@@ -236,6 +247,16 @@ func (s *EventService) UpdateEventStatus(ctx context.Context, id string, scopeTe
 
 func (s *EventService) DeleteEvent(ctx context.Context, id string, scopeTenantID *string) error {
 	return s.events.Delete(ctx, id, scopeTenantID)
+}
+
+func (s *EventService) PermanentDeleteEvent(ctx context.Context, id string, scopeTenantID *string) error {
+	deleter, ok := s.events.(interface {
+		PermanentDelete(context.Context, string, *string) error
+	})
+	if !ok {
+		return errors.New("permanent event deletion is unavailable")
+	}
+	return deleter.PermanentDelete(ctx, id, scopeTenantID)
 }
 
 func (s *EventService) validateCategory(ctx context.Context, categoryID *string, tenantID string) error {
@@ -411,6 +432,7 @@ func toEventResponse(event *domain.Event) dto.EventResponse {
 		RegistrationDeadline: event.RegistrationDeadline, Quota: event.Quota, Price: event.Price,
 		Status: string(event.Status), CertificateEnabled: event.CertificateEnabled,
 		PublishedAt: event.PublishedAt, CreatedAt: event.CreatedAt, UpdatedAt: event.UpdatedAt,
+		DeletedAt:   event.DeletedAt,
 		CreatedByID: event.CreatedByID, Speakers: make([]dto.SpeakerResponse, 0, len(event.Speakers)),
 		Benefits: make([]dto.BenefitResponse, 0, len(event.Benefits)),
 	}
@@ -446,7 +468,7 @@ func toEventResponse(event *domain.Event) dto.EventResponse {
 }
 
 func toCategoryResponse(category *domain.Category) dto.CategoryResponse {
-	return dto.CategoryResponse{ID: category.ID, TenantID: category.TenantID, Name: category.Name, Slug: category.Slug, Description: category.Description}
+	return dto.CategoryResponse{ID: category.ID, TenantID: category.TenantID, Name: category.Name, Slug: category.Slug, Description: category.Description, DeletedAt: category.DeletedAt}
 }
 
 func normalizeID(value *string) *string {

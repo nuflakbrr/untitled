@@ -32,18 +32,21 @@ func (m *Module) SetupRoutes(router *gin.RouterGroup) {
 	categories := router.Group("/event-categories")
 	{
 		categories.GET("", m.CategoryHandler.GetAll)
-		categories.POST("", middleware.JWTAuth(), middleware.RequirePermission("events.create"), m.CategoryHandler.Create)
-		categories.PUT("/:id", middleware.JWTAuth(), middleware.RequirePermission("events.update"), m.CategoryHandler.Update)
-		categories.DELETE("/:id", middleware.JWTAuth(), middleware.RequirePermission("events.delete"), m.CategoryHandler.Delete)
+		categories.POST("", middleware.JWTAuth(), middleware.RequirePermission("event.categories.create"), m.CategoryHandler.Create)
+		categories.PUT("/:id", middleware.JWTAuth(), middleware.RequirePermission("event.categories.update"), m.CategoryHandler.Update)
+		categories.DELETE("/:id", middleware.JWTAuth(), middleware.RequirePermission("event.categories.delete"), m.CategoryHandler.Delete)
+		categories.DELETE("/:id/permanent", middleware.JWTAuth(), middleware.RequirePermission("event.categories.delete"), m.CategoryHandler.PermanentDelete)
 	}
 
 	events := router.Group("/events")
 	{
 		events.GET("", m.EventHandler.GetAll)
+		events.GET("/admin", middleware.JWTAuth(), middleware.RequirePermission("events.read"), m.EventHandler.GetAdminAll)
 		events.GET("/:slug", m.EventHandler.GetBySlug)
 		events.POST("", middleware.JWTAuth(), middleware.RequirePermission("events.create"), m.EventHandler.Create)
 		events.PUT("/:id", middleware.JWTAuth(), middleware.RequirePermission("events.update"), m.EventHandler.Update)
 		events.PATCH("/:id/status", middleware.JWTAuth(), middleware.RequirePermission("events.publish"), m.EventHandler.UpdateStatus)
 		events.DELETE("/:id", middleware.JWTAuth(), middleware.RequirePermission("events.delete"), m.EventHandler.Delete)
+		events.DELETE("/:id/permanent", middleware.JWTAuth(), middleware.RequirePermission("events.delete"), m.EventHandler.PermanentDelete)
 	}
 }

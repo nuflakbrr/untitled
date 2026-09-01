@@ -5,10 +5,11 @@ import "time"
 type Status string
 
 const (
-	StatusWaiting  Status = "WAITING"
-	StatusPaid     Status = "PAID"
-	StatusFailed   Status = "FAILED"
-	StatusRefunded Status = "REFUNDED"
+	StatusWaiting       Status = "WAITING"
+	StatusPaid          Status = "PAID"
+	StatusFailed        Status = "FAILED"
+	StatusRefundPending Status = "REFUND_PENDING"
+	StatusRefunded      Status = "REFUNDED"
 )
 
 const (

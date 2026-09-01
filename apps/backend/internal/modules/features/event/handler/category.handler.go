@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 
 	"venturo-skeleton-go/internal/modules/features/event/dto"
@@ -80,4 +81,23 @@ func (h *CategoryHandler) Delete(c *gin.Context) {
 		return
 	}
 	response.Success(c, http.StatusOK, "Event category deleted successfully", nil)
+}
+
+func (h *CategoryHandler) PermanentDelete(c *gin.Context) {
+	_, scope, _, ok := actorScope(c)
+	if !ok {
+		return
+	}
+	service, ok := h.service.(interface {
+		PermanentDeleteCategory(context.Context, string, *string) error
+	})
+	if !ok {
+		response.Error(c, http.StatusNotImplemented, "Permanent delete unavailable", "")
+		return
+	}
+	if err := service.PermanentDeleteCategory(c.Request.Context(), c.Param("id"), scope); err != nil {
+		writeEventError(c, err, "Failed to permanently delete event category")
+		return
+	}
+	response.Success(c, http.StatusOK, "Event category permanently deleted", nil)
 }

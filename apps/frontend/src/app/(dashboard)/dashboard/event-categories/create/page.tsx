@@ -7,7 +7,7 @@ import { requireSession } from 'src/auth/server';
 import { EventCategoryForm } from '../event-category-form';
 
 export default async function CreateEventCategoryPage() {
-  await requireSession('events.create');
+  await requireSession('event.categories.create');
   return (
     <Stack spacing={3}>
       <Typography variant="h4">Tambah kategori event</Typography>

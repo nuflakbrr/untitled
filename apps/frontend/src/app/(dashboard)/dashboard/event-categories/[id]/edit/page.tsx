@@ -14,7 +14,7 @@ export default async function EditEventCategoryPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireSession('events.update');
+  await requireSession('event.categories.update');
   const { id } = await params;
   const result = await listEventCategoriesAction();
   const category = result.data?.find((item) => item.id === id);
