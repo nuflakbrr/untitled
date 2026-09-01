@@ -25,13 +25,13 @@ export default async function EventsPage() {
           gap: 3,
           display: 'flex',
           mb: 3,
-          alignItems: { sm: 'flex-end' },
+          alignItems: 'flex-start',
           justifyContent: 'space-between',
           flexDirection: { xs: 'column', sm: 'row' },
         }}
       >
         <Box>
-          <Typography variant="h3">Manajemen event</Typography>
+          <Typography variant="h4">Manajemen event</Typography>
           <Typography color="text.secondary" sx={{ mt: 0.75 }}>
             Susun dan publikasikan agenda untuk tenant aktif.
           </Typography>
