@@ -622,6 +622,113 @@ export async function listEventCategoriesAction() {
   return { data: parsed.data, error: null };
 }
 
+const adminEventSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  slug: z.string(),
+  description: z.string(),
+  banner: z.string().nullish(),
+  start_date: z.string(),
+  end_date: z.string(),
+  start_time: z.string(),
+  end_time: z.string(),
+  location: z.string(),
+  event_type: z.string(),
+  registration_deadline: z.string(),
+  quota: z.number(),
+  price: z.number(),
+  status: z.string(),
+  category: z.object({ name: z.string() }).nullish(),
+});
+
+export async function listAdminEventsAction() {
+  const auth = await authenticatedSession();
+  if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
+  const tenantID = auth.session.tenant?.id;
+  if (!tenantID) return { data: [], error: null };
+  const base = `tenant_id=${encodeURIComponent(tenantID)}&page=1&limit=100`;
+  const [draftResponse, publishedResponse] = await Promise.all([
+    fetchBackend(`features/v1/events?${base}&status=DRAFT`, auth.token),
+    fetchBackend(`features/v1/events?${base}`, auth.token),
+  ]);
+  const [draftPayload, publishedPayload] = await Promise.all([
+    responseJson<unknown>(draftResponse),
+    responseJson<unknown>(publishedResponse),
+  ]);
+  const draftParsed = z.array(adminEventSchema).safeParse(draftPayload.data);
+  const publishedParsed = z.array(adminEventSchema).safeParse(publishedPayload.data);
+  if (
+    !draftResponse.ok ||
+    !publishedResponse.ok ||
+    !draftParsed.success ||
+    !publishedParsed.success
+  ) {
+    return { data: null, error: 'Data event gagal dimuat' };
+  }
+  return { data: [...draftParsed.data, ...publishedParsed.data], error: null };
+}
+
+export async function eventCrudAction(
+  _state: { error: string; success: string },
+  formData: FormData
+) {
+  const auth = await authenticatedSession();
+  if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
+  const id = String(formData.get('id') || '');
+  const date = (name: string, end = false) =>
+    new Date(`${formData.get(name)}T${end ? '23:59' : '00:00'}:00Z`).toISOString();
+  const parseArray = (name: string) => {
+    try {
+      const value = JSON.parse(String(formData.get(name) || '[]'));
+      return Array.isArray(value) ? value : [];
+    } catch {
+      return [];
+    }
+  };
+  const body = {
+    title: String(formData.get('title') || '').trim(),
+    description: String(formData.get('description') || '').trim(),
+    banner: String(formData.get('banner') || '').trim() || null,
+    category_id: String(formData.get('category_id') || '').trim() || null,
+    start_date: date('start_date'),
+    end_date: date('end_date'),
+    start_time: String(formData.get('start_time') || ''),
+    end_time: String(formData.get('end_time') || ''),
+    location: String(formData.get('location') || '').trim(),
+    event_type: String(formData.get('event_type') || 'OFFLINE'),
+    registration_deadline: date('registration_deadline', true),
+    quota: Number(formData.get('quota') || 0),
+    price: Number(formData.get('price') || 0),
+    certificate_enabled: formData.get('certificate_enabled') === 'on',
+    speakers: parseArray('speakers'),
+    benefits: parseArray('benefits'),
+  };
+  if (!body.title || !body.description || !body.quota)
+    return { error: 'Lengkapi data event terlebih dahulu', success: '' };
+  const response = await fetchBackend(`features/v1/events${id ? `/${id}` : ''}`, auth.token, {
+    method: id ? 'PUT' : 'POST',
+    body: JSON.stringify(body),
+  });
+  const result = await responseJson<unknown>(response);
+  if (!response.ok) return { error: result.message || 'Event gagal disimpan', success: '' };
+  revalidatePath('/dashboard/events');
+  return redirect('/dashboard/events');
+}
+
+export async function deleteEventAction(
+  _state: { error: string; success: string },
+  formData: FormData
+) {
+  const auth = await authenticatedSession();
+  if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
+  const id = String(formData.get('id') || '');
+  const response = await fetchBackend(`features/v1/events/${id}`, auth.token, { method: 'DELETE' });
+  const result = await responseJson<unknown>(response);
+  if (!response.ok) return { error: result.message || 'Event gagal dihapus', success: '' };
+  revalidatePath('/dashboard/events');
+  return redirect('/dashboard/events');
+}
+
 export async function eventCategoryCrudAction(
   _state: { error: string; success: string },
   formData: FormData

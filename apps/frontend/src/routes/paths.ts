@@ -25,6 +25,7 @@ export const paths = {
   dashboard: {
     root: '/dashboard',
     events: '/dashboard/events',
+    eventsCreate: '/dashboard/events/create',
     eventCategories: '/dashboard/event-categories',
     eventCategoriesCreate: '/dashboard/event-categories/create',
     certificates: '/dashboard/certificates',

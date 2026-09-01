@@ -50,3 +50,7 @@ next-env.d.ts
 
 # laporan PDF hasil generate — jangan ikut commit
 *.pdf
+
+# playwright test artifacts
+/test-results
+.next-playwright
