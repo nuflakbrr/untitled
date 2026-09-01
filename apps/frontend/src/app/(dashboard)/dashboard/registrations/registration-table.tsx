@@ -18,6 +18,8 @@ import TableContainer from '@mui/material/TableContainer';
 
 import { Iconify } from 'src/components/iconify';
 
+import { downloadExcel } from '../excel-export';
+
 type Row = {
   id: string;
   registration_number: string;
@@ -79,8 +81,7 @@ export function RegistrationTable({ rows }: { rows: Row[] }) {
     [rows, event, status, query]
   );
   const pageRows = filtered.slice((page - 1) * 10, page * 10);
-  const exportExcel = () => {
-    const escape = (value: string) => `"${value.replaceAll('"', '""')}"`;
+  const exportExcel = async () => {
     const header = [
       'Peserta',
       'Email',
@@ -90,23 +91,22 @@ export function RegistrationTable({ rows }: { rows: Row[] }) {
       'Nomor registrasi',
       'Tanggal',
     ];
-    const body = filtered.map((r) => [
-      r.user_name,
-      r.user_email,
-      r.event_title,
-      r.event_status,
-      r.status,
-      r.registration_number,
-      new Date(r.created_at).toLocaleDateString('id-ID'),
-    ]);
-    const csv = [header, ...body].map((line) => line.map(escape).join(',')).join('\r\n');
-    const blob = new Blob([`\ufeff${csv}`], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'pendaftaran.csv';
-    link.click();
-    URL.revokeObjectURL(url);
+    await downloadExcel(
+      'pendaftaran.xlsx',
+      'Pendaftaran',
+      header,
+      filtered.map((r) => [
+        r.user_name,
+        r.user_email,
+        r.event_title,
+        statusLabel[r.event_status] ?? r.event_status,
+        statusLabel[r.status] ?? r.status,
+        r.registration_number,
+        new Date(r.created_at).toLocaleDateString('id-ID'),
+      ]),
+      'FF1565C0',
+      `Filter: ${event === 'ALL' ? 'Semua event' : event} · ${status === 'ALL' ? 'Semua status event' : (statusLabel[status] ?? status)} · ${query || 'Tanpa pencarian'} · Total ${filtered.length} data`
+    );
   };
   return (
     <Box sx={{ display: 'grid', gap: 2 }}>
