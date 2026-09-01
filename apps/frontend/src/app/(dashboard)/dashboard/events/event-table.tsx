@@ -15,6 +15,7 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import Pagination from '@mui/material/Pagination';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
 
@@ -40,6 +41,7 @@ export function EventTable({ rows }: { rows: Event[] }) {
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('ALL');
   const [eventType, setEventType] = useState('ALL');
+  const [page, setPage] = useState(1);
   const [state, action, pending] = useActionState(deleteEventAction, { error: '', success: '' });
   const [sort, setSort] = useState<{ key: keyof Event; direction: 'asc' | 'desc' }>({
     key: 'start_date',
@@ -88,14 +90,28 @@ export function EventTable({ rows }: { rows: Event[] }) {
           onChange={(e) => setSearch(e.target.value)}
           sx={{ flex: 1, minWidth: 220 }}
         />
-        <Select size="small" value={status} onChange={(e) => setStatus(e.target.value)}>
+        <Select
+          size="small"
+          value={status}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}
+        >
           <MenuItem value="ALL">Semua status</MenuItem>
           <MenuItem value="DRAFT">Draft</MenuItem>
           <MenuItem value="PUBLISHED">Dipublikasikan</MenuItem>
           <MenuItem value="CLOSED">Ditutup</MenuItem>
           <MenuItem value="COMPLETED">Selesai</MenuItem>
         </Select>
-        <Select size="small" value={eventType} onChange={(e) => setEventType(e.target.value)}>
+        <Select
+          size="small"
+          value={eventType}
+          onChange={(e) => {
+            setEventType(e.target.value);
+            setPage(1);
+          }}
+        >
           <MenuItem value="ALL">Semua tipe</MenuItem>
           <MenuItem value="ONLINE">Online</MenuItem>
           <MenuItem value="OFFLINE">Offline</MenuItem>
@@ -114,81 +130,90 @@ export function EventTable({ rows }: { rows: Event[] }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.length ? data.map((event) => (
-              <TableRow key={event.id}>
-                <TableCell>
-                  <Typography sx={{ fontWeight: 600 }}>{event.title}</Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {event.category?.name || 'Tanpa kategori'}
-                  </Typography>
-                </TableCell>
-                <TableCell>{event.start_date.slice(0, 10)}</TableCell>
-                <TableCell>{event.location}</TableCell>
-                <TableCell>
-                  <Chip
-                    size="small"
-                    label={event.event_type === 'ONLINE' ? 'Online' : 'Offline'}
-                    color={event.event_type === 'ONLINE' ? 'info' : 'default'}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    size="small"
-                    label={
-                      event.status === 'PUBLISHED'
-                        ? 'Dipublikasikan'
-                        : event.status === 'DRAFT'
-                          ? 'Draft'
-                          : event.status === 'COMPLETED'
-                            ? 'Selesai'
-                            : 'Ditutup'
-                    }
-                    color={
-                      event.status === 'PUBLISHED'
-                        ? 'success'
-                        : event.status === 'COMPLETED'
-                          ? 'info'
-                          : event.status === 'CLOSED'
-                            ? 'warning'
-                            : 'default'
-                    }
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 0.5 }}>
-                  <Tooltip title="Edit event">
-                    <IconButton
-                      component={RouterLink}
-                      href={`${paths.dashboard.events}/${event.id}/edit`}
-                      aria-label="Edit event"
+            {data.length ? (
+              data.slice((page - 1) * 10, page * 10).map((event) => (
+                <TableRow key={event.id}>
+                  <TableCell>
+                    <Typography sx={{ fontWeight: 600 }}>{event.title}</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {event.category?.name || 'Tanpa kategori'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>{event.start_date.slice(0, 10)}</TableCell>
+                  <TableCell>{event.location}</TableCell>
+                  <TableCell>
+                    <Chip
                       size="small"
+                      label={event.event_type === 'ONLINE' ? 'Online' : 'Offline'}
+                      color={event.event_type === 'ONLINE' ? 'info' : 'default'}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      size="small"
+                      label={
+                        event.status === 'PUBLISHED'
+                          ? 'Dipublikasikan'
+                          : event.status === 'DRAFT'
+                            ? 'Draft'
+                            : event.status === 'COMPLETED'
+                              ? 'Selesai'
+                              : 'Ditutup'
+                      }
+                      color={
+                        event.status === 'PUBLISHED'
+                          ? 'success'
+                          : event.status === 'COMPLETED'
+                            ? 'info'
+                            : event.status === 'CLOSED'
+                              ? 'warning'
+                              : 'default'
+                      }
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        alignItems: 'center',
+                        gap: 0.5,
+                      }}
                     >
-                      <Iconify icon="solar:pen-new-square-linear" />
-                    </IconButton>
-                  </Tooltip>
-                  <Box component="form" action={action}>
-                    <input type="hidden" name="id" value={event.id} />
-                    <Tooltip title="Hapus event">
-                      <span>
-                        <ConfirmSubmitButton
-                          title="Hapus event?"
-                          description="Event yang dihapus tidak dapat dipulihkan."
-                          color="error"
-                          variant="text"
-                            disabled={pending}
-                            aria-label="Hapus event"
-                            iconOnly
-                            size="small"
+                      <Tooltip title="Edit event">
+                        <IconButton
+                          component={RouterLink}
+                          href={`${paths.dashboard.events}/${event.id}/edit`}
+                          aria-label="Edit event"
+                          size="small"
                         >
-                          <Iconify icon="solar:trash-bin-trash-linear" />
-                        </ConfirmSubmitButton>
-                      </span>
-                    </Tooltip>
-                  </Box>
-                  </Box>
-                </TableCell>
-              </TableRow>
-            )) : (
+                          <Iconify icon="solar:pen-new-square-linear" />
+                        </IconButton>
+                      </Tooltip>
+                      <Box component="form" action={action}>
+                        <input type="hidden" name="id" value={event.id} />
+                        <Tooltip title="Hapus event">
+                          <span>
+                            <ConfirmSubmitButton
+                              title="Hapus event?"
+                              description="Event yang dihapus tidak dapat dipulihkan."
+                              color="error"
+                              variant="text"
+                              disabled={pending}
+                              aria-label="Hapus event"
+                              iconOnly
+                              size="small"
+                            >
+                              <Iconify icon="solar:trash-bin-trash-linear" />
+                            </ConfirmSubmitButton>
+                          </span>
+                        </Tooltip>
+                      </Box>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
               <TableRow>
                 <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
                   <Typography color="text.secondary">
@@ -202,6 +227,13 @@ export function EventTable({ rows }: { rows: Event[] }) {
           </TableBody>
         </Table>
       </TableContainer>
+      {data.length > 10 ? (
+        <Pagination
+          count={Math.ceil(data.length / 10)}
+          page={page}
+          onChange={(_, value) => setPage(value)}
+        />
+      ) : null}
     </Box>
   );
 }
