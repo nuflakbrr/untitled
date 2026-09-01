@@ -12,6 +12,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
 import IconButton from '@mui/material/IconButton';
 import TableContainer from '@mui/material/TableContainer';
@@ -96,7 +97,7 @@ export function EventCategoryTable({ rows }: { rows: Category[] }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {pageRows.map((row) => (
+            {pageRows.length ? pageRows.map((row) => (
               <TableRow key={row.id}>
                 <TableCell>{row.name}</TableCell>
                 <TableCell>{row.slug}</TableCell>
@@ -142,7 +143,15 @@ export function EventCategoryTable({ rows }: { rows: Category[] }) {
                   </Box>
                 </TableCell>
               </TableRow>
-            ))}
+            )) : (
+              <TableRow>
+                <TableCell colSpan={4} align="center" sx={{ py: 6 }}>
+                  <Typography color="text.secondary">
+                    {debounced ? 'Kategori tidak ditemukan.' : 'Belum ada kategori event.'}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

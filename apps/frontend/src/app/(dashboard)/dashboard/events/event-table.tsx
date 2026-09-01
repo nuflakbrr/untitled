@@ -114,7 +114,7 @@ export function EventTable({ rows }: { rows: Event[] }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((event) => (
+            {data.length ? data.map((event) => (
               <TableRow key={event.id}>
                 <TableCell>
                   <Typography sx={{ fontWeight: 600 }}>{event.title}</Typography>
@@ -188,7 +188,17 @@ export function EventTable({ rows }: { rows: Event[] }) {
                   </Box>
                 </TableCell>
               </TableRow>
-            ))}
+            )) : (
+              <TableRow>
+                <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
+                  <Typography color="text.secondary">
+                    {query || status !== 'ALL' || eventType !== 'ALL'
+                      ? 'Event tidak ditemukan.'
+                      : 'Belum ada event.'}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

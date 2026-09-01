@@ -9,6 +9,7 @@ import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import TableHead from '@mui/material/TableHead';
@@ -95,7 +96,7 @@ export function AdminCrud({
             </TableRow>
           </TableHead>
           <TableBody>
-            {pageRows.map((row) => {
+            {pageRows.length ? pageRows.map((row) => {
               const roleLocked =
                 resource === 'roles' &&
                 (row.id === currentUserRoleId || row.name === 'root_superadmin');
@@ -150,7 +151,15 @@ export function AdminCrud({
                   </TableCell>
                 </TableRow>
               );
-            })}
+            }) : (
+              <TableRow>
+                <TableCell colSpan={3} align="center" sx={{ py: 6 }}>
+                  <Typography color="text.secondary">
+                    {debouncedQuery ? 'Data tidak ditemukan.' : 'Belum ada data.'}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
