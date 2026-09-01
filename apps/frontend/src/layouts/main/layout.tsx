@@ -8,7 +8,7 @@ import type { MainSectionProps } from '../core/main-section';
 import type { HeaderSectionProps } from '../core/header-section';
 import type { LayoutSectionProps } from '../core/layout-section';
 
-import { useBoolean } from 'minimal-shared/hooks';
+import { useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -56,7 +56,9 @@ export function MainLayout({
   session = null,
 }: MainLayoutProps) {
   const isAuthenticated = Boolean(session);
-  const { value: open, onFalse: onClose, onTrue: onOpen } = useBoolean();
+  const [open, setOpen] = useState(false);
+  const onClose = () => setOpen(false);
+  const onOpen = () => setOpen(true);
 
   const renderHeader = () => {
     const headerSlots: HeaderSectionProps['slots'] = {
@@ -65,13 +67,43 @@ export function MainLayout({
           {/** @slot Nav mobile */}
           <MenuButton
             onClick={onOpen}
+            aria-expanded={open}
             sx={(theme) => ({
               mr: 1,
               ml: -1,
+              position: 'relative',
+              zIndex: theme.zIndex.appBar + 2,
+              pointerEvents: 'auto',
               [theme.breakpoints.up(layoutQuery)]: { display: 'none' },
             })}
           />
-          <NavMobile data={navData} open={open} onClose={onClose} />
+          <NavMobile
+            data={navData}
+            open={open}
+            onClose={onClose}
+            slots={{
+              bottomArea: !session ? (
+                <Box sx={{ display: 'grid', gap: 1, p: 2 }}>
+                  <Button
+                    component={RouterLink}
+                    href={paths.auth.signIn}
+                    variant="outlined"
+                    onClick={onClose}
+                  >
+                    Masuk
+                  </Button>
+                  <Button
+                    component={RouterLink}
+                    href={paths.auth.signUp}
+                    variant="contained"
+                    onClick={onClose}
+                  >
+                    Daftar
+                  </Button>
+                </Box>
+              ) : undefined,
+            }}
+          />
 
           {/** @slot Logo */}
           <Logo />
@@ -126,6 +158,7 @@ export function MainLayout({
             '--layout-header-mobile-height': '72px',
             '--layout-header-desktop-height': '84px',
             borderBottom: '1px solid transparent',
+            bgcolor: 'background.paper',
           },
           ...(Array.isArray(slotProps?.header?.sx) ? slotProps.header.sx : [slotProps?.header?.sx]),
         ]}
