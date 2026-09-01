@@ -43,9 +43,9 @@ func (m *Module) SetupRoutes(router *gin.RouterGroup) {
 	categories := router.Group("/article-categories")
 	{
 		categories.GET("", m.CategoryHandler.List)
-		categories.POST("", middleware.JWTAuth(), middleware.RequirePermission("article_categories.create"), m.CategoryHandler.Create)
-		categories.PUT("/:id", middleware.JWTAuth(), middleware.RequirePermission("article_categories.update"), m.CategoryHandler.Update)
-		categories.DELETE("/:id", middleware.JWTAuth(), middleware.RequirePermission("article_categories.delete"), m.CategoryHandler.Delete)
+		categories.POST("", middleware.JWTAuth(), middleware.RequirePermission("article.categories.create"), m.CategoryHandler.Create)
+		categories.PUT("/:id", middleware.JWTAuth(), middleware.RequirePermission("article.categories.update"), m.CategoryHandler.Update)
+		categories.DELETE("/:id", middleware.JWTAuth(), middleware.RequirePermission("article.categories.delete"), m.CategoryHandler.Delete)
 	}
 
 	galleries := router.Group("/galleries")

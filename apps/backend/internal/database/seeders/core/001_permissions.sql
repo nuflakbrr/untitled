@@ -64,10 +64,10 @@ INSERT INTO core.permissions (id, name, description, created_at, updated_at) VAL
 ('891b5c9d-b4dc-4d35-a57a-219853e043f9', 'articles.create', 'Membuat artikel baru', NOW(), NOW()),
 ('bd6f21ac-2f3a-40f5-8b2f-1df8d51603b2', 'articles.update', 'Mengubah artikel', NOW(), NOW()),
 ('91026f46-6c8a-4a49-a44a-85088161b679', 'articles.delete', 'Menghapus artikel', NOW(), NOW()),
-('6db02b05-5dfc-44d2-8f72-6d460d2f6458', 'article_categories.read', 'Melihat kategori artikel', NOW(), NOW()),
-('6aa16182-287f-414a-a742-8db428665f09', 'article_categories.create', 'Membuat kategori artikel baru', NOW(), NOW()),
-('1c0fef17-fc5c-4382-b315-184992abc798', 'article_categories.update', 'Mengubah kategori artikel', NOW(), NOW()),
-('5d21f897-245b-4991-90e7-f53e4197d2a3', 'article_categories.delete', 'Menghapus kategori artikel', NOW(), NOW())
+('6db02b05-5dfc-44d2-8f72-6d460d2f6458', 'article.categories.read', 'Melihat kategori artikel', NOW(), NOW()),
+('6aa16182-287f-414a-a742-8db428665f09', 'article.categories.create', 'Membuat kategori artikel baru', NOW(), NOW()),
+('1c0fef17-fc5c-4382-b315-184992abc798', 'article.categories.update', 'Mengubah kategori artikel', NOW(), NOW()),
+('5d21f897-245b-4991-90e7-f53e4197d2a3', 'article.categories.delete', 'Menghapus kategori artikel', NOW(), NOW())
 ON CONFLICT (name) DO UPDATE SET
     description = EXCLUDED.description,
     updated_at = NOW();

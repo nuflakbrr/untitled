@@ -55,7 +55,7 @@ JOIN core.permissions p ON p.name IN (
     'articles.create',
     'articles.update',
     'articles.delete',
-    'article_categories.read',
+    'article.categories.read',
     'galleries.read',
     'galleries.create',
     'galleries.update',
