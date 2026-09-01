@@ -15,6 +15,7 @@ type ParticipantTicketQRProps = {
   qrToken: string;
   eventID: string;
   registrationNumber: string;
+  attendanceStatus: string;
 };
 
 export function ParticipantTicketQR({
@@ -22,13 +23,15 @@ export function ParticipantTicketQR({
   qrToken,
   eventID,
   registrationNumber,
+  attendanceStatus,
 }: ParticipantTicketQRProps) {
   const [open, setOpen] = useState(false);
+  const checkedIn = attendanceStatus === 'HADIR';
 
   return (
     <>
-      <Button variant="contained" onClick={() => setOpen(true)}>
-        Tampilkan QR code
+      <Button variant="contained" onClick={() => setOpen(true)} disabled={checkedIn}>
+        {checkedIn ? 'Sudah check-in' : 'Tampilkan QR code'}
       </Button>
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ pb: 1 }}>QR tiket event</DialogTitle>

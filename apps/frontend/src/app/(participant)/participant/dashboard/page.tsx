@@ -23,6 +23,19 @@ import { listMyReviewsAction, listMyRegistrationsAction } from 'src/auth/actions
 import { ReviewForm } from './review-form';
 import { ParticipantTicketQR } from './participant-ticket-qr';
 
+const statusLabels: Record<string, string> = {
+  REGISTERED: 'Terdaftar',
+  CHECKED_IN: 'Hadir',
+  CANCELLED: 'Dibatalkan',
+  PRESENT: 'Hadir',
+  ABSENT: 'Belum hadir',
+  ISSUED: 'Sudah terbit',
+  PENDING: 'Menunggu',
+};
+
+const getStatusLabel = (status: string) =>
+  (statusLabels[status] ?? status.replaceAll('_', ' ')).toUpperCase();
+
 export default async function ParticipantDashboardPage() {
   const [result, reviewsResult] = await Promise.all([
     listMyRegistrationsAction(),
@@ -110,6 +123,7 @@ export default async function ParticipantDashboardPage() {
       <Box
         sx={{
           display: 'grid',
+          width: '100%',
           gridTemplateColumns: { xs: '1fr', md: releasedTickets.length ? '4fr 8fr' : '1fr' },
           gap: 3,
           alignItems: 'start',
@@ -179,6 +193,7 @@ export default async function ParticipantDashboardPage() {
                       qrToken={ticket.qr_token}
                       eventID={ticket.event_id}
                       registrationNumber={ticket.registration_number}
+                      attendanceStatus={ticket.attendance_status}
                     />
                   </Stack>
                 </Paper>
@@ -215,19 +230,39 @@ export default async function ParticipantDashboardPage() {
             </Paper>
           ) : null}
           {registrations.length ? (
-            <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
-              <Table sx={{ minWidth: 860 }}>
+            <TableContainer
+              component={Paper}
+              variant="outlined"
+              sx={{ width: '100%', minWidth: 0, overflowX: 'auto', borderRadius: 2 }}
+            >
+              <Table
+                sx={{
+                  width: '100%',
+                  minWidth: 1100,
+                  tableLayout: 'auto',
+                  '& .MuiTableCell-root': {
+                    px: { xs: 1, md: 2 },
+                    whiteSpace: 'nowrap',
+                  },
+                  '& .MuiTableCell-root:nth-of-type(1)': { minWidth: 240 },
+                  '& .MuiTableCell-root:nth-of-type(2)': { minWidth: 130 },
+                  '& .MuiTableCell-root:nth-of-type(3)': { minWidth: 220 },
+                  '& .MuiTableCell-root:nth-of-type(4)': { minWidth: 110 },
+                  '& .MuiTableCell-root:nth-of-type(5)': { minWidth: 140 },
+                  '& .MuiTableCell-root:nth-of-type(6)': { minWidth: 160 },
+                  '& .MuiTableCell-root:nth-of-type(7)': { minWidth: 260 },
+                }}
+              >
                 <TableHead>
                   <TableRow>
                     {[
                       'Event',
-                      'Review',
                       'Tanggal',
                       'Lokasi',
                       'Tipe',
                       'Kehadiran',
                       'Sertifikat',
-                      'Status',
+                      'Review',
                     ].map((heading) => (
                       <TableCell key={heading}>{heading}</TableCell>
                     ))}
@@ -245,27 +280,48 @@ export default async function ParticipantDashboardPage() {
                         </Button>
                       </TableCell>
                       <TableCell>
-                        {registration.status === 'CHECKED_IN' && !reviewed.has(registration.id) ? (
+                        {new Date(registration.event_start_date).toLocaleDateString('id-ID')}
+                      </TableCell>
+                      <TableCell>{registration.event_location || '-'}</TableCell>
+                      <TableCell>{registration.event_type}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={getStatusLabel(registration.attendance_status)}
+                          size="small"
+                          color={
+                            registration.attendance_status === 'HADIR'
+                              ? 'success'
+                              : registration.attendance_status === 'BELUM HADIR'
+                                ? 'warning'
+                                : 'default'
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={getStatusLabel(registration.certificate_status)}
+                          size="small"
+                          color={
+                            registration.certificate_status === 'TERBIT'
+                              ? 'success'
+                              : registration.certificate_status === 'MENUNGGU TERBIT'
+                                ? 'warning'
+                                : registration.certificate_status === 'TIDAK TERSEDIA'
+                                  ? 'error'
+                                  : 'default'
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {registration.event_status === 'COMPLETED' &&
+                        registration.status === 'CHECKED_IN' &&
+                        !reviewed.has(registration.id) ? (
                           <ReviewForm registrationID={registration.id} />
                         ) : reviewed.has(registration.id) ? (
                           'Sudah diulas'
                         ) : (
                           '-'
                         )}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(registration.event_start_date).toLocaleDateString('id-ID')}
-                      </TableCell>
-                      <TableCell>{registration.event_location || '-'}</TableCell>
-                      <TableCell>{registration.event_type}</TableCell>
-                      <TableCell>{registration.attendance_status}</TableCell>
-                      <TableCell>{registration.certificate_status}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={registration.status}
-                          size="small"
-                          color={registration.status === 'REGISTERED' ? 'success' : 'default'}
-                        />
                       </TableCell>
                     </TableRow>
                   ))}

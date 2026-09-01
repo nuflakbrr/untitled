@@ -37,6 +37,13 @@ function statusLabel(status: string) {
   );
 }
 
+function statusColor(status: string): ChipProps['color'] {
+  if (status === 'WAITING_PAYMENT') return 'warning';
+  if (status === 'CANCELLED') return 'error';
+  if (status === 'REGISTERED' || status === 'CHECKED_IN') return 'success';
+  return 'default';
+}
+
 export default async function ParticipantTransactionsPage() {
   const result = await listMyRegistrationsAction();
   const registrations = result.data ?? [];
@@ -97,7 +104,7 @@ export default async function ParticipantTransactionsPage() {
                     <Chip
                       size="small"
                       label={statusLabel(registration.status)}
-                      color={registration.status === 'REGISTERED' ? 'success' : 'default'}
+                      color={statusColor(registration.status)}
                     />
                   </TableCell>
                 </TableRow>
@@ -109,3 +116,4 @@ export default async function ParticipantTransactionsPage() {
     </Stack>
   );
 }
+import type { ChipProps } from '@mui/material/Chip';
