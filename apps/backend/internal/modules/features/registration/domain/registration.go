@@ -20,6 +20,7 @@ type Registration struct {
 	EventStartDate     time.Time
 	EventLocation      string
 	EventType          string
+	EventStatus        string
 	AttendanceStatus   string
 	CertificateStatus  string
 	TenantID           string

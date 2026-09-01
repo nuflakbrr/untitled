@@ -33,7 +33,7 @@ const registrationSelect = `
 	       r.user_id, COALESCE(u.name, ''), u.email, r.registration_number,
 	       r.qr_token, r.online_attendance, r.status::text, e.price,
 	       r.created_at, r.updated_at, r.deleted_at, e.start_date, e.location,
-	       e.event_type::text,
+	       e.event_type::text, e.status::text,
 	       CASE WHEN r.status = 'CHECKED_IN' THEN 'HADIR' ELSE 'BELUM HADIR' END,
 	       CASE WHEN c.id IS NOT NULL THEN 'TERBIT'
             WHEN e.certificate_enabled THEN 'MENUNGGU TERBIT'
@@ -270,7 +270,7 @@ func scanRegistrations(rows pgx.Rows) ([]*domain.Registration, error) {
 			&registration.UserName, &registration.UserEmail, &registration.RegistrationNumber,
 			&registration.QRToken, &registration.OnlineAttendance, &status, &registration.Price,
 			&registration.CreatedAt, &registration.UpdatedAt, &registration.DeletedAt,
-			&registration.EventStartDate, &registration.EventLocation, &registration.EventType,
+			&registration.EventStartDate, &registration.EventLocation, &registration.EventType, &registration.EventStatus,
 			&registration.AttendanceStatus, &registration.CertificateStatus,
 		); err != nil {
 			return nil, fmt.Errorf("scan registration: %w", err)

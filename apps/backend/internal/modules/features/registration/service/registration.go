@@ -137,7 +137,7 @@ func toResponse(registration *domain.Registration) dto.RegistrationResponse {
 		EventSlug: registration.EventSlug, EventBanner: registration.EventBanner,
 		TenantID: registration.TenantID, TenantCode: registration.TenantCode,
 		EventStartDate: registration.EventStartDate, EventLocation: registration.EventLocation,
-		EventType: registration.EventType, AttendanceStatus: registration.AttendanceStatus,
+		EventType: registration.EventType, EventStatus: registration.EventStatus, AttendanceStatus: registration.AttendanceStatus,
 		CertificateStatus: registration.CertificateStatus,
 		UserID:            registration.UserID, UserName: registration.UserName, UserEmail: registration.UserEmail,
 		RegistrationNumber: registration.RegistrationNumber, QRToken: registration.QRToken,
