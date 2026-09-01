@@ -13,6 +13,8 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
+func stringPtr(value string) *string { return &value }
+
 type mockEventRepository struct {
 	findPublicFn   func(context.Context, dto.EventQuery) ([]*domain.Event, int64, error)
 	findBySlugFn   func(context.Context, string) (*domain.Event, error)
@@ -134,6 +136,8 @@ func validCreateEventRequest() dto.CreateEventRequest {
 		StartTime: "09:00", EndTime: "17:00", Location: "Lab 3",
 		EventType: "OFFLINE", RegistrationDeadline: time.Date(2026, 10, 18, 0, 0, 0, 0, time.UTC),
 		Quota: 40, Price: 150000,
+		Speakers: []dto.SpeakerRequest{{Name: "Default Speaker", Title: stringPtr("Lead"), Company: stringPtr("Company"), CompanyURL: stringPtr("https://company.test"), GitHub: stringPtr("https://github.com/speaker"), Instagram: stringPtr("https://instagram.com/speaker"), LinkedIn: stringPtr("https://linkedin.com/speaker"), Avatar: stringPtr("https://example.com/avatar.webp")}},
+		Benefits: []dto.BenefitRequest{{Title: "Default Benefit", Description: stringPtr("Benefit description"), Icon: stringPtr("Gift")}},
 	}
 }
 
@@ -145,6 +149,8 @@ func validEvent(status domain.EventStatus) *domain.Event {
 		StartTime: req.StartTime, EndTime: req.EndTime, Location: req.Location,
 		EventType: domain.EventTypeOffline, RegistrationDeadline: req.RegistrationDeadline,
 		Quota: req.Quota, Price: req.Price, Status: status,
+		Speakers: []domain.Speaker{{ID: "speaker-1", Name: "Default Speaker", Title: stringPtr("Lead"), Company: stringPtr("Company"), CompanyURL: stringPtr("https://company.test"), GitHub: stringPtr("https://github.com/speaker"), Instagram: stringPtr("https://instagram.com/speaker"), LinkedIn: stringPtr("https://linkedin.com/speaker"), Avatar: stringPtr("https://example.com/avatar.webp")}},
+		Benefits: []domain.Benefit{{ID: "benefit-1", Title: "Default Benefit", Description: stringPtr("Benefit description"), Icon: stringPtr("Gift")}},
 	}
 }
 
@@ -446,8 +452,8 @@ func TestUpdateEventAppliesEditableFields(t *testing.T) {
 	deadline := startDate.Add(-time.Hour)
 	quota, price := 100, int64(25000)
 	online, certificate := true, true
-	speakers := []dto.SpeakerRequest{{Name: "Alex", Company: &title}}
-	benefits := []dto.BenefitRequest{{Title: "Certificate", Icon: &title}}
+	speakers := []dto.SpeakerRequest{{Name: "Alex", Title: &title, Company: &title, CompanyURL: &title, GitHub: &title, Instagram: &title, LinkedIn: &title, Avatar: &title}}
+	benefits := []dto.BenefitRequest{{Title: "Certificate", Description: &title, Icon: &title}}
 	updated := false
 	svc := NewEventServiceWithInterfaces(&mockEventRepository{
 		findByIDFn: func(context.Context, string, *string) (*domain.Event, error) { return event, nil },

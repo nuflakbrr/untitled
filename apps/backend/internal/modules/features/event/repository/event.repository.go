@@ -43,7 +43,7 @@ func NewEventRepository(db *pgxpool.Pool) *EventRepository {
 }
 
 func (r *EventRepository) FindPublic(ctx context.Context, filter dto.EventQuery) ([]*domain.Event, int64, error) {
-	conditions := []string{"e.deleted_at IS NULL", "e.status <> 'DRAFT'"}
+	conditions := []string{"e.deleted_at IS NULL"}
 	args := make([]any, 0, 8)
 	add := func(condition string, value any) {
 		args = append(args, value)
