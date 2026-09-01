@@ -1,10 +1,9 @@
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-import { hasPermission } from 'src/auth/types';
 import { requireSession } from 'src/auth/server';
 import {
   listTenantsAction,
@@ -27,8 +26,7 @@ export async function AccessResourcePage({
   permission: string;
   resource: 'permissions' | 'roles' | 'tenants' | 'users';
 }) {
-  const session = await requireSession('admin.access');
-  const allowed = hasPermission(session, permission);
+  const session = await requireSession(permission);
   const result =
     resource === 'permissions'
       ? await listAdminPermissionsAction()
@@ -49,27 +47,24 @@ export async function AccessResourcePage({
             {description}
           </Typography>
         </div>
-        <Chip
-          label={allowed ? 'Akses aktif' : 'Akses terbatas'}
-          color={allowed ? 'success' : 'default'}
-        />
+        <Button component="a" href={`/dashboard/access/${resource}/create`} variant="contained">
+          Tambah data
+        </Button>
       </Box>
-      <Paper variant="outlined" sx={{ p: 4, borderRadius: 2 }}>
-        <Typography variant="h6">Workspace {session.tenant?.name ?? 'Universitas'}</Typography>
-        <Typography color="text.secondary" sx={{ mt: 1 }}>
-          Data yang ditampilkan mengikuti hak akses akun dan organisasi yang sedang dipilih.
-        </Typography>
-      </Paper>
-      {allowed && result.data ? (
-        <AdminCrud
-          resource={resource === 'permissions' ? 'roles/permissions' : resource}
-          rows={result.data}
-          currentUserId={session.user.id}
-          currentUserRoleId={
-            session.user.role === 'root_superadmin' ? undefined : session.user.role_id
-          }
-        />
-      ) : null}
+      {result.data ? (
+        <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, borderRadius: 2, overflow: 'hidden' }}>
+          <AdminCrud
+            resource={resource === 'permissions' ? 'roles/permissions' : resource}
+            rows={result.data}
+            currentUserId={session.user.id}
+            currentUserRoleId={
+              session.user.role === 'root_superadmin' ? undefined : session.user.role_id
+            }
+          />
+        </Paper>
+      ) : (
+        <Typography color="error">{result.error}</Typography>
+      )}
     </Stack>
   );
 }

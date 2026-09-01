@@ -8,6 +8,7 @@ import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import TableRow from '@mui/material/TableRow';
+import Checkbox from '@mui/material/Checkbox';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
@@ -20,9 +21,10 @@ import TableContainer from '@mui/material/TableContainer';
 import { RouterLink } from 'src/routes/components';
 
 import { Iconify } from 'src/components/iconify';
+import { RefreshButton } from 'src/components/refresh-button';
 import { ConfirmSubmitButton } from 'src/components/confirm-submit-button';
 
-import { deleteGalleryAction } from 'src/auth/actions';
+import { deleteGalleryAction, bulkDeleteFeatureResourceAction } from 'src/auth/actions';
 
 type Gallery = {
   id: string;
@@ -36,6 +38,7 @@ export function GalleryTable({ rows }: { rows: Gallery[] }) {
   const [debounced, setDebounced] = useState('');
   const [page, setPage] = useState(1);
   const [direction, setDirection] = useState<'asc' | 'desc'>('asc');
+  const [selected, setSelected] = useState<string[]>([]);
   const [, action, pending] = useActionState(deleteGalleryAction, { error: '', success: '' });
   useEffect(() => {
     const t = setTimeout(() => setDebounced(q), 300);
@@ -51,6 +54,12 @@ export function GalleryTable({ rows }: { rows: Gallery[] }) {
     [rows, debounced, direction]
   );
   const items = data.slice((page - 1) * 10, page * 10);
+  const selectedOnPage = items.filter((item) => selected.includes(item.id));
+  const allOnPageSelected = items.length > 0 && selectedOnPage.length === items.length;
+  const toggle = (id: string) =>
+    setSelected((current) =>
+      current.includes(id) ? current.filter((value) => value !== id) : [...current, id]
+    );
   const heading = (label: string) => (
     <Button
       onClick={() => setDirection((v) => (v === 'asc' ? 'desc' : 'asc'))}
@@ -61,23 +70,59 @@ export function GalleryTable({ rows }: { rows: Gallery[] }) {
   );
   return (
     <Box sx={{ display: 'grid', gap: 2 }}>
-      <TextField
-        size="small"
-        label="Cari galeri"
-        value={q}
-        onChange={(e) => {
-          setQ(e.target.value);
-          setPage(1);
-        }}
-      />
+      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+        <TextField
+          size="small"
+          label="Cari galeri"
+          value={q}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setPage(1);
+          }}
+          sx={{ flex: 1 }}
+        />
+        <RefreshButton />
+      </Box>
       <TableContainer
         component={Paper}
         variant="outlined"
         sx={{ borderRadius: 1.5, overflow: 'hidden' }}
       >
+        {selected.length ? (
+          <Box
+            component="form"
+            action={bulkDeleteFeatureResourceAction}
+            sx={{ display: 'flex', gap: 1, p: 1.5, bgcolor: 'background.paper' }}
+          >
+            <input type="hidden" name="resource" value="galleries" />
+            {selected.map((id) => (
+              <input key={id} type="hidden" name="ids" value={id} />
+            ))}
+            <ConfirmSubmitButton
+              title="Hapus galeri terpilih?"
+              description="Galeri yang dipilih akan dihapus."
+              color="error"
+            >
+              Hapus terpilih ({selected.length})
+            </ConfirmSubmitButton>
+          </Box>
+        ) : null}
         <Table>
           <TableHead>
             <TableRow sx={{ bgcolor: 'action.hover' }}>
+              <TableCell padding="checkbox">
+                <Checkbox
+                  checked={allOnPageSelected}
+                  indeterminate={selectedOnPage.length > 0 && !allOnPageSelected}
+                  onChange={() =>
+                    setSelected(
+                      allOnPageSelected
+                        ? selected.filter((id) => !items.some((item) => item.id === id))
+                        : [...new Set([...selected, ...items.map((item) => item.id)])]
+                    )
+                  }
+                />
+              </TableCell>
               <TableCell>Preview</TableCell>
               <TableCell>{heading('Judul')}</TableCell>
               <TableCell>{heading('Deskripsi')}</TableCell>
@@ -89,6 +134,9 @@ export function GalleryTable({ rows }: { rows: Gallery[] }) {
             {items.length ? (
               items.map((r) => (
                 <TableRow key={r.id}>
+                  <TableCell padding="checkbox">
+                    <Checkbox checked={selected.includes(r.id)} onChange={() => toggle(r.id)} />
+                  </TableCell>
                   <TableCell>
                     <Box
                       component="img"
@@ -134,7 +182,7 @@ export function GalleryTable({ rows }: { rows: Gallery[] }) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
                   <Typography color="text.secondary">
                     {debounced ? 'Galeri tidak ditemukan.' : 'Belum ada galeri.'}
                   </Typography>

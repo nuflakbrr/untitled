@@ -17,6 +17,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 
 import { Iconify } from 'src/components/iconify';
+import { RefreshButton } from 'src/components/refresh-button';
 
 import { downloadExcel } from '../excel-export';
 
@@ -37,6 +38,7 @@ const labels: Record<string, string> = {
   WAITING: 'Menunggu pembayaran',
   PAID: 'Berhasil dibayar',
   FAILED: 'Gagal',
+  REFUND_PENDING: 'Menunggu pengembalian dana',
   EXPIRED: 'Kedaluwarsa',
 };
 
@@ -45,7 +47,13 @@ function PaymentStatus({ value }: { value: string }) {
     <Chip
       size="small"
       label={labels[value] ?? value}
-      color={value === 'PAID' ? 'success' : value === 'WAITING' ? 'warning' : 'error'}
+      color={
+        value === 'PAID'
+          ? 'success'
+          : value === 'WAITING' || value === 'REFUND_PENDING'
+            ? 'warning'
+            : 'error'
+      }
     />
   );
 }
@@ -130,6 +138,7 @@ export function PaymentTable({ rows }: { rows: Payment[] }) {
           <MenuItem value="WAITING">Menunggu pembayaran</MenuItem>
           <MenuItem value="PAID">Berhasil dibayar</MenuItem>
           <MenuItem value="FAILED">Gagal</MenuItem>
+          <MenuItem value="REFUND_PENDING">Menunggu pengembalian dana</MenuItem>
           <MenuItem value="EXPIRED">Kedaluwarsa</MenuItem>
         </TextField>
         <Button
@@ -141,6 +150,7 @@ export function PaymentTable({ rows }: { rows: Payment[] }) {
         >
           Export Excel
         </Button>
+        <RefreshButton />
       </Box>
       <TableContainer sx={{ borderRadius: 1.5, overflow: 'hidden' }}>
         <Table>
