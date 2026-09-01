@@ -35,7 +35,7 @@ export default async function EventCategoriesPage() {
           Tambah kategori
         </Button>
       </Box>
-      <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 } }}>
+      <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, borderRadius: 2, overflow: 'hidden' }}>
         <Chip label={session.tenant?.name ?? 'Universitas'} size="small" sx={{ mb: 2 }} />
         {result.data ? (
           <EventCategoryTable rows={result.data} />

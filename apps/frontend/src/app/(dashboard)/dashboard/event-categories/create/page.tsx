@@ -10,7 +10,7 @@ export default async function CreateEventCategoryPage() {
   return (
     <Stack spacing={3}>
       <Typography variant="h4">Tambah kategori event</Typography>
-      <Paper variant="outlined" sx={{ p: { xs: 2, md: 4 } }}>
+      <Paper variant="outlined" sx={{ p: { xs: 2, md: 4 }, width: { xs: '100%', md: '50%' }, maxWidth: '100%', borderRadius: 2 }}>
         <EventCategoryForm />
       </Paper>
     </Stack>
