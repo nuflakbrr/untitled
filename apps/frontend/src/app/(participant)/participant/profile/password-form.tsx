@@ -4,8 +4,9 @@ import { useActionState } from 'react';
 
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+
+import { ConfirmSubmitButton } from 'src/components/confirm-submit-button';
 
 import { changePasswordAction } from 'src/auth/actions';
 
@@ -18,9 +19,14 @@ export function PasswordForm() {
       <TextField required name="current_password" label="Kata sandi saat ini" type="password" />
       <TextField required name="new_password" label="Kata sandi baru" type="password" />
       <TextField required name="confirmation" label="Konfirmasi kata sandi baru" type="password" />
-      <Button type="submit" variant="outlined" disabled={pending} sx={{ justifySelf: 'start' }}>
+      <ConfirmSubmitButton
+        title="Ubah kata sandi?"
+        description="Setelah berhasil, sesi akan dikeluarkan dan kamu harus login kembali."
+        variant="outlined"
+        disabled={pending}
+      >
         Ubah kata sandi
-      </Button>
+      </ConfirmSubmitButton>
     </Box>
   );
 }

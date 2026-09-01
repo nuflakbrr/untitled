@@ -5,9 +5,10 @@ import { useEffect, useActionState } from 'react';
 
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
+
+import { ConfirmSubmitButton } from 'src/components/confirm-submit-button';
 
 import { updateMyProfileAction } from 'src/auth/actions';
 
@@ -34,9 +35,13 @@ export function ParticipantProfileForm({ name, image }: { name: string; image?: 
         placeholder="https://..."
         helperText="Opsional. Gunakan URL gambar yang dapat diakses publik."
       />
-      <Button type="submit" variant="contained" disabled={pending} sx={{ justifySelf: 'start' }}>
+      <ConfirmSubmitButton
+        title="Simpan perubahan profil?"
+        description="Perubahan profil akan langsung diterapkan."
+        disabled={pending}
+      >
         {pending ? <CircularProgress size={22} color="inherit" /> : 'Simpan perubahan'}
-      </Button>
+      </ConfirmSubmitButton>
     </Box>
   );
 }

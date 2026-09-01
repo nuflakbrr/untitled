@@ -14,6 +14,7 @@ import {
 } from 'src/auth/actions';
 
 import { AdminCrud } from './admin-crud';
+import { AdminFlash } from './admin-flash';
 
 export async function AccessResourcePage({
   title,
@@ -38,6 +39,7 @@ export async function AccessResourcePage({
           : await listTenantsAction();
   return (
     <Stack spacing={3}>
+      <AdminFlash />
       <Box
         sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2 }}
       >
@@ -63,7 +65,9 @@ export async function AccessResourcePage({
           resource={resource === 'permissions' ? 'roles/permissions' : resource}
           rows={result.data}
           currentUserId={session.user.id}
-          currentUserRoleId={session.user.role === 'root_superadmin' ? undefined : session.user.role_id}
+          currentUserRoleId={
+            session.user.role === 'root_superadmin' ? undefined : session.user.role_id
+          }
         />
       ) : null}
     </Stack>

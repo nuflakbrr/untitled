@@ -5,6 +5,7 @@ import { useMemo, useState, useEffect, useActionState } from 'react';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import Paper from '@mui/material/Paper';
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
@@ -13,7 +14,6 @@ import TableBody from '@mui/material/TableBody';
 import TableHead from '@mui/material/TableHead';
 import Pagination from '@mui/material/Pagination';
 import TableContainer from '@mui/material/TableContainer';
-import Alert from '@mui/material/Alert';
 
 import { RouterLink } from 'src/routes/components';
 
@@ -64,7 +64,6 @@ export function AdminCrud({
   return (
     <Box sx={{ display: 'grid', gap: 3 }}>
       {deleteState.error ? <Alert severity="error">{deleteState.error}</Alert> : null}
-      {deleteState.success ? <Alert severity="success">{deleteState.success}</Alert> : null}
       <Box sx={{ display: 'flex', gap: 2, justifyContent: 'space-between', flexWrap: 'wrap' }}>
         <TextField
           size="small"
