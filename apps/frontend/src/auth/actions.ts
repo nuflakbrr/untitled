@@ -590,6 +590,7 @@ export type AdminDashboardData = {
     tenant_type: string;
     tenant_id: string;
   }[];
+  tenantEvents: AdminDashboardData['events'];
   registrations: number;
   recentRegistrations: {
     id: string;
@@ -604,13 +605,7 @@ export async function getAdminDashboardDataAction(): Promise<AuthActionResult<Ad
   const auth = await authenticatedSession();
   if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
 
-  const tenantQuery = auth.session.tenant?.id
-    ? `&tenant_id=${encodeURIComponent(auth.session.tenant.id)}`
-    : '';
-  const eventsResponse = await fetchBackend(
-    `features/v1/events?page=1&limit=100${tenantQuery}`,
-    auth.token
-  );
+  const eventsResponse = await fetchBackend('features/v1/events?page=1&limit=100', auth.token);
   const eventsPayload = await responseJson<unknown>(eventsResponse);
   const events = z
     .array(
@@ -629,32 +624,79 @@ export async function getAdminDashboardDataAction(): Promise<AuthActionResult<Ad
   if (!eventsResponse.ok || !events.success)
     return { data: null, error: eventsPayload.message || 'Data event gagal dimuat' };
 
-  const registrationResults = await Promise.all(
-    events.data.map(async (event) => {
-      const response = await fetchBackend(
-        `features/v1/registrations/event/${event.id}?page=1&limit=5`,
+  const loadRegistrations = async (eventList: typeof events.data) => {
+    const results = await Promise.all(
+      eventList.map(async (event) => {
+        const response = await fetchBackend(
+          `features/v1/registrations/event/${event.id}?page=1&limit=5`,
+          auth.token
+        );
+        const payload = await responseJson<unknown>(response);
+        const total = z
+          .object({ pagination: z.object({ total: z.number() }).optional() })
+          .safeParse((payload as { meta?: unknown }).meta).data?.pagination?.total;
+        const registrations =
+          z
+            .array(
+              z.object({
+                id: z.string(),
+                user_name: z.string().nullish(),
+                user_email: z.string().nullish(),
+                event_title: z.string().nullish(),
+                created_at: z.string(),
+              })
+            )
+            .safeParse(payload.data).data ?? [];
+        return { total: total ?? 0, registrations, event: event.title };
+      })
+    );
+    return results;
+  };
+  const registrationResults = await loadRegistrations(events.data);
+  const tenantEventsResponse = auth.session.tenant?.id
+    ? await fetchBackend(
+        `features/v1/events?page=1&limit=100&tenant_id=${encodeURIComponent(auth.session.tenant.id)}`,
         auth.token
-      );
-      const payload = await responseJson<unknown>(response);
-      const total = z
-        .object({ pagination: z.object({ total: z.number() }).optional() })
-        .safeParse((payload as { meta?: unknown }).meta).data?.pagination?.total;
-      const registrations =
-        z
-          .array(
-            z.object({
-              id: z.string(),
-              user_name: z.string().nullish(),
-              user_email: z.string().nullish(),
-              event_title: z.string().nullish(),
-              created_at: z.string(),
-            })
-          )
-          .safeParse(payload.data).data ?? [];
-      return { total: total ?? 0, registrations, event: event.title };
-    })
-  );
-  const recentRegistrations = registrationResults
+      )
+    : null;
+  const tenantEventsPayload = tenantEventsResponse
+    ? await responseJson<unknown>(tenantEventsResponse)
+    : null;
+  const tenantEventsParsed = tenantEventsResponse
+    ? z
+        .array(
+          events.data[0]
+            ? z.object({
+                id: z.string(),
+                title: z.string(),
+                status: z.string().nullish(),
+                quota: z.number(),
+                start_date: z.string(),
+                tenant: z
+                  .object({ id: z.string(), name: z.string(), type: z.string().nullish() })
+                  .nullish(),
+              })
+            : z.never()
+        )
+        .safeParse(tenantEventsPayload?.data)
+    : null;
+  const scopedEvents = tenantEventsParsed?.success ? tenantEventsParsed.data : [];
+  const tenantRegistrationResults = await loadRegistrations(scopedEvents);
+  const mapEvents = (
+    eventList: typeof events.data,
+    results: Awaited<ReturnType<typeof loadRegistrations>>
+  ) =>
+    eventList.map((event, index) => ({
+      ...event,
+      status: event.status ?? 'PUBLISHED',
+      registrations: results[index]?.total ?? 0,
+      tenant_name: event.tenant?.name ?? 'Universitas',
+      tenant_type: event.tenant?.type ?? 'ROOT',
+      tenant_id: event.tenant?.id ?? '',
+    }));
+  const mappedEvents = mapEvents(events.data, registrationResults);
+  const mappedTenantEvents = mapEvents(scopedEvents, tenantRegistrationResults);
+  const recentRegistrations = tenantRegistrationResults
     .flatMap((result) =>
       result.registrations.map((registration) => ({
         id: registration.id,
@@ -668,15 +710,9 @@ export async function getAdminDashboardDataAction(): Promise<AuthActionResult<Ad
     .slice(0, 50);
   return {
     data: {
-      events: events.data.map((event, index) => ({
-        ...event,
-        status: event.status ?? 'PUBLISHED',
-        registrations: registrationResults[index]?.total ?? 0,
-        tenant_name: event.tenant?.name ?? 'Universitas',
-        tenant_type: event.tenant?.type ?? 'ROOT',
-        tenant_id: event.tenant?.id ?? '',
-      })),
-      registrations: registrationResults.reduce((sum, result) => sum + result.total, 0),
+      events: mappedEvents,
+      tenantEvents: mappedTenantEvents,
+      registrations: tenantRegistrationResults.reduce((sum, result) => sum + result.total, 0),
       recentRegistrations,
     },
     error: null,
