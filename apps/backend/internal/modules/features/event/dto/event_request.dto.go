@@ -3,13 +3,14 @@ package dto
 import "time"
 
 type EventQuery struct {
-	CategorySlug string `form:"category_slug"`
-	TenantID     string `form:"tenant_id"`
-	Status       string `form:"status" binding:"omitempty,oneof=DRAFT PUBLISHED CLOSED COMPLETED"`
-	EventType    string `form:"event_type" binding:"omitempty,oneof=ONLINE OFFLINE"`
-	Search       string `form:"search"`
-	Page         int    `form:"page,default=1" binding:"min=1"`
-	Limit        int    `form:"limit,default=10" binding:"min=1,max=100"`
+	CategorySlug   string `form:"category_slug"`
+	TenantID       string `form:"tenant_id"`
+	Status         string `form:"status" binding:"omitempty,oneof=DRAFT PUBLISHED CLOSED COMPLETED"`
+	EventType      string `form:"event_type" binding:"omitempty,oneof=ONLINE OFFLINE"`
+	Search         string `form:"search"`
+	IncludeDeleted bool   `form:"include_deleted"`
+	Page           int    `form:"page,default=1" binding:"min=1"`
+	Limit          int    `form:"limit,default=10" binding:"min=1,max=100"`
 }
 
 type CreateCategoryRequest struct {
