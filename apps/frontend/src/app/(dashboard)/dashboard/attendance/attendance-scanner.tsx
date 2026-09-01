@@ -150,7 +150,7 @@ export function AttendanceScanner() {
     }
   };
   return (
-    <Box sx={{ display: 'grid', gap: 2.5, maxWidth: 760 }}>
+    <Box sx={{ display: 'grid', gap: 2.5, width: '100%', maxWidth: 760, mx: 'auto' }}>
       <Paper variant="outlined" sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 2 }}>
         <Stack spacing={2.5}>
           <Typography variant="h5">Verifikasi tiket</Typography>
