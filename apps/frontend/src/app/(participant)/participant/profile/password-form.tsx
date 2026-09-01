@@ -24,6 +24,7 @@ export function PasswordForm() {
         description="Setelah berhasil, sesi akan dikeluarkan dan kamu harus login kembali."
         variant="outlined"
         disabled={pending}
+        sx={{ justifySelf: 'start', width: 'fit-content' }}
       >
         Ubah kata sandi
       </ConfirmSubmitButton>

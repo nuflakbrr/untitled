@@ -39,6 +39,7 @@ export function ParticipantProfileForm({ name, image }: { name: string; image?: 
         title="Simpan perubahan profil?"
         description="Perubahan profil akan langsung diterapkan."
         disabled={pending}
+        sx={{ justifySelf: 'start', width: 'fit-content' }}
       >
         {pending ? <CircularProgress size={22} color="inherit" /> : 'Simpan perubahan'}
       </ConfirmSubmitButton>
