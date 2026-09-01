@@ -18,14 +18,15 @@ import (
 )
 
 var (
-	ErrRegistrationNotFound  = errors.New("registration not found")
-	ErrEventNotAvailable     = errors.New("event is not available for registration")
-	ErrRegistrationClosed    = errors.New("event registration is closed")
-	ErrDuplicateRegistration = errors.New("user is already registered for this event")
-	ErrQuotaFull             = errors.New("event quota is full")
-	ErrOnlineUnavailable     = errors.New("online attendance is not available for this event")
-	ErrQRTokenExists         = errors.New("registration QR token already exists")
-	ErrPaymentInProgress     = errors.New("registration cannot be cancelled after payment has started")
+	ErrRegistrationNotFound   = errors.New("registration not found")
+	ErrEventNotAvailable      = errors.New("event is not available for registration")
+	ErrRegistrationClosed     = errors.New("event registration is closed")
+	ErrDuplicateRegistration  = errors.New("user is already registered for this event")
+	ErrQuotaFull              = errors.New("event quota is full")
+	ErrOnlineUnavailable      = errors.New("online attendance is not available for this event")
+	ErrQRTokenExists          = errors.New("registration QR token already exists")
+	ErrPaymentInProgress      = errors.New("registration cannot be cancelled after payment has started")
+	ErrAttendanceProofInvalid = errors.New("attendance proof is invalid")
 )
 
 const registrationSelect = `
@@ -37,7 +38,8 @@ const registrationSelect = `
 	       CASE WHEN r.status = 'CHECKED_IN' THEN 'HADIR' ELSE 'BELUM HADIR' END,
 	       CASE WHEN c.id IS NOT NULL THEN 'TERBIT'
             WHEN e.certificate_enabled THEN 'MENUNGGU TERBIT'
-            ELSE 'TIDAK TERSEDIA' END
+            ELSE 'TIDAK TERSEDIA' END,
+	       r.attendance_proof_url, r.attendance_proof_status
 	FROM registrations r
 	JOIN events e ON e.id = r.event_id
 	JOIN core.tenants t ON t.id = e.tenant_id
@@ -50,6 +52,41 @@ type RegistrationRepository struct {
 
 func NewRegistrationRepository(db *pgxpool.Pool) *RegistrationRepository {
 	return &RegistrationRepository{db: db}
+}
+
+func (r *RegistrationRepository) SubmitAttendanceProof(ctx context.Context, id, userID, proofURL string) error {
+	tag, err := r.db.Exec(ctx, `UPDATE registrations r SET attendance_proof_url = $1, attendance_proof_status = 'PENDING', updated_at = NOW()
+		FROM events e WHERE r.id = $2 AND r.user_id = $3 AND r.event_id = e.id AND e.event_type = 'ONLINE'
+		AND r.deleted_at IS NULL AND r.status = 'REGISTERED'`, proofURL, id, userID)
+	if err != nil {
+		return fmt.Errorf("submit attendance proof: %w", err)
+	}
+	if tag.RowsAffected() == 0 {
+		return ErrAttendanceProofInvalid
+	}
+	return nil
+}
+
+func (r *RegistrationRepository) ReviewAttendanceProof(ctx context.Context, id, reviewerID string, scopeTenantID *string, status string) error {
+	conditions := "r.id = $1 AND e.event_type = 'ONLINE' AND r.attendance_proof_status = 'PENDING' AND r.deleted_at IS NULL"
+	args := []any{id, status, reviewerID}
+	if scopeTenantID != nil {
+		args = append(args, *scopeTenantID)
+		conditions += fmt.Sprintf(" AND e.tenant_id = $%d", len(args))
+	}
+	newStatus := "r.status"
+	if status == "APPROVED" {
+		newStatus = "'CHECKED_IN'::registration_status"
+	}
+	query := fmt.Sprintf(`UPDATE registrations r SET attendance_proof_status = $2, attendance_proof_reviewed_by = $3, attendance_proof_reviewed_at = NOW(), status = %s, updated_at = NOW() FROM events e WHERE %s`, newStatus, conditions)
+	tag, err := r.db.Exec(ctx, query, args...)
+	if err != nil {
+		return fmt.Errorf("review attendance proof: %w", err)
+	}
+	if tag.RowsAffected() == 0 {
+		return ErrAttendanceProofInvalid
+	}
+	return nil
 }
 
 func (r *RegistrationRepository) Create(ctx context.Context, userID, eventID string, onlineAttendance bool, qrToken string) (*domain.Registration, error) {
@@ -272,6 +309,7 @@ func scanRegistrations(rows pgx.Rows) ([]*domain.Registration, error) {
 			&registration.CreatedAt, &registration.UpdatedAt, &registration.DeletedAt,
 			&registration.EventStartDate, &registration.EventLocation, &registration.EventType, &registration.EventStatus,
 			&registration.AttendanceStatus, &registration.CertificateStatus,
+			&registration.AttendanceProofURL, &registration.AttendanceProofStatus,
 		); err != nil {
 			return nil, fmt.Errorf("scan registration: %w", err)
 		}

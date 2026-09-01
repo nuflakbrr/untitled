@@ -76,6 +76,26 @@ func (s *RegistrationService) CancelMine(ctx context.Context, id, userID string)
 	return s.repository.CancelMine(ctx, id, userID)
 }
 
+func (s *RegistrationService) SubmitAttendanceProof(ctx context.Context, id, userID, proofURL string) error {
+	repo, ok := s.repository.(interface {
+		SubmitAttendanceProof(context.Context, string, string, string) error
+	})
+	if !ok {
+		return fmt.Errorf("attendance proof is not supported")
+	}
+	return repo.SubmitAttendanceProof(ctx, id, userID, proofURL)
+}
+
+func (s *RegistrationService) ReviewAttendanceProof(ctx context.Context, id, reviewerID string, scopeTenantID *string, status string) error {
+	repo, ok := s.repository.(interface {
+		ReviewAttendanceProof(context.Context, string, string, *string, string) error
+	})
+	if !ok {
+		return fmt.Errorf("attendance proof review is not supported")
+	}
+	return repo.ReviewAttendanceProof(ctx, id, reviewerID, scopeTenantID, status)
+}
+
 func (s *RegistrationService) ExportByEvent(ctx context.Context, eventID string, scopeTenantID *string) ([]byte, error) {
 	registrations, err := s.repository.ListForExport(ctx, eventID, scopeTenantID)
 	if err != nil {
@@ -143,5 +163,6 @@ func toResponse(registration *domain.Registration) dto.RegistrationResponse {
 		RegistrationNumber: registration.RegistrationNumber, QRToken: registration.QRToken,
 		OnlineAttendance: registration.OnlineAttendance, Status: string(registration.Status), Price: registration.Price,
 		CreatedAt: registration.CreatedAt, UpdatedAt: registration.UpdatedAt, DeletedAt: registration.DeletedAt,
+		AttendanceProofURL: registration.AttendanceProofURL, AttendanceProofStatus: registration.AttendanceProofStatus,
 	}
 }

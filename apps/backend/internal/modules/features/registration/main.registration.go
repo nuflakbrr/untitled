@@ -31,6 +31,8 @@ func (m *Module) SetupRoutes(router *gin.RouterGroup) {
 		registrations.POST("", middleware.RequirePermission("registrations.create"), m.Handler.Register)
 		registrations.GET("/me", middleware.RequirePermission("registrations.read"), m.Handler.ListMine)
 		registrations.DELETE("/:id", middleware.RequirePermission("registrations.cancel"), m.Handler.CancelMine)
+		registrations.POST("/:id/attendance-proof", middleware.RequirePermission("registrations.create"), m.Handler.SubmitAttendanceProof)
+		registrations.PATCH("/:id/attendance-proof", middleware.RequirePermission("attendance.scan"), m.Handler.ReviewAttendanceProof)
 		registrations.GET("/event/:eventID", middleware.RequirePermission("registrations.read"), m.Handler.ListByEvent)
 		registrations.GET("/event/:eventID/export", middleware.RequirePermission("registrations.read"), m.Handler.ExportByEvent)
 	}
