@@ -702,6 +702,59 @@ export async function listAdminRegistrationsAction() {
   return { data: results.flat(), error: null };
 }
 
+export type AdminPayment = AdminRegistration & {
+  payment_id: string;
+  payment_status: string;
+  amount: number;
+  provider: string;
+  transaction_id: string;
+  payment_method: string;
+};
+
+const paymentSchema = z.object({
+  id: z.string(),
+  registration_id: z.string(),
+  amount: z.number(),
+  status: z.string(),
+  provider: z.string(),
+  transaction_id: z.string().nullish(),
+  payment_method: z.string().nullish(),
+  payment_channel: z.string().nullish(),
+  created_at: z.string(),
+});
+
+export async function listAdminPaymentsAction() {
+  const registrations = await listAdminRegistrationsAction();
+  if (!registrations.data) return { data: null, error: registrations.error };
+  const auth = await authenticatedSession();
+  if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
+  const payments = await Promise.all(
+    registrations.data.map(async (registration) => {
+      const response = await fetchBackend(
+        `features/v1/payments/registration/${registration.id}`,
+        auth.token
+      );
+      const result = await responseJson<unknown>(response);
+      const parsed = paymentSchema.safeParse(result.data);
+      return response.ok && parsed.success
+        ? {
+            ...registration,
+            payment_id: parsed.data.id,
+            payment_status: parsed.data.status,
+            amount: parsed.data.amount,
+            provider: parsed.data.provider,
+            transaction_id: parsed.data.transaction_id || '',
+            payment_method: parsed.data.payment_method || '',
+          }
+        : null;
+    })
+  );
+  return {
+    data: payments.filter((payment): payment is AdminPayment => payment !== null),
+    error: null,
+  };
+}
+
 const adminGallerySchema = z.object({
   id: z.string(),
   title: z.string(),

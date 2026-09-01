@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
 
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
 import { paths } from 'src/routes/paths';
+
 import { requireSession } from 'src/auth/server';
 import { listEventCategoriesAction } from 'src/auth/actions';
 

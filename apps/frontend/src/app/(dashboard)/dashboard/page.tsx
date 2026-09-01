@@ -24,7 +24,8 @@ export default async function DashboardPage() {
   const dashboard = dashboardResult.data;
   const activeEvents =
     dashboard?.tenantEvents.filter((event) => event.status === 'PUBLISHED').length ?? 0;
-  const draftEvents = dashboard?.tenantEvents.filter((event) => event.status === 'DRAFT').length ?? 0;
+  const draftEvents =
+    dashboard?.tenantEvents.filter((event) => event.status === 'DRAFT').length ?? 0;
   const popularEvents = [...(dashboard?.events ?? [])]
     .sort((a, b) => b.registrations - a.registrations)
     .slice(0, 10);

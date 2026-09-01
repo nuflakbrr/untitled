@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function DashboardClock() {
   const [now, setNow] = useState<Date | null>(null);

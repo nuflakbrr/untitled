@@ -97,53 +97,55 @@ export function EventCategoryTable({ rows }: { rows: Category[] }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {pageRows.length ? pageRows.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell>{row.name}</TableCell>
-                <TableCell>{row.slug}</TableCell>
-                <TableCell>{row.description || '-'}</TableCell>
-                <TableCell align="right">
-                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                    <Tooltip title="Edit kategori">
-                      <IconButton
-                        component={RouterLink}
-                        href={`/dashboard/event-categories/${row.id}/edit`}
-                        aria-label="Edit kategori"
-                        size="small"
-                      >
-                        <Iconify icon="solar:pen-new-square-linear" />
-                      </IconButton>
-                    </Tooltip>
-                    <Box
-                      component="form"
-                      action={action}
-                      onSubmit={() => {
-                        document.cookie =
-                          'event_category_flash=; Max-Age=0; path=/dashboard/event-categories';
-                      }}
-                    >
-                      <input type="hidden" name="id" value={row.id} />
-                      <Tooltip title="Hapus kategori">
-                        <span>
-                          <ConfirmSubmitButton
-                            title="Hapus kategori?"
-                            description="Kategori yang dihapus tidak dapat dipulihkan."
-                            color="error"
-                            variant="text"
-                            disabled={pending}
-                            aria-label="Hapus kategori"
-                            iconOnly
-                            size="small"
-                          >
-                            <Iconify icon="solar:trash-bin-trash-linear" />
-                          </ConfirmSubmitButton>
-                        </span>
+            {pageRows.length ? (
+              pageRows.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell>{row.name}</TableCell>
+                  <TableCell>{row.slug}</TableCell>
+                  <TableCell>{row.description || '-'}</TableCell>
+                  <TableCell align="right">
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                      <Tooltip title="Edit kategori">
+                        <IconButton
+                          component={RouterLink}
+                          href={`/dashboard/event-categories/${row.id}/edit`}
+                          aria-label="Edit kategori"
+                          size="small"
+                        >
+                          <Iconify icon="solar:pen-new-square-linear" />
+                        </IconButton>
                       </Tooltip>
+                      <Box
+                        component="form"
+                        action={action}
+                        onSubmit={() => {
+                          document.cookie =
+                            'event_category_flash=; Max-Age=0; path=/dashboard/event-categories';
+                        }}
+                      >
+                        <input type="hidden" name="id" value={row.id} />
+                        <Tooltip title="Hapus kategori">
+                          <span>
+                            <ConfirmSubmitButton
+                              title="Hapus kategori?"
+                              description="Kategori yang dihapus tidak dapat dipulihkan."
+                              color="error"
+                              variant="text"
+                              disabled={pending}
+                              aria-label="Hapus kategori"
+                              iconOnly
+                              size="small"
+                            >
+                              <Iconify icon="solar:trash-bin-trash-linear" />
+                            </ConfirmSubmitButton>
+                          </span>
+                        </Tooltip>
+                      </Box>
                     </Box>
-                  </Box>
-                </TableCell>
-              </TableRow>
-            )) : (
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
               <TableRow>
                 <TableCell colSpan={4} align="center" sx={{ py: 6 }}>
                   <Typography color="text.secondary">
