@@ -26,6 +26,11 @@ type RegistrationHandler struct {
 	service Service
 }
 
+type attendanceProofService interface {
+	SubmitAttendanceProof(context.Context, string, string, string) error
+	ReviewAttendanceProof(context.Context, string, string, *string, string) error
+}
+
 func NewRegistrationHandler(service Service) *RegistrationHandler {
 	return &RegistrationHandler{service: service}
 }
@@ -76,6 +81,55 @@ func (h *RegistrationHandler) CancelMine(c *gin.Context) {
 		return
 	}
 	response.Success(c, http.StatusOK, "Registration cancelled successfully", nil)
+}
+
+func (h *RegistrationHandler) SubmitAttendanceProof(c *gin.Context) {
+	var req dto.AttendanceProofRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, http.StatusBadRequest, "Validation error", err.Error())
+		return
+	}
+	userID, ok := actorUserID(c)
+	if !ok {
+		return
+	}
+	service, ok := h.service.(attendanceProofService)
+	if !ok {
+		response.Error(c, http.StatusNotImplemented, "Attendance proof is not supported", "")
+		return
+	}
+	if err := service.SubmitAttendanceProof(c.Request.Context(), c.Param("id"), userID, req.ProofURL); err != nil {
+		writeRegistrationError(c, err, "Failed to submit attendance proof")
+		return
+	}
+	response.Success(c, http.StatusOK, "Attendance proof submitted", nil)
+}
+
+func (h *RegistrationHandler) ReviewAttendanceProof(c *gin.Context) {
+	var req dto.AttendanceProofReviewRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, http.StatusBadRequest, "Validation error", err.Error())
+		return
+	}
+	claims, err := middleware.GetUserFromContext(c)
+	if err != nil || claims == nil {
+		response.Error(c, http.StatusUnauthorized, "Authentication required", "")
+		return
+	}
+	var scope *string
+	if !claims.IsSuperAdmin {
+		scope = &claims.TenantID
+	}
+	service, ok := h.service.(attendanceProofService)
+	if !ok {
+		response.Error(c, http.StatusNotImplemented, "Attendance proof review is not supported", "")
+		return
+	}
+	if err := service.ReviewAttendanceProof(c.Request.Context(), c.Param("id"), claims.UserID, scope, req.Status); err != nil {
+		writeRegistrationError(c, err, "Failed to review attendance proof")
+		return
+	}
+	response.Success(c, http.StatusOK, "Attendance proof reviewed", nil)
 }
 
 func (h *RegistrationHandler) ListByEvent(c *gin.Context) {
@@ -145,6 +199,8 @@ func writeRegistrationError(c *gin.Context, err error, fallback string) {
 		response.Error(c, http.StatusConflict, err.Error(), "")
 	case errors.Is(err, repository.ErrRegistrationClosed), errors.Is(err, repository.ErrOnlineUnavailable):
 		response.Error(c, http.StatusUnprocessableEntity, err.Error(), "")
+	case errors.Is(err, repository.ErrAttendanceProofInvalid):
+		response.Error(c, http.StatusConflict, err.Error(), "")
 	default:
 		response.Error(c, http.StatusInternalServerError, fallback, err.Error())
 	}
