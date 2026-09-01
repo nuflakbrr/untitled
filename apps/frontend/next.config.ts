@@ -26,7 +26,7 @@ const SECURITY_HEADERS = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'X-Frame-Options', value: 'DENY' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+  { key: 'Permissions-Policy', value: 'camera=(self), microphone=(), geolocation=()' },
   // Aktif hanya lewat HTTPS; aman di-set selalu.
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' },
   { key: 'Content-Security-Policy-Report-Only', value: CSP_REPORT_ONLY },
@@ -36,6 +36,7 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   distDir: process.env.PLAYWRIGHT ? '.next-playwright' : '.next',
   poweredByHeader: false,
+  allowedDevOrigins: ['permitted-cult-miniature-buzz.trycloudflare.com'],
   // Standalone hanya untuk build Docker (di-set Dockerfile) — tanpa gate ini
   // `yarn start` lokal mengeluarkan warning dan tidak memakai output-nya.
   ...(process.env.BUILD_STANDALONE === 'true' && { output: 'standalone' as const }),
