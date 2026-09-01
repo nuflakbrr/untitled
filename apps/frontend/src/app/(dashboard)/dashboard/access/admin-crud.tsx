@@ -7,21 +7,22 @@ import Table from '@mui/material/Table';
 import Paper from '@mui/material/Paper';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import TableHead from '@mui/material/TableHead';
+import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
-import TableContainer from '@mui/material/TableContainer';
 import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
+import TableContainer from '@mui/material/TableContainer';
 
 import { RouterLink } from 'src/routes/components';
 
-import { toggleUserBanAction, deleteAdminResourceAction } from 'src/auth/actions';
 import { Iconify } from 'src/components/iconify';
+
+import { toggleUserBanAction, deleteAdminResourceAction } from 'src/auth/actions';
 
 export type Row = {
   id: string;
@@ -96,62 +97,80 @@ export function AdminCrud({
             </TableRow>
           </TableHead>
           <TableBody>
-            {pageRows.length ? pageRows.map((row) => {
-              const roleLocked =
-                resource === 'roles' &&
-                (row.id === currentUserRoleId || row.name === 'root_superadmin');
-              return (
-                <TableRow key={row.id}>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>
-                    {row.email || row.description || row.type || row.code || '-'}
-                  </TableCell>
-                  <TableCell align="right">
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                      {!roleLocked ? (
-                        <Tooltip title="Edit">
-                        <IconButton
-                          component={RouterLink}
-                          href={`/dashboard/access/${routeResource}/${row.id}/edit`}
-                          aria-label="Edit"
-                          size="small"
-                        >
-                          <Iconify icon="solar:pen-new-square-linear" />
-                        </IconButton>
-                        </Tooltip>
-                      ) : null}
-                      {resource === 'users' && row.id !== currentUserId ? (
-                        <Box component="form" action={toggleUserBanAction}>
-                          <input type="hidden" name="id" value={row.id} />
-                          <input type="hidden" name="banned" value={String(Boolean(row.banned))} />
-                          <Tooltip title={row.banned ? 'Aktifkan akun' : 'Nonaktifkan akun'}>
-                          <IconButton
-                            type="submit"
-                            color={row.banned ? 'success' : 'warning'}
-                            aria-label={row.banned ? 'Aktifkan akun' : 'Nonaktifkan akun'}
-                            size="small"
-                          >
-                            <Iconify icon={row.banned ? 'solar:user-check-linear' : 'solar:user-block-linear'} />
-                          </IconButton>
+            {pageRows.length ? (
+              pageRows.map((row) => {
+                const roleLocked =
+                  resource === 'roles' &&
+                  (row.id === currentUserRoleId || row.name === 'root_superadmin');
+                return (
+                  <TableRow key={row.id}>
+                    <TableCell>{row.name}</TableCell>
+                    <TableCell>
+                      {row.email || row.description || row.type || row.code || '-'}
+                    </TableCell>
+                    <TableCell align="right">
+                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                        {!roleLocked ? (
+                          <Tooltip title="Edit">
+                            <IconButton
+                              component={RouterLink}
+                              href={`/dashboard/access/${routeResource}/${row.id}/edit`}
+                              aria-label="Edit"
+                              size="small"
+                            >
+                              <Iconify icon="solar:pen-new-square-linear" />
+                            </IconButton>
                           </Tooltip>
-                        </Box>
-                      ) : null}
-                      {!roleLocked ? (
-                        <Box component="form" action={deleteAction}>
-                          <input type="hidden" name="resource" value={resource} />
-                          <input type="hidden" name="id" value={row.id} />
-                          <Tooltip title="Hapus">
-                          <IconButton type="submit" color="error" aria-label="Hapus" size="small" disabled={deletePending}>
-                            <Iconify icon="solar:trash-bin-trash-linear" />
-                          </IconButton>
-                          </Tooltip>
-                        </Box>
-                      ) : null}
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              );
-            }) : (
+                        ) : null}
+                        {resource === 'users' && row.id !== currentUserId ? (
+                          <Box component="form" action={toggleUserBanAction}>
+                            <input type="hidden" name="id" value={row.id} />
+                            <input
+                              type="hidden"
+                              name="banned"
+                              value={String(Boolean(row.banned))}
+                            />
+                            <Tooltip title={row.banned ? 'Aktifkan akun' : 'Nonaktifkan akun'}>
+                              <IconButton
+                                type="submit"
+                                color={row.banned ? 'success' : 'warning'}
+                                aria-label={row.banned ? 'Aktifkan akun' : 'Nonaktifkan akun'}
+                                size="small"
+                              >
+                                <Iconify
+                                  icon={
+                                    row.banned
+                                      ? 'solar:user-check-linear'
+                                      : 'solar:user-block-linear'
+                                  }
+                                />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
+                        ) : null}
+                        {!roleLocked ? (
+                          <Box component="form" action={deleteAction}>
+                            <input type="hidden" name="resource" value={resource} />
+                            <input type="hidden" name="id" value={row.id} />
+                            <Tooltip title="Hapus">
+                              <IconButton
+                                type="submit"
+                                color="error"
+                                aria-label="Hapus"
+                                size="small"
+                                disabled={deletePending}
+                              >
+                                <Iconify icon="solar:trash-bin-trash-linear" />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
+                        ) : null}
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            ) : (
               <TableRow>
                 <TableCell colSpan={3} align="center" sx={{ py: 6 }}>
                   <Typography color="text.secondary">

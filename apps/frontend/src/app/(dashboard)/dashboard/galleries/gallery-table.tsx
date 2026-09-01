@@ -1,6 +1,156 @@
 'use client';
+
 import { useMemo, useState, useEffect, useActionState } from 'react';
-import Box from '@mui/material/Box'; import Button from '@mui/material/Button'; import IconButton from '@mui/material/IconButton'; import Paper from '@mui/material/Paper'; import Table from '@mui/material/Table'; import TableBody from '@mui/material/TableBody'; import TableCell from '@mui/material/TableCell'; import TableContainer from '@mui/material/TableContainer'; import TableHead from '@mui/material/TableHead'; import TableRow from '@mui/material/TableRow'; import TextField from '@mui/material/TextField'; import Tooltip from '@mui/material/Tooltip'; import Typography from '@mui/material/Typography'; import Pagination from '@mui/material/Pagination';
-import { RouterLink } from 'src/routes/components'; import { Iconify } from 'src/components/iconify'; import { ConfirmSubmitButton } from 'src/components/confirm-submit-button'; import { deleteGalleryAction } from 'src/auth/actions';
-type Gallery={id:string;title:string;description?:string|null;image_url:string;featured:boolean};
-export function GalleryTable({rows}:{rows:Gallery[]}) { const [q,setQ]=useState(''); const [debounced,setDebounced]=useState(''); const [page,setPage]=useState(1); const [sort,setSort]=useState<'title'|'created_at'>('title'); const [direction,setDirection]=useState<'asc'|'desc'>('asc'); const [,action,pending]=useActionState(deleteGalleryAction,{error:'',success:''}); useEffect(()=>{const t=setTimeout(()=>setDebounced(q),300);return()=>clearTimeout(t)},[q]); const data=useMemo(()=>rows.filter(r=>`${r.title} ${r.description??''}`.toLowerCase().includes(debounced.toLowerCase())).sort((a,b)=>a.title.localeCompare(b.title)*(direction==='asc'?1:-1)),[rows,debounced,direction]); const items=data.slice((page-1)*10,page*10); const heading=(label:string)=> <Button onClick={()=>setDirection(v=>v==='asc'?'desc':'asc')} sx={{fontWeight:700,color:'inherit',px:0}}>{label} {direction==='asc'?'↑':'↓'}</Button>; return <Box sx={{display:'grid',gap:2}}><TextField size="small" label="Cari galeri" value={q} onChange={e=>{setQ(e.target.value);setPage(1)}}/><TableContainer component={Paper} variant="outlined" sx={{borderRadius:1.5,overflow:'hidden'}}><Table><TableHead><TableRow sx={{bgcolor:'action.hover'}}><TableCell>Preview</TableCell><TableCell>{heading('Judul')}</TableCell><TableCell>{heading('Deskripsi')}</TableCell><TableCell>Unggulan</TableCell><TableCell align="right">Aksi</TableCell></TableRow></TableHead><TableBody>{items.length?items.map(r=><TableRow key={r.id}><TableCell><Box component="img" src={r.image_url} alt={r.title} sx={{width:72,height:48,objectFit:'cover',borderRadius:1}}/></TableCell><TableCell>{r.title}</TableCell><TableCell>{r.description||'-'}</TableCell><TableCell>{r.featured?'Ya':'Tidak'}</TableCell><TableCell align="right"><Tooltip title="Edit galeri"><IconButton component={RouterLink} href={`/dashboard/galleries/${r.id}/edit`} size="small" aria-label="Edit galeri"><Iconify icon="solar:pen-new-square-linear"/></IconButton></Tooltip><Box component="form" action={action} sx={{display:'inline-flex'}}><input type="hidden" name="id" value={r.id}/><Tooltip title="Hapus galeri"><span><ConfirmSubmitButton iconOnly size="small" aria-label="Hapus galeri" title="Hapus galeri?" description="Galeri yang dihapus tidak dapat dipulihkan." color="error"><Iconify icon="solar:trash-bin-trash-linear"/></ConfirmSubmitButton></span></Tooltip></Box></TableCell></TableRow>):<TableRow><TableCell colSpan={5} align="center" sx={{py:6}}><Typography color="text.secondary">{debounced?'Galeri tidak ditemukan.':'Belum ada galeri.'}</Typography></TableCell></TableRow>}</TableBody></Table></TableContainer>{data.length>10?<Pagination count={Math.ceil(data.length/10)} page={page} onChange={(_,v)=>setPage(v)}/>:null}</Box> }
+
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+import TableRow from '@mui/material/TableRow';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import Pagination from '@mui/material/Pagination';
+import TableContainer from '@mui/material/TableContainer';
+
+import { RouterLink } from 'src/routes/components';
+
+import { Iconify } from 'src/components/iconify';
+import { ConfirmSubmitButton } from 'src/components/confirm-submit-button';
+
+import { deleteGalleryAction } from 'src/auth/actions';
+
+type Gallery = {
+  id: string;
+  title: string;
+  description?: string | null;
+  image_url: string;
+  featured: boolean;
+};
+export function GalleryTable({ rows }: { rows: Gallery[] }) {
+  const [q, setQ] = useState('');
+  const [debounced, setDebounced] = useState('');
+  const [page, setPage] = useState(1);
+  const [direction, setDirection] = useState<'asc' | 'desc'>('asc');
+  const [, action, pending] = useActionState(deleteGalleryAction, { error: '', success: '' });
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(q), 300);
+    return () => clearTimeout(t);
+  }, [q]);
+  const data = useMemo(
+    () =>
+      rows
+        .filter((r) =>
+          `${r.title} ${r.description ?? ''}`.toLowerCase().includes(debounced.toLowerCase())
+        )
+        .sort((a, b) => a.title.localeCompare(b.title) * (direction === 'asc' ? 1 : -1)),
+    [rows, debounced, direction]
+  );
+  const items = data.slice((page - 1) * 10, page * 10);
+  const heading = (label: string) => (
+    <Button
+      onClick={() => setDirection((v) => (v === 'asc' ? 'desc' : 'asc'))}
+      sx={{ fontWeight: 700, color: 'inherit', px: 0 }}
+    >
+      {label} {direction === 'asc' ? '↑' : '↓'}
+    </Button>
+  );
+  return (
+    <Box sx={{ display: 'grid', gap: 2 }}>
+      <TextField
+        size="small"
+        label="Cari galeri"
+        value={q}
+        onChange={(e) => {
+          setQ(e.target.value);
+          setPage(1);
+        }}
+      />
+      <TableContainer
+        component={Paper}
+        variant="outlined"
+        sx={{ borderRadius: 1.5, overflow: 'hidden' }}
+      >
+        <Table>
+          <TableHead>
+            <TableRow sx={{ bgcolor: 'action.hover' }}>
+              <TableCell>Preview</TableCell>
+              <TableCell>{heading('Judul')}</TableCell>
+              <TableCell>{heading('Deskripsi')}</TableCell>
+              <TableCell>Unggulan</TableCell>
+              <TableCell align="right">Aksi</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {items.length ? (
+              items.map((r) => (
+                <TableRow key={r.id}>
+                  <TableCell>
+                    <Box
+                      component="img"
+                      src={r.image_url}
+                      alt={r.title}
+                      sx={{ width: 72, height: 48, objectFit: 'cover', borderRadius: 1 }}
+                    />
+                  </TableCell>
+                  <TableCell>{r.title}</TableCell>
+                  <TableCell>{r.description || '-'}</TableCell>
+                  <TableCell>{r.featured ? 'Ya' : 'Tidak'}</TableCell>
+                  <TableCell align="right">
+                    <Tooltip title="Edit galeri">
+                      <IconButton
+                        component={RouterLink}
+                        href={`/dashboard/galleries/${r.id}/edit`}
+                        size="small"
+                        aria-label="Edit galeri"
+                      >
+                        <Iconify icon="solar:pen-new-square-linear" />
+                      </IconButton>
+                    </Tooltip>
+                    <Box component="form" action={action} sx={{ display: 'inline-flex' }}>
+                      <input type="hidden" name="id" value={r.id} />
+                      <Tooltip title="Hapus galeri">
+                        <span>
+                          <ConfirmSubmitButton
+                            iconOnly
+                            size="small"
+                            aria-label="Hapus galeri"
+                            title="Hapus galeri?"
+                            description="Galeri yang dihapus tidak dapat dipulihkan."
+                            color="error"
+                            disabled={pending}
+                          >
+                            <Iconify icon="solar:trash-bin-trash-linear" />
+                          </ConfirmSubmitButton>
+                        </span>
+                      </Tooltip>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                  <Typography color="text.secondary">
+                    {debounced ? 'Galeri tidak ditemukan.' : 'Belum ada galeri.'}
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      {data.length > 10 ? (
+        <Pagination
+          count={Math.ceil(data.length / 10)}
+          page={page}
+          onChange={(_, v) => setPage(v)}
+        />
+      ) : null}
+    </Box>
+  );
+}

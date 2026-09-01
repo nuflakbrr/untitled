@@ -1,10 +1,11 @@
+import { redirect } from 'next/navigation';
+
+import { requireSession } from 'src/auth/server';
 import {
   listAdminRolesAction,
   listAdminPermissionsAction,
   listRolePermissionIDsAction,
 } from 'src/auth/actions';
-import { requireSession } from 'src/auth/server';
-import { redirect } from 'next/navigation';
 
 import { AdminResourceForm } from '../../../admin-resource-form';
 
@@ -17,7 +18,11 @@ export default async function EditRolePage({ params }: { params: Promise<{ id: s
     listRolePermissionIDsAction(id),
   ]);
   const row = result.data?.find((item) => item.id === id);
-  if (!row || (!session.is_super_admin && id === session.user.role_id) || row.name === 'root_superadmin') {
+  if (
+    !row ||
+    (!session.is_super_admin && id === session.user.role_id) ||
+    row.name === 'root_superadmin'
+  ) {
     redirect('/error/403');
   }
   return (
