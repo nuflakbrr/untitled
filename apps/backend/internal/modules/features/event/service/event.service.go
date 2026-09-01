@@ -289,17 +289,29 @@ func validateEvent(event *domain.Event) error {
 	if event.Quota < 1 || event.Price < 0 {
 		return fmt.Errorf("%w: quota must be positive and price cannot be negative", ErrInvalidEvent)
 	}
+	if len(event.Speakers) == 0 {
+		return fmt.Errorf("%w: at least one speaker is required", ErrInvalidEvent)
+	}
+	if len(event.Benefits) == 0 {
+		return fmt.Errorf("%w: at least one benefit is required", ErrInvalidEvent)
+	}
 	for _, speaker := range event.Speakers {
-		if speaker.Name == "" {
-			return fmt.Errorf("%w: speaker name is required", ErrInvalidEvent)
+		if speaker.Name == "" || emptyOptional(speaker.Title) || emptyOptional(speaker.Company) ||
+			emptyOptional(speaker.CompanyURL) || emptyOptional(speaker.GitHub) ||
+			emptyOptional(speaker.Instagram) || emptyOptional(speaker.LinkedIn) || emptyOptional(speaker.Avatar) {
+			return fmt.Errorf("%w: all speaker fields are required", ErrInvalidEvent)
 		}
 	}
 	for _, benefit := range event.Benefits {
-		if benefit.Title == "" {
-			return fmt.Errorf("%w: benefit title is required", ErrInvalidEvent)
+		if benefit.Title == "" || emptyOptional(benefit.Description) || emptyOptional(benefit.Icon) {
+			return fmt.Errorf("%w: all benefit fields are required", ErrInvalidEvent)
 		}
 	}
 	return nil
+}
+
+func emptyOptional(value *string) bool {
+	return value == nil || strings.TrimSpace(*value) == ""
 }
 
 func canTransition(current, next domain.EventStatus) bool {

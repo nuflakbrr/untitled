@@ -5,7 +5,7 @@ import "time"
 type EventQuery struct {
 	CategorySlug string `form:"category_slug"`
 	TenantID     string `form:"tenant_id"`
-	Status       string `form:"status" binding:"omitempty,oneof=PUBLISHED CLOSED COMPLETED"`
+	Status       string `form:"status" binding:"omitempty,oneof=DRAFT PUBLISHED CLOSED COMPLETED"`
 	EventType    string `form:"event_type" binding:"omitempty,oneof=ONLINE OFFLINE"`
 	Search       string `form:"search"`
 	Page         int    `form:"page,default=1" binding:"min=1"`

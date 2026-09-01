@@ -1,6 +1,8 @@
-.PHONY: help install dev dev-fe dev-be build lint test test-api test-api-bail tsc clean db-setup db-reset docker-up docker-down
+.PHONY: help install dev dev-fe dev-be build lint test test-e2e test-e2e-ui playwright-install test-api test-api-bail tsc clean db-setup db-reset docker-up docker-down
 
 export PATH := $(HOME)/go/bin:/Library/PostgreSQL/18/bin:/Library/PostgreSQL/17/bin:/Library/PostgreSQL/16/bin:/opt/homebrew/bin:/opt/homebrew/opt/libpq/bin:/usr/local/bin:$(PATH)
+E2E_ADMIN_EMAIL ?= superadmin.fasilkom@gmail.com
+E2E_ADMIN_PASSWORD ?= password
 
 help:
 	@echo "Venturo Monorepo Commands:"
@@ -15,6 +17,9 @@ help:
 	@echo "  make build        - Build all apps (Next.js & Go)"
 	@echo "  make lint         - Run linters across all apps"
 	@echo "  make test         - Run tests across all apps"
+	@echo "  make test-e2e     - Run frontend Playwright tests"
+	@echo "  make test-e2e-ui  - Run Playwright tests in UI mode"
+	@echo "  make playwright-install - Install Playwright Chromium"
 	@echo "  make test-api     - Run backend API endpoint tests"
 	@echo "  make test-api-bail - Stop API tests on first failure"
 	@echo "  make tsc          - Run TypeScript type checks"
@@ -48,6 +53,15 @@ lint:
 
 test:
 	@bun run test
+
+test-e2e:
+	@E2E_ADMIN_EMAIL=$(E2E_ADMIN_EMAIL) E2E_ADMIN_PASSWORD=$(E2E_ADMIN_PASSWORD) PLAYWRIGHT_HEADLESS=false bun run --cwd apps/frontend test:e2e
+
+test-e2e-ui:
+	@E2E_ADMIN_EMAIL=$(E2E_ADMIN_EMAIL) E2E_ADMIN_PASSWORD=$(E2E_ADMIN_PASSWORD) bun run --cwd apps/frontend test:e2e:ui
+
+playwright-install:
+	@bunx playwright install chromium
 
 test-api:
 	@$(MAKE) -C apps/backend test-api

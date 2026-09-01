@@ -9,6 +9,8 @@
     "start": "next start -p 3000",
     "build": "next build",
     "test": "bun test",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:print": "npx eslint --print-config eslint.config.mjs > eslint-show-config.json",
@@ -68,6 +70,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "@playwright/test": "^1.62.1",
     "@svgr/webpack": "^8.1.0",
     "@types/node": "^25.6.2",
     "@types/react": "^19.2.14",

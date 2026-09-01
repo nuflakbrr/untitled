@@ -91,3 +91,13 @@ All route strings live in [src/routes/paths.ts](src/routes/paths.ts) as `paths` 
 - ESLint disables `@typescript-eslint/no-explicit-any`, enforces `consistent-type-imports`; unused imports/vars are auto-removable warnings (prefix intentionally-unused vars with `_`).
 - Files are kebab-case; barrel `index.ts` files re-export from each directory.
 - Env vars: copy `.env.example` to `.env` (documents every variable); `.env` itself is gitignored.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
