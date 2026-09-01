@@ -53,6 +53,11 @@ export type ParticipantReview = {
   rating: number;
   comment: string;
 };
+export type AdminRegistration = ParticipantRegistration & {
+  user_name: string;
+  user_email: string;
+  event_status: string;
+};
 
 const credentialsSchema = z.object({
   email: z.email(),
@@ -98,6 +103,10 @@ const participantRegistrationSchema = z.object({
   status: z.string(),
   price: z.number(),
   created_at: z.string(),
+});
+const adminRegistrationSchema = participantRegistrationSchema.extend({
+  user_name: z.string(),
+  user_email: z.string(),
 });
 const participantCertificateSchema = z.object({
   id: z.string(),
@@ -668,35 +677,90 @@ export async function listAdminEventsAction() {
   return { data: [...draftParsed.data, ...publishedParsed.data], error: null };
 }
 
+export async function listAdminRegistrationsAction() {
+  const auth = await authenticatedSession();
+  if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
+  const events = await listAdminEventsAction();
+  if (!events.data) return { data: null, error: events.error || 'Data event gagal dimuat' };
+  const results = await Promise.all(
+    events.data.map(async (event) => {
+      const response = await fetchBackend(
+        `features/v1/registrations/event/${event.id}?page=1&limit=100`,
+        auth.token
+      );
+      const result = await responseJson<unknown>(response);
+      const parsed = z.array(adminRegistrationSchema).safeParse(result.data);
+      return response.ok && parsed.success
+        ? parsed.data.map((registration) => ({
+            ...registration,
+            event_title: event.title,
+            event_status: event.status,
+          }))
+        : [];
+    })
+  );
+  return { data: results.flat(), error: null };
+}
+
 const adminGallerySchema = z.object({
-  id: z.string(), title: z.string(), description: z.string().nullish(), image_url: z.string(),
-  featured: z.boolean(), event_id: z.string().nullish(), created_at: z.string(), updated_at: z.string(),
+  id: z.string(),
+  title: z.string(),
+  description: z.string().nullish(),
+  image_url: z.string(),
+  featured: z.boolean(),
+  event_id: z.string().nullish(),
+  created_at: z.string(),
+  updated_at: z.string(),
 });
 export async function listAdminGalleriesAction() {
   const auth = await authenticatedSession();
   if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
   const tenantID = auth.session.tenant?.id;
   if (!tenantID) return { data: [], error: null };
-  const response = await fetchBackend(`features/v1/galleries?tenant_id=${tenantID}&page=1&limit=100`, auth.token);
+  const response = await fetchBackend(
+    `features/v1/galleries?tenant_id=${tenantID}&page=1&limit=100`,
+    auth.token
+  );
   const result = await responseJson<unknown>(response);
   const data = z.array(adminGallerySchema).safeParse(result.data);
-  return response.ok && data.success ? { data: data.data, error: null } : { data: null, error: 'Data galeri gagal dimuat' };
+  return response.ok && data.success
+    ? { data: data.data, error: null }
+    : { data: null, error: 'Data galeri gagal dimuat' };
 }
-export async function galleryCrudAction(_state: { error: string; success: string }, formData: FormData) {
+export async function galleryCrudAction(
+  _state: { error: string; success: string },
+  formData: FormData
+) {
   const auth = await authenticatedSession();
   if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
   const id = String(formData.get('id') || '');
-  const body = { title: String(formData.get('title') || '').trim(), description: String(formData.get('description') || '').trim(), image_url: String(formData.get('image_url') || '').trim(), featured: formData.get('featured') === 'on', event_id: String(formData.get('event_id') || '').trim() || '' };
-  const response = await fetchBackend(`features/v1/galleries${id ? `/${id}` : ''}`, auth.token, { method: id ? 'PUT' : 'POST', body: JSON.stringify(body) });
+  const body = {
+    title: String(formData.get('title') || '').trim(),
+    description: String(formData.get('description') || '').trim(),
+    image_url: String(formData.get('image_url') || '').trim(),
+    featured: formData.get('featured') === 'on',
+    event_id: String(formData.get('event_id') || '').trim() || '',
+  };
+  const response = await fetchBackend(`features/v1/galleries${id ? `/${id}` : ''}`, auth.token, {
+    method: id ? 'PUT' : 'POST',
+    body: JSON.stringify(body),
+  });
   const result = await responseJson<unknown>(response);
   if (!response.ok) return { error: result.message || 'Galeri gagal disimpan', success: '' };
   revalidatePath('/dashboard/galleries');
   return redirect('/dashboard/galleries');
 }
-export async function deleteGalleryAction(_state: { error: string; success: string }, formData: FormData) {
+export async function deleteGalleryAction(
+  _state: { error: string; success: string },
+  formData: FormData
+) {
   const auth = await authenticatedSession();
   if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
-  const response = await fetchBackend(`features/v1/galleries/${String(formData.get('id') || '')}`, auth.token, { method: 'DELETE' });
+  const response = await fetchBackend(
+    `features/v1/galleries/${String(formData.get('id') || '')}`,
+    auth.token,
+    { method: 'DELETE' }
+  );
   const result = await responseJson<unknown>(response);
   if (!response.ok) return { error: result.message || 'Galeri gagal dihapus', success: '' };
   revalidatePath('/dashboard/galleries');
