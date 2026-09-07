@@ -107,15 +107,11 @@ func (h *TenantHandler) Create(c *gin.Context) {
 	response.Success(c, http.StatusCreated, "Tenant created successfully", tenant)
 }
 
-// checkTenantBoundary blocks a non-root tenant admin from acting on any
-// tenant other than their own or one of its direct children. Writes a 403
-// and returns false if blocked.
+// checkTenantBoundary blocks a non-root tenant admin from acting on anything
+// except a direct child of the active tenant.
 func (h *TenantHandler) checkTenantBoundary(c *gin.Context, id string) bool {
 	claims, _ := middleware.GetUserFromContext(c)
 	if claims == nil || claims.IsSuperAdmin || claims.TenantID == "" {
-		return true
-	}
-	if id == claims.TenantID {
 		return true
 	}
 	target, err := h.service.GetByID(c.Request.Context(), id)

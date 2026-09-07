@@ -28,8 +28,10 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
   const router = useRouter();
   const tenantId = usePathname().split('/')[2];
   const queryClient = useQueryClient();
-  const { hasPermission } = usePermission();
+  const { hasPermission, hasRole } = usePermission();
   const [openDelete, setOpenDelete] = useState(false);
+  const isRootSuperadmin = hasRole('root_superadmin');
+  const canManageTenant = isRootSuperadmin || data.parentId === tenantId;
   const canDeleteTenant = !['root', 'university'].some((type) =>
     data.type.toLowerCase().includes(type)
   );
@@ -71,7 +73,7 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
           >
             <Copy className="mr-2 h-4 w-4" /> Salin ID
           </DropdownMenuItem>
-          {hasPermission('tenant.update') && (
+          {hasPermission('tenant.update') && canManageTenant && (
             <DropdownMenuItem
               variant="warning"
               className="cursor-pointer"
@@ -80,7 +82,7 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
               <Edit className="mr-2 h-4 w-4" /> Ubah
             </DropdownMenuItem>
           )}
-          {hasPermission('tenant.delete') && canDeleteTenant && (
+          {hasPermission('tenant.delete') && canManageTenant && canDeleteTenant && (
             <DropdownMenuItem
               variant="destructive"
               className="cursor-pointer"

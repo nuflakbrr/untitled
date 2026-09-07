@@ -8,6 +8,7 @@ export interface AdminTenantRow {
   slug: string;
   code: string;
   type: string;
+  parentId?: string;
   parentName: string;
   createdAt: string;
 }
@@ -45,6 +46,7 @@ export async function getTenants(page = 1, limit = 10, search = ''): Promise<Ten
       slug: String(tenant.slug ?? '-'),
       code: String(tenant.code ?? '-'),
       type: String(tenant.type ?? '-'),
+      parentId: typeof tenant.parent_id === 'string' ? tenant.parent_id : undefined,
       parentName: String(
         (tenant.parent as Record<string, unknown> | null)?.name ??
           (typeof tenant.parent_id === 'string' ? parentNames.get(tenant.parent_id) : undefined) ??
