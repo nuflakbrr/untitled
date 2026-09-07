@@ -54,7 +54,8 @@ export default function TenantDetailPage() {
   return (
     <section className="space-y-5">
       <Heading title="Ubah Tenant" description="Perbarui informasi organisasi atau unit kerja." />
-      <form onSubmit={submit} className="max-w-xl space-y-4">
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+      <form onSubmit={submit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="name">Nama Tenant</Label>
           <Input
@@ -102,7 +103,7 @@ export default function TenantDetailPage() {
         {error && <p className="text-sm text-destructive">{error}</p>}
         <Button type="submit">Simpan Perubahan</Button>
       </form>
-      <form onSubmit={submitGateway} className="max-w-xl space-y-4 rounded-lg border p-5">
+      <form onSubmit={submitGateway} className="space-y-4 rounded-lg border p-5">
         <div><h2 className="text-lg font-semibold">Payment Gateway</h2><p className="text-sm text-muted-foreground">Atur metode pembayaran untuk tenant ini.</p></div>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={gateway.is_active} onChange={(e) => setGateway({ ...gateway, is_active: e.target.checked })} /> Aktifkan payment gateway</label>
         <div className="space-y-2"><Label htmlFor="provider">Provider</Label><select id="provider" className="h-10 w-full rounded-md border bg-background px-3 text-sm" value={gateway.provider} onChange={(e) => setGateway({ ...gateway, provider: e.target.value as TenantPaymentGateway['provider'] })}><option value="MANUAL">MANUAL</option><option value="IPAYMU">IPAYMU</option></select></div>
@@ -113,6 +114,7 @@ export default function TenantDetailPage() {
         {gateway.provider === 'IPAYMU' && <div className="space-y-2"><Label htmlFor="apiKey">API Key {gateway.has_api_key && '(tersimpan, kosongkan jika tidak diubah)'}</Label><Input id="apiKey" type="password" value={gateway.api_key ?? ''} onChange={(e) => setGateway({ ...gateway, api_key: e.target.value })} /></div>}
         <Button type="submit">Simpan Payment Gateway</Button>
       </form>
+      </div>
     </section>
   );
 }
