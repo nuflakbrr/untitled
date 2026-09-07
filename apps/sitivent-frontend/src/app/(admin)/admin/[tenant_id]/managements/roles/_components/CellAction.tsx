@@ -8,11 +8,11 @@ import { type FC, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { copyToClipboard } from '@/lib/clipboard';
-import { deleteRole } from '@/services/admin/roles';
 import { usePermission } from '@/providers/PermissionProvider';
 import AlertModal from '@/components/Common/Modals/AlertModal';
 import { Copy, Edit, Trash, MoreHorizontal } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { deleteRole, restoreRole, permanentlyDeleteRole } from '@/services/admin/roles';
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -32,7 +32,7 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
   const [open, setOpen] = useState<boolean>(false);
 
   const mutation = useMutation({
-    mutationFn: (id: string) => deleteRole(id),
+    mutationFn: (id: string) => (data.deletedAt ? permanentlyDeleteRole(id) : deleteRole(id)),
     onSuccess: (result) => {
       if (result.success) {
         toast.success(result.message);
@@ -42,6 +42,16 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
       } else {
         toast.error(result.error);
       }
+    },
+  });
+  const restoreMutation = useMutation({
+    mutationFn: (id: string) => restoreRole(id),
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success(result.message);
+        queryClient.invalidateQueries({ queryKey: ['roles'] });
+        router.refresh();
+      } else toast.error(result.error);
     },
   });
 
@@ -75,6 +85,11 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
               <Link href={`/admin/managements/roles/${data.id}`}>
                 <Edit className="mr-2 h-4 w-4" /> Ubah
               </Link>
+            </DropdownMenuItem>
+          )}
+          {data.deletedAt && hasPermission('role.update') && (
+            <DropdownMenuItem className="cursor-pointer" onClick={() => restoreMutation.mutate(data.id)}>
+              Pulihkan
             </DropdownMenuItem>
           )}
           {hasPermission('role.delete') && (

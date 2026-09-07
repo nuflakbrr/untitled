@@ -21,7 +21,10 @@ const Columns = (): ColumnDef<AdminTenantRow>[] => [
       </Button>
     ),
     cell: ({ row }) => (
-      <div className="flex items-center gap-1" style={{ paddingLeft: `${(row.original.depth ?? 0) * 20}px` }}>
+      <div
+        className="flex items-center gap-1"
+        style={{ paddingLeft: `${(row.original.depth ?? 0) * 24}px` }}
+      >
         {row.original.hasChildren ? (
           <button type="button" onClick={row.original.onToggle} className="rounded p-1 hover:bg-muted" aria-label="Toggle tenant children">
             {row.original.isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}

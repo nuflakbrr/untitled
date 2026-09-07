@@ -30,7 +30,7 @@ const PermissionsCMS: FC = () => {
 
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ['permissions', page, limit, debouncedSearch],
     queryFn: async () => {
       const result = await getPermissions(page, limit, debouncedSearch);
@@ -40,13 +40,14 @@ const PermissionsCMS: FC = () => {
 
   const deleteBulkMutation = useMutation({
     mutationFn: (ids: string[]) => deleteBulkPermissions(ids),
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
       if (result.success) {
         toast.success(result.message);
         queryClient.invalidateQueries({ queryKey: ['permissions'] });
         setIsBulkDeleteOpen(false);
         setSelectedPermissions([]);
         setRowSelection({});
+        await refetch();
       } else {
         toast.error(result.error);
       }

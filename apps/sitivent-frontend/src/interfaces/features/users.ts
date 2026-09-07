@@ -1,6 +1,7 @@
 import type { Role } from './roles';
 
 export interface User {
+  deletedAt?: string | null;
   id: string;
   name: string;
   email: string;

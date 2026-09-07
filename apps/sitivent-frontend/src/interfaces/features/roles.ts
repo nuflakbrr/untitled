@@ -5,6 +5,7 @@ export interface Role {
   permissions?: { id: string; name: string }[];
   createdAt?: string;
   updatedAt?: string;
+  deletedAt?: string | null;
   _count?: {
     users: number;
     permissions: number;

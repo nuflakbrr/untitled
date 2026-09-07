@@ -33,7 +33,7 @@ const labelMapping: Record<string, string> = {
   users: 'Pengguna',
   roles: 'Jabatan',
   permissions: 'Hak Akses',
-  tenants: 'Tenant',
+  tenants: 'Organisasi',
   new: 'Tambah',
   publications: 'Publikasi',
   articles: 'Artikel',
@@ -43,8 +43,11 @@ const labelMapping: Record<string, string> = {
 export function CMSHeader() {
   const pathname = usePathname();
   const rawSegments = pathname.split('/').filter((v) => v);
-  const tenantId = rawSegments[0] === 'admin' && isUUID(rawSegments[1] ?? '') ? rawSegments[1] : null;
-  const pathSegments = rawSegments.filter((segment, index) => !(index === 1 && tenantId && segment === tenantId));
+  const tenantId =
+    rawSegments[0] === 'admin' && isUUID(rawSegments[1] ?? '') ? rawSegments[1] : null;
+  const pathSegments = rawSegments.filter(
+    (segment, index) => !(index === 1 && tenantId && segment === tenantId)
+  );
   const [resolvedLabels, setResolvedLabels] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -113,7 +116,11 @@ export function CMSHeader() {
           <BreadcrumbList>
             {pathSegments.length > 0 && (
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href={tenantId ? `/admin/${tenantId}/dashboard` : '/admin/dashboard'}>SITIVENT</BreadcrumbLink>
+                <BreadcrumbLink
+                  href={tenantId ? `/admin/${tenantId}/dashboard` : '/admin/dashboard'}
+                >
+                  SITIVENT
+                </BreadcrumbLink>
               </BreadcrumbItem>
             )}
 

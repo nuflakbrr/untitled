@@ -10,10 +10,10 @@ import { getMeAction } from '@/services/public/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { usePermission } from '@/providers/PermissionProvider';
 import AlertModal from '@/components/Common/Modals/AlertModal';
-import { banUser, unbanUser, deleteUser } from '@/services/admin/users';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import UserSettingsModal from '@/components/Mixins/Sidebar/UserSettingsModal';
 import { Ban, Copy, Edit, Trash, UserCheck, MoreHorizontal } from 'lucide-react';
+import { banUser, unbanUser, deleteUser, permanentlyDeleteUser } from '@/services/admin/users';
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -56,7 +56,7 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
   const canEdit = isSelf || isCurrentUserSuperAdmin || !isTargetSuperAdmin;
 
   const { mutate: onDelete, isPending } = useMutation({
-    mutationFn: () => deleteUser(data.id),
+    mutationFn: () => data.deletedAt ? permanentlyDeleteUser(data.id) : deleteUser(data.id),
     onSuccess: (result) => {
       if (result.success) {
         toast.success(result.message);

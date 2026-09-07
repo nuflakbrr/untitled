@@ -6,13 +6,12 @@ import Link from 'next/link';
 import * as React from 'react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
+import { ChevronRight } from 'lucide-react';
 import { useMounted } from '@/hooks/useMounted';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter , usePathname } from 'next/navigation';
 import { getMyTenantsAction } from '@/services/public/auth';
-import { Check , ChevronRight, ChevronsUpDown } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import {
   Sidebar,
   SidebarMenu,
@@ -30,6 +29,7 @@ import {
 
 import { UserSetting } from './UserSetting';
 import { sideLinks } from './constant/sideLinks';
+import { TenantSwitcher } from './TenantSwitcher';
 
 const BASE_ADMIN_PATH = '/admin';
 
@@ -157,24 +157,7 @@ export function AppSidebar({
           height={40}
           loading="lazy"
         />
-        {(tenants.length > 1 || isRootSuperadmin) && tenants.length > 0 && (
-          <SidebarMenu className="mt-3 w-full">
-            <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton size="lg">
-                    <div className="flex size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">{tenantId?.slice(0, 2).toUpperCase()}</div>
-                    <div className="grid flex-1 text-left text-sm leading-tight"><span className="truncate font-semibold">Tenant aktif</span><span className="truncate text-xs text-muted-foreground">{tenants.find((tenant) => tenant.id === tenantId)?.name ?? 'Pilih tenant'}</span></div>
-                    <ChevronsUpDown className="ml-auto size-4" />
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent side="right" align="end" className="min-w-64">
-                  {tenants.map((tenant) => <DropdownMenuItem key={tenant.id} onSelect={() => switchTenant(tenant.id)}>{tenant.name}{tenant.id === tenantId && <Check className="ml-auto size-4" />}</DropdownMenuItem>)}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        )}
+        {(tenants.length > 1 || isRootSuperadmin) && tenants.length > 0 && <TenantSwitcher tenants={tenants} activeTenantId={tenantId} onSwitch={switchTenant} />}
       </SidebarHeader>
       <SidebarContent className="gap-0">
         {/* We create a collapsible SidebarGroup for each parent. */}

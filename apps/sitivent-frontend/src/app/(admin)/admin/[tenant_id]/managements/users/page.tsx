@@ -10,10 +10,10 @@ import Heading from '@/components/Common/Heading';
 import { getMeAction } from '@/services/public/auth';
 import { Separator } from '@/components/ui/separator';
 import { DataTable } from '@/components/ui/data-table';
-import { getUsers, deleteUser } from '@/services/admin/users';
 import AlertModal from '@/components/Common/Modals/AlertModal';
 import { usePermission } from '@/providers/PermissionProvider';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getUsers, deleteUser, permanentlyDeleteUser } from '@/services/admin/users';
 
 import Columns from './_components/Columns';
 
@@ -26,17 +26,27 @@ const UsersCMS = () => {
   const [selected, setSelected] = useState<typeof users>([]);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [confirming, setConfirming] = useState(false);
+  const [includeDeleted, setIncludeDeleted] = useState(false);
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['users', page, limit, debouncedSearch],
-    queryFn: () => getUsers(page, limit, debouncedSearch),
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['users', page, limit, debouncedSearch, includeDeleted],
+    queryFn: () => getUsers(page, limit, debouncedSearch, includeDeleted),
   });
   const { data: meData } = useQuery({ queryKey: ['auth-me-server-action'], queryFn: getMeAction });
 
   const users = data?.data || [];
   const meta = data?.meta || { total: 0, page: 1, lastPage: 0 };
-  const deleteMutation = useMutation({ mutationFn: () => Promise.all(selected.map((user) => deleteUser(user.id))), onSuccess: () => { toast.success('Pengguna berhasil dihapus.'); setConfirming(false); setSelected([]); setRowSelection({}); queryClient.invalidateQueries({ queryKey: ['users'] }); } });
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const results = await Promise.all(selected.map((user) => includeDeleted ? permanentlyDeleteUser(user.id) : deleteUser(user.id)));
+      const failed = results.find((result) => !result.success);
+      if (failed) throw new Error(failed.error ?? 'Gagal menghapus pengguna.');
+      return results;
+    },
+    onSuccess: async () => { toast.success('Pengguna berhasil dihapus.'); setConfirming(false); setSelected([]); setRowSelection({}); await queryClient.invalidateQueries({ queryKey: ['users'] }); await refetch(); },
+    onError: (error) => toast.error(error instanceof Error ? error.message : 'Gagal menghapus pengguna.'),
+  });
 
   return (
     <section>
@@ -70,6 +80,8 @@ const UsersCMS = () => {
         onRowSelectionChange={setRowSelection}
         onBulkDelete={(rows) => { setSelected(rows); setConfirming(true); }}
         isRowSelectable={(row) => row.id !== meData?.session?.user?.id}
+        includeDeleted={includeDeleted}
+        onIncludeDeletedChange={(value) => { setIncludeDeleted(value); setPage(1); setRowSelection({}); }}
       />
     </section>
   );

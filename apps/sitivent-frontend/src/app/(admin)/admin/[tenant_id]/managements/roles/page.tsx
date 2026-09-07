@@ -9,10 +9,10 @@ import { useDebounce } from '@/hooks/useDebounce';
 import Heading from '@/components/Common/Heading';
 import { Separator } from '@/components/ui/separator';
 import { DataTable } from '@/components/ui/data-table';
-import { getRoles, deleteRole } from '@/services/admin/roles';
 import AlertModal from '@/components/Common/Modals/AlertModal';
 import { usePermission } from '@/providers/PermissionProvider';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getRoles, deleteRole, permanentlyDeleteRole } from '@/services/admin/roles';
 
 import Columns from './_components/Columns';
 
@@ -25,19 +25,22 @@ const RolesCMS: FC = () => {
   const [selected, setSelected] = useState<typeof roles>([]);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [confirming, setConfirming] = useState(false);
+  const [includeDeleted, setIncludeDeleted] = useState(false);
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['roles', page, limit, debouncedSearch],
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['roles', page, limit, debouncedSearch, includeDeleted],
     queryFn: async () => {
-      const result = await getRoles(page, limit, debouncedSearch);
+      const result = await getRoles(page, limit, debouncedSearch, includeDeleted);
       return result;
     },
   });
 
-  const roles = data?.data || [];
+  const roles = (data?.data || []).filter((role) =>
+    includeDeleted ? Boolean(role.deletedAt) : !role.deletedAt
+  );
   const meta = data?.meta || { total: 0, page: 1, lastPage: 0 };
-  const deleteMutation = useMutation({ mutationFn: () => Promise.all(selected.map((role) => deleteRole(role.id))), onSuccess: () => { toast.success('Jabatan berhasil dihapus.'); setConfirming(false); setSelected([]); setRowSelection({}); queryClient.invalidateQueries({ queryKey: ['roles'] }); } });
+  const deleteMutation = useMutation({ mutationFn: () => Promise.all(selected.map((role) => includeDeleted ? permanentlyDeleteRole(role.id) : deleteRole(role.id))), onSuccess: async () => { toast.success('Jabatan berhasil dihapus.'); setConfirming(false); setSelected([]); setRowSelection({}); await queryClient.invalidateQueries({ queryKey: ['roles'] }); await refetch(); } });
 
   return (
     <section>
@@ -70,6 +73,8 @@ const RolesCMS: FC = () => {
         rowSelection={rowSelection}
         onRowSelectionChange={setRowSelection}
         onBulkDelete={(rows) => { setSelected(rows); setConfirming(true); }}
+        includeDeleted={includeDeleted}
+        onIncludeDeletedChange={(value) => { setIncludeDeleted(value); setPage(1); setRowSelection({}); }}
       />
     </section>
   );

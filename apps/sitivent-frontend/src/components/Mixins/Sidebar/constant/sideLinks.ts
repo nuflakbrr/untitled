@@ -151,7 +151,7 @@ export const sideLinks: SideLinks = {
       icon: UserCog,
       items: [
         {
-          title: 'Tenant',
+          title: 'Organisasi',
           url: 'managements/tenants',
           icon: Building2,
           permission: 'tenant.read',
