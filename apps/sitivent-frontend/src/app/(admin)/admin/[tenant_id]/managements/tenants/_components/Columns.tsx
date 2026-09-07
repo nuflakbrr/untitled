@@ -6,13 +6,13 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { AdminTenantRow } from '@/services/admin/tenants';
 
 import moment from 'moment';
-import { ChevronsUpDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ChevronDown, ChevronRight, ChevronsUpDown } from 'lucide-react';
 
 import CellAction from './CellAction';
 
-const Columns: ColumnDef<AdminTenantRow>[] = [
+const Columns = (): ColumnDef<AdminTenantRow>[] => [
   {
     accessorKey: 'name',
     header: ({ column }) => (
@@ -21,9 +21,16 @@ const Columns: ColumnDef<AdminTenantRow>[] = [
       </Button>
     ),
     cell: ({ row }) => (
-      <div>
+      <div className="flex items-center gap-1" style={{ paddingLeft: `${(row.original.depth ?? 0) * 20}px` }}>
+        {row.original.hasChildren ? (
+          <button type="button" onClick={row.original.onToggle} className="rounded p-1 hover:bg-muted" aria-label="Toggle tenant children">
+            {row.original.isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          </button>
+        ) : <span className="w-6" />}
+        <div>
         <p className="font-medium">{row.original.name}</p>
         <p className="text-xs text-muted-foreground">{row.original.code}</p>
+        </div>
       </div>
     ),
   },

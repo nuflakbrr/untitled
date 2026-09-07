@@ -1,15 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import Heading from '@/components/Common/Heading';
+import { useParams, useRouter } from 'next/navigation';
 import { createTenant } from '@/services/admin/tenants';
 
 export default function NewTenantPage() {
   const router = useRouter();
+  const params = useParams<{ tenant_id: string }>();
   const [form, setForm] = useState({ name: '', slug: '', code: '', type: 'FACULTY' });
   const [error, setError] = useState('');
   const submit = async (event: React.FormEvent) => {
@@ -19,7 +20,7 @@ export default function NewTenantPage() {
       setError(result.error ?? 'Gagal membuat tenant.');
       return undefined;
     }
-    router.push('..');
+    router.push(`/admin/${params.tenant_id}/managements/tenants`);
     router.refresh();
     return undefined;
   };

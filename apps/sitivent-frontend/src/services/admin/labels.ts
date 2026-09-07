@@ -13,6 +13,7 @@ const endpoints: Record<string, string> = {
   users: '/core/v1/users',
   roles: '/core/v1/roles',
   permissions: '/core/v1/permissions',
+  tenants: '/core/v1/tenants',
 };
 
 export async function resolveLabel(id: string, parentSegment: string): Promise<string | null> {

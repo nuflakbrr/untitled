@@ -50,7 +50,7 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
   const currentUser = session?.user as ExtendedUser | undefined;
   const isSelf = currentUser?.id === data.id;
   const isTargetSuperAdmin = data.roles?.some((role) => role.name.toLowerCase() === 'superadmin');
-  const isCurrentUserSuperAdmin = hasRole('superadmin');
+  const isCurrentUserSuperAdmin = hasRole('superadmin') || hasRole('root_superadmin');
 
   const canDelete = !isSelf && (isCurrentUserSuperAdmin || !isTargetSuperAdmin);
   const canEdit = isSelf || isCurrentUserSuperAdmin || !isTargetSuperAdmin;

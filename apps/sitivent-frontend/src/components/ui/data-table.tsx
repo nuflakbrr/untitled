@@ -54,6 +54,7 @@ interface DataTableProps<TData, TValue> {
   includeDeleted?: boolean;
   onIncludeDeletedChange?: (value: boolean) => void;
   enableRowSelection?: boolean;
+  isRowSelectable?: (row: TData) => boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -74,6 +75,7 @@ export function DataTable<TData, TValue>({
   includeDeleted,
   onIncludeDeletedChange,
   enableRowSelection = true,
+  isRowSelectable,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -140,6 +142,7 @@ export function DataTable<TData, TValue>({
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
+          disabled={isRowSelectable ? !isRowSelectable(row.original) : false}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label={`Pilih baris ${row.index + 1}`}
         />
@@ -163,7 +166,7 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onRowSelectionChange: onRowSelectionChangeHandler,
-    enableRowSelection,
+    enableRowSelection: isRowSelectable ? (row) => isRowSelectable(row.original) : enableRowSelection,
     state: {
       sorting,
       columnFilters,

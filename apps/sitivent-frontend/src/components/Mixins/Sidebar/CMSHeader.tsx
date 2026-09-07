@@ -33,6 +33,7 @@ const labelMapping: Record<string, string> = {
   users: 'Pengguna',
   roles: 'Jabatan',
   permissions: 'Hak Akses',
+  tenants: 'Tenant',
   new: 'Tambah',
   publications: 'Publikasi',
   articles: 'Artikel',
@@ -71,6 +72,7 @@ export function CMSHeader() {
           'users',
           'roles',
           'permissions',
+          'tenants',
           'articles',
           'galleries',
         ];

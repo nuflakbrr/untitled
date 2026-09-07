@@ -9,6 +9,10 @@ export interface AdminTenantRow {
   code: string;
   type: string;
   parentId?: string;
+  depth?: number;
+  hasChildren?: boolean;
+  isExpanded?: boolean;
+  onToggle?: () => void;
   parentName: string;
   createdAt: string;
 }
