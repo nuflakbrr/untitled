@@ -66,6 +66,7 @@ export async function getMeAction() {
 
 export interface AdminTenant {
   id: string;
+  code?: string;
   name: string;
   slug?: string;
   type?: string;
@@ -82,6 +83,7 @@ export async function getMyTenantsAction(): Promise<AdminTenant[]> {
       )
       .map((tenant: Record<string, unknown>) => ({
         id: String(tenant.id ?? tenant.tenant_id),
+        code: String(tenant.code ?? tenant.tenant_code ?? ''),
         name: String(
           tenant.name ?? tenant.tenant_name ?? tenant.code ?? tenant.tenant_code ?? 'Tenant'
         ),
