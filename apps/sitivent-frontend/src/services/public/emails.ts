@@ -11,4 +11,6 @@ export async function queueEmail(to: string, ..._legacyArgs: unknown[]) {
   }
 }
 
-export async function processEmailQueue() { return { success: true }; }
+export async function processEmailQueue() {
+  return { success: true };
+}

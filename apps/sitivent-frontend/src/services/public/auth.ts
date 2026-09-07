@@ -18,7 +18,10 @@ export async function loginAction(values: LoginValues): Promise<AuthResponse> {
     const result = await auth.api.signInEmail({ body: parsed.data });
     return { success: true, data: { user: result.data.user as never, token: 'session-cookie' } };
   } catch (error) {
-    return { success: false, error: error instanceof Error ? error.message : 'Email atau password salah.' };
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Email atau password salah.',
+    };
   }
 }
 
@@ -72,12 +75,28 @@ export async function getMyTenantsAction(): Promise<AdminTenant[]> {
   try {
     const result = await api.get('/core/v1/auth/my-tenants');
     return (result.data.data ?? [])
-      .filter((tenant: Record<string, unknown>) => typeof (tenant.id ?? tenant.tenant_id) === 'string' && String(tenant.id ?? tenant.tenant_id).length > 0)
+      .filter(
+        (tenant: Record<string, unknown>) =>
+          typeof (tenant.id ?? tenant.tenant_id) === 'string' &&
+          String(tenant.id ?? tenant.tenant_id).length > 0
+      )
       .map((tenant: Record<string, unknown>) => ({
         id: String(tenant.id ?? tenant.tenant_id),
-        name: String(tenant.name ?? tenant.tenant_name ?? tenant.code ?? tenant.tenant_code ?? 'Tenant'),
-        slug: tenant.slug ? String(tenant.slug) : tenant.tenant_slug ? String(tenant.tenant_slug) : undefined,
-        type: tenant.type ? String(tenant.type) : tenant.tenant_type ? String(tenant.tenant_type) : undefined,
+        name: String(
+          tenant.name ?? tenant.tenant_name ?? tenant.code ?? tenant.tenant_code ?? 'Tenant'
+        ),
+        slug: tenant.slug
+          ? String(tenant.slug)
+          : tenant.tenant_slug
+            ? String(tenant.tenant_slug)
+            : undefined,
+        type: tenant.type
+          ? String(tenant.type)
+          : tenant.tenant_type
+            ? String(tenant.tenant_type)
+            : undefined,
       }));
-  } catch { return []; }
+  } catch {
+    return [];
+  }
 }

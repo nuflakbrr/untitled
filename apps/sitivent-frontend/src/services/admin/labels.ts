@@ -29,5 +29,7 @@ export async function resolveLabel(id: string, parentSegment: string): Promise<s
     }
     const item = (await api.get(`${endpoint}/${id}`)).data.data;
     return item?.name ?? item?.title ?? item?.certificateNumber ?? item?.registrationNumber ?? null;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
