@@ -1,0 +1,149 @@
+import type { Route } from 'next';
+
+import Link from 'next/link';
+import Image from 'next/image';
+import { type FC } from 'react';
+import { getGalleries } from '@/services/admin/galleries';
+import { ArrowRight, Image as ImageIcon } from 'lucide-react';
+
+const GalleryBento: FC = async () => {
+  const response = await getGalleries(1, 5, '', true);
+  const galleries = (response.data || []).filter((item) => item.imageUrl?.trim());
+
+  // Pattern layout bento untuk 5 item
+  const getBentoSpans = (index: number) => {
+    const patterns = [
+      'col-span-1 sm:col-span-2 md:col-span-2 md:row-span-2 h-[240px] sm:h-[300px] md:h-full', // Item 1 (Utama, besar)
+      'col-span-1 md:col-span-1 md:row-span-1 h-[200px] md:h-full', // Item 2 (Kecil)
+      'col-span-1 md:col-span-1 md:row-span-2 h-[220px] md:h-full', // Item 3 (Vertikal tinggi)
+      'col-span-1 md:col-span-1 md:row-span-1 h-[200px] md:h-full', // Item 4 (Kecil)
+      'col-span-1 sm:col-span-2 md:col-span-2 md:row-span-1 h-[200px] md:h-full', // Item 5 (Lebar mendatar)
+    ];
+    return patterns[index % patterns.length];
+  };
+
+  return (
+    <section
+      id="galeri-unggulan"
+      className="py-12 sm:py-16 border-t"
+      style={{ background: '#FAF9F5', borderColor: '#E3DACC' }}
+    >
+      <div className="container mx-auto px-4 max-w-6xl">
+        {/* Section header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-10">
+          <div>
+            <span
+              className="text-[11px] font-bold uppercase tracking-widest block mb-2 sm:mb-3"
+              style={{
+                fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+                color: '#87867F',
+              }}
+            >
+              Dokumentasi Kegiatan
+            </span>
+            <h2
+              className="leading-tight"
+              style={{
+                fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
+                fontWeight: 500,
+                fontSize: 'clamp(1.6rem, 3vw, 2.25rem)',
+                color: '#141413',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              Kilas Balik Kemeriahan Event
+            </h2>
+            <p className="mt-2 text-sm" style={{ color: '#87867F' }}>
+              Momen-momen terbaik dan antusiasme peserta yang tertangkap kamera dalam berbagai
+              kegiatan kami.
+            </p>
+          </div>
+          {galleries.length > 0 && (
+            <Link
+              href={'/gallery' as Route}
+              className="flex items-center gap-1.5 text-sm font-semibold transition-all duration-200 hover:gap-2.5 shrink-0 self-start sm:self-auto"
+              style={{ color: '#D97757' }}
+            >
+              Lihat Galeri Lengkap <ArrowRight className="w-4 h-4" />
+            </Link>
+          )}
+        </div>
+
+        {galleries.length === 0 ? (
+          <div
+            className="text-center py-12 px-6 rounded-2xl border bg-white max-w-md mx-auto space-y-3"
+            style={{ borderColor: '#E3DACC' }}
+          >
+            <div
+              className="w-12 h-12 rounded-full mx-auto flex items-center justify-center"
+              style={{ background: 'rgba(120,140,93,0.08)' }}
+            >
+              <ImageIcon className="w-6 h-6" style={{ color: '#788C5D' }} />
+            </div>
+            <h3 className="text-base font-semibold text-[#141413]">Dokumentasi Belum Tersedia</h3>
+            <p className="text-xs text-[#87867F] leading-relaxed">
+              Dokumentasi foto event belum diunggah. Silakan kunjungi galeri secara berkala.
+            </p>
+            <div className="pt-2">
+              <Link
+                href={'/gallery' as Route}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-xl transition-transform hover:scale-105 text-white"
+                style={{ background: '#788C5D' }}
+              >
+                Kunjungi Halaman Galeri
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-2 md:auto-rows-45">
+            {galleries.map((item, idx) => (
+              <div
+                key={item.id}
+                className={`group relative overflow-hidden rounded-2xl border shadow-xs transition-all duration-300 hover:shadow-md ${getBentoSpans(idx)}`}
+                style={{ borderColor: '#E3DACC', background: '#FFFFFF' }}
+              >
+                <Image
+                  src={item.imageUrl}
+                  alt={item.title}
+                  fill
+                  unoptimized
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover group-hover:scale-102 transition-transform duration-500 ease-out"
+                />
+                {/* Gradient Overlay */}
+                <div
+                  className="absolute inset-0 transition-opacity duration-300"
+                  style={{
+                    background:
+                      'linear-gradient(to top, rgba(20, 20, 19, 0.85) 0%, rgba(20, 20, 19, 0.3) 50%, transparent 100%)',
+                  }}
+                />
+
+                {/* Title & Description Overlay */}
+                <div className="absolute bottom-0 inset-x-0 p-5 flex flex-col justify-end text-white">
+                  <span
+                    className="text-[9px] font-bold tracking-wider uppercase opacity-75 mb-1"
+                    style={{
+                      fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+                      color: '#E3DACC',
+                    }}
+                  >
+                    Dokumentasi
+                  </span>
+                  <h3 className="text-sm font-bold line-clamp-1 leading-snug">{item.title}</h3>
+                  {item.description && (
+                    <p className="text-xs text-zinc-300 line-clamp-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 max-w-sm">
+                      {item.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
+export default GalleryBento;

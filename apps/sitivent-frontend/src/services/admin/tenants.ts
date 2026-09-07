@@ -1,0 +1,65 @@
+'use server';
+
+import api from '@/lib/api';
+
+export interface AdminTenantRow {
+  id: string;
+  name: string;
+  slug: string;
+  code: string;
+  type: string;
+  parentName: string;
+  createdAt: string;
+}
+
+export interface TenantPaginationResponse {
+  success: boolean;
+  data: AdminTenantRow[];
+  meta: { total: number; page: number; lastPage: number };
+}
+
+export async function getTenants(page = 1, limit = 10, search = ''): Promise<TenantPaginationResponse> {
+  try {
+    const response = await api.get('/core/v1/tenants', { params: { page, limit, search } });
+    const body = response.data;
+    const tenants = (body.data ?? []) as Record<string, unknown>[];
+    const parentIds = [...new Set(
+      tenants
+        .map((tenant) => (typeof tenant.parent_id === 'string' ? tenant.parent_id : ''))
+        .filter(Boolean),
+    )];
+    const parentEntries = await Promise.all(
+      parentIds.map(async (id) => {
+        try {
+          const parentResponse = await api.get(`/core/v1/tenants/${id}`);
+          return [id, String(parentResponse.data?.data?.name ?? '-')] as const;
+        } catch {
+          return [id, '-'] as const;
+        }
+      }),
+    );
+    const parentNames = new Map(parentEntries);
+    const rows = tenants.map((tenant) => ({
+      id: String(tenant.id),
+      name: String(tenant.name ?? '-'),
+      slug: String(tenant.slug ?? '-'),
+      code: String(tenant.code ?? '-'),
+      type: String(tenant.type ?? '-'),
+      parentName: String(
+        (tenant.parent as Record<string, unknown> | null)?.name ??
+          (typeof tenant.parent_id === 'string' ? parentNames.get(tenant.parent_id) : undefined) ??
+          '-',
+      ),
+      createdAt: String(tenant.created_at ?? tenant.createdAt ?? ''),
+    }));
+    const total = Number(body.pagination?.total ?? rows.length);
+    return { success: true, data: rows, meta: { total, page, lastPage: Math.max(1, Math.ceil(total / limit)) } };
+  } catch {
+    return { success: false, data: [], meta: { total: 0, page, lastPage: 1 } };
+  }
+}
+
+export async function createTenant(values: Record<string, unknown>) { try { const result = await api.post('/core/v1/tenants', values); return { success: true, data: result.data.data }; } catch { return { success: false, error: 'Gagal membuat tenant.' }; } }
+export async function getTenant(id: string) { try { const result = await api.get(`/core/v1/tenants/${id}`); return { success: true, data: result.data.data }; } catch { return { success: false, error: 'Gagal mengambil data tenant.' }; } }
+export async function updateTenant(id: string, values: Record<string, unknown>) { try { const result = await api.put(`/core/v1/tenants/${id}`, values); return { success: true, data: result.data.data }; } catch { return { success: false, error: 'Gagal memperbarui tenant.' }; } }
+export async function deleteTenant(id: string) { try { await api.delete(`/core/v1/tenants/${id}`); return { success: true }; } catch { return { success: false, error: 'Gagal menghapus tenant.' }; } }

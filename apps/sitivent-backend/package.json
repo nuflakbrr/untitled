@@ -1,0 +1,15 @@
+{
+  "name": "sitivent-backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "export PATH=\"$HOME/go/bin:$PATH\" && (which air >/dev/null 2>&1 && air || go run cmd/api/main.go)",
+    "build": "go build -o bin/sitivent-api cmd/api/main.go",
+    "test": "go test ./...",
+    "lint": "golangci-lint run ./...",
+    "tsc:check": "true",
+    "db:migrate": "make migrate-up",
+    "db:seed": "make seed",
+    "db:setup": "make db-setup"
+  }
+}

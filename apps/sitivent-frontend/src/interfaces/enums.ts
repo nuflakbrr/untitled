@@ -1,0 +1,6 @@
+export enum EventStatus { DRAFT = 'DRAFT', PUBLISHED = 'PUBLISHED', CLOSED = 'CLOSED', COMPLETED = 'COMPLETED' }
+export enum EventType { ONLINE = 'ONLINE', OFFLINE = 'OFFLINE', HYBRID = 'HYBRID' }
+export enum PaymentStatus { PENDING = 'PENDING', WAITING = 'WAITING', PAID = 'PAID', FAILED = 'FAILED', REFUNDED = 'REFUNDED' }
+export enum RegistrationStatus { WAITING_PAYMENT = 'WAITING_PAYMENT', REGISTERED = 'REGISTERED', PAID = 'PAID', CHECKED_IN = 'CHECKED_IN', CANCELLED = 'CANCELLED' }
+export enum AttendanceStatus { SUCCESS = 'SUCCESS', FAILED = 'FAILED' }
+export enum CertNumberMode { AUTO = 'AUTO', MANUAL = 'MANUAL', SEQUENTIAL = 'SEQUENTIAL', CUSTOM = 'CUSTOM' }

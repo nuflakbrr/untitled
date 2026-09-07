@@ -1,0 +1,233 @@
+'use client';
+
+import type { Route } from 'next';
+
+import Link from 'next/link';
+import * as React from 'react';
+import Image from 'next/image';
+import { useTheme } from 'next-themes';
+import { useMounted } from '@/hooks/useMounted';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter , usePathname } from 'next/navigation';
+import { getMyTenantsAction } from '@/services/public/auth';
+import { Check , ChevronRight, ChevronsUpDown } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+  Sidebar,
+  SidebarMenu,
+  SidebarRail,
+  SidebarGroup,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarContent,
+  SidebarMenuSub,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
+} from '@/components/ui/sidebar';
+
+import { UserSetting } from './UserSetting';
+import { sideLinks } from './constant/sideLinks';
+
+const BASE_ADMIN_PATH = '/admin';
+
+export function AppSidebar({
+  session,
+  permissions,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & { session: any; permissions: string[] }) {
+  const isMounted = useMounted();
+  const { resolvedTheme } = useTheme();
+  const pathname = usePathname();
+  const router = useRouter();
+  const tenantId = pathname.split('/')[2];
+  const adminPath = tenantId ? `${BASE_ADMIN_PATH}/${tenantId}` : BASE_ADMIN_PATH;
+  const { data: tenants = [] } = useQuery({ queryKey: ['my-tenants'], queryFn: getMyTenantsAction, staleTime: 5 * 60 * 1000 });
+  const isRootSuperadmin = (session?.roles ?? []).some((role: string) => role.toLowerCase() === 'root_superadmin');
+
+  const [logoSrc, setLogoSrc] = React.useState('/assets/img/ttn-logo.jpg');
+
+  // Auto-close sidebar on mobile when link is clicked
+  React.useEffect(() => {
+    const handleCloseSidebar = () => {
+      if (window.innerWidth < 768) {
+        const sidebarTrigger = document.querySelector(
+          '[data-sidebar] button[aria-label="Toggle Sidebar"]'
+        ) as HTMLButtonElement;
+        if (sidebarTrigger) {
+          sidebarTrigger.click();
+        }
+      }
+    };
+
+    document.addEventListener('close-sidebar', handleCloseSidebar);
+    return () => document.removeEventListener('close-sidebar', handleCloseSidebar);
+  }, []);
+
+  React.useEffect(() => {
+    if (isMounted) {
+      const newSrc =
+        resolvedTheme === 'dark' ? '/assets/img/ttn-logo.jpg' : '/assets/img/ttn-logo.jpg';
+      setLogoSrc(newSrc);
+    }
+  }, [resolvedTheme, isMounted]);
+
+  const userPermissions = permissions || [];
+
+  if (!isMounted) {
+    return (
+      <Sidebar {...props}>
+        <SidebarHeader>
+          <div className="flex h-12 items-center px-4">
+            <div className="h-8 w-32 animate-pulse rounded-md bg-sidebar-accent" />
+          </div>
+        </SidebarHeader>
+        <SidebarContent className="gap-0">
+          <SidebarGroup>
+            <div className="space-y-2 p-2">
+              <div className="h-8 w-full animate-pulse rounded-md bg-sidebar-accent" />
+              <div className="h-8 w-full animate-pulse rounded-md bg-sidebar-accent" />
+            </div>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarRail />
+      </Sidebar>
+    );
+  }
+
+  // Mapping data dari session untuk UserSetting
+  const userData = {
+    name: session?.user?.name || 'User',
+    email: session?.user?.email || '...',
+    avatar: session?.user?.image || '',
+  };
+
+  const hasPermission = (permission?: string) => {
+    if (!permission) return true;
+    if (permission === 'tenant.read' && isRootSuperadmin) return true;
+    return userPermissions.includes(permission);
+  };
+
+  // Close sidebar on mobile when link is clicked
+  const closeSidebarOnMobile = () => {
+    if (window.innerWidth < 768) {
+      const event = new Event('close-sidebar');
+      document.dispatchEvent(event);
+    }
+  };
+
+  const switchTenant = (nextTenantId: string) => {
+    document.cookie = `sitivent_active_tenant=${encodeURIComponent(nextTenantId)}; path=/; samesite=lax`;
+    window.location.assign(`/admin/${nextTenantId}/dashboard`);
+  };
+
+  const filteredNavMain = sideLinks.navMain
+    .map((item) => {
+      // Filter children first
+      const visibleItems = item.items?.filter((subItem) => hasPermission(subItem.permission));
+
+      // If item has children, show if at least one child is visible
+      if (item.hasChildren) {
+        if (visibleItems && visibleItems.length > 0) {
+          return { ...item, items: visibleItems };
+        }
+        return null;
+      }
+
+      // If item has no children, check its own permission
+      if (hasPermission(item.permission)) {
+        return item;
+      }
+
+      return null;
+    })
+    .filter(Boolean) as typeof sideLinks.navMain;
+
+  return (
+    <Sidebar {...props}>
+      <SidebarHeader className="flex items-center justify-center p-4">
+        {/* Menggunakan img standar sementara untuk memastikan path benar-benar bisa diakses */}
+        <Image
+          className="w-auto h-25"
+          src="/assets/img/SITIVENT-PRIMARY.png"
+          alt="Logo"
+          width={120}
+          height={40}
+          loading="lazy"
+        />
+        {(tenants.length > 1 || isRootSuperadmin) && tenants.length > 0 && (
+          <SidebarMenu className="mt-3 w-full">
+            <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton size="lg">
+                    <div className="flex size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">{tenantId?.slice(0, 2).toUpperCase()}</div>
+                    <div className="grid flex-1 text-left text-sm leading-tight"><span className="truncate font-semibold">Tenant aktif</span><span className="truncate text-xs text-muted-foreground">{tenants.find((tenant) => tenant.id === tenantId)?.name ?? 'Pilih tenant'}</span></div>
+                    <ChevronsUpDown className="ml-auto size-4" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="right" align="end" className="min-w-64">
+                  {tenants.map((tenant) => <DropdownMenuItem key={tenant.id} onSelect={() => switchTenant(tenant.id)}>{tenant.name}{tenant.id === tenantId && <Check className="ml-auto size-4" />}</DropdownMenuItem>)}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        )}
+      </SidebarHeader>
+      <SidebarContent className="gap-0">
+        {/* We create a collapsible SidebarGroup for each parent. */}
+        {filteredNavMain.map((item) => (
+          <SidebarGroup key={item.title}>
+            {item.hasChildren ? (
+              <Collapsible defaultOpen className="group/collapsible">
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton
+                    className="font-medium text-sidebar-foreground hover:bg-sidebar-accent"
+                    onClick={closeSidebarOnMobile}
+                  >
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {item.items?.map((subItem) => (
+                      <SidebarMenuSubItem key={subItem.title}>
+                        <SidebarMenuSubButton asChild>
+                          <Link
+                            href={`${adminPath}/${subItem.url}` as Route}
+                            onClick={closeSidebarOnMobile}
+                          >
+                            <span>{subItem.title}</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </Collapsible>
+            ) : (
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link href={`${adminPath}/${item.url}` as Route}>
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            )}
+          </SidebarGroup>
+        ))}
+      </SidebarContent>
+      <SidebarFooter>
+        <UserSetting user={userData} />
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+  );
+}
