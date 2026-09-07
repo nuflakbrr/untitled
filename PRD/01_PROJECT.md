@@ -1,7 +1,7 @@
-# About Project & Product Roadmap - SITIVENT (Untitled Monorepo)
+# About Project & Product Roadmap - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
-> **Product Name**: SITIVENT (Untitled Monorepo)  
+> **Product Name**: SITIVENT (SITIVENT Monorepo)  
 > **Target Domain**: Sistem Informasi & Manajemen Event Universitas (Hierarchical Multi-Tenant: Rektorat & Fakultas)  
 > **Target Event**: Seminar Ilmiah, Workshop Akademik, Webinar, Kompetisi Mahasiswa, Konferensi Internasional, Expo Kampus, Dies Natalis, dan Wisuda.
 

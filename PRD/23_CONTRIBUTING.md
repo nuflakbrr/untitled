@@ -1,4 +1,4 @@
-# Contributing & Development Workflow - SITIVENT (Untitled Monorepo)
+# Contributing & Development Workflow - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
 > Pedoman alur kerja pengembangan, batasan AI Agent, dan konvensi git commit untuk monorepo polyglot.
@@ -9,7 +9,7 @@
 
 Saat menghasilkan atau memodifikasi kode di repository ini, AI wajib:
 
-- **Mematuhi Arsitektur Monorepo**: Menempatkan kode backend di `apps/backend/` dan antarmuka di `apps/frontend/`.
+- **Mematuhi Arsitektur Monorepo**: Menempatkan kode backend di `apps/backend/` dan antarmuka di `apps/sitivent-frontend/`.
 - **Menggunakan Stack yang Tersedia**: Dilarang menginstal library alternatif jika pustaka yang setara sudah ada.
 - **Mempertahankan Type Safety**: Dilarang menggunakan tipe `any` di TypeScript maupun `interface{}`/`any` serampangan di Go.
 - **Memvalidasi Hak Akses**: Setiap endpoint administratif di Go wajib dilindungi middleware `middleware.RequirePermission("module.action")`.

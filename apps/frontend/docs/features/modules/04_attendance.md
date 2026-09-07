@@ -1,4 +1,4 @@
-# Frontend Feature: QR Scanner & Presensi - SITIVENT (Untitled)
+# Frontend Feature: QR Scanner & Presensi - SITIVENT (SITIVENT)
 
 > **Version**: 1.0.0  
 > **Module**: Camera QR Scanner UI  

@@ -1,4 +1,4 @@
-# Frontend Feature: Manajemen & Pemrosesan Media - SITIVENT (Untitled)
+# Frontend Feature: Manajemen & Pemrosesan Media - SITIVENT (SITIVENT)
 
 > **Version**: 1.0.0  
 > **Module**: Media Upload & Image Cropper UI  

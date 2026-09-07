@@ -1,4 +1,4 @@
-# Performance & Optimization Rules - SITIVENT (Untitled Monorepo)
+# Performance & Optimization Rules - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
 > Pedoman optimasi performa backend Go, rendering Next.js, efisiensi bandwidth, kueri PostgreSQL, dan in-memory cache Redis.

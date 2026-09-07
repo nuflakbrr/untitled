@@ -1,4 +1,4 @@
-# File Upload & Media Management - SITIVENT (Untitled Monorepo)
+# File Upload & Media Management - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
 > Seluruh aset media (banner event, foto pembicara, avatar pengguna, bukti pembayaran, galeri dokumentasi, dan template sertifikat) dikelola menggunakan layanan Cloud Storage (Google Cloud Storage / ImageKit) dengan validasi tipe file yang ketat.

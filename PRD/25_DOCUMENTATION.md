@@ -1,4 +1,4 @@
-# Cetak Biru Arsitektur & Panduan Dokumentasi Fitur - SITIVENT (Untitled Monorepo)
+# Cetak Biru Arsitektur & Panduan Dokumentasi Fitur - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
 > Dokumen ini berfungsi sebagai peta navigasi utama dan pedoman pengembangan untuk programmer dan AI Agent dalam memahami arsitektur, tech stack, alur kerja pengembangan, serta struktur fitur di proyek **SITIVENT** versi **Turborepo Polyglot Monorepo (Go Backend + Next.js Frontend)**.
@@ -18,7 +18,7 @@ Aplikasi dibangun menggunakan arsitektur monorepo polyglot terpisah yang diorkes
   - **Authentication**: JWT HS256 (`golang-jwt/jwt/v5`) + Bcrypt password hashing
   - **Structured Logging**: Uber Zap
   - **Hot Reload**: Air
-- **Frontend Web (`apps/frontend`)**:
+- **Frontend Web (`apps/sitivent-frontend`)**:
   - **Framework**: [Next.js 16.2.6](https://nextjs.org/) (App Router, Turbopack, React 19.2.6)
   - **UI Design System**: Material UI v9 (`@mui/material`, `@mui/lab`) + Zone/Minimal UI + Tailwind CSS v4
   - **State Management & Caching**: TanStack React Query v5
@@ -28,10 +28,10 @@ Aplikasi dibangun menggunakan arsitektur monorepo polyglot terpisah yang diorkes
 
 ---
 
-## 2. Struktur Monorepo (`apps/backend` & `apps/frontend`)
+## 2. Struktur Monorepo (`apps/backend` & `apps/sitivent-frontend`)
 
 ```text
-untitled/
+sitivent/
 ├── apps/
 │   ├── backend/               # Go Gin REST API Server (:8080)
 │   │   ├── cmd/api/main.go    # Entry point & dependency injection
@@ -79,12 +79,12 @@ Saat membuat atau memodifikasi fitur di SITIVENT Monorepo, ikuti tahapan berikut
 3. Buat handler di `apps/backend/internal/handlers/` dan daftarkan rutenya di `apps/backend/internal/router/router.go` dengan middleware permission guard `middleware.RequirePermission("feature.action")`.
 
 ### Langkah 3: Types & API Client (Frontend)
-1. Definisikan tipe DTO di `apps/frontend/src/types/`.
+1. Definisikan tipe DTO di `apps/sitivent-frontend/src/types/`.
 2. Buat skema validasi form menggunakan Zod di `src/sections/[feature]/schema.ts`.
-3. Buat custom React Query hook di `apps/frontend/src/services/[feature].ts` menggunakan client `ky`.
+3. Buat custom React Query hook di `apps/sitivent-frontend/src/services/[feature].ts` menggunakan client `ky`.
 
 ### Langkah 4: UI Implementation & Testing (Frontend)
-1. Buat komponen form dan tabel di `apps/frontend/src/sections/[feature]/`.
-2. Pasang halaman di route group `apps/frontend/src/app/(admin)/admin/[feature]/page.tsx` atau `(participant)/participant/[feature]/page.tsx`.
+1. Buat komponen form dan tabel di `apps/sitivent-frontend/src/sections/[feature]/`.
+2. Pasang halaman di route group `apps/sitivent-frontend/src/app/(admin)/admin/[feature]/page.tsx` atau `(participant)/participant/[feature]/page.tsx`.
 3. Pasang guard izin UI menggunakan hook `usePermission`.
 4. Jalankan `make lint` dan `make tsc` untuk verifikasi kualitas kode.

@@ -1,4 +1,4 @@
-# Frontend Feature: Katalog & Manajemen Event - SITIVENT (Untitled)
+# Frontend Feature: Katalog & Manajemen Event - SITIVENT (SITIVENT)
 
 > **Version**: 1.0.0  
 > **Module**: Events UI (Catalog & CMS)  

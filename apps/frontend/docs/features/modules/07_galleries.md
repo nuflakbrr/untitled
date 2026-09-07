@@ -1,4 +1,4 @@
-# Frontend Feature: Galeri Kegiatan UI - SITIVENT (Untitled)
+# Frontend Feature: Galeri Kegiatan UI - SITIVENT (SITIVENT)
 
 > **Version**: 1.0.0  
 > **Module**: Event Galleries & Lightbox UI  

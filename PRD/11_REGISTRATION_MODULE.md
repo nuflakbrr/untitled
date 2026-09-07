@@ -1,4 +1,4 @@
-# Registration Module - SITIVENT (Untitled Monorepo)
+# Registration Module - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
 > Modul pengelolaan pendaftaran peserta event (Universal Participant Registration), generasi nomor registrasi unik, alokasi QR Code, dan validasi kuota secara transaksional lintas fakultas.

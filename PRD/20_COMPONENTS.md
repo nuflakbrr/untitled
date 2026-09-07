@@ -1,11 +1,11 @@
-# Component Rules & Architecture - SITIVENT (Untitled Monorepo)
+# Component Rules & Architecture - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
-> Seluruh pengembangan antarmuka wajib mengacu pada sistem komponen terstruktur di bawah direktori `apps/frontend/src/components/`, `src/sections/`, dan `src/layouts/`.
+> Seluruh pengembangan antarmuka wajib mengacu pada sistem komponen terstruktur di bawah direktori `apps/sitivent-frontend/src/components/`, `src/sections/`, dan `src/layouts/`.
 
 ---
 
-## 1. Pembagian Hierarki Komponen Frontend (`apps/frontend/src/`)
+## 1. Pembagian Hierarki Komponen Frontend (`apps/sitivent-frontend/src/`)
 
 ```text
 src/

@@ -1,8 +1,8 @@
-# AI Agents Guidelines - SITIVENT (Untitled Monorepo)
+# AI Agents Guidelines - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
 > **Author**: Naufal Akbar Nugroho  
-> **Project**: SITIVENT / Untitled Monorepo  
+> **Project**: SITIVENT / SITIVENT Monorepo  
 > **Target Domain**: Sistem Informasi & Manajemen Event Universitas (Hierarchical Multi-Tenant: Rektorat & Fakultas)  
 > **Architecture**: Turborepo Monorepo (Polyglot: Go Backend + Next.js Frontend)  
 > **Backend**: Go (Golang 1.25+ / Gin Web Framework / Redis / Zap Logger)  
@@ -11,7 +11,7 @@
 > **Authentication**: JWT & Multi-Tenant PBAC (Permission-Based Access Control) with Redis Cache  
 > **Last Updated**: 2026
 
-Selamat datang di pedoman pengembangan AI SITIVENT (Untitled). Dokumentasi Product Requirement Document (PRD) ini dipecah menjadi beberapa modul terstruktur untuk memudahkan pemeliharaan, referensi teknis, dan kepatuhan arsitektur monorepo polyglot:
+Selamat datang di pedoman pengembangan AI SITIVENT (SITIVENT). Dokumentasi Product Requirement Document (PRD) ini dipecah menjadi beberapa modul terstruktur untuk memudahkan pemeliharaan, referensi teknis, dan kepatuhan arsitektur monorepo polyglot:
 
 ---
 
@@ -37,8 +37,8 @@ Selamat datang di pedoman pengembangan AI SITIVENT (Untitled). Dokumentasi Produ
 ### 2. Arsitektur & Setup
 
 2. [02_STACK.md](./PRD/02_STACK.md) - Rincian lengkap teknologi stack (Turborepo, Bun, Next.js 16, React 19, MUI v9, Tailwind v4, Go 1.25+, Gin, PostgreSQL, Redis, Zap).
-3. [03_ARCHITECTURE.md](./PRD/03_ARCHITECTURE.md) - Prinsip arsitektur monorepo, tenant context isolation, REST API layer (`apps/backend`), Next.js App Router (`apps/frontend`).
-4. [04_FOLDER_STRUCTURE.md](./PRD/04_FOLDER_STRUCTURE.md) - Struktur direktori monorepo (`apps/backend/`, `apps/frontend/`, `packages/`).
+3. [03_ARCHITECTURE.md](./PRD/03_ARCHITECTURE.md) - Prinsip arsitektur monorepo, tenant context isolation, REST API layer (`apps/backend`), Next.js App Router (`apps/sitivent-frontend`).
+4. [04_FOLDER_STRUCTURE.md](./PRD/04_FOLDER_STRUCTURE.md) - Struktur direktori monorepo (`apps/backend/`, `apps/sitivent-frontend/`, `packages/`).
 
 ### 3. Konvensi & Standar Kode
 

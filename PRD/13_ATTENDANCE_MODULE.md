@@ -1,4 +1,4 @@
-# Attendance & QR Scanner Module - SITIVENT (Untitled Monorepo)
+# Attendance & QR Scanner Module - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
 > Modul validasi kehadiran peserta di lokasi acara secara langsung via kamera perangkat (HTML5 QR Scanner) dan pencatatan presensi real-time.

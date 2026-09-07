@@ -1,4 +1,4 @@
-# Frontend Feature: Pendaftaran & Pembayaran - SITIVENT (Untitled)
+# Frontend Feature: Pendaftaran & Pembayaran - SITIVENT (SITIVENT)
 
 > **Version**: 1.0.0  
 > **Module**: Registrations & Payments UI  

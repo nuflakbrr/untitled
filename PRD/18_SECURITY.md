@@ -1,4 +1,4 @@
-# Security Policies & Data Protection - SITIVENT (Untitled Monorepo)
+# Security Policies & Data Protection - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
 > Pedoman keamanan komprehensif untuk melindungi integritas sistem, data pribadi peserta, isolasi data antar-tenant, dan keaslian transaksi pada arsitektur monorepo polyglot.

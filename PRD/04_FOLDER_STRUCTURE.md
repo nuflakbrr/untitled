@@ -1,10 +1,10 @@
-# Folder Structure - SITIVENT (Untitled Monorepo)
+# Folder Structure - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
-> **Monorepo Layout**: Turborepo, `apps/backend/` (Go Gin REST API), `apps/frontend/` (Next.js 16 App Router), `packages/` (Shared Packages)
+> **Monorepo Layout**: Turborepo, `apps/backend/` (Go Gin REST API), `apps/sitivent-frontend/` (Next.js 16 App Router), `packages/` (Shared Packages)
 
 ```text
-untitled/
+sitivent/
 ├── .husky/                                # Git hooks (pre-commit, pre-push)
 ├── apps/
 │   ├── backend/                           # Go REST API Service (Port 8080)

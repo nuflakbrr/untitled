@@ -1,4 +1,4 @@
-# Frontend Feature: Autentikasi & PBAC UI - SITIVENT (Untitled)
+# Frontend Feature: Autentikasi & PBAC UI - SITIVENT (SITIVENT)
 
 > **Version**: 1.0.0  
 > **Module**: Auth & Permissions UI  

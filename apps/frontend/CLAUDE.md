@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-**Untitled Frontend** (internal codename **SITIVENT**) — Next.js 16 (App Router) + MUI 9 + TypeScript, built on the Zone UI v4.6.0 (Minimals) template. It has grown beyond the original marketing-skeleton scope into the full product frontend for a university event platform: a **public site** (home, events, articles, gallery, registration/checkout), an **admin dashboard** (`/dashboard/*` — access control: users/roles/permissions/tenants, events), and a **participant portal** (`/participant/*` — transactions, certificates, profile), plus shared `/auth/*` sign-in/sign-up.
+**SITIVENT Frontend** (internal codename **SITIVENT**) — Next.js 16 (App Router) + MUI 9 + TypeScript, built on the Zone UI v4.6.0 (Minimals) template. It has grown beyond the original marketing-skeleton scope into the full product frontend for a university event platform: a **public site** (home, events, articles, gallery, registration/checkout), an **admin dashboard** (`/dashboard/*` — access control: users/roles/permissions/tenants, events), and a **participant portal** (`/participant/*` — transactions, certificates, profile), plus shared `/auth/*` sign-in/sign-up.
 
 Data comes from the Go backend (`apps/backend` in this monorepo) through **two distinct lanes** — see "API/data layer" below; don't assume one pattern covers both. Mock data in [src/\_mock/](src/_mock/) only feeds the component gallery and a couple of static fallbacks — do not build new features on mocks.
 

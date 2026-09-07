@@ -40,10 +40,10 @@ dev:
 	@bun run dev
 
 dev-fe:
-	@bun run --filter untitled-frontend dev
+	@bun run --filter sitivent-frontend dev
 
 dev-be:
-	@bun run --filter untitled-backend dev
+	@bun run --filter sitivent-backend dev
 
 build:
 	@bun run build
@@ -55,10 +55,10 @@ test:
 	@bun run test
 
 test-e2e:
-	@E2E_ADMIN_EMAIL=$(E2E_ADMIN_EMAIL) E2E_ADMIN_PASSWORD=$(E2E_ADMIN_PASSWORD) PLAYWRIGHT_HEADLESS=false bun run --cwd apps/frontend test:e2e
+	@E2E_ADMIN_EMAIL=$(E2E_ADMIN_EMAIL) E2E_ADMIN_PASSWORD=$(E2E_ADMIN_PASSWORD) PLAYWRIGHT_HEADLESS=false bun run --cwd apps/sitivent-frontend test:e2e
 
 test-e2e-ui:
-	@E2E_ADMIN_EMAIL=$(E2E_ADMIN_EMAIL) E2E_ADMIN_PASSWORD=$(E2E_ADMIN_PASSWORD) bun run --cwd apps/frontend test:e2e:ui
+	@E2E_ADMIN_EMAIL=$(E2E_ADMIN_EMAIL) E2E_ADMIN_PASSWORD=$(E2E_ADMIN_PASSWORD) bun run --cwd apps/sitivent-frontend test:e2e:ui
 
 playwright-install:
 	@bunx playwright install chromium

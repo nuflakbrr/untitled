@@ -1,4 +1,4 @@
-# Payment Module - SITIVENT (Untitled Monorepo)
+# Payment Module - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
 > Modul pengelolaan pembayaran tiket event berbayar multi-tenant dengan integrasi **iPaymu Payment Gateway** (Multi-Credential per Tenant), webhook otomatis, dan fallback transfer manual.

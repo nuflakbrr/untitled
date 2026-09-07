@@ -1,4 +1,4 @@
-# UI/UX & Design Guidelines - SITIVENT (Untitled Monorepo)
+# UI/UX & Design Guidelines - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
 > Pedoman antarmuka pengguna berbasis **Material UI v9 (Minimal/Zone UI Base)** dan **Tailwind CSS v4** dengan dukungan penjenamaan fakultas (*Faculty Theming & Branding*).
@@ -12,7 +12,7 @@
    - Tipografi menggunakan font modern sans-serif yang mudah dibaca di layar desktop maupun mobile.
 
 2. **Dukungan Tema Terang & Gelap (Dark & Light Mode)**:
-   - Warna palette tema dikonfigurasi secara tersentralisasi di `apps/frontend/src/theme/core/palette.ts`.
+   - Warna palette tema dikonfigurasi secara tersentralisasi di `apps/sitivent-frontend/src/theme/core/palette.ts`.
    - Komponen wajib mendukung mode gelap tanpa merusak kontras teks atau elemen interaktif.
 
 3. **Faculty Branding & Tenant Accent Colors**:

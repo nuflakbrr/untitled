@@ -1,4 +1,4 @@
-# Architecture Principles & Design - SITIVENT (Untitled Monorepo)
+# Architecture Principles & Design - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
 > **Paradigm**: Hierarchical Multi-Tenant (Universitas & Fakultas), Turborepo Polyglot Monorepo, Go Clean Architecture (Gin REST API), Next.js 16 App Router, Multi-Tenant PBAC Access Guard
@@ -14,7 +14,7 @@
 
 2. **Polyglot Monorepo Separation**:
    - `apps/backend/`: Layanan REST API performa tinggi berbasis **Go 1.25+ (Gin)** yang menangani seluruh operasi basis data, transaksi multi-tenant, autentikasi JWT, antrean email, verifikasi pembayaran, dan presensi QR.
-   - `apps/frontend/`: Aplikasi antarmuka berbasis **Next.js 16 (React 19)** yang melayani portal publik, dashboard admin panitia fakultas/rektorat, dan dashboard peserta mandiri.
+   - `apps/sitivent-frontend/`: Aplikasi antarmuka berbasis **Next.js 16 (React 19)** yang melayani portal publik, dashboard admin panitia fakultas/rektorat, dan dashboard peserta mandiri.
    - `packages/`: Paket utilitas dan tipe bersama antarlayanan monorepo.
 
 3. **Clean Layered Architecture di Backend (`apps/backend`)**:
@@ -27,7 +27,7 @@
 
 ## 2. Struktur Route & API Endpoints
 
-### A. Next.js 16 Route Groups (`apps/frontend/src/app/`)
+### A. Next.js 16 Route Groups (`apps/sitivent-frontend/src/app/`)
 
 ```text
 src/app/

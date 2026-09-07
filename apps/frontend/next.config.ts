@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   distDir: process.env.PLAYWRIGHT ? '.next-playwright' : '.next',
   poweredByHeader: false,
-  allowedDevOrigins: ['permitted-cult-miniature-buzz.trycloudflare.com'],
+  allowedDevOrigins: ['vincent-implied-sensitivity-tuesday.trycloudflare.com'],
   // Standalone hanya untuk build Docker (di-set Dockerfile) — tanpa gate ini
   // `yarn start` lokal mengeluarkan warning dan tidak memakai output-nya.
   ...(process.env.BUILD_STANDALONE === 'true' && { output: 'standalone' as const }),

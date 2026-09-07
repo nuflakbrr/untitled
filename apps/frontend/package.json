@@ -1,12 +1,12 @@
 {
-  "name": "untitled-frontend",
+  "name": "frontend",
   "author": "SITIVENT Contributors",
   "version": "0.1.0",
   "description": "SITIVENT university event management frontend",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000",
-    "start": "next start -p 3000",
+    "dev": "next dev -p 3001",
+    "start": "next start -p 3001",
     "build": "next build",
     "test": "bun test",
     "test:e2e": "playwright test",

@@ -1,7 +1,7 @@
-# Service Layer Architecture - SITIVENT (Untitled Monorepo)
+# Service Layer Architecture - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
-> Pedoman arsitektur Service Layer di Go Backend (`apps/backend`) dan API Client Layer di Next.js Frontend (`apps/frontend`).
+> Pedoman arsitektur Service Layer di Go Backend (`apps/backend`) dan API Client Layer di Next.js Frontend (`apps/sitivent-frontend`).
 
 ---
 
@@ -46,7 +46,7 @@ PostgreSQL Database
 
 ---
 
-## 2. Frontend API Client Layer (`apps/frontend/src/services/`)
+## 2. Frontend API Client Layer (`apps/sitivent-frontend/src/services/`)
 
 Frontend mengonsumsi endpoint backend REST API menggunakan wrapper **Ky** dan **TanStack React Query**:
 

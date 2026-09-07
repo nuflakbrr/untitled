@@ -1,4 +1,4 @@
-# Database Conventions & Migrations - SITIVENT (Untitled Monorepo)
+# Database Conventions & Migrations - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.1.0  
 > Konvensi skema PostgreSQL, Isolasi Schema (`core` & `public`), Hierarchical Multi-Tenancy (`core.tenants`), Pure UUID v4 Primary Keys, aturan granular `golang-migrate` (1 tabel per migrasi), dan SQL seeders idempotent.

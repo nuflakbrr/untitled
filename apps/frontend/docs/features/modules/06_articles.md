@@ -1,4 +1,4 @@
-# Frontend Feature: Artikel & Publikasi UI - SITIVENT (Untitled)
+# Frontend Feature: Artikel & Publikasi UI - SITIVENT (SITIVENT)
 
 > **Version**: 1.0.0  
 > **Module**: Articles & News UI  

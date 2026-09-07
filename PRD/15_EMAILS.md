@@ -1,4 +1,4 @@
-# Email Architecture & Queue - SITIVENT (Untitled Monorepo)
+# Email Architecture & Queue - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
 > Seluruh komunikasi email transaksional diproses secara asinkron menggunakan sistem antrean database (`email_queues`) untuk menjamin performa request utama tetap instan.
@@ -70,5 +70,5 @@ Pengiriman email di Go Backend dikonfigurasi melalui `pkg/email/smtp.go` dengan 
 - `SMTP_PORT`: Port SMTP (contoh: `587` untuk STARTTLS).
 - `SMTP_USER`: Username / email akun pengirim.
 - `SMTP_PASSWORD`: Password aplikasi / API token.
-- `SMTP_FROM_EMAIL`: Alamat email pengirim (contoh: `noreply@untitled.com`).
+- `SMTP_FROM_EMAIL`: Alamat email pengirim (contoh: `noreply@sitivent.com`).
 - `SMTP_FROM_NAME`: Nama pengirim (contoh: `"SITIVENT"`).

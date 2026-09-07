@@ -1,4 +1,4 @@
-# Technology Stack - SITIVENT (Untitled Monorepo)
+# Technology Stack - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
 > Seluruh pengembangan fitur wajib memanfaatkan ekosistem stack monorepo yang sudah terpasang. Dilarang menginstal library alternatif tanpa kebutuhan arsitektural yang jelas.
@@ -30,7 +30,7 @@
 
 ---
 
-## 3. Frontend Stack (`apps/frontend`)
+## 3. Frontend Stack (`apps/sitivent-frontend`)
 
 - **Framework**: [Next.js 16.2.6](https://nextjs.org/) (App Router, Turbopack, React Compiler support)
 - **UI Library**: [React 19.2.6](https://react.dev/) & `react-dom 19.2.6`

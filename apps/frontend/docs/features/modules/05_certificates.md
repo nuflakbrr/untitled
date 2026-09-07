@@ -1,4 +1,4 @@
-# Frontend Feature: Desain Sertifikat & Verifikasi Publik - SITIVENT (Untitled)
+# Frontend Feature: Desain Sertifikat & Verifikasi Publik - SITIVENT (SITIVENT)
 
 > **Version**: 1.0.0  
 > **Module**: Certificate Builder & Public Verification UI  

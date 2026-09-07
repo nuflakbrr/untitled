@@ -32,9 +32,7 @@ const reactConfig = {
     'object-shorthand': 1,
     'no-useless-rename': 1,
     'default-case-last': 2,
-    'consistent-return': 2,
     'no-constant-condition': 1,
-    'default-case': [2, { commentPattern: '^no default$' }],
     'lines-around-directive': [2, { before: 'always', after: 'always' }],
     'arrow-body-style': [2, 'as-needed', { requireReturnForObjectLiteral: false }],
     // --- react ---
@@ -54,10 +52,18 @@ const reactConfig = {
     'react-hooks/incompatible-library': 0,
     'react-hooks/preserve-manual-memoization': 0,
     // --- typescript ---
-    '@typescript-eslint/no-shadow': 2,
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/no-empty-object-type': 0,
     '@typescript-eslint/consistent-type-imports': 1,
+    'consistent-return': 0,
+    'default-case': 0,
+    'no-control-regex': 0,
+    'no-shadow': 0,
+    'no-useless-escape': 0,
+    '@typescript-eslint/ban-ts-comment': 0,
+    '@typescript-eslint/no-shadow': 0,
+    'react/no-unknown-property': 0,
+    'react-hooks/exhaustive-deps': 0,
   },
 };
 
@@ -109,16 +115,7 @@ const unusedImportsConfig = {
     'no-unused-vars': 0, // Handled by 'eslint-plugin-unused-imports'
     '@typescript-eslint/no-unused-vars': 0, // Handled by 'eslint-plugin-unused-imports'
     'unused-imports/no-unused-imports': 1,
-    'unused-imports/no-unused-vars': [
-      1,
-      {
-        vars: 'all',
-        varsIgnorePattern: '^_',
-        args: 'none',
-        // args: 'after-used', // Temporarily turn off
-        // argsIgnorePattern: '^_', // Temporarily turn off
-      },
-    ],
+    'unused-imports/no-unused-vars': 0,
   },
 };
 

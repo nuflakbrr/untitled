@@ -1,4 +1,4 @@
-# Certificate Module - SITIVENT (Untitled Monorepo)
+# Certificate Module - SITIVENT (SITIVENT Monorepo)
 
 > **Version**: 1.0.0  
 > Modul penerbitan dan verifikasi sertifikat digital dinamis per fakultas/rektorat yang dilengkapi dengan _Certificate Template Builder_, dukungan multi tanda tangan elektronik resmi (Dekan / Rektor), dan portal verifikasi publik.
