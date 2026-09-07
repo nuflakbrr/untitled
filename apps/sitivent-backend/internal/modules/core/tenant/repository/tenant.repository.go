@@ -31,7 +31,11 @@ func (r *TenantRepository) FindAll(ctx context.Context, filter dto.TenantQueryFi
 	var args []interface{}
 	argIdx := 1
 
-	conditions = append(conditions, "deleted_at IS NULL")
+	if filter.IncludeDeleted {
+		conditions = append(conditions, "deleted_at IS NOT NULL")
+	} else {
+		conditions = append(conditions, "deleted_at IS NULL")
+	}
 
 	if filter.Search != "" {
 		conditions = append(conditions, fmt.Sprintf("(name ILIKE $%d OR slug ILIKE $%d OR code ILIKE $%d)", argIdx, argIdx, argIdx))
@@ -188,6 +192,17 @@ func (r *TenantRepository) Delete(ctx context.Context, id string) error {
 	cmdTag, err := r.db.Exec(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete tenant: %w", err)
+	}
+	if cmdTag.RowsAffected() == 0 {
+		return ErrTenantNotFound
+	}
+	return nil
+}
+
+func (r *TenantRepository) PermanentDelete(ctx context.Context, id string) error {
+	cmdTag, err := r.db.Exec(ctx, `DELETE FROM tenants WHERE id = $1 AND deleted_at IS NOT NULL AND type <> 'ROOT'`, id)
+	if err != nil {
+		return fmt.Errorf("failed to permanently delete tenant: %w", err)
 	}
 	if cmdTag.RowsAffected() == 0 {
 		return ErrTenantNotFound

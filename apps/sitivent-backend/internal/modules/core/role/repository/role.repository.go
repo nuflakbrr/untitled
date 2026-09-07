@@ -39,8 +39,34 @@ func (r *RoleRepository) Update(ctx context.Context, id string, req dto.UpdateRo
 }
 
 func (r *RoleRepository) Delete(ctx context.Context, id string) error {
-	_, err := r.db.Exec(ctx, `DELETE FROM roles WHERE id=$1`, id)
-	return err
+	result, err := r.db.Exec(ctx, `UPDATE roles SET deleted_at=NOW(), updated_at=NOW() WHERE id=$1 AND deleted_at IS NULL`, id)
+	if err != nil {
+		return err
+	}
+	if result.RowsAffected() == 0 {
+		return ErrRoleNotFound
+	}
+	return nil
+}
+func (r *RoleRepository) Restore(ctx context.Context, id string) error {
+	result, err := r.db.Exec(ctx, `UPDATE roles SET deleted_at=NULL, updated_at=NOW() WHERE id=$1 AND deleted_at IS NOT NULL`, id)
+	if err != nil {
+		return err
+	}
+	if result.RowsAffected() == 0 {
+		return ErrRoleNotFound
+	}
+	return nil
+}
+func (r *RoleRepository) PermanentDelete(ctx context.Context, id string) error {
+	result, err := r.db.Exec(ctx, `DELETE FROM roles WHERE id=$1 AND deleted_at IS NOT NULL`, id)
+	if err != nil {
+		return err
+	}
+	if result.RowsAffected() == 0 {
+		return ErrRoleNotFound
+	}
+	return nil
 }
 
 func (r *RoleRepository) ListPermissions(ctx context.Context) ([]domain.Permission, error) {
@@ -111,15 +137,21 @@ func (r *RoleRepository) GetPermissionIDs(ctx context.Context, roleID string) ([
 // FindAll retrieves roles visible to the caller: every role when scopeTenantID
 // is nil (root superadmin), otherwise global template roles (tenant_id IS
 // NULL) plus that tenant's own custom roles.
-func (r *RoleRepository) FindAll(ctx context.Context, scopeTenantID *string) ([]domain.Role, error) {
+func (r *RoleRepository) FindAll(ctx context.Context, scopeTenantID *string, includeDeleted bool) ([]domain.Role, error) {
 	query := `
-		SELECT id, name, COALESCE(description, ''), tenant_id, created_at, updated_at
+		SELECT id, name, COALESCE(description, ''), tenant_id, created_at, updated_at, deleted_at
 		FROM roles
 	`
 	args := []interface{}{}
+	status := "deleted_at IS NULL"
+	if includeDeleted {
+		status = "deleted_at IS NOT NULL"
+	}
 	if scopeTenantID != nil {
-		query += ` WHERE (tenant_id IS NULL AND name <> 'root_superadmin') OR tenant_id = $1`
+		query += ` WHERE (` + status + `) AND ((tenant_id IS NULL AND name <> 'root_superadmin') OR tenant_id = $1)`
 		args = append(args, *scopeTenantID)
+	} else {
+		query += ` WHERE ` + status
 	}
 	query += ` ORDER BY created_at ASC`
 
@@ -132,7 +164,7 @@ func (r *RoleRepository) FindAll(ctx context.Context, scopeTenantID *string) ([]
 	var roles []domain.Role
 	for rows.Next() {
 		var role domain.Role
-		if err := rows.Scan(&role.ID, &role.Name, &role.Description, &role.TenantID, &role.CreatedAt, &role.UpdatedAt); err != nil {
+		if err := rows.Scan(&role.ID, &role.Name, &role.Description, &role.TenantID, &role.CreatedAt, &role.UpdatedAt, &role.DeletedAt); err != nil {
 			return nil, fmt.Errorf("failed to scan role: %w", err)
 		}
 		roles = append(roles, role)
@@ -143,12 +175,12 @@ func (r *RoleRepository) FindAll(ctx context.Context, scopeTenantID *string) ([]
 // FindByID retrieves a role by ID
 func (r *RoleRepository) FindByID(ctx context.Context, id string) (*domain.Role, error) {
 	query := `
-		SELECT id, name, COALESCE(description, ''), tenant_id, created_at, updated_at
+		SELECT id, name, COALESCE(description, ''), tenant_id, created_at, updated_at, deleted_at
 		FROM roles
-		WHERE id = $1
+		WHERE id = $1 AND deleted_at IS NULL
 	`
 	var role domain.Role
-	err := r.db.QueryRow(ctx, query, id).Scan(&role.ID, &role.Name, &role.Description, &role.TenantID, &role.CreatedAt, &role.UpdatedAt)
+	err := r.db.QueryRow(ctx, query, id).Scan(&role.ID, &role.Name, &role.Description, &role.TenantID, &role.CreatedAt, &role.UpdatedAt, &role.DeletedAt)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, ErrRoleNotFound

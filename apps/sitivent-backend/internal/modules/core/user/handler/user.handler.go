@@ -184,6 +184,18 @@ func (h *UserHandler) Delete(c *gin.Context) {
 	response.Success(c, http.StatusOK, "User deleted successfully", nil)
 }
 
+func (h *UserHandler) PermanentDelete(c *gin.Context) {
+	if err := h.service.PermanentDelete(c.Request.Context(), c.Param("id")); err != nil {
+		if errors.Is(err, repository.ErrUserNotFound) {
+			response.Error(c, http.StatusNotFound, "User not found", "")
+			return
+		}
+		response.Error(c, http.StatusInternalServerError, "Failed to permanently delete user", err.Error())
+		return
+	}
+	response.Success(c, http.StatusOK, "User permanently deleted", nil)
+}
+
 // UpdateMe handles PUT /core/v1/users/me
 func (h *UserHandler) UpdateMe(c *gin.Context) {
 	claims, err := middleware.GetUserFromContext(c)

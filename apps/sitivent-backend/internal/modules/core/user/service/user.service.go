@@ -146,6 +146,9 @@ func (s *UserService) Update(ctx context.Context, id string, req dto.UpdateUserR
 func (s *UserService) Delete(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, id)
 }
+func (s *UserService) PermanentDelete(ctx context.Context, id string) error {
+	return s.repo.PermanentDelete(ctx, id)
+}
 
 // UpdateMe updates profile of currently authenticated user
 func (s *UserService) UpdateMe(ctx context.Context, id string, req dto.UpdateMeRequest) (*dto.UserResponse, error) {

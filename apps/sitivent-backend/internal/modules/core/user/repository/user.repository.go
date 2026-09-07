@@ -84,6 +84,11 @@ func (r *UserRepository) FindAll(ctx context.Context, params dto.UserQueryParams
 	var conditions []string
 	var args []interface{}
 	argIdx := 1
+	if params.IncludeDeleted {
+		conditions = append(conditions, "u.deleted_at IS NOT NULL")
+	} else {
+		conditions = append(conditions, "u.deleted_at IS NULL")
+	}
 
 	if params.Search != "" {
 		conditions = append(conditions, fmt.Sprintf("(u.email ILIKE $%d OR u.name ILIKE $%d)", argIdx, argIdx))
@@ -330,6 +335,31 @@ func (r *UserRepository) Delete(ctx context.Context, id string) error {
 	}
 	if cmdTag.RowsAffected() == 0 {
 		return ErrUserNotFound
+	}
+	return nil
+}
+
+func (r *UserRepository) PermanentDelete(ctx context.Context, id string) error {
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to permanently delete user: %w", err)
+	}
+	defer tx.Rollback(ctx)
+	if _, err = tx.Exec(ctx, `DELETE FROM certificate_generation_jobs WHERE created_by_id = $1`, id); err != nil {
+		return fmt.Errorf("failed to permanently delete user: %w", err)
+	}
+	if _, err = tx.Exec(ctx, `DELETE FROM registrations WHERE user_id = $1`, id); err != nil {
+		return fmt.Errorf("failed to permanently delete user: %w", err)
+	}
+	cmdTag, err := tx.Exec(ctx, `DELETE FROM users WHERE id = $1 AND deleted_at IS NOT NULL`, id)
+	if err != nil {
+		return fmt.Errorf("failed to permanently delete user: %w", err)
+	}
+	if cmdTag.RowsAffected() == 0 {
+		return ErrUserNotFound
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("failed to permanently delete user: %w", err)
 	}
 	return nil
 }

@@ -41,6 +41,7 @@ func (m *TenantModule) SetupRoutes(router *gin.RouterGroup) {
 		tenants.POST("", middleware.JWTAuth(), middleware.RequirePermission("tenant.create"), m.Handler.Create)
 		tenants.PUT("/:id", middleware.JWTAuth(), middleware.RequirePermission("tenant.update"), m.Handler.Update)
 		tenants.DELETE("/:id", middleware.JWTAuth(), middleware.RequirePermission("tenant.delete"), m.Handler.Delete)
+		tenants.DELETE("/:id/permanent", middleware.JWTAuth(), middleware.RequirePermission("tenant.delete"), m.Handler.PermanentDelete)
 
 		// Payment gateway configuration
 		tenants.GET("/:id/payment-gateway", middleware.JWTAuth(), middleware.RequirePermission("tenant.update"), m.Handler.GetPaymentGateway)

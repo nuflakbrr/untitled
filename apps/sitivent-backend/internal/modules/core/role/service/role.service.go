@@ -30,8 +30,8 @@ func (s *RoleService) SetPermissionCacheInvalidator(inv PermissionCacheInvalidat
 
 // GetAll returns roles visible to the caller. scopeTenantID nil means
 // unrestricted (root superadmin); otherwise global roles + that tenant's own.
-func (s *RoleService) GetAll(ctx context.Context, scopeTenantID *string) ([]dto.RoleResponse, error) {
-	roles, err := s.roleRepo.FindAll(ctx, scopeTenantID)
+func (s *RoleService) GetAll(ctx context.Context, scopeTenantID *string, includeDeleted bool) ([]dto.RoleResponse, error) {
+	roles, err := s.roleRepo.FindAll(ctx, scopeTenantID, includeDeleted)
 	if err != nil {
 		return nil, err
 	}
@@ -45,6 +45,7 @@ func (s *RoleService) GetAll(ctx context.Context, scopeTenantID *string) ([]dto.
 			TenantID:    r.TenantID,
 			CreatedAt:   r.CreatedAt,
 			UpdatedAt:   r.UpdatedAt,
+			DeletedAt:   r.DeletedAt,
 		})
 	}
 	return resps, nil
@@ -82,6 +83,12 @@ func (s *RoleService) Update(ctx context.Context, id string, req dto.UpdateRoleR
 	return err
 }
 func (s *RoleService) Delete(ctx context.Context, id string) error { return s.roleRepo.Delete(ctx, id) }
+func (s *RoleService) Restore(ctx context.Context, id string) error {
+	return s.roleRepo.Restore(ctx, id)
+}
+func (s *RoleService) PermanentDelete(ctx context.Context, id string) error {
+	return s.roleRepo.PermanentDelete(ctx, id)
+}
 func (s *RoleService) Permissions(ctx context.Context) ([]domain.Permission, error) {
 	return s.roleRepo.ListPermissions(ctx)
 }

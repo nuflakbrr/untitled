@@ -26,6 +26,7 @@ type TenantRepositoryInterface interface {
 	Create(ctx context.Context, t *domain.Tenant) error
 	Update(ctx context.Context, t *domain.Tenant) error
 	Delete(ctx context.Context, id string) error
+	PermanentDelete(ctx context.Context, id string) error
 	GetPaymentGateway(ctx context.Context, tenantID string) (*domain.TenantPaymentGateway, error)
 	UpsertPaymentGateway(ctx context.Context, pg *domain.TenantPaymentGateway) error
 }
@@ -159,6 +160,11 @@ func (s *TenantService) Delete(ctx context.Context, id string) error {
 	return s.repo.Delete(ctx, id)
 }
 
+// PermanentDelete permanently removes a previously soft-deleted tenant.
+func (s *TenantService) PermanentDelete(ctx context.Context, id string) error {
+	return s.repo.PermanentDelete(ctx, id)
+}
+
 // GetPaymentGateway gets gateway configuration for a tenant
 func (s *TenantService) GetPaymentGateway(ctx context.Context, tenantID string) (*dto.TenantPaymentGatewayResponse, error) {
 	// Verify tenant exists
@@ -246,4 +252,3 @@ func toTenantResponse(t *domain.Tenant) dto.TenantResponse {
 		UpdatedAt:   t.UpdatedAt.Format(time.RFC3339),
 	}
 }
-

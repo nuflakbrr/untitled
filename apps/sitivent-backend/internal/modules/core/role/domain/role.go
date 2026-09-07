@@ -10,9 +10,10 @@ type Role struct {
 	// TenantID is nil for a shared/global template role (root_superadmin,
 	// superadmin, panitia, scanner, peserta); set to a specific tenant's ID
 	// for a custom role created by/for that tenant only.
-	TenantID  *string   `json:"tenant_id,omitempty" db:"tenant_id"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+	TenantID  *string    `json:"tenant_id,omitempty" db:"tenant_id"`
+	CreatedAt time.Time  `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at" db:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty" db:"deleted_at"`
 }
 
 // Permission represents a permission entity in SITIVENT

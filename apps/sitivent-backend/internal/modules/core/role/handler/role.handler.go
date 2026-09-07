@@ -85,6 +85,26 @@ func (h *RoleHandler) Delete(c *gin.Context) {
 	}
 	response.Success(c, 200, "Role deleted successfully", nil)
 }
+func (h *RoleHandler) Restore(c *gin.Context) {
+	if !h.checkRoleBoundary(c, c.Param("id")) {
+		return
+	}
+	if err := h.service.Restore(c, c.Param("id")); err != nil {
+		response.Error(c, 404, "Role not found", "")
+		return
+	}
+	response.Success(c, 200, "Role restored successfully", nil)
+}
+func (h *RoleHandler) PermanentDelete(c *gin.Context) {
+	if !h.checkRoleBoundary(c, c.Param("id")) {
+		return
+	}
+	if err := h.service.PermanentDelete(c, c.Param("id")); err != nil {
+		response.Error(c, 404, "Role not found", "")
+		return
+	}
+	response.Success(c, 200, "Role permanently deleted", nil)
+}
 func (h *RoleHandler) Permissions(c *gin.Context) {
 	permissions, err := h.service.Permissions(c)
 	if err != nil {
@@ -182,7 +202,7 @@ func (h *RoleHandler) GetAll(c *gin.Context) {
 		scopeTenantID = &claims.TenantID
 	}
 
-	roles, err := h.service.GetAll(c.Request.Context(), scopeTenantID)
+	roles, err := h.service.GetAll(c.Request.Context(), scopeTenantID, c.Query("include_deleted") == "true")
 	if err != nil {
 		response.Error(c, http.StatusInternalServerError, "Failed to retrieve roles", err.Error())
 		return

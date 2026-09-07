@@ -63,13 +63,14 @@ type UserResponse struct {
 
 // UserQueryParams represents query parameters for listing users
 type UserQueryParams struct {
-	Page        int     `form:"page,default=1" binding:"min=1"`
-	Limit       int     `form:"limit,default=10" binding:"min=1,max=100"`
-	Search      string  `form:"search" binding:"omitempty,max=255"`
-	Role        string  `form:"role" binding:"omitempty"`
-	ExcludeRole string  `form:"exclude_role" binding:"omitempty"`
-	TenantID    *string `form:"tenant_id" binding:"omitempty,uuid"`
-	Banned      *bool   `form:"banned"`
+	Page           int     `form:"page,default=1" binding:"min=1"`
+	Limit          int     `form:"limit,default=10" binding:"min=1,max=100"`
+	Search         string  `form:"search" binding:"omitempty,max=255"`
+	Role           string  `form:"role" binding:"omitempty"`
+	ExcludeRole    string  `form:"exclude_role" binding:"omitempty"`
+	TenantID       *string `form:"tenant_id" binding:"omitempty,uuid"`
+	Banned         *bool   `form:"banned"`
+	IncludeDeleted bool    `form:"include_deleted"`
 
 	// Populated from caller's JWT context by handler
 	ScopeTenantID *string `form:"-" json:"-"`

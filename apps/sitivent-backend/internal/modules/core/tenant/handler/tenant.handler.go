@@ -12,6 +12,7 @@ import (
 	"venturo-skeleton-go/internal/shared/response"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type TenantHandler struct {
@@ -200,6 +201,27 @@ func (h *TenantHandler) Delete(c *gin.Context) {
 	}
 
 	response.Success(c, http.StatusOK, "Tenant deleted successfully", nil)
+}
+
+func (h *TenantHandler) PermanentDelete(c *gin.Context) {
+	id := c.Param("id")
+	if !h.checkTenantBoundary(c, id) {
+		return
+	}
+	if err := h.service.PermanentDelete(c.Request.Context(), id); err != nil {
+		if errors.Is(err, repository.ErrTenantNotFound) {
+			response.Error(c, http.StatusNotFound, "Tenant not found", "")
+			return
+		}
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23503" {
+			response.Error(c, http.StatusConflict, "Tenant masih memiliki data terkait dan tidak dapat dihapus permanen", "Hapus atau pindahkan data terkait terlebih dahulu.")
+			return
+		}
+		response.Error(c, http.StatusInternalServerError, "Failed to permanently delete tenant", err.Error())
+		return
+	}
+	response.Success(c, http.StatusOK, "Tenant permanently deleted", nil)
 }
 
 // GetPaymentGateway handles GET /core/v1/tenants/:id/payment-gateway
