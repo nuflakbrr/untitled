@@ -19,6 +19,18 @@ export interface TenantPaginationResponse {
   meta: { total: number; page: number; lastPage: number };
 }
 
+export interface TenantPaymentGateway {
+  provider: 'IPAYMU' | 'MANUAL';
+  is_active: boolean;
+  api_key?: string;
+  virtual_account?: string;
+  env: 'sandbox' | 'production';
+  bank_name?: string;
+  bank_account_number?: string;
+  bank_account_holder?: string;
+  has_api_key?: boolean;
+}
+
 export async function getTenants(page = 1, limit = 10, search = ''): Promise<TenantPaginationResponse> {
   try {
     const response = await api.get('/core/v1/tenants', { params: { page, limit, search } });
@@ -65,3 +77,5 @@ export async function createTenant(values: Record<string, unknown>) { try { cons
 export async function getTenant(id: string) { try { const result = await api.get(`/core/v1/tenants/${id}`); return { success: true, data: result.data.data }; } catch { return { success: false, error: 'Gagal mengambil data tenant.' }; } }
 export async function updateTenant(id: string, values: Record<string, unknown>) { try { const result = await api.put(`/core/v1/tenants/${id}`, values); return { success: true, data: result.data.data }; } catch { return { success: false, error: 'Gagal memperbarui tenant.' }; } }
 export async function deleteTenant(id: string) { try { await api.delete(`/core/v1/tenants/${id}`); return { success: true }; } catch { return { success: false, error: 'Gagal menghapus tenant.' }; } }
+export async function getTenantPaymentGateway(id: string) { try { const result = await api.get(`/core/v1/tenants/${id}/payment-gateway`); return { success: true, data: result.data.data as TenantPaymentGateway | null }; } catch { return { success: false, error: 'Gagal mengambil pengaturan payment gateway.' }; } }
+export async function updateTenantPaymentGateway(id: string, values: TenantPaymentGateway) { try { const result = await api.put(`/core/v1/tenants/${id}/payment-gateway`, values); return { success: true, data: result.data.data as TenantPaymentGateway }; } catch { return { success: false, error: 'Gagal menyimpan pengaturan payment gateway.' }; } }
