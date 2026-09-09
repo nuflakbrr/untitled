@@ -50,7 +50,7 @@ pnpm dev
 
 ## 3. Perintah Menjalankan Pengujian
 
-### A. Menjalankan Seluruh Suite Pengujian (TC001 - TC100)
+### A. Menjalankan Seluruh Suite Pengujian (TC001 - TC165)
 
 ```bash
 pnpm test
@@ -156,4 +156,3 @@ Apabila ditemukan test-case yang **FAIL** atau tidak sesuai saat eksekusi automa
 2. **Skill Caveman**: Mengeksekusi kode perbaikan secara ultra-terfokus, efisien, langsung pada titik kegagalan tanpa filler/keterlambatan context.
 3. **Skill Superpowers**: Menerapkan otomatisasi tingkat tinggi, penanganan *edge cases*, serta arsitektur kode yang tangguh dan tahan kegagalan (*resilient*).
 4. **Skill UI-UX-Pro-Max**: Memperbaiki tampilan, respon interaktif, serta estetika visual komponen UI/UX secara profesional, modern, dan bebas cacat visual.
-

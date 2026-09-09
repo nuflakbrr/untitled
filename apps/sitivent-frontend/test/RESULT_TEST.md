@@ -6,8 +6,8 @@ Dokumen ini menyajikan pemetaan komprehensif dan evaluasi kesesuaian antara **Sk
 
 ## 1. Ringkasan Eksekutif
 
-- **Total Skenario Pengujian**: 100 Skenario (`TC001` s.d. `TC100`)
-- **Total Test Case Implementasi**: 100 File Playwright Spec (`TC001` s.d. `TC100`)
+- **Total Skenario Pengujian**: 165 Skenario (`TC001` s.d. `TC165`)
+- **Total Test Case Implementasi**: 165 File Playwright Spec (`TC001` s.d. `TC165`)
 - **Status Kesesuaian (Alignment)**: **100% Sesuai**
 - **Status Verifikasi Tipe (TypeScript `tsc --noEmit`)**: **PASSED (0 Error)**
 - **Cakupan Pengujian**: Autentikasi, Keamanan, RBAC, Manajemen Event, Pendaftaran, Pembayaran, Presensi/QR, Sertifikat, Artikel, Galeri, Bantuan Pelanggan, Impersonasi, Audit Logging, dan Integrasi Database.
@@ -148,5 +148,3 @@ Apabila ditemukan test-case yang **FAIL** atau tidak sesuai saat eksekusi automa
 - **Caveman**: Perbaikan kode secara ultra-terfokus, cepat, dan presisi tinggi.
 - **Superpowers**: Otomatisasi mutakhir & penanganan edge cases secara tangguh.
 - **UI-UX-Pro-Max**: Perbaikan tampilan dan interaktivitas UI/UX berkualitas tinggi & modern.
-
-
