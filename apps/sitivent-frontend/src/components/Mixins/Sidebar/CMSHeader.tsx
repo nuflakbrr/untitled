@@ -80,7 +80,7 @@ export function CMSHeader() {
           'galleries',
         ];
         if (prevSegment && resolvableParents.includes(prevSegment)) {
-          const label = await resolveLabel(segment, prevSegment);
+          const label = await resolveLabel(segment, prevSegment, tenantId);
           if (label) {
             newLabels[segment] = label;
             changed = true;
