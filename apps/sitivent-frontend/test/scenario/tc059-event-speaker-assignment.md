@@ -4,7 +4,7 @@
 Memastikan Admin dapat menyematkan beberapa narasumber/pembicara pada pembuatan event.
 
 ## Prasyarat
-- Admin ter-login di `/admin/master/events/create`.
+- Admin ter-login di `/admin/c9711506-d356-4704-a32e-0543dfe3e104/master/events/new`.
 
 ## Kondisi
 - **Input**: Pembicara `Dr. Tech` (Jabatan: `AI Expert`)

@@ -4,7 +4,7 @@
 Memastikan Admin dapat menambahkan foto dokumentasi ke galeri event.
 
 ## Prasyarat
-- Admin ter-login dan berada di `/admin/master/galleries`.
+- Admin ter-login dan berada di `/admin/c9711506-d356-4704-a32e-0543dfe3e104/master/galleries`.
 
 ## Kondisi
 - **Input**:
@@ -14,7 +14,7 @@ Memastikan Admin dapat menambahkan foto dokumentasi ke galeri event.
   - Foto dokumentasi terdaftar di galeri event.
 
 ## Langkah-Langkah Pengujian
-1. Buka `/admin/master/galleries`.
+1. Buka `/admin/c9711506-d356-4704-a32e-0543dfe3e104/master/galleries`.
 2. Klik tombol "+ Tambah Galeri".
 3. Pilih event dan unggah foto dokumentasi.
 4. Klik tombol "Simpan".

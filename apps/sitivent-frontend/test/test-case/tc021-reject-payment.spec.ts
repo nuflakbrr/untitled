@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Admin Reject Payment Proof', async ({ page }) => {
-  await page.goto('/admin/transactions/payments');
+  await page.goto('/admin/c9711506-d356-4704-a32e-0543dfe3e104/transactions/payments');
 
   const rejectButton = page.locator('button:has-text("Tolak")').first();
   if (await rejectButton.isVisible()) {

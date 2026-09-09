@@ -9,7 +9,7 @@ Memastikan halaman legalitas Syarat & Ketentuan (`/terms`) serta Kebijakan Priva
 ## Kondisi
 - **Input**: Buka `/terms` dan `/privacy`.
 - **Output yang Diharapkan**:
-  - Halaman memuat konten kebijakan legalitas tanpa error.
+  - Heading `Syarat & Ketentuan` dan `Kebijakan Privasi` terlihat pada halaman masing-masing.
 
 ## Langkah-Langkah Pengujian
 1. Buka `/terms`.

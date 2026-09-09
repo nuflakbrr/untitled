@@ -1,4 +1,15 @@
-# Test Case: Login Admin Success (TC002)
+# Test Case: Login Faculty Superadmin Success (TC002)
+
+## Skenario Pengujian
+Memastikan superadmin fakultas seed diarahkan ke dashboard tenant fakultasnya sendiri.
+
+## Prasyarat
+- Data seed backend sudah dijalankan.
+- Konfigurasi `E2E_FACULTY_ADMIN_EMAIL`, `E2E_PASSWORD`, dan `E2E_FACULTY_TENANT_ID` tersedia.
+
+## Hasil yang Diharapkan
+- Login berhasil.
+- URL akhir adalah `/admin/{E2E_FACULTY_TENANT_ID}/dashboard`.
 
 ## Skenario Pengujian
 Memastikan administrator (Admin/Superadmin) dapat login ke dashboard admin menggunakan email dan password yang valid.
@@ -11,7 +22,7 @@ Memastikan administrator (Admin/Superadmin) dapat login ke dashboard admin mengg
   - Email: `admin@gmail.com`
   - Password: `Password123`
 - **Output yang Diharapkan**:
-  - Pengguna dialihkan ke halaman dashboard admin `/admin/dashboard`.
+  - Pengguna dialihkan ke halaman dashboard admin `/admin/c9711506-d356-4704-a32e-0543dfe3e104/dashboard`.
   - Sidebar menu admin (seperti Event, Registrasi, Pembayaran) terlihat.
 
 ## Langkah-Langkah Pengujian
@@ -19,5 +30,5 @@ Memastikan administrator (Admin/Superadmin) dapat login ke dashboard admin mengg
 2. Masukkan email `admin@gmail.com` pada input email.
 3. Masukkan password `Password123` pada input password.
 4. Klik tombol "Masuk".
-5. Verifikasi URL saat ini adalah `/admin/dashboard`.
+5. Verifikasi URL saat ini adalah `/admin/c9711506-d356-4704-a32e-0543dfe3e104/dashboard`.
 6. Verifikasi sidebar navigasi admin terlihat di layar.

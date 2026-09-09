@@ -4,7 +4,7 @@
 Memastikan tautan meeting online wajib diisi jika tipe event adalah `isOnline: true`.
 
 ## Prasyarat
-- Admin membuat event online di `/admin/master/events/create`.
+- Admin membuat event online di `/admin/c9711506-d356-4704-a32e-0543dfe3e104/master/events/new`.
 
 ## Kondisi
 - **Input**: `isOnline: true`, tautan meeting kosong.

@@ -8,5 +8,6 @@ test('Login Failed due to Invalid Credentials', async ({ page }) => {
 
   await page.click('#btn-login-submit');
 
-  await expect(page).toHaveURL('/login');
+  await expect(page).toHaveURL(/\/login$/);
+  await expect(page.getByText('Email atau password salah.')).toBeVisible();
 });

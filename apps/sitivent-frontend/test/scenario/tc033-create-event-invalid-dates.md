@@ -4,7 +4,7 @@
 Memastikan pembuatan event gagal apabila tanggal selesai lebih awal dibanding tanggal mulai.
 
 ## Prasyarat
-- Admin ter-login di `/admin/master/events/create`.
+- Admin ter-login di `/admin/c9711506-d356-4704-a32e-0543dfe3e104/master/events/new`.
 
 ## Kondisi
 - **Input**:

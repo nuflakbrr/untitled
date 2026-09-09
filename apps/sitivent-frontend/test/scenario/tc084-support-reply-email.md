@@ -4,7 +4,7 @@
 Memastikan balasan pesan dari Admin ter-queue untuk dikirimkan ke email penanya.
 
 ## Prasyarat
-- Admin membalas pesan di `/admin/support/inbox`.
+- Admin membalas pesan di `/admin/c9711506-d356-4704-a32e-0543dfe3e104/support/messages`.
 
 ## Kondisi
 - **Input**: Isi Balasan: `Terima kasih, sertifikat dapat diunduh pada tab sertifikat.`

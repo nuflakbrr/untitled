@@ -4,7 +4,7 @@
 Memastikan Super Admin dapat melakukan impersonasi sesi pengguna lain untuk keperluan pengujian/bantuan.
 
 ## Prasyarat
-- Super Admin ter-login di `/admin/managements/users`.
+- Super Admin ter-login di `/admin/c9711506-d356-4704-a32e-0543dfe3e104/managements/users`.
 
 ## Kondisi
 - **Input**: Klik "Impersonate / Masuk Sebagai User".

@@ -7,7 +7,7 @@ Memastikan pengguna tanpa hak akses permission (misal `user.create`) ditolak saa
 - Pengguna login sebagai `Panitia` tanpa izin `user.create`.
 
 ## Kondisi
-- **Input**: Eksekusi tindakan tambah pengguna di `/admin/managements/users`.
+- **Input**: Eksekusi tindakan tambah pengguna di `/admin/c9711506-d356-4704-a32e-0543dfe3e104/managements/users`.
 - **Output yang Diharapkan**:
   - Ditolak dengan pesan "Anda tidak memiliki hak akses untuk melakukan tindakan ini."
 

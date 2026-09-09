@@ -4,7 +4,7 @@
 Memastikan Admin dapat mengustomisasi koordinat X/Y, warna, dan ukuran font nama peserta pada template sertifikat.
 
 ## Prasyarat
-- Admin di `/admin/master/certificates`.
+- Admin di `/admin/c9711506-d356-4704-a32e-0543dfe3e104/master/certificates`.
 
 ## Kondisi
 - **Input**: `nameX: 500`, `nameY: 300`, `fontSize: 32`, `fontColor: #D97757`

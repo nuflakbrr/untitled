@@ -4,7 +4,7 @@
 Memastikan Admin dapat mencetak label nama (name tag/badge) peserta untuk event luring (offline).
 
 ## Prasyarat
-- Admin di `/admin/transactions/registrations`.
+- Admin di `/admin/c9711506-d356-4704-a32e-0543dfe3e104/transactions/registrations`.
 
 ## Kondisi
 - **Input**: Klik "Cetak Label Nama".

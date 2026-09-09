@@ -4,16 +4,16 @@
 Memastikan sistem memvalidasi dan menolak upaya login jika password yang dimasukkan salah, serta menampilkan pesan error yang relevan.
 
 ## Prasyarat
-- Akun terdaftar dengan email `peserta@gmail.com` dan password `Password123`.
+- Akun seed terdaftar dengan email `peserta@gmail.com` dan password `password`.
 
 ## Kondisi
 - **Input**:
   - Email: `peserta@gmail.com`
-  - Password: `PasswordSalah`
+  - Password: `wrongpassword`
 - **Output yang Diharapkan**:
   - Upaya login ditolak.
   - Halaman tetap di `/login`.
-  - Pesan error notifikasi (seperti toast error) ditampilkan.
+  - Pesan error `Email atau password salah.` ditampilkan.
 
 ## Langkah-Langkah Pengujian
 1. Buka halaman login `/login`.

@@ -7,10 +7,10 @@ Memastikan pengguna biasa (Peserta) atau tamu yang belum login tidak dapat menga
 - Pengguna login sebagai `Peserta` atau belum login.
 
 ## Kondisi
-- **Input**: Navigasi ke `/admin/dashboard`
+- **Input**: Navigasi ke `/admin/c9711506-d356-4704-a32e-0543dfe3e104/dashboard`
 - **Output yang Diharapkan**:
   - Akses ditolak dan dialihkan ke `/login` atau `/403`.
 
 ## Langkah-Langkah Pengujian
-1. Buka URL `/admin/dashboard`.
+1. Buka URL `/admin/c9711506-d356-4704-a32e-0543dfe3e104/dashboard`.
 2. Verifikasi sistem melakukan redirect ke `/login` atau menampilkan halaman Forbidden.

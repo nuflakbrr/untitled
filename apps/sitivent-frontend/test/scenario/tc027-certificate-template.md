@@ -4,7 +4,7 @@
 Memastikan Admin dapat mendesain dan mengonfigurasi template sertifikat digital event.
 
 ## Prasyarat
-- Admin ter-login dan berada di `/admin/master/certificates`.
+- Admin ter-login dan berada di `/admin/c9711506-d356-4704-a32e-0543dfe3e104/master/certificates`.
 
 ## Kondisi
 - **Input**:
@@ -15,7 +15,7 @@ Memastikan Admin dapat mendesain dan mengonfigurasi template sertifikat digital 
   - Template sertifikat tersimpan dan siap digunakan untuk pencetakan sertifikat digital peserta.
 
 ## Langkah-Langkah Pengujian
-1. Buka `/admin/master/certificates`.
+1. Buka `/admin/c9711506-d356-4704-a32e-0543dfe3e104/master/certificates`.
 2. Klik "+ Buat Template Baru" atau "Atur Template".
 3. Unggah latar belakang sertifikat dan atur bidang posisi nama peserta.
 4. Klik tombol "Simpan Template".

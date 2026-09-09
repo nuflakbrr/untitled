@@ -4,7 +4,7 @@
 Memastikan Admin dapat menyaring pesan bantuan pelanggan yang belum dibaca (UNREAD).
 
 ## Prasyarat
-- Admin di `/admin/support/inbox`.
+- Admin di `/admin/c9711506-d356-4704-a32e-0543dfe3e104/support/messages`.
 
 ## Kondisi
 - **Input**: Klik filter "Belum Dibaca".

@@ -9,7 +9,7 @@ Memastikan pengiriman form login dengan bidang kosong menampilkan pesan validasi
 ## Kondisi
 - **Input**: Email dan password kosong.
 - **Output yang Diharapkan**:
-  - Validasi form menolak pengiriman dan menampilkan pesan error wajib diisi.
+  - Validasi form menolak pengiriman dan menampilkan pesan format email serta password minimal delapan karakter.
 
 ## Langkah-Langkah Pengujian
 1. Buka `/login`.

@@ -4,7 +4,7 @@
 Memastikan Admin dapat menyetujui (approve) atau menayangkan testimoni di beranda utama.
 
 ## Prasyarat
-- Admin ter-login di `/admin/publications/testimonies`.
+- Admin ter-login di `/admin/c9711506-d356-4704-a32e-0543dfe3e104/publications/testimonies`.
 
 ## Kondisi
 - **Input**: Klik "Tampilkan di Beranda / Setujui".
@@ -12,6 +12,6 @@ Memastikan Admin dapat menyetujui (approve) atau menayangkan testimoni di berand
   - Testimoni muncul pada komponen testimoni publik di homepage.
 
 ## Langkah-Langkah Pengujian
-1. Buka `/admin/publications/testimonies`.
+1. Buka `/admin/c9711506-d356-4704-a32e-0543dfe3e104/publications/testimonies`.
 2. Klik sakelar/tombol tampilkan testimoni.
 3. Buka homepage `/` dan verifikasi testimoni tampil.

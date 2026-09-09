@@ -4,7 +4,7 @@
 Memastikan Super Admin dapat mengelola jabatan/role pengguna.
 
 ## Prasyarat
-- Super Admin ter-login dan berada di `/admin/managements/users`.
+- Super Admin ter-login dan berada di `/admin/c9711506-d356-4704-a32e-0543dfe3e104/managements/users`.
 
 ## Kondisi
 - **Input**:
@@ -14,7 +14,7 @@ Memastikan Super Admin dapat mengelola jabatan/role pengguna.
   - Jabatan pengguna berhasil diperbarui di database dan tabel pengguna UI.
 
 ## Langkah-Langkah Pengujian
-1. Buka `/admin/managements/users`.
+1. Buka `/admin/c9711506-d356-4704-a32e-0543dfe3e104/managements/users`.
 2. Klik tombol aksi (tiga titik) pada baris pengguna.
 3. Klik "Edit".
 4. Ubah Jabatan ke role yang diinginkan.

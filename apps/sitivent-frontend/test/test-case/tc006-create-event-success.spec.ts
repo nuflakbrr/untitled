@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
+
 import { loginWithCleanState } from '../utils/auth-helper';
 
 test('Create Offline Event Success', async ({ page }) => {
-  await loginWithCleanState(page, 'super.admin@gmail.com', 'password');
+  await loginWithCleanState(page, 'superadmin.univ@gmail.com', 'password');
 
   // Go to create event page
-  await page.goto('/admin/master/events/new');
+  await page.goto('/admin/c9711506-d356-4704-a32e-0543dfe3e104/master/events/new');
 
   // Name / Title
   const titleInput = page.locator('input[name="title"]').first();

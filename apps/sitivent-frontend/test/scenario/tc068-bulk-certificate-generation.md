@@ -4,7 +4,7 @@
 Memastikan Admin dapat melakukan penerbitan sertifikat sekaligus (bulk) untuk seluruh peserta terkonfirmasi hadir.
 
 ## Prasyarat
-- Admin di `/admin/master/certificates`.
+- Admin di `/admin/c9711506-d356-4704-a32e-0543dfe3e104/master/certificates`.
 
 ## Kondisi
 - **Input**: Klik "Generate Semua Sertifikat".

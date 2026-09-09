@@ -9,7 +9,7 @@ Memastikan pengunjung dapat membuka dan menutup item pertanyaan umum di `/faq`.
 ## Kondisi
 - **Input**: Klik item accordion pertanyaan.
 - **Output yang Diharapkan**:
-  - Jawaban pertanyaan terbuka/ter-expand.
+  - Elemen FAQ berubah ke state `open` dan jawaban pertanyaan terbuka.
 
 ## Langkah-Langkah Pengujian
 1. Buka `/faq`.

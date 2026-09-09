@@ -1,8 +1,10 @@
 import { test, expect } from '@playwright/test';
+
+import { e2eConfig } from '../utils/e2e-config';
 import { loginWithCleanState } from '../utils/auth-helper';
 
-test('Participant Login Success', async ({ page }) => {
-  await loginWithCleanState(page, 'peserta@gmail.com', 'password');
+test('Root superadmin login success', async ({ page }) => {
+  await loginWithCleanState(page, e2eConfig.rootAdminEmail);
 
-  await expect(page).not.toHaveURL('/login');
+  await expect(page).toHaveURL(new RegExp(`/admin/${e2eConfig.rootTenantId}/dashboard$`));
 });
