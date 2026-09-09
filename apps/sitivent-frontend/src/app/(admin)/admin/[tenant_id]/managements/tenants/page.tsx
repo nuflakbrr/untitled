@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { Plus } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -114,7 +115,9 @@ export default function TenantsCMS() {
           description="Kelola organisasi dan unit kerja dalam SITIVENT."
         />
         <Button asChild>
-          <Link href={`/admin/${tenantId}/managements/tenants/new`}>Tambah Tenant</Link>
+          <Link href={`/admin/${tenantId}/managements/tenants/new`}>
+            <Plus className="mr-2 h-4 w-4" /> Tambah Organisasi
+          </Link>
         </Button>
       </div>
       <Separator />
