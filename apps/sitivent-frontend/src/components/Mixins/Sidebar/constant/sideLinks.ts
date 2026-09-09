@@ -174,6 +174,12 @@ export const sideLinks: SideLinks = {
           icon: UserCog,
           permission: 'user.read',
         },
+        {
+          title: 'Peserta',
+          url: 'managements/participants',
+          icon: UserCog,
+          permission: 'user.read',
+        },
       ],
     },
   ],

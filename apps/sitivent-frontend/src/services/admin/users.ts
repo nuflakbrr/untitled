@@ -29,12 +29,13 @@ export async function getUsers(
   page = 1,
   limit = 10,
   search = '',
-  includeDeleted = false
+  includeDeleted = false,
+  role = ''
 ): Promise<UserPaginationResponse> {
   try {
     const body = (
       await api.get(endpoint, {
-        params: { page, limit, search, include_deleted: includeDeleted, exclude_role: 'peserta' },
+        params: { page, limit, search, include_deleted: includeDeleted, ...(role ? { role } : { exclude_role: 'peserta' }) },
       })
     ).data;
     const total = body.pagination?.total ?? body.data?.length ?? 0;

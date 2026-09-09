@@ -17,7 +17,7 @@ import { getUsers, deleteUser, permanentlyDeleteUser } from '@/services/admin/us
 
 import Columns from './_components/Columns';
 
-const UsersCMS = () => {
+export const UsersCMS = ({ participantOnly = false }: { participantOnly?: boolean }) => {
   const { hasPermission } = usePermission();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -30,8 +30,8 @@ const UsersCMS = () => {
   const queryClient = useQueryClient();
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['users', page, limit, debouncedSearch, includeDeleted],
-    queryFn: () => getUsers(page, limit, debouncedSearch, includeDeleted),
+    queryKey: ['users', participantOnly, page, limit, debouncedSearch, includeDeleted],
+    queryFn: () => getUsers(page, limit, debouncedSearch, includeDeleted, participantOnly ? 'peserta' : ''),
   });
   const { data: meData } = useQuery({ queryKey: ['auth-me-server-action'], queryFn: getMeAction });
 
@@ -52,10 +52,10 @@ const UsersCMS = () => {
     <section>
       <AlertModal isOpen={confirming} onClose={() => setConfirming(false)} onConfirm={() => deleteMutation.mutate()} loading={deleteMutation.isPending} />
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 md:mb-4">
-        <Heading title={`Pengguna (${meta.total})`} description="Daftar pengguna yang terdaftar." />
+        <Heading title={`${participantOnly ? 'Peserta' : 'Pengguna'} (${meta.total})`} description={participantOnly ? 'Kelola akun peserta yang terdaftar.' : 'Daftar pengguna yang terdaftar.'} />
         {hasPermission('user.create') && (
           <Button asChild className="w-full sm:w-auto">
-            <Link href="/admin/managements/users/new">
+            <Link href={participantOnly ? '/admin/managements/participants/new' : '/admin/managements/users/new'}>
               <Plus /> Tambah Pengguna
             </Link>
           </Button>
