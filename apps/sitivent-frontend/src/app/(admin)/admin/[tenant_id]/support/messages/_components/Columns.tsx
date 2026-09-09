@@ -1,10 +1,13 @@
 'use client';
 
+import 'moment-timezone';
+
 import type { Row, ColumnDef } from '@tanstack/react-table';
 import type { SupportMessage } from '@/interfaces/features/support';
 
+import moment from 'moment';
 import { toast } from 'sonner';
-import { Clock, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateSupportMessageStatusAction } from '@/services/participant/support';
 
@@ -13,26 +16,31 @@ import CellAction from './CellAction';
 const STATUS_CONFIG = {
   PENDING: {
     label: 'Pending',
-    color: '#B04A3F',
-    bg: 'rgba(176,74,63,0.08)',
-    border: 'rgba(176,74,63,0.25)',
-    icon: AlertCircle,
+    className:
+      'border-rose-200 bg-rose-50/50 text-rose-700 dark:border-rose-500/30 dark:bg-rose-950/20 dark:text-rose-400',
   },
   PROCESS: {
     label: 'Diproses',
-    color: '#D97757',
-    bg: 'rgba(217,119,87,0.08)',
-    border: 'rgba(217,119,87,0.25)',
-    icon: Clock,
+    className:
+      'border-amber-200 bg-amber-50/50 text-amber-700 dark:border-amber-500/30 dark:bg-amber-950/20 dark:text-amber-400',
   },
   RESOLVED: {
     label: 'Selesai',
-    color: '#788C5D',
-    bg: 'rgba(120,140,93,0.08)',
-    border: 'rgba(120,140,93,0.25)',
-    icon: CheckCircle2,
+    className:
+      'border-emerald-200 bg-emerald-50/50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-950/20 dark:text-emerald-400',
   },
 } as const;
+
+const categoryClass = (category: string) => {
+  const value = category.toLowerCase();
+  if (value.includes('bayar') || value.includes('payment'))
+    return 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-950/20 dark:text-emerald-400';
+  if (value.includes('event'))
+    return 'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-500/30 dark:bg-blue-950/20 dark:text-blue-400';
+  if (value.includes('akun') || value.includes('account'))
+    return 'border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-500/30 dark:bg-violet-950/20 dark:text-violet-400';
+  return 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/30 dark:bg-amber-950/20 dark:text-amber-400';
+};
 
 const StatusCell = ({ row }: { row: Row<SupportMessage> }) => {
   const queryClient = useQueryClient();
@@ -56,21 +64,14 @@ const StatusCell = ({ row }: { row: Row<SupportMessage> }) => {
   });
 
   const config = STATUS_CONFIG[data.status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.PENDING;
-  const Icon = config.icon;
-
   return (
     <div className="flex items-center gap-2">
-      <div
-        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-bold uppercase tracking-wider shrink-0"
-        style={{
-          background: config.bg,
-          borderColor: config.border,
-          color: config.color,
-        }}
+      <Badge
+        variant="outline"
+        className={`shrink-0 gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${config.className}`}
       >
-        <Icon className="w-3 h-3" />
         <span>{config.label}</span>
-      </div>
+      </Badge>
       <select
         value={data.status}
         disabled={isPending || data.status === 'RESOLVED'}
@@ -95,12 +96,7 @@ const Columns: ColumnDef<SupportMessage>[] = [
     header: 'Tanggal',
     cell: ({ row }) => (
       <span className="text-xs text-muted-foreground whitespace-nowrap">
-        {new Date(row.original.createdAt).toLocaleDateString('id-ID', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-          timeZone: 'Asia/Jakarta',
-        })}
+        {moment(row.original.createdAt).tz('Asia/Jakarta').locale('id').format('DD MMM YYYY')}
       </span>
     ),
   },
@@ -118,7 +114,9 @@ const Columns: ColumnDef<SupportMessage>[] = [
     accessorKey: 'category',
     header: 'Kategori',
     cell: ({ row }) => (
-      <span className="text-xs font-semibold uppercase px-2 py-1 rounded bg-muted">
+      <span
+        className={`w-fit rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${categoryClass(row.original.category)}`}
+      >
         {row.original.category}
       </span>
     ),
@@ -127,9 +125,9 @@ const Columns: ColumnDef<SupportMessage>[] = [
     accessorKey: 'title',
     header: 'Subjek & Kronologi',
     cell: ({ row }) => (
-      <div className="flex flex-col max-w-xs">
-        <span className="font-medium text-sm line-clamp-1">{row.original.title}</span>
-        <span className="text-xs text-muted-foreground line-clamp-1">
+      <div className="flex min-w-0 max-w-xs flex-col">
+        <span className="block max-w-full truncate text-sm font-medium">{row.original.title}</span>
+        <span className="block max-w-full truncate text-xs text-muted-foreground">
           {row.original.chronology}
         </span>
       </div>
