@@ -131,7 +131,33 @@ INSERT INTO events (
     NOW(),
     NOW()
 ),
--- Event 5: Event FEB (Kompetisi Business Plan)
+-- Event 5: Fixture E2E dengan kuota penuh
+(
+    'd5d74c9a-6b02-4b42-b3d5-5df4d5545109',
+    'c9711506-d356-4704-a32e-0543dfe3e104',
+    'Event Kuota Penuh E2E',
+    'event-kuota-penuh-e2e',
+    'Fixture deterministik untuk memverifikasi pendaftaran event ketika kuota sudah penuh.',
+    NULL,
+    '2026-11-20 00:00:00+00',
+    '2026-11-20 00:00:00+00',
+    '09:00',
+    '11:00',
+    'Auditorium Pusat Gedung Rektorat Lt. 3',
+    'OFFLINE',
+    FALSE,
+    '2026-11-19 23:59:59+00',
+    1,
+    0,
+    'PUBLISHED',
+    FALSE,
+    NOW(),
+    '83780fb3-7c86-48f7-aeac-4e169a2ef760',
+    '48e8167e-0105-4242-b6db-9bb12dc84bce',
+    NOW(),
+    NOW()
+),
+-- Event 6: Event FEB (Kompetisi Business Plan)
 (
     '0cab550d-5978-4ed3-a505-8a02e6e20144',
     '2f36ab3a-bc06-4652-8bc4-cc8f7a703eb9',

@@ -74,6 +74,18 @@ INSERT INTO registrations (
     NOW(),
     NOW()
 ),
+-- Peserta Berbayar → Fixture event kuota penuh, REGISTERED
+(
+    'c12e3dc9-2a47-46c0-86c3-a7467f9f7fd3',
+    'd5d74c9a-6b02-4b42-b3d5-5df4d5545109',
+    '62091730-0a40-4962-b56f-5cd44f9a9ffb',
+    'REG-E2E-FULL-QUOTA-2026',
+    'qr-e2e-full-quota-2026',
+    FALSE,
+    'REGISTERED',
+    NOW(),
+    NOW()
+),
 -- Peserta Scan 1 → Konferensi, WAITING_PAYMENT
 (
     '71faeb86-8116-45e8-99f9-aa629b254520',

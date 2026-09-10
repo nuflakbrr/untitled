@@ -4,7 +4,8 @@
 Memastikan pendaftaran event ditolak ketika kuota peserta event sudah penuh.
 
 ## Prasyarat
-- Event berstatus aktif namun sisa kuota = 0.
+- Peserta terautentikasi.
+- Fixture `event-kuota-penuh-e2e` berstatus aktif, kuota `1`, dan sudah memiliki satu pendaftaran aktif.
 
 ## Kondisi
 - **Input**: Klik "Daftar Sekarang" pada event penuh.
@@ -12,5 +13,6 @@ Memastikan pendaftaran event ditolak ketika kuota peserta event sudah penuh.
   - Tombol pendaftaran dinonaktifkan atau muncul pesan "Kuota event sudah penuh".
 
 ## Langkah-Langkah Pengujian
-1. Buka halaman detail event yang kuotanya habis `/events/slug-event-penuh`.
-2. Verifikasi tombol "Kuota Penuh" atau pesan peringatan kuota habis.
+1. Masuk sebagai peserta yang belum terdaftar pada fixture tersebut.
+2. Buka halaman detail event yang kuotanya habis `/events/event-kuota-penuh-e2e`.
+3. Verifikasi tombol "Kuota Penuh" tampil dan tidak dapat ditekan.

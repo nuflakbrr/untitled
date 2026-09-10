@@ -1,10 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-test('Register Event Full Quota Blocked', async ({ page }) => {
-  await page.goto('/events');
+import { loginWithCleanState } from '../utils/auth-helper';
+import { e2eConfig } from '../utils/e2e-config';
 
-  const fullEventBtn = page.locator('button:has-text("Penuh"), button:disabled');
-  if (await fullEventBtn.isVisible()) {
-    await expect(fullEventBtn).toBeDisabled();
-  }
+test('Register Event Full Quota Blocked', async ({ page }) => {
+  await loginWithCleanState(page, e2eConfig.participantEmail);
+  await page.goto('/events/event-kuota-penuh-e2e');
+
+  const fullEventButton = page.getByRole('button', { name: 'Kuota Penuh' });
+  await expect(fullEventButton).toBeVisible();
+  await expect(fullEventButton).toBeDisabled();
 });
