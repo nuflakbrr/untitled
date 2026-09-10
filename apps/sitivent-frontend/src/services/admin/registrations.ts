@@ -86,12 +86,9 @@ export async function registerToEvent(eventId: string): Promise<any> {
     return { success: false, error: 'Gagal mendaftar event.' };
   }
 }
-export async function getEventRegistrationStatus(eventId: string): Promise<any> {
-  try {
-    return { success: true, data: (await api.get(`${endpoint}/event/${eventId}`)).data.data };
-  } catch {
-    return { success: false, data: null };
-  }
+export async function getEventRegistrationStatus(eventId: string): Promise<Registration | null> {
+  const registrations = await getParticipantRegistrations();
+  return registrations.find((registration: Registration) => registration.eventId === eventId && !registration.deletedAt) ?? null;
 }
 export async function cancelRegistration(registrationId: string): Promise<any> {
   try {

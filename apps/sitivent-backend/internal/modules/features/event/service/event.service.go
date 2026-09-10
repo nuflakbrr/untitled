@@ -453,7 +453,8 @@ func toEventResponse(event *domain.Event) dto.EventResponse {
 		Status: string(event.Status), CertificateEnabled: event.CertificateEnabled,
 		PublishedAt: event.PublishedAt, CreatedAt: event.CreatedAt, UpdatedAt: event.UpdatedAt,
 		DeletedAt:   event.DeletedAt,
-		CreatedByID: event.CreatedByID, Speakers: make([]dto.SpeakerResponse, 0, len(event.Speakers)),
+		CreatedByID: event.CreatedByID, RegistrationCount: event.RegistrationCount,
+		Speakers: make([]dto.SpeakerResponse, 0, len(event.Speakers)),
 		Benefits: make([]dto.BenefitResponse, 0, len(event.Benefits)),
 	}
 	if event.Category != nil {

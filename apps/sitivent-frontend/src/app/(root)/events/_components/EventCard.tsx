@@ -1,6 +1,7 @@
 'use client';
 
 import type { FC } from 'react';
+import type { Event } from '@/interfaces/features/events';
 
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
@@ -20,26 +21,12 @@ import {
 } from 'lucide-react';
 
 interface EventCardProps {
-  event: {
-    id: string;
-    title: string;
-    slug: string;
-    banner: string | null;
-    eventType: 'ONLINE' | 'OFFLINE';
-    status: 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'COMPLETED';
-    startDate: Date;
-    startTime: string;
-    endTime: string;
-    location: string;
-    price: number;
-    quota: number;
-    registrations?: { id: string }[];
-  };
+  event: Event;
   formattedStartDate: string;
 }
 
 export const EventCard: FC<EventCardProps> = ({ event, formattedStartDate }) => {
-  const totalRegistered = event.registrations?.length ?? 0;
+  const totalRegistered = event.registrationCount;
   const slotsLeft = Math.max(0, event.quota - totalRegistered);
   const isFree = event.price === 0;
 

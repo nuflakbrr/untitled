@@ -101,4 +101,5 @@ type Event struct {
 	Creator              *Creator
 	Speakers             []Speaker
 	Benefits             []Benefit
+	RegistrationCount    int
 }

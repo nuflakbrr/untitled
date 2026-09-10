@@ -22,6 +22,13 @@ export interface EventBenefit {
   order?: number;
 }
 
+export interface EventCreator {
+  id: string;
+  name: string;
+  email: string;
+  image?: string | null;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -46,11 +53,12 @@ export interface Event {
   updatedAt: Date;
   deletedAt?: Date | null;
   createdById?: string | null;
+  createdBy?: EventCreator | null;
   categoryId?: string | null;
   category?: EventCategory | null;
-  registrations?: { id: string }[];
-  speakers?: EventSpeaker[];
-  benefits?: EventBenefit[];
+  registrationCount: number;
+  speakers: EventSpeaker[];
+  benefits: EventBenefit[];
   _count?: {
     registrations: number;
   };

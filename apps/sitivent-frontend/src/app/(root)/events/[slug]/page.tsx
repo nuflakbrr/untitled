@@ -4,7 +4,6 @@ import 'moment/locale/id';
 import type { Metadata } from 'next';
 import type { EventBenefit, EventSpeaker } from '@/interfaces/features/events';
 
-import api from '@/lib/api';
 import moment from 'moment';
 import { auth } from '@/lib/auth';
 import { notFound } from 'next/navigation';
@@ -14,6 +13,7 @@ import { formatCurrency } from '@/lib/formatCurrency';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent } from '@/components/ui/card';
 import { getEventRegistrationStatus } from '@/services/admin/registrations';
+import { getPublicEventBySlug } from '@/services/admin/events';
 import { GitHubIcon, LinkedInIcon, InstagramIcon } from '@/components/Common/CustomIcons';
 import {
   User,
@@ -39,8 +39,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  let event: any = null;
-  try { event = (await api.get(`/features/v1/events/${slug}`)).data.data; } catch { /* not found */ }
+  const event = await getPublicEventBySlug(slug);
 
   if (!event) {
     return {
@@ -58,8 +57,7 @@ export default async function EventDetailPage({ params }: Props) {
   const { slug } = await params;
 
   // Retrieve event details
-  let event: any = null;
-  try { event = (await api.get(`/features/v1/events/${slug}`)).data.data; } catch { /* not found */ }
+  const event = await getPublicEventBySlug(slug);
 
   if (!event) {
     return notFound();
@@ -80,7 +78,7 @@ export default async function EventDetailPage({ params }: Props) {
     }
   }
 
-  const totalRegistered = event.registrations?.length ?? 0;
+  const totalRegistered = event.registrationCount;
   const slotsLeft = Math.max(0, event.quota - totalRegistered);
   const isQuotaFull = slotsLeft <= 0;
   const isDeadlinePassed = new Date() > new Date(event.registrationDeadline);

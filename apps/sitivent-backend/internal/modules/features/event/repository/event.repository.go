@@ -26,6 +26,9 @@ const eventSelect = `
 	       e.registration_deadline, e.quota, e.price, e.status::text,
 	       e.certificate_enabled, e.published_at, e.created_at, e.updated_at,
 	       e.deleted_at, e.created_by_id,
+	       (SELECT COUNT(*) FROM registrations r
+	        WHERE r.event_id = e.id AND r.deleted_at IS NULL
+	          AND r.status IN ('WAITING_PAYMENT', 'REGISTERED', 'CHECKED_IN')),
 	       c.id, c.tenant_id, c.name, c.slug, c.description,
 	       t.id, t.name, t.slug, t.code, t.type::text, t.logo_url, t.website,
 	       u.id, u.name, u.email, u.image
@@ -355,7 +358,7 @@ func scanEvent(row rowScanner) (*domain.Event, error) {
 		&eventType, &event.OnlineAttendance, &event.RegistrationDeadline,
 		&event.Quota, &event.Price, &status, &event.CertificateEnabled,
 		&event.PublishedAt, &event.CreatedAt, &event.UpdatedAt, &event.DeletedAt,
-		&event.CreatedByID, &categoryID, &categoryTenantID, &categoryName,
+		&event.CreatedByID, &event.RegistrationCount, &categoryID, &categoryTenantID, &categoryName,
 		&categorySlug, &categoryDescription,
 		&tenantID, &tenantName, &tenantSlug, &tenantCode, &tenantType, &tenantLogoURL, &tenantWebsite,
 		&creatorID, &creatorName, &creatorEmail, &creatorAvatarURL,

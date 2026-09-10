@@ -85,7 +85,7 @@ const FeaturedEvents: FC<Props> = ({ events }) => (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {events.map((event) => {
-                const totalRegistered = event.registrations?.length || 0;
+                const totalRegistered = event.registrationCount;
                 const slotsLeft = Math.max(0, event.quota - totalRegistered);
                 const isFree = event.price === 0;
                 const isAlmostFull = slotsLeft > 0 && slotsLeft <= 10;

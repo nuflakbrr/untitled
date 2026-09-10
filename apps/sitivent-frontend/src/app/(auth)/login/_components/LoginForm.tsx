@@ -60,7 +60,10 @@ const LoginForm: FC = () => {
     },
     onSuccess: async (session) => {
       toast.success('Login berhasil! Selamat datang kembali.');
-      const tenantPath = session?.data?.tenantId
+      const userRole = session?.data?.user?.role;
+      const tenantPath = userRole === 'peserta'
+        ? '/participant/dashboard'
+        : session?.data?.tenantId
         ? `/admin/${session.data.tenantId}/dashboard`
         : '/admin';
       router.push(tenantPath as Route);

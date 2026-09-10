@@ -3,7 +3,6 @@ import 'moment/locale/id';
 
 import type { Metadata } from 'next';
 
-import api from '@/lib/api';
 import moment from 'moment';
 import Link from 'next/link';
 import { Suspense } from 'react';
@@ -12,6 +11,7 @@ import { Empty, EmptyTitle, EmptyHeader, EmptyDescription } from '@/components/u
 
 import EventCard from './_components/EventCard';
 import SearchBanner from './_components/SearchBanner';
+import { getPublicEvents } from '@/services/admin/events';
 
 type Props = {
   searchParams: Promise<{ q?: string; category?: string }>;
@@ -26,10 +26,7 @@ export const metadata: Metadata = {
 export default async function EventsPage({ searchParams }: Props) {
   const { q, category } = await searchParams;
 
-  let events: Array<Record<string, any>> = [];
-  try {
-    events = (await api.get('/features/v1/events', { params: { search: q, category_slug: category, status: 'PUBLISHED', page: 1, limit: 100 } })).data.data ?? [];
-  } catch { /* empty state */ }
+  const events = await getPublicEvents(q, category);
 
   return (
     <section
@@ -82,7 +79,7 @@ export default async function EventsPage({ searchParams }: Props) {
 
               return (
                 /* SOLID: Extracted Single Event Card component */
-                <EventCard key={event.id} event={event as never} formattedStartDate={formattedStartDate} />
+                <EventCard key={event.id} event={event} formattedStartDate={formattedStartDate} />
               );
             })}
           </div>

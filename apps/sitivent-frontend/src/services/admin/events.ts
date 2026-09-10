@@ -17,6 +17,8 @@ function body<T>(result: {
 }
 
 function normalizeEvent(item: Record<string, unknown>): Event {
+  const creator = item.creator as Record<string, unknown> | null | undefined;
+
   return {
     ...(item as unknown as Event),
     eventType: (item.eventType ?? item.event_type) as Event['eventType'],
@@ -26,6 +28,17 @@ function normalizeEvent(item: Record<string, unknown>): Event {
     endTime: String(item.endTime ?? item.end_time ?? ''),
     registrationDeadline: new Date(String(item.registrationDeadline ?? item.registration_deadline)),
     certificateEnabled: Boolean(item.certificateEnabled ?? item.certificate_enabled),
+    registrationCount: Number(item.registrationCount ?? item.registration_count ?? 0),
+    speakers: (item.speakers ?? []) as Event['speakers'],
+    benefits: (item.benefits ?? []) as Event['benefits'],
+    createdBy: creator
+      ? {
+          id: String(creator.id),
+          name: String(creator.name ?? ''),
+          email: String(creator.email ?? ''),
+          image: (creator.image ?? creator.avatarUrl ?? creator.avatar_url ?? null) as string | null,
+        }
+      : null,
     createdAt: new Date(String(item.createdAt ?? item.created_at)),
     updatedAt: new Date(String(item.updatedAt ?? item.updated_at)),
     deletedAt: item.deletedAt
@@ -143,13 +156,23 @@ export async function getAllEvents() {
     return [];
   }
 }
-export async function getPublicEvents(): Promise<Event[]> {
+export async function getPublicEvents(search = '', categorySlug = ''): Promise<Event[]> {
   try {
     return (
-      (await api.get('/features/v1/events', { params: { status: 'PUBLISHED', limit: 100 } })).data
-        .data ?? []
-    );
+      (await api.get('/features/v1/events', {
+        params: { status: 'PUBLISHED', limit: 100, search, category_slug: categorySlug },
+      })).data.data ?? []
+    ).map(normalizeEvent);
   } catch {
     return [];
+  }
+}
+
+export async function getPublicEventBySlug(slug: string): Promise<Event | null> {
+  try {
+    const event = (await api.get(`/features/v1/events/${slug}`)).data.data;
+    return event ? normalizeEvent(event) : null;
+  } catch {
+    return null;
   }
 }

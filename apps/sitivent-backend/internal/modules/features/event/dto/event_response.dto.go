@@ -78,6 +78,7 @@ type EventResponse struct {
 	UpdatedAt            time.Time            `json:"updated_at"`
 	DeletedAt            *time.Time           `json:"deleted_at,omitempty"`
 	CreatedByID          *string              `json:"created_by_id,omitempty"`
+	RegistrationCount    int                  `json:"registration_count"`
 	Creator              *CreatorInfoResponse `json:"creator,omitempty"`
 	Speakers             []SpeakerResponse    `json:"speakers"`
 	Benefits             []BenefitResponse    `json:"benefits"`
