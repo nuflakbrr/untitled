@@ -1,2 +1,2 @@
 # TC270 — Public Keyboard Focus
-Elemen interaktif publik dapat menerima fokus keyboard.
+Setelah Tab, browser memiliki elemen publik yang terlihat dan fokus.

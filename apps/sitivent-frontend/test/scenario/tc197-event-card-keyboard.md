@@ -1,2 +1,2 @@
 # TC197 — Event Card Keyboard Access
-Event card atau link event dapat difokuskan oleh keyboard.
+Link navigasi Event dapat menerima fokus keyboard.

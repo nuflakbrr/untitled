@@ -1,3 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-test('events page handles an empty search query', async ({ page }) => { await page.goto('/events?search='); await expect(page.locator('body')).toBeVisible(); });
+test('events page handles an empty supported search query', async ({ page }) => {
+  await page.goto('/events?q=');
+  await expect(page).toHaveURL(/\/events\?q=$/);
+  await expect(page.getByPlaceholder('Cari event atau lokasi...')).toHaveValue('');
+});

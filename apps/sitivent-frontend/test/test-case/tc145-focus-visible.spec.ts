@@ -1,3 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-test('search input can receive focus', async ({ page }) => { await page.goto('/events'); const input = page.locator('input[placeholder*="Cari"], input[type="search"]').first(); if (await input.count()) { await input.focus(); await expect(input).toBeFocused(); } });
+test('search input can receive focus', async ({ page }) => {
+  await page.goto('/events');
+  const input = page.getByPlaceholder('Cari event atau lokasi...');
+  await expect(input).toBeVisible();
+  await input.click();
+  await expect(input).toBeFocused();
+});

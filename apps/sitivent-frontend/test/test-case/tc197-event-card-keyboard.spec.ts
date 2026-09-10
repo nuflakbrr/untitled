@@ -1,3 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-test('event links are keyboard reachable', async ({ page }) => { await page.goto('/events'); const links = page.locator('a').filter({ hasText: /event|seminar|workshop/i }); if (await links.count()) { await links.first().focus(); await expect(links.first()).toBeFocused(); } });
+test('event navigation link is keyboard reachable', async ({ page }) => {
+  await page.goto('/events');
+  const link = page.getByRole('link', { name: 'Event', exact: true }).first();
+  await expect(link).toBeVisible();
+  await link.focus();
+  await expect(link).toBeFocused();
+});

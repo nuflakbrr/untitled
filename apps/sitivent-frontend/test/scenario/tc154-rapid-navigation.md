@@ -1,2 +1,2 @@
 # TC154 — Rapid Navigation
-Klik/navigasi cepat antar halaman tidak menyebabkan runtime error.
+Navigasi berurutan dari Event ke Artikel selesai tanpa route abort yang tidak tertangani.

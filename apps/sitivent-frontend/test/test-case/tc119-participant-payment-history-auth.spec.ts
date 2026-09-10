@@ -1,3 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-test('payment history requires a safe session', async ({ page }) => { await page.goto('/participant/payment-history'); await expect(page.locator('body')).toBeVisible(); await expect(page.locator('body')).not.toContainText('password'); });
+test('payment history requires authentication', async ({ page }) => {
+  await page.goto('/participant/payment-history');
+  await expect(page).toHaveURL(/\/login(?:\?|$)/);
+  await expect(page.locator('#login-password')).toBeVisible();
+});

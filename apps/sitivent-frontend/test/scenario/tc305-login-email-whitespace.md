@@ -1,2 +1,2 @@
 # TC305 — Login Email Whitespace
-Field email dapat menerima input dengan spasi untuk diproses validasi aplikasi.
+Field email menormalisasi spasi di awal dan akhir input.

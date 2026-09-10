@@ -1,2 +1,2 @@
 # TC145 — Focus Visibility
-Element form yang difokuskan tetap terdeteksi oleh browser dan dapat dioperasikan.
+Input pencarian event dapat difokuskan dan tetap fokus setelah interaksi pengguna.

@@ -1,2 +1,2 @@
 # TC171 — Required Field Indicators
-Form yang memiliki field wajib menampilkan indikator required.
+Form login menampilkan label Email, Password, dan tombol submit yang dapat ditemukan secara aksesibel.

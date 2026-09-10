@@ -1,5 +1,5 @@
-# Test Case: Tenant Context Isolation (TC105)
-Memastikan route admin selalu membawa tenant context dan tidak menghapus identifier tenant saat navigasi.
+# TC105 — Proteksi Route Admin Tenant
+Memastikan route admin tenant tidak dapat diakses tanpa sesi autentikasi.
 
 ## Hasil yang Diharapkan
-URL tenant tetap memiliki pola `/admin/{tenant_id}/...`.
+Pengunjung anonim diarahkan ke `/login` sebelum tenant data diproses.

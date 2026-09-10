@@ -10,4 +10,4 @@ Login superadmin fakultas berhasil.
 1. Buka form Tambah Foto tenant fakultas.
 
 ## Hasil yang Diharapkan
-Heading Tambah Foto, label thumbnail, dan pesan foto wajib diunggah terlihat.
+Heading Tambah Foto, label thumbnail dengan tanda wajib, dan input file gambar tersedia.
