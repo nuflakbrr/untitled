@@ -69,7 +69,7 @@ test-e2e-validate:
 	@bun run --cwd apps/sitivent-frontend test:validate
 
 playwright-install:
-	@bunx playwright install chromium
+	@cd apps/sitivent-frontend && ./node_modules/.bin/playwright install chromium
 
 test-api:
 	@$(MAKE) -C apps/backend test-api
