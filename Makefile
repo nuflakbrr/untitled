@@ -1,8 +1,8 @@
-.PHONY: help install dev dev-fe dev-be build lint test test-e2e test-e2e-ui playwright-install test-api test-api-bail tsc clean db-setup db-reset docker-up docker-down
+.PHONY: help install dev dev-fe dev-be build lint test test-e2e test-e2e-headed test-e2e-ui test-e2e-validate playwright-install test-api test-api-bail tsc clean db-setup db-reset docker-up docker-down
 
 export PATH := $(HOME)/go/bin:/Library/PostgreSQL/18/bin:/Library/PostgreSQL/17/bin:/Library/PostgreSQL/16/bin:/opt/homebrew/bin:/opt/homebrew/opt/libpq/bin:/usr/local/bin:$(PATH)
-E2E_ADMIN_EMAIL ?= superadmin.fasilkom@gmail.com
-E2E_ADMIN_PASSWORD ?= password
+E2E_ROOT_ADMIN_EMAIL ?= superadmin.univ@gmail.com
+E2E_PASSWORD ?= password
 
 help:
 	@echo "Venturo Monorepo Commands:"
@@ -17,8 +17,10 @@ help:
 	@echo "  make build        - Build all apps (Next.js & Go)"
 	@echo "  make lint         - Run linters across all apps"
 	@echo "  make test         - Run tests across all apps"
-	@echo "  make test-e2e     - Run frontend Playwright tests"
-	@echo "  make test-e2e-ui  - Run Playwright tests in UI mode"
+	@echo "  make test-e2e     - Validate and run frontend Playwright tests headless"
+	@echo "  make test-e2e-headed - Run frontend Playwright tests with browser visible"
+	@echo "  make test-e2e-ui  - Run frontend Playwright tests in UI mode"
+	@echo "  make test-e2e-validate - Validate scenario/spec pairs only"
 	@echo "  make playwright-install - Install Playwright Chromium"
 	@echo "  make test-api     - Run backend API endpoint tests"
 	@echo "  make test-api-bail - Stop API tests on first failure"
@@ -55,10 +57,16 @@ test:
 	@bun run test
 
 test-e2e:
-	@E2E_ADMIN_EMAIL=$(E2E_ADMIN_EMAIL) E2E_ADMIN_PASSWORD=$(E2E_ADMIN_PASSWORD) PLAYWRIGHT_HEADLESS=false bun run --cwd apps/sitivent-frontend test:e2e
+	@E2E_ROOT_ADMIN_EMAIL=$(E2E_ROOT_ADMIN_EMAIL) E2E_PASSWORD=$(E2E_PASSWORD) bun run --cwd apps/sitivent-frontend test
+
+test-e2e-headed:
+	@E2E_ROOT_ADMIN_EMAIL=$(E2E_ROOT_ADMIN_EMAIL) E2E_PASSWORD=$(E2E_PASSWORD) bun run --cwd apps/sitivent-frontend test:headed
 
 test-e2e-ui:
-	@E2E_ADMIN_EMAIL=$(E2E_ADMIN_EMAIL) E2E_ADMIN_PASSWORD=$(E2E_ADMIN_PASSWORD) bun run --cwd apps/sitivent-frontend test:e2e:ui
+	@cd apps/sitivent-frontend && E2E_ROOT_ADMIN_EMAIL=$(E2E_ROOT_ADMIN_EMAIL) E2E_PASSWORD=$(E2E_PASSWORD) bunx playwright test --ui
+
+test-e2e-validate:
+	@bun run --cwd apps/sitivent-frontend test:validate
 
 playwright-install:
 	@bunx playwright install chromium
