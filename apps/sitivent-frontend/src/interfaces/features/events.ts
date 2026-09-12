@@ -1,5 +1,5 @@
-import type { EventType, EventStatus } from '@/interfaces/enums';
 import type { EventCategory } from './event-categories';
+import type { EventType, EventStatus } from '@/interfaces/enums';
 
 export interface EventSpeaker {
   id?: string;
