@@ -1,6 +1,6 @@
-import type { TermsSection } from '@/interfaces/terms';
+import type { LegalSection } from '@/interfaces/legal';
 
-export const termsSections: TermsSection[] = [
+export const termsSections: LegalSection[] = [
   {
     id: 'penerimaan',
     title: '1. Penerimaan Syarat',

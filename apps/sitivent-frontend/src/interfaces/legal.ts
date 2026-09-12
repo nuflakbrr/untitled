@@ -1,4 +1,4 @@
-export interface TermsSection {
+export interface LegalSection {
   id: string;
   title: string;
   content: string[];
