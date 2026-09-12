@@ -2,11 +2,12 @@
 
 import 'react-advanced-cropper/dist/style.css';
 
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { X, Check, Loader2, Scissors } from 'lucide-react';
 import { useRef, type FC, useState, useEffect } from 'react';
 import { Cropper, type CropperRef, ImageRestriction } from 'react-advanced-cropper';
+
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 import Modal from './Modal';
 
@@ -112,7 +113,7 @@ const ImageCropperModal: FC<ImageCropperModalProps> = ({
       className="sm:max-w-5xl w-full"
     >
       <div className="mt-2 flex flex-col gap-6 w-full">
-        <div className="relative w-full overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-2xl h-[300px] sm:h-[450px] md:h-[500px] bg-[conic-gradient(#e5e7eb_25%,#ffffff_0_50%,#e5e7eb_0_75%,#ffffff_0)] dark:bg-[conic-gradient(#18181b_25%,#09090b_0_50%,#18181b_0_75%,#09090b_0)] bg-size-[20px_20px]">
+        <div className="relative w-full overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-2xl h-75 sm:h-112.5 md:h-125 bg-[conic-gradient(#e5e7eb_25%,#ffffff_0_50%,#e5e7eb_0_75%,#ffffff_0)] dark:bg-[conic-gradient(#18181b_25%,#09090b_0_50%,#18181b_0_75%,#09090b_0)] bg-size-[20px_20px]">
           <Cropper
             key={currentAspectRatio || 'free'}
             ref={cropperRef}
