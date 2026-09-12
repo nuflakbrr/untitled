@@ -48,9 +48,10 @@ const Login = () => (
         <div className="w-full max-w-115">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-[#6c7280] transition hover:text-[#11233f]"
+            className="inline-flex group items-center gap-2 text-sm text-[#6c7280] transition hover:text-[#11233f]"
           >
-            <ArrowLeft className="w-4 h-4" /> Kembali ke beranda
+            <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />{' '}
+            Kembali ke beranda
           </Link>
 
           <div className="mt-8">
