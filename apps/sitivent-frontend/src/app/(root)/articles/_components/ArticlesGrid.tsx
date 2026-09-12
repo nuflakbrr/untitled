@@ -1,157 +1,157 @@
 'use client';
 
-import type { ArticleItem } from '@/interfaces/features/articles';
-
 import Link from 'next/link';
-import { useDebounce } from '@/hooks/useDebounce';
 import { useMemo, type FC, useState } from 'react';
 import { Clock, Search, BookOpen, ArrowRight } from 'lucide-react';
 
+import type { ArticleItem } from '@/interfaces/features/articles';
+
+import { useDebounce } from '@/hooks/useDebounce';
+
+import ArticleCover from './ArticleCover';
+import { getCoverStyles } from '../../_libs/getCoverStyles';
+
 interface ArticlesGridProps {
   initialItems: ArticleItem[];
+  categories: string[];
 }
 
-export const ArticlesGrid: FC<ArticlesGridProps> = ({ initialItems }) => {
+const ArticlesGrid: FC<ArticlesGridProps> = ({ initialItems, categories: availableCategories }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useDebounce('', 500);
-  const [categoryFilter, setCategoryFilter] = useState('All');
+  const [categoryFilter, setCategoryFilter] = useState('Semua');
 
-  const categoriesList = useMemo(() => {
-    const list = new Set<string>(['All']);
-    initialItems.forEach((item) => {
-      if (item.category) list.add(item.category);
-    });
-    return Array.from(list);
-  }, [initialItems]);
+  const categories = useMemo(
+    () => ['Semua', ...new Set(availableCategories.filter(Boolean))],
+    [availableCategories]
+  );
 
-  const filteredItems = useMemo(() => initialItems.filter((item) => {
+  const filteredItems = useMemo(() => {
+    const query = debouncedSearchTerm.toLowerCase();
+
+    return initialItems.filter((item) => {
       const matchesSearch =
-        item.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        item.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
-      const matchesCategory = categoryFilter === 'All' || item.category === categoryFilter;
+        item.title.toLowerCase().includes(query) || item.description.toLowerCase().includes(query);
+      const matchesCategory =
+        categoryFilter === 'Semua' ||
+        item.categories?.includes(categoryFilter) ||
+        item.category === categoryFilter;
       return matchesSearch && matchesCategory;
-    }), [initialItems, debouncedSearchTerm, categoryFilter]);
+    });
+  }, [categoryFilter, debouncedSearchTerm, initialItems]);
+
+  const coverStyles = useMemo(
+    () => getCoverStyles(filteredItems.map((item) => item.id)),
+    [filteredItems]
+  );
+  const featured = filteredItems[0];
+  const remainingItems = filteredItems.slice(1);
+
+  const updateSearch = (value: string) => {
+    setSearchTerm(value);
+    setDebouncedSearchTerm(value);
+  };
 
   return (
-    <div className="space-y-10">
-      {/* Controls: Search + Categories */}
-      <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between pb-6 border-b border-[#E3DACC]">
-        {/* Category Filters */}
-        <div className="flex flex-wrap gap-2">
-          {categoriesList.map((cat) => (
+    <div className="space-y-8 pb-24">
+      <div className="flex flex-col gap-4 border-b border-[#111927]/10 pb-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex min-w-0 gap-2 overflow-x-auto pb-1">
+          {categories.map((category) => (
             <button
-              key={cat}
-              onClick={() => setCategoryFilter(cat)}
-              className={`px-4 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
-                categoryFilter === cat
-                  ? 'bg-[#D97757] text-[#FAF9F5] border-[#D97757]'
-                  : 'bg-white text-[#87867F] border-[#E3DACC] hover:border-[#141413] hover:text-[#141413]'
-              }`}
+              key={category}
+              type="button"
+              onClick={() => setCategoryFilter(category)}
+              className={`shrink-0 rounded-full border px-3.5 py-2 text-[13px] font-bold transition ${categoryFilter === category ? 'border-[#11233f] bg-[#11233f] text-white' : 'border-[#111927]/10 bg-white/45 text-[#4b5565] hover:border-[#11233f]/35 hover:text-[#11233f]'}`}
             >
-              {cat}
+              {category}
             </button>
           ))}
         </div>
-
-        {/* Search */}
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-3 top-3.5 w-4 h-4 text-[#87867F]" />
+        <label className="relative block w-full shrink-0 lg:max-w-100">
+          <span className="sr-only">Cari artikel</span>
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6c7280]" />
           <input
-            type="text"
-            placeholder="Cari artikel..."
+            type="search"
             value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setDebouncedSearchTerm(e.target.value);
-            }}
-            className="w-full pl-10 pr-4 py-2.5 border rounded-xl text-xs bg-white focus:outline-none focus:border-[#141413] transition-colors"
-            style={{ borderColor: '#E3DACC' }}
+            onChange={(event) => updateSearch(event.target.value)}
+            placeholder="Cari artikel..."
+            className="w-full rounded-[14px] border border-[#111927]/10 bg-[#fffdf8] py-3 pl-11 pr-4 text-sm text-[#11233f] outline-none transition placeholder:text-[#6c7280]/70 focus:border-[#11233f] focus:ring-3 focus:ring-[#11233f]/15"
           />
-        </div>
+        </label>
       </div>
 
-      {/* Grid List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredItems.map((article) => (
-          <article
-            key={article.id}
-            className="group flex p-0 flex-col justify-between border shadow-xs hover:shadow-lg hover:border-[#D97757] transition-all duration-500 rounded-3xl overflow-hidden h-105"
-            style={{ borderColor: '#E3DACC', background: '#FFFFFF' }}
-          >
-            <div className="space-y-4">
-              {/* Cover Image Container */}
-              <div className="relative aspect-16/10 w-full overflow-hidden bg-muted">
-                {article.cover ? (
-                  <img
-                    src={article.cover}
-                    alt={article.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-                ) : (
-                  <div
-                    className="w-full h-full flex items-center justify-center p-4 bg-muted/40"
-                    style={{
-                      background: 'linear-gradient(135deg, #F0EEE6 0%, #E3DACC 100%)',
-                    }}
-                  >
-                    <BookOpen className="h-8 w-8 opacity-20 text-[#141413]" />
-                  </div>
-                )}
-                {/* Category tag inside image */}
-                <span
-                  className="absolute top-4 left-4 text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border shadow-xs"
-                  style={{
-                    background: 'rgba(217,119,87,0.12)',
-                    borderColor: 'rgba(217,119,87,0.3)',
-                    color: '#D97757',
-                  }}
-                >
-                  {article.category}
-                </span>
+      {featured ? (
+        <>
+          <article className="group grid overflow-hidden rounded-[28px] bg-[#11233f] text-white shadow-[0_18px_50px_rgba(17,35,63,.08)] lg:grid-cols-[1.12fr_.88fr]">
+            <ArticleCover className={`${coverStyles[0]} min-h-82.5 sm:min-h-100 lg:min-h-115`} />
+            <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-10">
+              <div className="flex items-center gap-2 text-xs font-bold text-white/65">
+                <span>{featured.categories?.join(' · ') || featured.category}</span>
+                <span>·</span>
+                <span>{featured.readTime}</span>
               </div>
-
-              {/* Info details */}
-              <div className="px-6 pt-1 space-y-3">
-                <div className="flex items-center gap-3 text-[10px] text-[#87867F] font-mono">
-                  <span>{article.date}</span>
-                  <span>•</span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> {article.readTime}
-                  </span>
-                </div>
-                <h3 className="font-serif font-bold text-lg md:text-xl leading-snug transition-colors line-clamp-1">
-                  <Link
-                    href={`/articles/${article.id}`}
-                    className="hover:text-[#D97757] transition-colors duration-300"
-                  >
-                    {article.title}
-                  </Link>
-                </h3>
-                <p className="text-xs text-[#3D3D3A] leading-relaxed line-clamp-2">
-                  {article.description}
-                </p>
-              </div>
-            </div>
-
-            {/* Action link */}
-            <div className="px-6 pb-6 space-y-5">
-              <div className="pt-4 border-t border-[#F0EEE6]">
-                <Link
-                    href={`/articles/${article.id}`}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#D97757] hover:text-[#141413] transition-colors group/link"
-                >
-                  Baca Selengkapnya
-                  <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" />
-                </Link>
-              </div>
+              <h2 className="font-display mt-4 max-w-125 text-[clamp(32px,4vw,52px)] font-extrabold leading-[1.02] tracking-tighter">
+                {featured.title}
+              </h2>
+              <p className="mt-5 max-w-120 text-sm leading-relaxed text-white/68 sm:text-base">
+                {featured.description}
+              </p>
+              <Link
+                href={`/articles/${featured.id}`}
+                className="group/link mt-7 inline-flex w-fit items-center gap-2 rounded-full bg-white px-4.5 py-3 font-bold text-[#11233f] transition hover:-translate-y-0.5"
+              >
+                Baca artikel
+                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/link:-rotate-45" />
+              </Link>
             </div>
           </article>
-        ))}
-      </div>
 
-      {filteredItems.length === 0 && (
-        <div className="text-center py-20 text-[#87867F] italic">
-          Belum ada artikel yang dipublikasikan dalam kategori ini.
+          {remainingItems.length > 0 && (
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {remainingItems.map((article, index) => (
+                <article
+                  key={article.id}
+                  className="group overflow-hidden rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] shadow-[0_12px_30px_rgba(17,35,63,.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(17,35,63,.1)]"
+                >
+                  <ArticleCover className={`${coverStyles[index + 1]} h-65`} />
+                  <div className="p-5">
+                    <div className="flex items-center gap-2 text-xs text-[#6c7280]">
+                      <span>{article.date}</span>
+                      <span>·</span>
+                      <span className="inline-flex items-center gap-1">
+                        <Clock className="h-3.5 w-3.5" /> {article.readTime}
+                      </span>
+                    </div>
+                    <h3 className="font-display mt-3 line-clamp-2 text-xl font-bold leading-tight tracking-tight text-[#11233f]">
+                      {article.title}
+                    </h3>
+                    <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-[#6c7280]">
+                      {article.description}
+                    </p>
+                    <Link
+                      href={`/articles/${article.id}`}
+                      className="group/link mt-5 inline-flex items-center gap-2 text-sm font-bold text-[#11233f] transition hover:text-[#ff7a45]"
+                    >
+                      Baca selengkapnya
+                      <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/link:translate-x-1" />
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="flex flex-col items-center rounded-[24px] border border-[#111927]/10 bg-[#fffdf8] px-6 py-16 text-center">
+          <div className="grid h-14 w-14 place-items-center rounded-full bg-[#ffe5d8] text-[#ff7a45]">
+            <BookOpen className="h-6 w-6" />
+          </div>
+          <h2 className="font-display mt-5 text-2xl font-extrabold tracking-[-.03em] text-[#11233f]">
+            Artikel belum ditemukan
+          </h2>
+          <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#6c7280]">
+            Coba gunakan kata kunci lain atau pilih kategori yang berbeda.
+          </p>
         </div>
       )}
     </div>

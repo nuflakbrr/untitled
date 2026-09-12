@@ -1,7 +1,12 @@
 const coverStyles = ['featured-cover-orange', 'featured-cover-green', 'featured-cover-yellow'];
 
 export const getCoverStyles = (eventIds: string[]): string[] =>
-  eventIds.reduce<string[]>((styles, eventId) => {
+  eventIds.reduce<string[]>((styles, eventId, index) => {
+    if (index === 0) {
+      styles.push(coverStyles[0]);
+      return styles;
+    }
+
     const hash = [...eventId].reduce(
       (total, character) => total * 31 + character.charCodeAt(0),
       0

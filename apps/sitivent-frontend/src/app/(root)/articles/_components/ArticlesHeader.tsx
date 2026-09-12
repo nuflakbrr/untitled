@@ -1,34 +1,17 @@
 import type { FC } from 'react';
 
 export const ArticlesHeader: FC = () => (
-    <div
-      style={{ background: '#141413', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-      className="py-28 px-6"
-    >
-      <div className="max-w-4xl mx-auto space-y-6 text-center flex flex-col items-center">
-        <div className="space-y-2">
-          <p
-            className="text-xs font-bold uppercase tracking-widest mb-3"
-            style={{
-              color: '#D97757',
-              fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
-            }}
-          >
-            Artikel · Sitivent
-          </p>
-          <h1
-            className="font-serif text-4xl md:text-5xl font-bold leading-tight"
-            style={{ color: '#FAF9F5' }}
-          >
-            Pusat Edukasi &amp; Artikel
-          </h1>
-          <p className="mt-4 text-base max-w-xl mx-auto" style={{ color: '#87867F' }}>
-            Temukan panduan, tutorial, berita, dan tips terbaik seputar teknologi serta event
-            menarik di SITIVENT.
-          </p>
-        </div>
-      </div>
+  <section className="px-4 pb-12 pt-16 sm:px-6 sm:pt-20 lg:pb-14 lg:pt-24">
+    <div className="mx-auto max-w-295">
+      <h1 className="font-display mt-5 max-w-225 text-[clamp(46px,7vw,80px)] font-extrabold leading-[.98] tracking-[-.06em] text-[#111927]">
+        Jangan cuma datang. Dapatkan lebih banyak dari setiap event.
+      </h1>
+      <p className="mt-5 max-w-162.5 text-[17px] leading-relaxed text-[#6c7280]">
+        Temukan tips untuk memilih event yang cocok, datang dengan lebih pede, dan pulang membawa
+        pengalaman yang benar-benar berguna.
+      </p>
     </div>
-  );
+  </section>
+);
 
 export default ArticlesHeader;

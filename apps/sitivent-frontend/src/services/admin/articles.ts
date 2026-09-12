@@ -1,6 +1,9 @@
 'use server';
 
 import type { z } from 'zod';
+
+import { revalidatePath } from 'next/cache';
+
 import type { articleSchema } from '@/schemas/articles';
 import type {
   Article,
@@ -11,7 +14,6 @@ import type {
 } from '@/interfaces/features/articles';
 
 import api from '@/lib/api';
-import { revalidatePath } from 'next/cache';
 
 export type ArticleValues = z.infer<typeof articleSchema>;
 const endpoint = '/features/v1/articles';
@@ -156,7 +158,12 @@ export async function permanentlyDeleteCategory(id: string): Promise<ArticleCate
 }
 export async function getPublicArticles(): Promise<Article[]> {
   try {
-    return (await api.get(endpoint, { params: { limit: 100 } })).data.data ?? [];
+    const items = (await api.get(endpoint, { params: { limit: 100 } })).data.data ?? [];
+
+    return items.map((item: Article & { category_ids?: string[] }) => ({
+      ...item,
+      categoryIds: item.categoryIds ?? item.category_ids ?? [],
+    }));
   } catch {
     return [];
   }

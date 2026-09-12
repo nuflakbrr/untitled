@@ -9,6 +9,7 @@ export interface Article {
   deletedAt?: Date | string | null;
   createdById: string | null;
   articleCategories: ArticleCategory[];
+  categoryIds?: string[];
 }
 
 export interface ArticleCategory {
@@ -64,6 +65,7 @@ export interface ArticleItem {
   date: string;
   author: string;
   cover?: string | null;
+  categories?: string[];
 }
 
 export interface ArticleDetailStep {
