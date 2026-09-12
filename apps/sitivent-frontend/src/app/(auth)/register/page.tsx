@@ -41,7 +41,7 @@ const Register = () => (
         </div>
 
         <p className="relative z-10 mt-12 text-xs text-white/50 lg:mt-0">
-          Temukan event. Datang dengan siap. Bawa pulang pengalaman.
+          Temukan event, Datang ke venue, Bawa pulang pengalaman.
         </p>
       </section>
 

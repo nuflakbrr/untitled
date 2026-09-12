@@ -2,33 +2,29 @@
 
 import type { FC } from 'react';
 import type { Route } from 'next';
-import type { LoginValues } from '@/services/public/auth';
 
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { signIn } from '@/lib/authClient';
-import { loginSchema } from '@/schemas/auth';
 import { useMutation } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, LogIn, EyeOff, Loader2 } from 'lucide-react';
-import { useRouter , useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react';
 
-function sanitizeCallbackURL(url: string | null): string {
-  if (!url) return '/admin/dashboard';
-  // Allow safe internal relative paths, prevent open redirect (e.g. //attacker.com)
-  if (url.startsWith('/') && !url.startsWith('//') && !url.startsWith('/\\')) {
-    return url;
-  }
-  return '/admin/dashboard';
-}
+import type { LoginValues } from '@/services/public/auth';
+
+import { signIn } from '@/lib/authClient';
+import { loginSchema } from '@/schemas/auth';
+
+import { getLoginInputClass } from '../_libs/getLoginInputClass';
+import { sanitizeCallbackUrl } from '../_libs/sanitizeCallbackUrl';
 
 const LoginForm: FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const rawCallbackUrl = searchParams.get('callbackURL') || searchParams.get('redirectTo');
-  const targetUrl = sanitizeCallbackURL(rawCallbackUrl);
+  const targetUrl = sanitizeCallbackUrl(rawCallbackUrl);
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginValues>({
@@ -49,7 +45,8 @@ const LoginForm: FC = () => {
         if (error.status === 401 || error.code === 'INVALID_EMAIL_OR_PASSWORD') {
           message = 'Email atau password salah.';
         } else if (error.status === 503) {
-          message = 'Server sedang tidak dapat dihubungi. Pastikan backend SITIVENT sedang berjalan.';
+          message =
+            'Server sedang tidak dapat dihubungi. Pastikan backend SITIVENT sedang berjalan.';
         } else if (error.code === 'USER_NOT_FOUND') {
           message = 'Pengguna tidak ditemukan.';
         }
@@ -61,34 +58,24 @@ const LoginForm: FC = () => {
     onSuccess: async (session) => {
       toast.success('Login berhasil! Selamat datang kembali.');
       const userRole = session?.data?.user?.role;
-      const tenantPath = userRole === 'peserta'
-        ? '/participant/dashboard'
-        : session?.data?.tenantId
-        ? `/admin/${session.data.tenantId}/dashboard`
-        : '/admin';
+      const tenantPath =
+        userRole === 'peserta'
+          ? '/participant/dashboard'
+          : session?.data?.tenantId
+            ? `/admin/${session.data.tenantId}/dashboard`
+            : '/admin';
       router.push(tenantPath as Route);
       router.refresh();
     },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onError: (error: Error) => toast.error(error.message),
   });
 
   const onSubmit = (values: LoginValues) => handleLogin(values);
 
-  const inputBase =
-    'w-full px-4 py-3 rounded-xl border-2 bg-white text-[#3D3D3A] placeholder-[#87867F] text-sm outline-none transition-all duration-200 focus:border-[#D97757] focus:shadow-[0_0_0_3px_rgba(217,119,87,0.12)]';
-
-  const errorBase = 'mt-1.5 text-xs text-[#B04A3F] font-medium';
-
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5" noValidate>
-      {/* Email */}
       <div>
-        <label
-          htmlFor="login-email"
-          className="block text-xs font-bold uppercase tracking-widest text-[#87867F] mb-1.5"
-        >
+        <label htmlFor="login-email" className="mb-2 block text-[13px] font-bold text-[#11233f]">
           Email
         </label>
         <input
@@ -98,94 +85,73 @@ const LoginForm: FC = () => {
           autoComplete="email"
           disabled={isPending}
           {...form.register('email')}
-          className={`${inputBase} ${
-            form.formState.errors.email ? 'border-[#B04A3F]' : 'border-[#E3DACC]'
-          } disabled:opacity-60 disabled:cursor-not-allowed`}
+          className={getLoginInputClass(Boolean(form.formState.errors.email))}
         />
         {form.formState.errors.email && (
-          <p className={errorBase}>{form.formState.errors.email.message}</p>
+          <p className="mt-1.5 text-xs font-medium text-[#b84a2a]">
+            {form.formState.errors.email.message}
+          </p>
         )}
       </div>
 
-      {/* Password */}
       <div>
-        <label
-          htmlFor="login-password"
-          className="block text-xs font-bold uppercase tracking-widest text-[#87867F] mb-1.5"
-        >
+        <label htmlFor="login-password" className="mb-2 block text-[13px] font-bold text-[#11233f]">
           Password
         </label>
         <div className="relative">
           <input
             id="login-password"
             type={showPassword ? 'text' : 'password'}
-            placeholder="••••••••"
+            placeholder="Minimal 8 karakter"
             autoComplete="current-password"
             disabled={isPending}
             {...form.register('password')}
-            className={`${inputBase} pr-11 ${
-              form.formState.errors.password ? 'border-[#B04A3F]' : 'border-[#E3DACC]'
-            } disabled:opacity-60 disabled:cursor-not-allowed`}
+            className={`${getLoginInputClass(Boolean(form.formState.errors.password))} pr-11`}
           />
           <button
             type="button"
-            onClick={() => setShowPassword((p) => !p)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#87867F] hover:text-[#D97757] transition-colors"
+            onClick={() => setShowPassword((visible) => !visible)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-[#6c7280] transition hover:bg-[#f6f3eb] hover:text-[#11233f]"
             tabIndex={-1}
             aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
           >
-            {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
         {form.formState.errors.password && (
-          <p className={errorBase}>{form.formState.errors.password.message}</p>
+          <p className="mt-1.5 text-xs font-medium text-[#b84a2a]">
+            {form.formState.errors.password.message}
+          </p>
         )}
       </div>
 
-      <div className="flex justify-end -mt-2">
+      <div className="-mt-2 flex justify-end">
         <Link
           href={'/forgot-password' as Route}
-          className="text-xs font-semibold text-[#D97757] hover:underline"
+          className="text-xs font-semibold text-[#11233f] transition hover:text-[#ff7a45]"
         >
           Lupa password?
         </Link>
       </div>
 
-      {/* Submit */}
       <button
         type="submit"
         id="btn-login-submit"
         disabled={isPending}
-        className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#D97757] hover:bg-[#c46843] active:scale-[0.98] text-white font-bold text-sm tracking-wide shadow-lg shadow-[#D97757]/25 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100"
+        className="inline-flex w-full group items-center justify-center gap-2 rounded-full bg-[#ff7a45] px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-[#f2693a] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
+        {isPending ? 'Memproses...' : 'Masuk'}
         {isPending ? (
-          <>
-            <Loader2 size={16} className="animate-spin" />
-            Memproses...
-          </>
+          <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
-          <>
-            <LogIn size={16} />
-            Masuk ke Dashboard
-          </>
+          <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:-rotate-45" />
         )}
       </button>
 
-      {/* Divider */}
-      <div className="flex items-center gap-3 py-1">
-        <div className="flex-1 h-px bg-[#E3DACC]" />
-        <span className="text-[10px] font-bold uppercase tracking-widest text-[#87867F]">atau</span>
-        <div className="flex-1 h-px bg-[#E3DACC]" />
-      </div>
-
-      {/* Register link */}
-      <p className="text-center text-sm text-[#87867F]">
+      <p className="text-center text-sm text-[#6c7280]">
         Belum punya akun?{' '}
-        <Link
-          href="/register"
-          className="font-bold text-[#D97757] hover:text-[#c46843] transition-colors"
-        >
-          Daftar sekarang
+        <Link href="/register" className="font-bold text-[#11233f] transition hover:text-[#ff7a45]">
+          Daftar
         </Link>
       </p>
     </form>

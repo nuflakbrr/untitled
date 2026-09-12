@@ -7,10 +7,11 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { authClient } from '@/lib/authClient';
 import { useMutation } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
+
+import { authClient } from '@/lib/authClient';
 
 const forgotPasswordSchema = z.object({
   email: z.email('Format email tidak valid'),
