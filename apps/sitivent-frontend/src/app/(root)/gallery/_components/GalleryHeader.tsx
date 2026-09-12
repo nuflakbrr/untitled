@@ -1,33 +1,16 @@
 import type { FC } from 'react';
 
-export const GalleryHeader: FC = () => (
-    <div
-      style={{ background: '#141413', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-      className="py-28 px-6"
-    >
-      <div className="max-w-4xl mx-auto space-y-6 text-center flex flex-col items-center">
-        <div className="space-y-2">
-          <p
-            className="text-xs font-bold uppercase tracking-widest mb-3"
-            style={{
-              color: '#D97757',
-              fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
-            }}
-          >
-            Galeri · Sitivent
-          </p>
-          <h1
-            className="font-serif text-4xl md:text-5xl font-bold leading-tight"
-            style={{ color: '#FAF9F5' }}
-          >
-            Galeri Foto Event
-          </h1>
-          <p className="mt-4 text-base max-w-xl mx-auto" style={{ color: '#87867F' }}>
-            Kumpulan dokumentasi momen keseruan dan kemeriahan event-event yang diselenggarakan.
-          </p>
-        </div>
-      </div>
+const GalleryHeader: FC = () => (
+  <section className="px-4 pb-14 pt-16 sm:px-6 sm:pt-20 lg:pb-16 lg:pt-24">
+    <div className="mx-auto max-w-295">
+      <h1 className="font-display mt-5 max-w-225 text-[clamp(46px,7vw,80px)] font-extrabold leading-[.98] tracking-[-.06em] text-[#111927]">
+        Momen yang tetap hidup setelah acara selesai.
+      </h1>
+      <p className="mt-5 max-w-162.5 text-[17px] leading-relaxed text-[#6c7280]">
+        Kilas balik suasana, diskusi, workshop, dan kebersamaan dari berbagai event Sitivent.
+      </p>
     </div>
-  );
+  </section>
+);
 
 export default GalleryHeader;

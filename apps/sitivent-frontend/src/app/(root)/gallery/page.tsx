@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 
-import api from '@/lib/api';
-import { Empty, EmptyTitle, EmptyHeader, EmptyDescription } from '@/components/ui/empty';
+import { getGalleries } from '@/services/admin/galleries';
 
 import GalleryGrid from './_components/GalleryGrid';
 import GalleryHeader from './_components/GalleryHeader';
@@ -13,47 +12,27 @@ export const metadata: Metadata = {
 };
 
 export default async function PublicGalleryPage() {
-  // 1. Fetch data from DB (Clean database query concern)
-  let galleries: any[] = [];
-  try { galleries = (await api.get('/features/v1/galleries', { params: { page: 1, limit: 10 } })).data.data ?? []; } catch { /* empty state */ }
-
-  // 2. Map data to client schema
-  const mapped = galleries.map((item) => ({
-    id: item.id,
-    title: item.title,
-    description: item.description,
-    imageUrl: item.imageUrl ?? item.image_url ?? '',
-    featured: item.featured,
-    eventId: item.eventId ?? item.event_id,
-    createdAt: String(item.createdAt ?? item.created_at),
-    updatedAt: String(item.updatedAt ?? item.updated_at),
-    event: item.event,
-  }));
+  const { data: galleries } = await getGalleries(1, 10);
 
   return (
-    <section
-      className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-16"
-      style={{ background: '#FAF9F5' }}
-    >
-      {/* SOLID: Extracted Gallery Header component */}
+    <section className="min-h-screen bg-[#f6f3eb] pb-24 text-[#111927]">
       <GalleryHeader />
 
-      {/* Grid Section */}
-      <div className="container mx-auto px-4 max-w-6xl mt-12">
-        {mapped.length === 0 ? (
-          <Empty
-            className="py-24 border rounded-2xl bg-white dark:bg-zinc-900 shadow-xs"
-            style={{ borderColor: '#E3DACC' }}
-          >
-            <EmptyHeader>
-              <EmptyTitle>Foto Tidak Ditemukan</EmptyTitle>
-              <EmptyDescription>
-                Saat ini belum ada dokumentasi foto yang ditambahkan.
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
+      <div className="mx-auto max-w-295 px-4 md:px-0">
+        {galleries.length === 0 ? (
+          <div className="mx-auto flex max-w-md flex-col items-center rounded-[24px] border border-[#111927]/10 bg-[#fffdf8] px-6 py-16 text-center shadow-[0_18px_50px_rgba(17,35,63,.05)]">
+            <div className="grid h-14 w-14 place-items-center rounded-full bg-[#ffe5d8] text-[#ff7a45]">
+              <span className="font-display text-xl font-extrabold">S</span>
+            </div>
+            <h2 className="font-display mt-5 text-2xl font-extrabold tracking-[-.03em] text-[#11233f]">
+              Dokumentasi belum tersedia
+            </h2>
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#6c7280]">
+              Foto kegiatan akan tampil di sini setelah dokumentasi event diunggah.
+            </p>
+          </div>
         ) : (
-          <GalleryGrid initialItems={mapped} />
+          <GalleryGrid initialItems={galleries} />
         )}
       </div>
     </section>

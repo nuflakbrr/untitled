@@ -58,11 +58,11 @@ const GalleryBento: FC = async () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:auto-rows-45 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-12 lg:gap-4.5">
             {galleries.map((item, idx) => (
               <div
                 key={item.id}
-                className={`group relative overflow-hidden rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] shadow-[0_12px_30px_rgba(17,35,63,.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(17,35,63,.1)] ${getBentoSpans(idx)}`}
+                className={`group relative overflow-hidden rounded-[24px] border border-[#111927]/10 bg-[#fffdf8] shadow-[0_12px_30px_rgba(17,35,63,.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(17,35,63,.1)] ${getBentoSpans(idx)}`}
               >
                 <Image
                   src={item.imageUrl}
@@ -72,7 +72,7 @@ const GalleryBento: FC = async () => {
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover group-hover:scale-102 transition-transform duration-500 ease-out"
                 />
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(28,30,36,.9),rgba(255,122,69,.16)_65%,transparent)]" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(17,35,63,.9),rgba(17,35,63,.18)_65%,transparent)]" />
                 <div className="absolute inset-x-0 bottom-0 p-5 text-white">
                   <h3 className="font-display line-clamp-2 text-lg font-bold leading-tight">
                     {item.title}
