@@ -2,22 +2,19 @@
 
 import type { FC } from 'react';
 
-import { z } from 'zod';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Mail, Loader2, ArrowRight } from 'lucide-react';
 
 import { authClient } from '@/lib/authClient';
+import { forgotPasswordSchema, type ForgotPasswordValues } from '@/schemas/auth';
 
-const forgotPasswordSchema = z.object({
-  email: z.email('Format email tidak valid'),
-});
-
-type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
+import ForgotPasswordSuccess from './ForgotPasswordSuccess';
+import { getForgotPasswordInputClass } from '../_libs/getForgotPasswordInputClass';
 
 const ForgotPasswordForm: FC = () => {
   const [emailSent, setEmailSent] = useState(false);
@@ -45,71 +42,25 @@ const ForgotPasswordForm: FC = () => {
       setSentEmail(email);
       setEmailSent(true);
     },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onError: (error: Error) => toast.error(error.message),
   });
 
-  const inputBase =
-    'w-full px-4 py-3 rounded-xl border-2 bg-white text-[#3D3D3A] placeholder-[#87867F] text-sm outline-none transition-all duration-200 focus:border-[#D97757] focus:shadow-[0_0_0_3px_rgba(217,119,87,0.12)]';
-
   if (emailSent) {
-    return (
-      <div className="text-center space-y-4">
-        <div
-          className="w-16 h-16 rounded-full flex items-center justify-center mx-auto"
-          style={{ background: 'rgba(217,119,87,0.12)' }}
-        >
-          <CheckCircle size={32} style={{ color: '#D97757' }} />
-        </div>
-        <h2 className="text-lg font-bold" style={{ color: '#141413' }}>
-          Email Terkirim!
-        </h2>
-        <p className="text-sm" style={{ color: '#87867F' }}>
-          Kami telah mengirim tautan reset password ke{' '}
-          <span className="font-semibold" style={{ color: '#3D3D3A' }}>
-            {sentEmail}
-          </span>
-          . Silakan periksa kotak masuk Anda.
-        </p>
-        <p className="text-xs" style={{ color: '#87867F' }}>
-          Tidak menerima email? Periksa folder spam atau{' '}
-          <button
-            type="button"
-            onClick={() => setEmailSent(false)}
-            className="font-semibold underline"
-            style={{ color: '#D97757' }}
-          >
-            coba lagi
-          </button>
-          .
-        </p>
-        <Link
-          href="/login"
-          className="inline-flex items-center gap-2 text-sm font-semibold mt-4"
-          style={{ color: '#87867F' }}
-        >
-          <ArrowLeft size={15} />
-          Kembali ke halaman login
-        </Link>
-      </div>
-    );
+    return <ForgotPasswordSuccess email={sentEmail} onRetry={() => setEmailSent(false)} />;
   }
 
   return (
-    <form onSubmit={form.handleSubmit((v) => handleSubmit(v))} className="space-y-5" noValidate>
+    <form
+      onSubmit={form.handleSubmit((values) => handleSubmit(values))}
+      className="space-y-5"
+      noValidate
+    >
       <div>
-        <label
-          htmlFor="forgot-email"
-          className="block text-xs font-bold uppercase tracking-widest mb-1.5"
-          style={{ color: '#87867F' }}
-        >
-          Alamat Email
+        <label htmlFor="forgot-email" className="mb-2 block text-[13px] font-bold text-[#11233f]">
+          Email
         </label>
         <div className="relative">
-          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-            <Mail size={16} style={{ color: '#87867F' }} />
-          </span>
+          <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6c7280]" />
           <input
             id="forgot-email"
             type="email"
@@ -117,13 +68,11 @@ const ForgotPasswordForm: FC = () => {
             autoComplete="email"
             disabled={isPending}
             {...form.register('email')}
-            className={`${inputBase} pl-10 ${
-              form.formState.errors.email ? 'border-[#B04A3F]' : 'border-[#E3DACC]'
-            } disabled:opacity-60 disabled:cursor-not-allowed`}
+            className={getForgotPasswordInputClass(Boolean(form.formState.errors.email))}
           />
         </div>
         {form.formState.errors.email && (
-          <p className="mt-1.5 text-xs font-medium" style={{ color: '#B04A3F' }}>
+          <p className="mt-1.5 text-xs font-medium text-[#b84a2a]">
             {form.formState.errors.email.message}
           </p>
         )}
@@ -133,29 +82,20 @@ const ForgotPasswordForm: FC = () => {
         type="submit"
         id="btn-forgot-password-submit"
         disabled={isPending}
-        className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm tracking-wide text-white transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100 active:scale-[0.98]"
-        style={{
-          background: isPending ? '#c46843' : '#D97757',
-          boxShadow: '0 4px 20px rgba(217,119,87,0.3)',
-        }}
+        className="inline-flex group w-full items-center justify-center gap-2 rounded-full bg-[#ff7a45] px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-[#f2693a] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
+        {isPending ? 'Mengirim...' : 'Kirim tautan reset'}
         {isPending ? (
-          <>
-            <Loader2 size={16} className="animate-spin" />
-            Mengirim...
-          </>
+          <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
-          <>
-            <Mail size={16} />
-            Kirim Tautan Reset Password
-          </>
+          <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:-rotate-45" />
         )}
       </button>
 
-      <p className="text-center text-sm" style={{ color: '#87867F' }}>
-        Ingat password Anda?{' '}
-        <Link href="/login" className="font-bold transition-colors" style={{ color: '#D97757' }}>
-          Masuk sekarang
+      <p className="text-center text-sm text-[#6c7280]">
+        Ingat password kamu?{' '}
+        <Link href="/login" className="font-bold text-[#11233f] transition hover:text-[#ff7a45]">
+          Masuk
         </Link>
       </p>
     </form>
