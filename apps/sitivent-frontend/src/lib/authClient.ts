@@ -1,6 +1,10 @@
 'use client';
 
 import { signInAction, signUpAction, signOutAction } from '@/services/public/session';
+import {
+  resetPasswordAction,
+  requestPasswordResetAction,
+} from '@/services/public/auth';
 
 export const signIn = {
   email: async (values: { email: string; password: string; callbackURL?: string }) => {
@@ -33,6 +37,16 @@ export const authClient = {
   signOut,
   updateUser: async (_values: unknown) => ({ error: null as { message: string; code?: string } | null }),
   changePassword: async (_values: unknown) => ({ error: null as { message: string; code?: string } | null }),
-  requestPasswordReset: async (_values: unknown) => ({ error: null as { message: string; code?: string } | null }),
-  resetPassword: async (_values: unknown) => ({ error: null as { message: string; code?: string } | null }),
+  requestPasswordReset: async ({ email }: { email: string; redirectTo?: string }) => {
+    const result = await requestPasswordResetAction(email);
+    return result.success
+      ? { error: null }
+      : { error: { message: result.error ?? 'Gagal memproses permintaan reset password.' } };
+  },
+  resetPassword: async ({ newPassword, token }: { newPassword: string; token: string }) => {
+    const result = await resetPasswordAction(token, newPassword);
+    return result.success
+      ? { error: null }
+      : { error: { message: result.error ?? 'Gagal mereset password.' } };
+  },
 };

@@ -1,6 +1,7 @@
 'use server';
 
 import type { z } from 'zod';
+
 import type { AuthResponse } from '@/interfaces/features/auth';
 
 import api from '@/lib/api';
@@ -55,6 +56,31 @@ export async function sendPasswordChangeNotificationEmail(..._legacyArgs: unknow
     return { success: true };
   } catch {
     return { success: false, error: 'Gagal mengirim notifikasi email.' };
+  }
+}
+
+export async function requestPasswordResetAction(email: string) {
+  try {
+    await api.post('/core/v1/auth/password-reset/request', { email });
+    return { success: true };
+  } catch {
+    return { success: false, error: 'Gagal memproses permintaan reset password.' };
+  }
+}
+
+export async function resetPasswordAction(token: string, newPassword: string) {
+  try {
+    await api.post('/core/v1/auth/password-reset/confirm', { token, new_password: newPassword });
+    return { success: true };
+  } catch (error) {
+    const response = error as { response?: { status?: number } };
+    return {
+      success: false,
+      error:
+        response.response?.status === 400
+          ? 'Token reset password tidak valid atau telah kedaluwarsa.'
+          : 'Gagal mereset password. Silakan coba lagi.',
+    };
   }
 }
 
