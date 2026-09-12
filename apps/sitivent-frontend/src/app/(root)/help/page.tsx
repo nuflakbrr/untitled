@@ -119,7 +119,7 @@ const HelpPage: FC = () => {
               fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
             }}
           >
-            Layanan Bantuan · Sitivent
+            Layanan Bantuan · SITIVENT
           </p>
           <h1
             className="font-serif text-4xl md:text-5xl font-bold leading-tight"

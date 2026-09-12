@@ -27,16 +27,16 @@ const FAQ_DATA: FAQItem[] = [
   {
     id: 'apa-itu-sitivent',
     category: 'umum',
-    question: 'Apa itu Sitivent?',
+    question: 'Apa itu SITIVENT?',
     answer:
-      'Sitivent adalah platform manajemen dan pencarian event terintegrasi yang memudahkan penyelenggara untuk mempublikasikan, mengelola pendaftaran, dan mendistribusikan tiket event, serta membantu peserta menemukan berbagai event menarik seperti seminar, workshop, webinar, dan kompetisi.',
+      'SITIVENT adalah platform manajemen dan pencarian event terintegrasi yang memudahkan penyelenggara untuk mempublikasikan, mengelola pendaftaran, dan mendistribusikan tiket event, serta membantu peserta menemukan berbagai event menarik seperti seminar, workshop, webinar, dan kompetisi.',
   },
   {
     id: 'apakah-daftar-gratis',
     category: 'umum',
-    question: 'Apakah mendaftar di Sitivent gratis?',
+    question: 'Apakah mendaftar di SITIVENT gratis?',
     answer:
-      'Ya, pendaftaran akun untuk peserta maupun penyelenggara di Sitivent sepenuhnya gratis tanpa biaya bulanan atau biaya tersembunyi.',
+      'Ya, pendaftaran akun untuk peserta maupun penyelenggara di SITIVENT sepenuhnya gratis tanpa biaya bulanan atau biaya tersembunyi.',
   },
   {
     id: 'bagaimana-cara-beli-tiket',
@@ -62,7 +62,7 @@ const FAQ_DATA: FAQItem[] = [
   {
     id: 'metode-pembayaran-apa-saja',
     category: 'pembayaran',
-    question: 'Metode pembayaran apa saja yang didukung oleh Sitivent?',
+    question: 'Metode pembayaran apa saja yang didukung oleh SITIVENT?',
     answer:
       'Kami mendukung berbagai metode pembayaran instan dan aman, termasuk transfer bank virtual account (VA), e-wallet populer (GoPay, OVO, Dana), QRIS, serta pembayaran melalui gerai retail minimarket.',
   },
@@ -94,13 +94,17 @@ const FAQPage: FC = () => {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useDebounce('', 500);
   const [selectedCategory, setSelectedCategory] = useState<string>('semua');
 
-  const filteredFAQs = useMemo(() => FAQ_DATA.filter((faq) => {
-      const matchesSearch =
-        faq.question.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
-        faq.answer.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
-      const matchesCategory = selectedCategory === 'semua' || faq.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    }), [debouncedSearchQuery, selectedCategory]);
+  const filteredFAQs = useMemo(
+    () =>
+      FAQ_DATA.filter((faq) => {
+        const matchesSearch =
+          faq.question.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+          faq.answer.toLowerCase().includes(debouncedSearchQuery.toLowerCase());
+        const matchesCategory = selectedCategory === 'semua' || faq.category === selectedCategory;
+        return matchesSearch && matchesCategory;
+      }),
+    [debouncedSearchQuery, selectedCategory]
+  );
 
   return (
     <div
@@ -133,7 +137,7 @@ const FAQPage: FC = () => {
               fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
             }}
           >
-            Bantuan · Sitivent
+            Bantuan · SITIVENT
           </p>
           <h1
             className="font-serif text-4xl md:text-5xl font-bold leading-tight"
@@ -143,7 +147,7 @@ const FAQPage: FC = () => {
           </h1>
           <p className="text-base max-w-xl mx-auto" style={{ color: '#87867F' }}>
             Temukan jawaban cepat atas pertanyaan umum seputar pembelian tiket, pendaftaran event,
-            dan penggunaan platform Sitivent.
+            dan penggunaan platform SITIVENT.
           </p>
 
           {/* Search bar inside hero */}

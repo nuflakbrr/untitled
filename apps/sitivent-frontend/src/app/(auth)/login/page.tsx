@@ -9,7 +9,7 @@ import LoginForm from './_components/LoginForm';
 
 export const metadata: Metadata = genPageMetadata({
   title: 'Masuk',
-  description: 'Masuk ke Sitivent untuk mengelola dan mengikuti event impianmu.',
+  description: 'Masuk ke SITIVENT untuk mengelola dan mengikuti event impianmu.',
 });
 
 const Login = () => (
@@ -22,12 +22,12 @@ const Login = () => (
         <Link
           href="/"
           className="relative z-10 inline-flex w-fit items-center gap-2"
-          aria-label="Beranda Sitivent"
+          aria-label="Beranda SITIVENT"
         >
           <span className="font-display grid h-9 w-9 -rotate-3 place-items-center rounded-[12px] bg-white text-lg font-extrabold text-[#11233f]">
             S
           </span>
-          <span className="font-display text-xl font-extrabold tracking-[-.04em]">Sitivent</span>
+          <span className="font-display text-xl font-extrabold tracking-[-.04em]">SITIVENT</span>
         </Link>
 
         <div className="relative z-10 mt-16 lg:mt-0">
@@ -56,7 +56,7 @@ const Login = () => (
 
           <div className="mt-8">
             <h2 className="font-display text-[clamp(34px,4vw,44px)] font-extrabold leading-none tracking-[-.045em] text-[#11233f]">
-              Masuk ke Sitivent
+              Masuk ke SITIVENT
             </h2>
             <p className="mt-3 text-[#6c7280]">Gunakan akunmu untuk melanjutkan.</p>
           </div>

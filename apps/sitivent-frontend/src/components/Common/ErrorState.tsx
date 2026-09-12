@@ -19,12 +19,12 @@ const ErrorState: FC<ErrorStateProps> = ({ code, error }) => {
     <main className="grid min-h-dvh place-items-center bg-[radial-gradient(circle_at_85%_15%,rgba(255,122,69,.1),transparent_28rem),#f6f3eb] p-4 sm:p-7">
       <section className="w-full max-w-350 rounded-[32px] border border-[#111927]/10 bg-[#fffdf8] p-5 shadow-[0_18px_50px_rgba(17,35,63,.08)] sm:p-8">
         <nav className="flex items-center justify-between gap-5" aria-label="Navigasi error">
-          <Link href="/" className="inline-flex items-center gap-2" aria-label="Beranda Sitivent">
+          <Link href="/" className="inline-flex items-center gap-2" aria-label="Beranda SITIVENT">
             <span className="font-display grid h-9 w-9 -rotate-3 place-items-center rounded-[12px] bg-[#11233f] text-lg font-extrabold text-white">
               S
             </span>
             <span className="font-display text-xl font-extrabold tracking-[-.04em] text-[#11233f]">
-              Sitivent
+              SITIVENT
             </span>
           </Link>
           <Link
@@ -91,7 +91,7 @@ const ErrorState: FC<ErrorStateProps> = ({ code, error }) => {
             </div>
 
             <div className="mt-6 border-t border-[#111927]/10 pt-5 text-[13px] text-[#6c7280]">
-              Kalau kamu sampai ke halaman ini dari sebuah link Sitivent, kamu bisa kembali ke
+              Kalau kamu sampai ke halaman ini dari sebuah link SITIVENT, kamu bisa kembali ke
               halaman sebelumnya atau coba akses menu utama.
             </div>
           </div>
@@ -99,7 +99,7 @@ const ErrorState: FC<ErrorStateProps> = ({ code, error }) => {
 
         {/* <footer className="flex flex-col gap-2 border-t border-[#111927]/10 pt-5 text-xs text-[#6c7280] sm:flex-row sm:items-center sm:justify-between">
           <span>Error {code}</span>
-          <span>Sitivent · Event kampus tanpa ribet administratif</span>
+          <span>SITIVENT · Event kampus tanpa ribet administratif</span>
         </footer> */}
       </section>
     </main>

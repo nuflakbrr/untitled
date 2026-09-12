@@ -44,14 +44,14 @@ const Navbar: FC = () => {
         <div className="flex items-center justify-between gap-6">
           <Link
             href="/"
-            aria-label="Sitivent"
+            aria-label="SITIVENT"
             className="flex shrink-0 items-center gap-2 text-xl font-extrabold tracking-[-.03em] text-[#111927]"
             style={{ fontFamily: 'var(--font-display)' }}
           >
             <span className="grid h-9.5 w-9.5 -rotate-3 place-items-center rounded-xl bg-[#11233f] text-[15px] text-white">
               S
             </span>
-            <span>Sitivent</span>
+            <span>SITIVENT</span>
           </Link>
           <nav className="hidden items-center gap-7.5 text-sm font-semibold text-[#4b5565] lg:flex">
             {navlinks.map((link) => (

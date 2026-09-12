@@ -6,7 +6,7 @@ export const getErrorContent = (statusCode: number): ErrorMetadata => {
       titlePrefix: 'Masuk untuk',
       titleSuffix: 'Melanjutkan',
       description:
-        'Sesi kamu sudah berakhir atau halaman ini membutuhkan akun. Masuk kembali untuk melanjutkan perjalananmu di Sitivent.',
+        'Sesi kamu sudah berakhir atau halaman ini membutuhkan akun. Masuk kembali untuk melanjutkan perjalananmu di SITIVENT.',
       badge: 'Sesi perlu diperbarui',
       theme: 'amber',
     },
@@ -35,7 +35,7 @@ export const getErrorContent = (statusCode: number): ErrorMetadata => {
       theme: 'amber',
     },
     503: {
-      titlePrefix: 'Sitivent sedang',
+      titlePrefix: 'SITIVENT sedang',
       titleSuffix: 'beres-beres sebentar.',
       description:
         'Layanan sedang dalam pemeliharaan atau mengalami lonjakan trafik. Coba kembali beberapa saat lagi.',

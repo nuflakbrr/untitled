@@ -23,11 +23,14 @@ export const SearchBanner: FC = () => {
   }, [query]);
 
   // Cleanup pending timer on unmount
-  useEffect(() => () => {
+  useEffect(
+    () => () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
-    }, []);
+    },
+    []
+  );
 
   const updateUrl = useCallback(
     (newQuery: string) => {
@@ -85,7 +88,7 @@ export const SearchBanner: FC = () => {
               fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
             }}
           >
-            Event · Sitivent
+            Event · SITIVENT
           </p>
           <h1
             className="font-serif text-4xl md:text-5xl font-bold leading-tight"

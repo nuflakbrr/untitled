@@ -64,7 +64,7 @@ const HeroBanner: FC<Props> = ({ events }) => {
 
           <div
             className="relative min-h-136 overflow-visible sm:min-h-135"
-            aria-label="Preview tiket event Sitivent"
+            aria-label="Preview tiket event SITIVENT"
           >
             <article className="absolute inset-[18px_10px_126px_10px] rotate-0 overflow-hidden rounded-3xl bg-[#11233f] p-4 text-white shadow-[0_12px_30px_rgba(17,35,63,.1)] sm:inset-[28px_34px_56px_22px] sm:rotate-2 sm:p-5.5 sm:shadow-[0_18px_50px_rgba(17,35,63,.08)]">
               <div className="relative flex h-60 flex-col justify-between overflow-hidden rounded-[20px] bg-[#1b3458] bg-[linear-gradient(135deg,rgba(255,255,255,.03),rgba(255,255,255,.13)),repeating-linear-gradient(125deg,transparent_0_44px,rgba(255,255,255,.035)_45px_46px)] p-4 after:absolute after:-bottom-10 after:-right-8 after:h-45 after:w-45 after:rounded-full after:bg-[#ff7a45] before:absolute before:bottom-6 before:right-28 before:h-27.5 before:w-27.5 before:rounded-full before:bg-[#f7df86] before:opacity-80 sm:h-70 sm:rounded-[22px] sm:p-6">

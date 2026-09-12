@@ -7,7 +7,7 @@ const GalleryHeader: FC = () => (
         Momen yang tetap hidup setelah acara selesai.
       </h1>
       <p className="mt-5 max-w-162.5 text-[17px] leading-relaxed text-[#6c7280]">
-        Kilas balik suasana, diskusi, workshop, dan kebersamaan dari berbagai event Sitivent.
+        Kilas balik suasana, diskusi, workshop, dan kebersamaan dari berbagai event SITIVENT.
       </p>
     </div>
   </section>

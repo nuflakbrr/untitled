@@ -29,7 +29,7 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
       cleanPhone = '62' + cleanPhone.substring(1);
     }
     const text = encodeURIComponent(
-      `Halo ${name},\n\nKami dari tim Support Sitivent ingin menindaklanjuti laporan Anda mengenai "${title}".\n\nBagaimana kami bisa membantu Anda?`
+      `Halo ${name},\n\nKami dari tim Support SITIVENT ingin menindaklanjuti laporan Anda mengenai "${title}".\n\nBagaimana kami bisa membantu Anda?`
     );
     return `https://wa.me/${cleanPhone}?text=${text}`;
   };

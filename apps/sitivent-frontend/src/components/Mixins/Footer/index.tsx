@@ -50,7 +50,9 @@ const Footer: FC = () => {
               <span className="font-display grid h-9 w-9 place-items-center rounded-[12px] bg-[#11233f] text-lg font-extrabold text-white">
                 S
               </span>
-              <span className="font-display text-xl font-extrabold tracking-[-.04em]">Sitivent</span>
+              <span className="font-display text-xl font-extrabold tracking-[-.04em]">
+                SITIVENT
+              </span>
             </Link>
             <p className="mt-4 max-w-105 text-sm leading-relaxed text-[#6c7280]">
               Platform event kampus untuk registrasi, ticketing, check-in, kehadiran, dan sertifikat
