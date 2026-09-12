@@ -15,4 +15,5 @@ export interface AlertModal {
   loading: boolean;
   title?: string;
   desc?: string;
+  variant?: 'cms' | 'public';
 }

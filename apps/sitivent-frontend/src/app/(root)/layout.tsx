@@ -46,7 +46,7 @@ const LandingPageLayout = async ({ children }: Props) => {
   return (
     <div
       className={cn(
-        'font-sans',
+        'min-h-screen bg-[#f6f3eb] font-sans',
         inter.variable,
         jakartaSans.variable,
         geistSans.variable,

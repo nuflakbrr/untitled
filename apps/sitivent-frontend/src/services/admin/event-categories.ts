@@ -1,5 +1,7 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
+
 import type {
   EventCategory,
   EventCategoryResponse,
@@ -8,7 +10,6 @@ import type {
 
 import api from '@/lib/api';
 import { slugify } from '@/lib/slugify';
-import { revalidatePath } from 'next/cache';
 import { eventCategorySchema, type EventCategoryValues } from '@/schemas/event-categories';
 
 const BASE_PATH = '/admin/master/event-categories';
@@ -173,5 +174,13 @@ export async function permanentlyDeleteEventCategory(id: string): Promise<EventC
 }
 
 export async function getPublicEventCategories(): Promise<EventCategory[]> {
-  return getAllEventCategories();
+  try {
+    return (
+      await api.get('/features/v1/event-categories', {
+        headers: { 'X-Skip-Tenant': 'true' },
+      })
+    ).data.data ?? [];
+  } catch {
+    return [];
+  }
 }

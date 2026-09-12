@@ -4,383 +4,143 @@ import type { FC } from 'react';
 import type { Route } from 'next';
 
 import Link from 'next/link';
-import { toast } from 'sonner';
-import Image from 'next/image';
-import { cn } from '@/lib/utils';
-import { signOut } from '@/lib/authClient';
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { usePathname } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import { X, Menu, ArrowRight } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
 import { getMeAction } from '@/services/public/auth';
-import { useRouter, usePathname } from 'next/navigation';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import AlertModal from '@/components/Common/Modals/AlertModal';
-import { X, Menu, LogOut, LayoutDashboard } from 'lucide-react';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
 
-import { EventSearch } from './EventSearch';
-import { navlinks } from './constant/navLinks';
-
-interface MeResponse {
-  isAdmin: boolean;
-}
-
-interface NavbarUserDropdownProps {
-  user: { name: string; email: string; image?: string | null };
-  scrolled: boolean;
-  isAdmin: boolean;
-  tenantId?: string | null;
-}
-
-const getInitials = (name: string): string =>
-  name
-    ? name
-        .split(' ')
-        .map((n) => n[0])
-        .slice(0, 2)
-        .join('')
-        .toUpperCase()
-    : 'U';
-
-const NavbarUserDropdown: FC<NavbarUserDropdownProps> = ({ user, scrolled, isAdmin, tenantId }) => {
-  const router = useRouter();
-  const dashboardHref = isAdmin ? (tenantId ? `/admin/${tenantId}/dashboard` : '/admin') : '/participant/dashboard';
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-
-  const { mutate: handleLogout, isPending } = useMutation({
-    mutationFn: async () => {
-      const { error } = await signOut();
-      if (error) throw new Error('Gagal keluar dari sistem.');
-    },
-    onSuccess: () => {
-      toast.success('Berhasil keluar. Sampai jumpa!');
-      window.location.href = '/';
-    },
-    onError: (err: Error) => toast.error(err.message || 'Terjadi kesalahan.'),
-  });
-
-  return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className={cn(
-              'relative h-9 w-9 rounded-full ring-2 transition-all p-0',
-              scrolled ? 'ring-[#D1CFC5] hover:ring-[#D97757]' : 'ring-white/30 hover:ring-white/60'
-            )}
-          >
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={user.image ?? undefined} alt={user.name} />
-              <AvatarFallback
-                style={{ background: '#D97757', color: '#FFFFFF' }}
-                className="text-xs font-bold"
-              >
-                {getInitials(user.name)}
-              </AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          className="w-56 rounded-xl border border-[#D1CFC5] shadow-md"
-          style={{ background: '#FFFFFF' }}
-          align="end"
-          forceMount
-        >
-          <DropdownMenuLabel className="font-normal px-3 py-2.5">
-            <p className="text-sm font-semibold text-[#141413] truncate">{user.name}</p>
-            <p className="text-xs text-[#87867F] font-mono truncate">{user.email}</p>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator className="bg-[#E3DACC]" />
-          <DropdownMenuItem asChild>
-            <Link
-              href={dashboardHref as Route}
-              className="cursor-pointer flex items-center gap-2 px-3 py-2 text-sm text-[#3D3D3A] hover:text-[#141413]"
-            >
-              <LayoutDashboard className="h-4 w-4" />
-              Dashboard
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator className="bg-[#E3DACC]" />
-          <DropdownMenuItem
-            variant="destructive"
-            className="cursor-pointer flex items-center gap-2 px-3 py-2 text-sm"
-            onClick={() => setIsLogoutModalOpen(true)}
-          >
-            <LogOut className="h-4 w-4" />
-            Keluar
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <AlertModal
-        isOpen={isLogoutModalOpen}
-        onClose={() => setIsLogoutModalOpen(false)}
-        onConfirm={() => handleLogout()}
-        loading={isPending}
-        title="Keluar dari Sistem"
-        desc="Apakah Anda yakin ingin keluar dari akun Anda?"
-      />
-    </>
-  );
-};
+import UserMenu from './_components/UserMenu';
+import { navlinks } from './_constants/navLinks';
 
 const Navbar: FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const { data: meData } = useQuery({
+  const { data } = useQuery({
     queryKey: ['auth-me-server-action'],
     queryFn: () => getMeAction(),
     staleTime: 5 * 60 * 1000,
   });
-  const session = meData?.session;
-  const isAdmin = meData?.isAdmin ?? false;
-  const tenantId = session?.tenantId;
-  const dashboardHref = isAdmin ? (tenantId ? `/admin/${tenantId}/dashboard` : '/admin') : '/participant/dashboard';
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    setOpen(false);
+  }, [pathname]);
 
-  useEffect(() => setIsOpen(false), [pathname]);
-
-  const isMenuActive = (path: string): boolean => {
-    if (pathname === '/' && path === '/') return true;
-    return pathname !== '/' && path !== '/' && pathname.includes(path);
-  };
-
-  const isTransparentNotAllowed = [
-    '/',
-    '/events',
-    '/gallery',
-    '/articles',
-    '/about',
-    '/help',
-    '/faq',
-    '/terms',
-    '/privacy',
-  ];
-
-  const isSolid = scrolled || !isTransparentNotAllowed.includes(pathname);
+  const session = data?.session;
+  const isAdmin = data?.isAdmin ?? false;
+  const tenantId = session?.tenantId;
+  const dashboardHref = isAdmin
+    ? tenantId
+      ? `/admin/${tenantId}/dashboard`
+      : '/admin'
+    : '/participant/dashboard';
+  const active = (path: string) => (path === '/' ? pathname === '/' : pathname.startsWith(path));
 
   return (
-    <>
-      <header
-        className={cn(
-          'fixed top-0 left-0 w-full z-50 transition-all duration-300',
-          isSolid ? 'bg-[#FFFFFF]/96 backdrop-blur-md border-b border-[#E3DACC]' : 'bg-transparent'
-        )}
-      >
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="flex items-center justify-between h-16 gap-4">
-            {/* Logo */}
-            <Link
-              href="/"
-              aria-label="SITIVENT"
-              className="inline-flex items-center gap-2 shrink-0"
-            >
-              <Image
-                className="w-auto h-25"
-                src={
-                  isSolid ? '/assets/img/SITIVENT-PRIMARY.png' : '/assets/img/SITIVENT-WHITE.png'
-                }
-                alt="Logo"
-                width={120}
-                height={40}
-                loading="lazy"
-              />
-              {/* <span
-                className="flex items-center justify-center w-8 h-8 rounded-lg font-black text-sm shadow-sm"
-                style={{ background: '#D97757', color: '#FFFFFF' }}
-              >
-                S
-              </span>
-              <span
-                className={cn(
-                  'font-extrabold text-lg tracking-tight transition-colors duration-300',
-                  isSolid ? 'text-[#141413]' : 'text-white'
-                )}
-                style={{ fontFamily: 'ui-serif, Georgia, serif' }}
-              >
-                SITIVENT
-              </span> */}
-            </Link>
-
-            {/* Desktop nav */}
-            <nav className="hidden lg:flex items-center gap-1">
-              {navlinks.map((link) => (
-                <Link
-                  key={link.path}
-                  href={link.path as Route}
-                  className={cn(
-                    'relative px-3 py-2 text-sm font-medium transition-colors duration-200',
-                    'after:absolute after:bottom-0 after:left-3 after:right-3 after:h-0.5 after:rounded-full after:transition-transform after:duration-300 after:origin-center',
-                    isSolid
-                      ? 'text-[#3D3D3A] hover:text-[#D97757] after:bg-[#D97757]'
-                      : 'text-white/80 hover:text-white after:bg-white',
-                    isMenuActive(link.path)
-                      ? isSolid
-                        ? 'text-[#D97757] after:scale-x-100'
-                        : 'text-white font-semibold after:scale-x-100'
-                      : 'after:scale-x-0'
-                  )}
-                >
-                  {link.title}
-                </Link>
-              ))}
-            </nav>
-
-            {/* Desktop right: search + auth */}
-            <div className="hidden lg:flex items-center gap-2">
-              <EventSearch scrolled={isSolid} />
-              {session?.user ? (
-                <NavbarUserDropdown user={session.user} scrolled={isSolid} isAdmin={isAdmin} tenantId={tenantId} />
-              ) : (
-                <>
-                  <Link
-                    href={'/login' as Route}
-                    className={cn(
-                      'text-sm font-semibold px-4 py-2 rounded-lg transition-colors duration-200',
-                      isSolid
-                        ? 'text-[#3D3D3A] hover:text-[#D97757]'
-                        : 'text-white/80 hover:text-white'
-                    )}
-                  >
-                    Masuk
-                  </Link>
-                  <Link
-                    href={'/register' as Route}
-                    className="text-sm font-bold px-5 py-2.5 rounded-xl text-white shadow-sm transition-all duration-200 hover:scale-[1.03] active:scale-[0.97]"
-                    style={{ background: '#D97757' }}
-                  >
-                    Daftar
-                  </Link>
-                </>
-              )}
-            </div>
-
-            {/* Mobile hamburger */}
-            <button
-              type="button"
-              onClick={() => setIsOpen((o) => !o)}
-              aria-label="Toggle navigation"
-              className={cn(
-                'lg:hidden p-2 rounded-lg transition-colors',
-                isSolid ? 'text-[#3D3D3A] hover:bg-[#F0EEE6]' : 'text-white hover:bg-white/10'
-              )}
-            >
-              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile nav drawer */}
-      <div
-        className={cn(
-          'fixed inset-x-0 top-16 z-40 lg:hidden transition-all duration-300 ease-in-out',
-          isOpen
-            ? 'opacity-100 translate-y-0 pointer-events-auto'
-            : 'opacity-0 -translate-y-2 pointer-events-none'
-        )}
-      >
-        <div
-          className="mx-4 mt-1 rounded-2xl shadow-xl overflow-hidden border"
-          style={{ background: '#FFFFFF', borderColor: '#E3DACC' }}
-        >
-          <nav className="p-3">
-            <ul className="space-y-0.5">
-              {navlinks.map((link) => (
-                <li key={link.path}>
-                  <Link
-                    href={link.path as Route}
-                    className={cn(
-                      'flex items-center px-4 py-2.5 rounded-xl text-sm font-medium transition-colors',
-                      isMenuActive(link.path)
-                        ? 'font-semibold'
-                        : 'text-[#3D3D3A] hover:text-[#141413]'
-                    )}
-                    style={
-                      isMenuActive(link.path)
-                        ? { background: '#F5E8E3', color: '#D97757' }
-                        : { backgroundColor: 'transparent' }
-                    }
-                  >
-                    {link.title}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <div
-            className="px-4 pb-4 pt-2 flex flex-col gap-2 border-t"
-            style={{ borderColor: '#E3DACC' }}
+    <header className="sticky top-0 z-50 px-4 pt-5 sm:px-6">
+      <div className="relative mx-auto max-w-295 rounded-[18px] border border-white/70 bg-[#fffdf8]/65 p-[14px_18px] shadow-[0_10px_28px_rgba(17,35,63,.08),inset_0_1px_0_rgba(255,255,255,.85)] backdrop-blur-2xl backdrop-saturate-150">
+        <div className="flex items-center justify-between gap-6">
+          <Link
+            href="/"
+            aria-label="Sitivent"
+            className="flex shrink-0 items-center gap-2 text-xl font-extrabold tracking-[-.03em] text-[#111927]"
+            style={{ fontFamily: 'var(--font-display)' }}
           >
+            <span className="grid h-9.5 w-9.5 -rotate-3 place-items-center rounded-xl bg-[#11233f] text-[15px] text-white">
+              S
+            </span>
+            <span>Sitivent</span>
+          </Link>
+          <nav className="hidden items-center gap-7.5 text-sm font-semibold text-[#4b5565] lg:flex">
+            {navlinks.map((link) => (
+              <Link
+                key={link.path}
+                href={link.path as Route}
+                className={cn(
+                  'transition hover:text-[#111927]',
+                  active(link.path) && 'text-[#111927]'
+                )}
+              >
+                {link.title === 'Tentang Kami' ? 'Tentang' : link.title}
+              </Link>
+            ))}
+          </nav>
+          <div className="hidden items-center gap-2 lg:flex">
             {session?.user ? (
-              <>
-                <div className="flex items-center gap-3 px-2 py-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src={session.user.image ?? undefined}
-                      alt={session.user.name ?? ''}
-                    />
-                    <AvatarFallback
-                      style={{ background: '#D97757', color: '#FFF' }}
-                      className="text-xs font-bold"
-                    >
-                      {getInitials(session.user.name ?? '')}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[#141413] truncate">
-                      {session.user.name}
-                    </p>
-                    <p className="text-xs text-[#87867F] font-mono truncate">
-                      {session.user.email}
-                    </p>
-                  </div>
-                </div>
-                <Link
-                  href={dashboardHref as Route}
-                  className="w-full text-center py-2.5 rounded-xl text-sm font-semibold transition-colors"
-                  style={{ background: '#F5E8E3', color: '#D97757' }}
-                >
-                  Dashboard
-                </Link>
-              </>
+              <UserMenu user={session.user} isAdmin={isAdmin} tenantId={tenantId} />
             ) : (
               <>
                 <Link
                   href={'/login' as Route}
-                  className="w-full text-center py-2.5 rounded-xl text-sm font-semibold text-[#3D3D3A] hover:text-[#141413] transition-colors"
-                  style={{ background: '#F0EEE6' }}
+                  className="rounded-full px-4.5 py-3 font-bold text-[#11233f] transition hover:-translate-y-0.5"
                 >
                   Masuk
                 </Link>
                 <Link
-                  href={'/register' as Route}
-                  className="w-full text-center py-2.5 rounded-xl text-sm font-bold text-white transition-colors"
-                  style={{ background: '#D97757' }}
+                  href={'/events' as Route}
+                  className="inline-flex items-center group gap-2 rounded-full bg-[#11233f] px-4.5 py-3 font-bold text-white shadow-[0_10px_22px_rgba(17,35,63,.16)] transition hover:-translate-y-0.5"
                 >
-                  Daftar
+                  Cari Event{' '}
+                  <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:-rotate-45" />
                 </Link>
               </>
             )}
           </div>
+          <button
+            type="button"
+            aria-label="Buka menu"
+            onClick={() => setOpen((value) => !value)}
+            className="grid h-10.5 w-10.5 place-items-center rounded-xl bg-[#11233f] text-white lg:hidden"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
+        {open && (
+          <div className="absolute inset-x-0 top-full z-10 mt-3 rounded-[18px] border border-white/70 bg-[#fffdf8]/95 p-3 shadow-[0_18px_40px_rgba(17,35,63,.12),inset_0_1px_0_rgba(255,255,255,.85)] backdrop-blur-2xl backdrop-saturate-150 lg:hidden">
+            <nav className="grid gap-1">
+              {navlinks
+                .filter((link) => link.path !== '/')
+                .map((link) => (
+                  <Link
+                    key={link.path}
+                    href={link.path as Route}
+                    className="rounded-xl px-3 py-2.5 text-sm font-semibold text-[#4b5565] hover:bg-[#f6f3eb]"
+                  >
+                    {link.title}
+                  </Link>
+                ))}
+            </nav>
+            <div className="mt-3 grid gap-2 border-t border-[#111927]/10 pt-3">
+              {session?.user ? (
+                <Link
+                  href={dashboardHref as Route}
+                  className="rounded-full bg-[#11233f] px-4 py-3 text-center text-sm font-bold text-white"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href={'/login' as Route}
+                    className="rounded-full bg-[#f6f3eb] px-4 py-3 text-center text-sm font-bold text-[#11233f]"
+                  >
+                    Masuk
+                  </Link>
+                  <Link
+                    href={'/events' as Route}
+                    className="rounded-full bg-[#11233f] px-4 py-3 text-center text-sm font-bold text-white"
+                  >
+                    Cari Event
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
-    </>
+    </header>
   );
 };
 

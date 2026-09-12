@@ -1,10 +1,12 @@
 'use server';
 
 import type { z } from 'zod';
+
+import { revalidatePath } from 'next/cache';
+
 import type { Event, EventResponse, EventPaginationResponse } from '@/interfaces/features/events';
 
 import api from '@/lib/api';
-import { revalidatePath } from 'next/cache';
 import { eventSchema } from '@/schemas/events';
 
 const BASE_PATH = '/admin/master/events';
@@ -161,6 +163,7 @@ export async function getPublicEvents(search = '', categorySlug = ''): Promise<E
     return (
       (await api.get('/features/v1/events', {
         params: { status: 'PUBLISHED', limit: 100, search, category_slug: categorySlug },
+        headers: { 'X-Skip-Tenant': 'true' },
       })).data.data ?? []
     ).map(normalizeEvent);
   } catch {

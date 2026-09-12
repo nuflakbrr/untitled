@@ -1,20 +1,19 @@
 import type { Metadata } from 'next';
+
+import dynamic from 'next/dynamic';
+
 import type { Event } from '@/interfaces/features/events';
 
-import { Suspense } from 'react';
-import dynamic from 'next/dynamic';
 import { getPublicEvents } from '@/services/admin/events';
 import { getFeaturedTestimonials } from '@/services/public/testimonials';
 import { getPublicEventCategories } from '@/services/admin/event-categories';
 
-import Stats from './_components/Stats';
+import Features from './_components/Features';
 import HeroBanner from './_components/HeroBanner';
-import CategoryLinks from './_components/CategoryLinks';
+import GalleryBento from './_components/GalleryBento';
 import FeaturedEvents from './_components/FeaturedEvents';
+import TestimonialsCarousel from './_components/TestimonialsCarousel';
 
-const GalleryBento = dynamic(() => import('./_components/GalleryBento'));
-const Features = dynamic(() => import('./_components/Features'));
-const TestimonialsCarousel = dynamic(() => import('./_components/TestimonialsCarousel'));
 const CTABanner = dynamic(() => import('./_components/CTABanner'));
 
 export const metadata: Metadata = {
@@ -30,17 +29,10 @@ export default async function HomePage() {
     getFeaturedTestimonials(10),
   ]);
 
-  // Take minimum 3 and maximum 5 for HeroBanner, fallback if fewer
-  const heroEvents = events.slice(0, 5);
-
   return (
-    <div className="w-full">
-      <HeroBanner events={heroEvents as Event[]} />
-      <Suspense fallback={<div className="h-14 border-b bg-white" />}>
-        <CategoryLinks categories={categories} />
-      </Suspense>
-      <FeaturedEvents events={events} />
-      <Stats />
+    <div className="w-full bg-[#f6f3eb] text-[#111927]">
+      <HeroBanner events={events.slice(0, 5) as Event[]} />
+      <FeaturedEvents events={events} categories={categories} />
       <GalleryBento />
       <Features />
       <TestimonialsCarousel testimonials={testimonials} />

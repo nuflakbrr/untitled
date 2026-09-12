@@ -1,33 +1,35 @@
 'use client';
 
-import type { FC } from 'react';
 import type { Route } from 'next';
-import type { EventCategory } from '@/interfaces/features/event-categories';
+import type { FC, WheelEvent } from 'react';
 
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
 import { Tag, Mic2, Code2, Laptop, MonitorPlay, MessageSquare } from 'lucide-react';
 
-// Helper to map dynamic categories to warm palette icon themes
+import type { EventCategory } from '@/interfaces/features/event-categories';
+
+import { cn } from '@/lib/utils';
+
+// Keep category icons recognizable while the visual treatment stays on-brand.
 const getCategoryConfig = (slug: string) => {
   const norm = slug.toLowerCase();
   if (norm.includes('seminar')) {
-    return { icon: Mic2, accent: '#D97757' }; // clay
+    return { icon: Mic2 };
   }
   if (norm.includes('workshop')) {
-    return { icon: Laptop, accent: '#788C5D' }; // olive
+    return { icon: Laptop };
   }
   if (norm.includes('webinar')) {
-    return { icon: MonitorPlay, accent: '#3D3D3A' }; // gray-700
+    return { icon: MonitorPlay };
   }
   if (norm.includes('bootcamp')) {
-    return { icon: Code2, accent: '#B04A3F' }; // rust
+    return { icon: Code2 };
   }
   if (norm.includes('talk') || norm.includes('show') || norm.includes('wicara')) {
-    return { icon: MessageSquare, accent: '#87867F' }; // gray-500
+    return { icon: MessageSquare };
   }
-  return { icon: Tag, accent: '#3D3D3A' };
+  return { icon: Tag };
 };
 
 interface CategoryLinksProps {
@@ -37,6 +39,14 @@ interface CategoryLinksProps {
 const CategoryLinks: FC<CategoryLinksProps> = ({ categories }) => {
   const searchParams = useSearchParams();
   const activeCategory = searchParams.get('category');
+
+  const handleCategoryWheel = (event: WheelEvent<HTMLElement>) => {
+    const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+    if (!delta || event.currentTarget.scrollWidth <= event.currentTarget.clientWidth) return;
+
+    event.preventDefault();
+    event.currentTarget.scrollLeft += delta;
+  };
 
   // Dynamic helper to create target href maintaining existing params
   const createCategoryHref = (categorySlug?: string) => {
@@ -52,70 +62,48 @@ const CategoryLinks: FC<CategoryLinksProps> = ({ categories }) => {
   };
 
   return (
-    <div
-      className="sticky z-30"
-      style={{
-        background: '#FFFFFF',
-        borderBottom: '1.5px solid #E3DACC',
-        boxShadow: '0 2px 8px rgba(20,20,19,0.04)',
-        top: '60px',
-      }}
-    >
-      <div className="container mx-auto px-4 max-w-6xl">
-        <div className="flex items-center gap-2 overflow-x-auto py-3 scrollbar-hide">
-          {/* "Semua" filter button */}
+    <div className="mb-10 border-y border-[#111927]/10 py-4">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-40">
+        <p className="shrink-0 text-sm font-bold text-[#11233f]">Jelajahi berdasarkan minatmu</p>
+        <nav
+          aria-label="Kategori event"
+          className="flex min-w-0 flex-nowrap gap-2 overflow-x-scroll overscroll-x-contain pb-1 touch-pan-x select-none sm:w-0 sm:flex-1 sm:justify-start"
+          style={{ scrollbarWidth: 'thin' }}
+          onWheel={handleCategoryWheel}
+        >
           <Link
             href={createCategoryHref()}
             className={cn(
-              'flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200'
-            )}
-            style={
+              'inline-flex shrink-0 items-center rounded-full border px-3.5 py-2 text-sm font-bold whitespace-nowrap transition duration-200',
               !activeCategory
-                ? {
-                    background: '#141413',
-                    color: '#FAF9F5',
-                    border: '1.5px solid #141413',
-                  }
-                : {
-                    background: 'transparent',
-                    color: '#3D3D3A',
-                    border: '1.5px solid #D1CFC5',
-                  }
-            }
+                ? 'border-[#11233f] bg-[#11233f] text-white'
+                : 'border-[#111927]/15 text-[#11233f] hover:border-[#11233f] hover:bg-[#fffdf8]'
+            )}
           >
-            Semua Event
+            Semua event
           </Link>
 
           {categories.map((cat) => {
-            const config = getCategoryConfig(cat.slug);
-            const Icon = config.icon;
+            const Icon = getCategoryConfig(cat.slug).icon;
             const isActive = activeCategory === cat.slug;
 
             return (
               <Link
                 key={cat.id}
                 href={createCategoryHref(cat.slug)}
-                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200"
-                style={
+                className={cn(
+                  'inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-bold whitespace-nowrap transition duration-200',
                   isActive
-                    ? {
-                        background: config.accent,
-                        color: '#FFFFFF',
-                        border: `1.5px solid ${config.accent}`,
-                      }
-                    : {
-                        background: 'transparent',
-                        color: '#3D3D3A',
-                        border: '1.5px solid #D1CFC5',
-                      }
-                }
+                    ? 'border-[#11233f] bg-[#11233f] text-white'
+                    : 'border-[#111927]/15 text-[#11233f] hover:border-[#11233f] hover:bg-[#fffdf8]'
+                )}
               >
-                <Icon className="w-3.5 h-3.5" />
+                <Icon className="h-3.5 w-3.5" />
                 {cat.name}
               </Link>
             );
           })}
-        </div>
+        </nav>
       </div>
     </div>
   );

@@ -6,6 +6,82 @@
 @custom-variant dark (&:is(.dark *));
 @config "../../tailwind.config.ts";
 
+.font-display {
+  font-family: var(--font-display);
+}
+
+.featured-cover-orange {
+  background:
+    radial-gradient(circle at 78% 75%, #ffdba9 0 10%, transparent 10.5%),
+    radial-gradient(circle at 82% 70%, #ff7a45 0 31%, transparent 31.5%),
+    #172942;
+  color: white;
+}
+
+.featured-cover-green {
+  background:
+    linear-gradient(
+      135deg,
+      transparent 0 38%,
+      rgb(255 255 255 / 32%) 38% 39%,
+      transparent 39% 60%,
+      rgb(255 255 255 / 23%) 60% 61%
+    ),
+    #bfe4c7;
+  color: #11233f;
+}
+
+.featured-cover-yellow {
+  background:
+    repeating-radial-gradient(
+      circle at 100% 0,
+      transparent 0 18px,
+      rgb(17 35 63 / 8%) 19px 20px
+    ),
+    #f7df86;
+  color: #11233f;
+}
+
+.category-marquee {
+  display: flex;
+  width: max-content;
+  animation: category-marquee 24s linear infinite;
+  will-change: transform;
+}
+
+.category-marquee__group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 40px;
+  padding: 17px 40px 17px 0;
+  color: #11233f;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.category-marquee__item::before {
+  content: '✦';
+  margin-right: 40px;
+  color: #ff7a45;
+}
+
+@keyframes category-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-25%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-marquee {
+    animation: none;
+  }
+}
+
 html {
   scroll-behavior: smooth;
 }

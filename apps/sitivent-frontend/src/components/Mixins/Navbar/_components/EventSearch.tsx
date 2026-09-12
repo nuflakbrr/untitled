@@ -1,15 +1,16 @@
 'use client';
 
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useRef, useState, useEffect, useCallback } from 'react';
+import { X, Search, ArrowRight, CalendarDays } from 'lucide-react';
+
 import type { EventSearchResult } from '@/interfaces/features/events';
 
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
 import { EventType } from '@/interfaces/enums';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { useRef, useState, useEffect, useCallback } from 'react';
-import { X, Search, ArrowRight, CalendarDays } from 'lucide-react';
 import {
   type CategoryItem,
   searchEventsAction,

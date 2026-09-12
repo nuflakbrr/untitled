@@ -3,10 +3,11 @@
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { useTheme } from 'next-themes';
-import { signOut } from '@/lib/authClient';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { Cog, LogOut, ChevronsUpDown } from 'lucide-react';
+
+import { signOut } from '@/lib/authClient';
 import AlertModal from '@/components/Common/Modals/AlertModal';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {

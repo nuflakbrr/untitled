@@ -4,14 +4,15 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { useTour } from '@reactour/tour';
-import { signOut } from '@/lib/authClient';
 import { useRouter } from 'next/navigation';
+import { useMutation } from '@tanstack/react-query';
+import { Home, Award, LogOut, CreditCard, UserCircle, LayoutDashboard } from 'lucide-react';
+
+import { signOut } from '@/lib/authClient';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/useMobile';
-import { useMutation } from '@tanstack/react-query';
 import AlertModal from '@/components/Common/Modals/AlertModal';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Home, Award, LogOut, CreditCard, UserCircle, LayoutDashboard } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -173,6 +174,7 @@ export default function ParticipantNavbarClient({ user }: Props) {
         onClose={() => setIsLogoutModalOpen(false)}
         onConfirm={() => handleLogout()}
         loading={isPending}
+        variant="public"
         title="Keluar dari Sistem"
         desc="Apakah Anda yakin ingin keluar dari akun Anda?"
       />

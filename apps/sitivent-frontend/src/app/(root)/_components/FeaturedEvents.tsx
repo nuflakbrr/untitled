@@ -1,294 +1,110 @@
-import 'moment-timezone';
 import 'moment/locale/id';
 
 import type { FC } from 'react';
-import type { Event } from '@/interfaces/features/events';
 
 import moment from 'moment';
 import Link from 'next/link';
-import Image from 'next/image';
+import { MapPin, ArrowRight, CalendarDays } from 'lucide-react';
+
+import type { Event } from '@/interfaces/features/events';
+import type { EventCategory } from '@/interfaces/features/event-categories';
+
 import { formatCurrency } from '@/lib/formatCurrency';
-import { Clock, Users, Globe, MapPin, Calendar, Landmark, ArrowRight } from 'lucide-react';
 
-type Props = {
-  events: Event[];
-};
+import CategoryLinks from './CategoryLinks';
+import { getCoverStyles } from '../_libs/getCoverStyles';
 
-const FeaturedEvents: FC<Props> = ({ events }) => (
-    <section id="event-unggulan" className="py-16" style={{ background: '#FAF9F5' }}>
-      <div className="container mx-auto px-4 max-w-6xl">
-        {/* Section header */}
-        <div className="flex items-end justify-between mb-10">
-          <div>
-            <span
-              className="text-[11px] font-bold uppercase tracking-widest block mb-3"
-              style={{
-                fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
-                color: '#87867F',
-              }}
-            >
-              Event Pilihan
-            </span>
-            <h2
-              className="leading-tight"
-              style={{
-                fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
-                fontWeight: 500,
-                fontSize: 'clamp(1.6rem, 3vw, 2.25rem)',
-                color: '#141413',
-                letterSpacing: '-0.01em',
-              }}
-            >
-              Event Unggulan
-            </h2>
-            <p className="mt-2 text-sm" style={{ color: '#87867F' }}>
-              Event terpilih yang dibuka untuk umum
+type Props = { events: Event[]; categories: EventCategory[] };
+
+const FeaturedEvents: FC<Props> = ({ events, categories }) => {
+  const visibleEvents = events.slice(0, 3);
+  const coverStylesByEvent = getCoverStyles(visibleEvents.map((event) => event.id));
+
+  return (
+    <section id="event" className="px-4 py-24 sm:px-6">
+      <div className="mx-auto max-w-295">
+        <div className="mb-12">
+          <h2 className="font-display max-w-190 text-[clamp(34px,5vw,58px)] font-extrabold leading-[1.05] tracking-[-.04em]">
+            Temukan pengalaman yang layak kamu datangi.
+          </h2>
+          <div className="mt-6 flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
+            <p className="max-w-2xl text-[17px] text-[#6c7280]">
+              Seminar, workshop, kompetisi, sampai festival kampus. Semua event tersaji dalam satu
+              tempat dengan proses registrasi yang lebih ringkas.
             </p>
-          </div>
-          {events.length > 0 && (
             <Link
               href="/events"
-              className="hidden sm:flex items-center gap-1.5 text-sm font-semibold transition-all duration-200 hover:gap-2.5"
-              style={{ color: '#D97757' }}
+              className="inline-flex group shrink-0 items-center gap-2 rounded-full border border-[#11233f] px-4.5 py-3 font-bold text-[#11233f] transition hover:-translate-y-0.5 hover:bg-[#11233f] hover:text-white"
             >
-              Lihat Semua <ArrowRight className="w-4 h-4" />
+              Lihat semua event{' '}
+              <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:-rotate-45" />
             </Link>
-          )}
+          </div>
         </div>
 
-        {events.length === 0 ? (
-          <div
-            className="text-center py-12 px-6 rounded-2xl border bg-white max-w-md mx-auto space-y-3"
-            style={{ borderColor: '#E3DACC' }}
-          >
-            <div
-              className="w-12 h-12 rounded-full mx-auto flex items-center justify-center"
-              style={{ background: 'rgba(217,119,87,0.08)' }}
-            >
-              <Calendar className="w-6 h-6" style={{ color: '#D97757' }} />
-            </div>
-            <h3 className="text-base font-semibold text-[#141413]">Belum Ada Event Unggulan</h3>
-            <p className="text-xs text-[#87867F] leading-relaxed">
-              Saat ini belum ada event unggulan yang tersedia. Silakan cek katalog lengkap kami.
-            </p>
-            <div className="pt-2">
-              <Link
-                href="/events"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-xl transition-transform hover:scale-105"
-                style={{ background: '#D97757', color: '#FFFFFF' }}
-              >
-                Jelajahi Semua Event
-              </Link>
-            </div>
+        <CategoryLinks categories={categories} />
+
+        {visibleEvents.length === 0 ? (
+          <div className="rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] p-12 text-center text-[#6c7280]">
+            Belum ada event yang tersedia.
           </div>
         ) : (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {events.map((event) => {
-                const totalRegistered = event.registrationCount;
-                const slotsLeft = Math.max(0, event.quota - totalRegistered);
-                const isFree = event.price === 0;
-                const isAlmostFull = slotsLeft > 0 && slotsLeft <= 10;
-                const isFull = slotsLeft === 0;
-                const formattedDate = moment(event.startDate)
-                  .tz('Asia/Jakarta')
-                  .locale('id')
-                  .format('DD MMM YYYY');
-
-                return (
-                  <Link
-                    key={event.id}
-                    href={`/events/${event.slug}`}
-                    className="event-card group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1"
-                    style={{
-                      background: '#FFFFFF',
-                      border: '1.5px solid #D1CFC5',
-                      borderRadius: '12px',
-                      boxShadow: '0 2px 8px rgba(20,20,19,0.06)',
-                    }}
-                  >
-                    {/* Banner */}
-                    <div
-                      className="relative aspect-video w-full overflow-hidden shrink-0"
-                      style={{ background: '#E3DACC' }}
-                    >
-                      {event.banner ? (
-                        <Image
-                          src={event.banner}
-                          alt={event.title}
-                          fill
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                          loading="lazy"
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div
-                          className="w-full h-full flex items-center justify-center p-4"
-                          style={{
-                            background: 'linear-gradient(135deg, #E3DACC 0%, #D1CFC5 100%)',
-                          }}
-                        >
-                          <span
-                            className="font-semibold text-sm text-center line-clamp-2 leading-snug"
-                            style={{
-                              color: '#3D3D3A',
-                              fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
-                            }}
-                          >
-                            {event.title}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Top badges */}
-                      <div className="absolute top-2.5 left-2.5 flex gap-1.5 z-10">
-                        <span
-                          className="text-[10px] font-semibold tracking-wide uppercase px-2.5 py-1 rounded-full flex items-center gap-1.5"
-                          style={{
-                            background: 'rgba(255,255,255,0.92)',
-                            color: '#3D3D3A',
-                            backdropFilter: 'blur(6px)',
-                          }}
-                        >
-                          {event.eventType === 'ONLINE' ? (
-                            <Globe className="w-3 h-3" style={{ color: '#788C5D' }} />
-                          ) : (
-                            <Landmark className="w-3 h-3" style={{ color: '#D97757' }} />
-                          )}
-                          {event.eventType === 'ONLINE' ? 'Online' : 'Offline'}
-                        </span>
-                        {isFree && (
-                          <span
-                            className="text-[10px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full"
-                            style={{ background: '#788C5D', color: '#FFFFFF' }}
-                          >
-                            Gratis
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Urgency / full overlay */}
-                      {isAlmostFull && (
-                        <div className="absolute bottom-2.5 right-2.5 z-10">
-                          <span
-                            className="text-[10px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full"
-                            style={{ background: '#B04A3F', color: '#FFFFFF' }}
-                          >
-                            Sisa {slotsLeft} kursi
-                          </span>
-                        </div>
-                      )}
-                      {isFull && (
-                        <div
-                          className="absolute inset-0 flex items-center justify-center z-10"
-                          style={{ background: 'rgba(20,20,19,0.55)', backdropFilter: 'blur(4px)' }}
-                        >
-                          <span
-                            className="font-semibold text-xs px-3.5 py-1.5 rounded-full uppercase tracking-wider"
-                            style={{
-                              background: 'rgba(20,20,19,0.8)',
-                              color: '#F0EEE6',
-                              border: '1px solid rgba(240,238,230,0.15)',
-                            }}
-                          >
-                            Kuota Penuh
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-4 flex flex-col flex-1 gap-3">
-                      <span
-                        className="text-[10px] font-bold tracking-widest uppercase"
-                        style={{
-                          color: '#D97757',
-                          fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
-                        }}
-                      >
-                        {event.eventType} Event
-                      </span>
-                      <h3
-                        className="text-sm font-semibold leading-snug line-clamp-2 transition-colors duration-200"
-                        style={{
-                          fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
-                          color: '#141413',
-                        }}
-                      >
-                        {event.title}
-                      </h3>
-
-                      <div className="space-y-1.5 text-xs flex-1" style={{ color: '#87867F' }}>
-                        <div className="flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5 shrink-0" style={{ color: '#D97757' }} />
-                          {formattedDate}
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 shrink-0" style={{ color: '#D97757' }} />
-                          {event.startTime} WIB
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: '#D97757' }} />
-                          <span className="line-clamp-1">{event.location}</span>
-                        </div>
-                      </div>
-
-                      {/* Footer */}
-                      <div
-                        className="flex items-center justify-between pt-3 border-t"
-                        style={{ borderColor: '#F0EEE6' }}
-                      >
-                        {isFree ? (
-                          <span
-                            className="text-sm font-bold"
-                            style={{
-                              color: '#788C5D',
-                              fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
-                            }}
-                          >
-                            Gratis
-                          </span>
-                        ) : (
-                          <span
-                            className="text-sm font-bold"
-                            style={{
-                              color: '#141413',
-                              fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
-                            }}
-                          >
-                            {formatCurrency(event.price)}
-                          </span>
-                        )}
-                        <span
-                          className="flex items-center gap-1 text-xs"
-                          style={{ color: '#87867F' }}
-                        >
-                          <Users className="w-3.5 h-3.5" />
-                          {slotsLeft} tersisa
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* Mobile see all */}
-            {events.length > 0 && (
-              <div className="mt-8 text-center sm:hidden">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {visibleEvents.map((event, index) => {
+              const slotsLeft = Math.max(0, event.quota - event.registrationCount);
+              const isFull = slotsLeft === 0;
+              return (
                 <Link
-                  href="/events"
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold transition-colors"
-                  style={{ color: '#D97757' }}
+                  key={event.id}
+                  href={`/events/${event.slug}`}
+                  className="group overflow-hidden rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(17,35,63,.08)]"
                 >
-                  Lihat Semua Event <ArrowRight className="w-4 h-4" />
+                  <div
+                    className={`relative flex aspect-[1.35] flex-col justify-between overflow-hidden p-5.5 ${coverStylesByEvent[index]}`}
+                  >
+                    <span className="text-xs font-extrabold uppercase tracking-[.08em]">
+                      {event.category?.name ?? 'Event'}
+                    </span>
+                    <h3 className="font-display relative z-10 max-w-65 text-[34px] font-extrabold leading-[.97] tracking-[-.045em]">
+                      {event.title}
+                    </h3>
+                    {isFull && (
+                      <span className="absolute right-4 top-4 rounded-full bg-[#11233f]/80 px-3 py-1 text-xs font-bold text-white">
+                        Kuota penuh
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-5">
+                    <h3 className="font-display text-[19px] font-bold tracking-[-.02em]">
+                      {event.title}
+                    </h3>
+                    <div className="mt-3 grid gap-2 text-[13px] text-[#6c7280]">
+                      <span className="flex items-center gap-2">
+                        <CalendarDays className="h-4 w-4 text-[#ff7a45]" />
+                        {moment(event.startDate).locale('id').format('DD MMMM YYYY')}
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-[#ff7a45]" />
+                        {event.location}
+                      </span>
+                    </div>
+                    <div className="mt-4.5 flex items-center justify-between border-t border-[#111927]/10 pt-4">
+                      <strong className="text-[#11233f]">
+                        {event.price ? formatCurrency(event.price) : 'Gratis'}
+                      </strong>
+                      <span className="grid h-9.5 w-9.5 place-items-center rounded-full bg-[#11233f] text-white transition group-hover:-rotate-45">
+                        <ArrowRight className="h-4 w-4" />
+                      </span>
+                    </div>
+                  </div>
                 </Link>
-              </div>
-            )}
-          </>
+              );
+            })}
+          </div>
         )}
       </div>
     </section>
   );
+};
 
 export default FeaturedEvents;

@@ -1,11 +1,14 @@
 'use client';
 
-import type { Testimonial } from '@/interfaces/features/testimonials';
+import type { FC } from 'react';
 
 import Link from 'next/link';
 import Autoplay from 'embla-carousel-autoplay';
-import { type FC, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Star, User, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
+
+import type { Testimonial } from '@/interfaces/features/testimonials';
+
 import {
   Carousel,
   CarouselItem,
@@ -17,164 +20,134 @@ interface Props {
   testimonials: Testimonial[];
 }
 
-const autoplayPlugin = Autoplay({ delay: 6000, stopOnInteraction: false, stopOnMouseEnter: true });
-
 const TestimonialsCarousel: FC<Props> = ({ testimonials }) => {
   const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
+  const [, setCurrent] = useState(0);
+  const autoplayPlugin = useMemo(
+    () => Autoplay({ delay: 4000, stopOnInteraction: false, stopOnMouseEnter: false }),
+    []
+  );
 
   useEffect(() => {
     if (!api) return;
+
     const onSelect = () => setCurrent(api.selectedScrollSnap());
     api.on('select', onSelect);
+
     return () => {
       api.off('select', onSelect);
     };
   }, [api]);
 
-  if (!testimonials || testimonials.length === 0) return null;
+  if (!testimonials.length) return null;
 
   return (
     <section
       id="testimoni-peserta"
-      className="py-16 border-t overflow-hidden relative"
-      style={{ background: '#FAF9F5', borderColor: '#E3DACC' }}
+      className="relative overflow-hidden border-t border-[#111927]/10 px-4 py-24 sm:px-6"
     >
-      <div className="container mx-auto px-4 max-w-6xl">
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+      <div className="mx-auto max-w-295">
+        <div className="mb-10 flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
           <div>
-            <span
-              className="text-[11px] font-bold uppercase tracking-widest block mb-3"
-              style={{
-                fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
-                color: '#D97757',
-              }}
-            >
-              Ulasan Peserta
-            </span>
-            <h2
-              className="leading-tight"
-              style={{
-                fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
-                fontWeight: 500,
-                fontSize: 'clamp(1.6rem, 3vw, 2.25rem)',
-                color: '#141413',
-                letterSpacing: '-0.01em',
-              }}
-            >
-              Apa Kata Peserta Event Kami?
+            <h2 className="font-display max-w-190 text-[clamp(34px,5vw,58px)] font-extrabold leading-[1.05] tracking-[-.04em]">
+              Pengalaman yang ikut terbawa pulang.
             </h2>
-            <p className="mt-2 text-sm max-w-xl" style={{ color: '#87867F' }}>
-              Pengalaman nyata dan pesan berkesan dari para peserta yang telah mengikuti seminar,
-              workshop, dan bootcamp SITIVENT.
+            <p className="mt-5 max-w-155 text-[17px] leading-relaxed text-[#6c7280]">
+              Cerita dari peserta yang sudah datang, terhubung, dan menikmati berbagai event kampus
+              bersama SITIVENT.
             </p>
           </div>
 
-          {/* Carousel Buttons */}
-          <div className="flex items-center gap-2 self-start md:self-end">
+          <div className="flex shrink-0 items-center gap-2">
             <button
+              type="button"
               onClick={() => api?.scrollPrev()}
-              className="p-2.5 rounded-full border border-[#D1CFC5] text-[#141413] transition-all hover:bg-[#D97757] hover:border-[#D97757] hover:text-white"
+              className="grid h-10 w-10 place-items-center rounded-full border border-[#11233f] text-[#11233f] transition hover:-translate-y-0.5 hover:bg-[#11233f] hover:text-white"
               aria-label="Sebelumnya"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="h-4 w-4" />
             </button>
             <button
+              type="button"
               onClick={() => api?.scrollNext()}
-              className="p-2.5 rounded-full border border-[#D1CFC5] text-[#141413] transition-all hover:bg-[#D97757] hover:border-[#D97757] hover:text-white"
+              className="grid h-10 w-10 place-items-center rounded-full border border-[#11233f] text-[#11233f] transition hover:-translate-y-0.5 hover:bg-[#11233f] hover:text-white"
               aria-label="Berikutnya"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="h-4 w-4" />
             </button>
           </div>
         </div>
 
-        {/* Testimonials Carousel */}
-        <Carousel
-          opts={{ loop: true, align: 'start' }}
-          plugins={[autoplayPlugin]}
-          setApi={setApi}
-          className="w-full"
-        >
-          <CarouselContent className="-ml-4">
-            {testimonials.map((item) => (
-              <CarouselItem key={item.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                <div
-                  className="h-full flex flex-col justify-between p-6 rounded-2xl border transition-all duration-300 hover:shadow-md"
-                  style={{
-                    background: '#FFFFFF',
-                    borderColor: '#E3DACC',
-                  }}
-                >
-                  <div className="space-y-4">
-                    {/* Top row: Rating & Quote Icon */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className={`w-4 h-4 ${
-                              star <= item.rating
-                                ? 'fill-amber-400 text-amber-400'
-                                : 'fill-muted text-muted-foreground/30'
-                            }`}
-                          />
-                        ))}
+        <div className="relative">
+          <Carousel
+            opts={{ loop: true, align: 'start' }}
+            plugins={[autoplayPlugin]}
+            setApi={setApi}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-4">
+              {testimonials.map((item) => (
+                <CarouselItem key={item.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                  <article className="flex h-full flex-col justify-between rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] p-6 shadow-[0_2px_10px_rgba(17,35,63,.025)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(17,35,63,.045)]">
+                    <div className="space-y-5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`h-4 w-4 ${star <= item.rating ? 'fill-[#ff7a45] text-[#ff7a45]' : 'text-[#111927]/15'}`}
+                            />
+                          ))}
+                        </div>
+                        <Quote className="h-6 w-6 text-[#ff7a45]/45" />
                       </div>
-                      <Quote className="w-6 h-6 opacity-20 text-[#141413]" />
+
+                      <p className="line-clamp-4 text-[17px] leading-relaxed text-[#11233f]">
+                        &ldquo;{item.comment}&rdquo;
+                      </p>
                     </div>
 
-                    {/* Ulasan text */}
-                    <p className="text-sm leading-relaxed italic" style={{ color: '#3D3D3A' }}>
-                      &ldquo;{item.comment}&rdquo;
-                    </p>
-                  </div>
-
-                  {/* Bottom User & Event Details */}
-                  <div className="mt-6 pt-4 border-t space-y-1" style={{ borderColor: '#F0EBE1' }}>
-                    <div className="flex items-center gap-3">
-                      {item.user?.image ? (
-                        <img
-                          src={item.user.image}
-                          alt={item.user.name || 'Peserta'}
-                          loading="lazy"
-                          className="w-9 h-9 rounded-full object-cover shrink-0 border"
-                          style={{ borderColor: '#E3DACC' }}
-                        />
-                      ) : (
-                        <div
-                          className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 font-bold text-xs"
-                          style={{ background: 'rgba(217,119,87,0.1)', color: '#D97757' }}
-                        >
-                          {item.user?.name ? (
-                            item.user.name.charAt(0).toUpperCase()
-                          ) : (
-                            <User className="w-4 h-4" />
+                    <div className="mt-8 border-t border-[#111927]/10 pt-4">
+                      <div className="flex items-center gap-3">
+                        {item.user?.image ? (
+                          <img
+                            src={item.user.image}
+                            alt={item.user.name || 'Peserta'}
+                            loading="lazy"
+                            className="h-9 w-9 shrink-0 rounded-full border border-[#111927]/10 object-cover"
+                          />
+                        ) : (
+                          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#ffe5d8] text-xs font-bold text-[#ff7a45]">
+                            {item.user?.name ? (
+                              item.user.name.charAt(0).toUpperCase()
+                            ) : (
+                              <User className="h-4 w-4" />
+                            )}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <h3 className="truncate text-sm font-bold text-[#11233f]">
+                            {item.user?.name || 'Peserta Event'}
+                          </h3>
+                          {item.event && (
+                            <Link
+                              href={`/events/${item.event.slug}`}
+                              className="block truncate text-xs text-[#6c7280] hover:text-[#ff7a45] hover:underline"
+                            >
+                              {item.event.title}
+                            </Link>
                           )}
                         </div>
-                      )}
-                      <div className="min-w-0">
-                        <h4 className="text-sm font-semibold text-[#141413] truncate">
-                          {item.user?.name || 'Peserta Event'}
-                        </h4>
-                        {item.event && (
-                          <Link
-                            href={`/events/${item.event.slug}`}
-                            className="text-xs truncate block hover:underline"
-                            style={{ color: '#87867F' }}
-                          >
-                            {item.event.title}
-                          </Link>
-                        )}
                       </div>
                     </div>
-                  </div>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
+                  </article>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-linear-to-r from-[#f6f3eb] to-transparent sm:w-16" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-linear-to-l from-[#f6f3eb] to-transparent sm:w-16" />
+        </div>
       </div>
     </section>
   );

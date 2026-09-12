@@ -136,7 +136,9 @@ const customGroups = {
 };
 
 const typeGroups = [
-  ['type', 'external-type', 'builtin-type'],
+  ['external-type', 'builtin-type'],
+  ['builtin', 'external'],
+  ['type'],
   { newlinesBetween: 'never' },
   ['index-type', 'parent-type', 'sibling-type', 'internal-type'],
 ];
@@ -165,12 +167,11 @@ const perfectionistConfig = {
         environment: 'node',
         maxLineLength: undefined,
         newlinesBetween: 'always',
-        internalPattern: ['^src/.+'],
+        internalPattern: ['^src/.+', '^@/.+'],
         groups: [
           'style',
           'side-effect',
           ...typeGroups,
-          ['builtin', 'external'],
           customGroups.mui,
           customGroups.routes,
           customGroups.hooks,

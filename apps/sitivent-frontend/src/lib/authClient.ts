@@ -16,7 +16,19 @@ export const signUp = {
   },
 };
 
-export const signOut = async () => ({ ...(await signOutAction()), error: null });
+export const signOut = async () => {
+  try {
+    return { ...(await signOutAction()), error: null };
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        message: error instanceof Error ? error.message : 'Logout gagal diproses.',
+        status: 503,
+      },
+    };
+  }
+};
 export const authClient = {
   signOut,
   updateUser: async (_values: unknown) => ({ error: null as { message: string; code?: string } | null }),

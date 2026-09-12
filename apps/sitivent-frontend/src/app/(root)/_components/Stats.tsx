@@ -11,7 +11,9 @@ const Stats: FC = async () => {
     eventCount = result.data.data?.events ?? 0;
     registrationCount = result.data.data?.registrations ?? 0;
     certificateCount = result.data.data?.certificates ?? 0;
-  } catch { /* public stats are optional */ }
+  } catch {
+    /* public stats are optional */
+  }
 
   // Fallback values if DB is empty to make it look premium
   const stats = [
