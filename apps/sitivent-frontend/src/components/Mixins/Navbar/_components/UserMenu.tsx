@@ -56,7 +56,7 @@ const UserMenu: FC<UserMenuProps> = ({ user, isAdmin, tenantId }) => {
           <button
             type="button"
             aria-label="Menu akun"
-            className="group inline-flex h-12 items-center gap-2 rounded-full border border-[#111927]/10 bg-white/60 p-1.5 pr-3 text-left shadow-[0_8px_24px_rgba(17,35,63,.08)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-[#11233f]/25"
+            className="group inline-flex h-12 cursor-pointer items-center gap-2 rounded-full border border-[#111927]/10 bg-white/60 p-1.5 pr-3 text-left shadow-[0_8px_24px_rgba(17,35,63,.08)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-[#11233f]/25"
           >
             <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#11233f] text-xs font-bold tracking-wide text-white">
               {getInitials(user.name)}
@@ -91,7 +91,7 @@ const UserMenu: FC<UserMenuProps> = ({ user, isAdmin, tenantId }) => {
           <DropdownMenuItem asChild>
             <Link
               href={dashboardHref as Route}
-              className="rounded-xl px-3 py-2.5 text-[#11233f] data-highlighted:bg-[#f6f3eb] data-highlighted:text-[#11233f]"
+              className="cursor-pointer rounded-xl px-3 py-2.5 text-[#11233f] data-highlighted:bg-[#f6f3eb] data-highlighted:text-[#11233f]"
             >
               <LayoutDashboard className="h-4 w-4 text-[#ff7a45]" />
               Dashboard
@@ -99,7 +99,7 @@ const UserMenu: FC<UserMenuProps> = ({ user, isAdmin, tenantId }) => {
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => setLogoutOpen(true)}
-            className="rounded-xl px-3 py-2.5 text-[#b84a2a] data-highlighted:bg-[#fff0e9] data-highlighted:text-[#b84a2a]"
+            className="cursor-pointer rounded-xl px-3 py-2.5 text-[#b84a2a] data-highlighted:bg-[#fff0e9] data-highlighted:text-[#b84a2a]"
           >
             <LogOut className="h-4 w-4" />
             Keluar

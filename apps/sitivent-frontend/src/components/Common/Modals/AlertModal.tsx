@@ -41,7 +41,7 @@ const AlertModal: FC<AlertModalProps> = ({
           <Button
             disabled={loading}
             onClick={onConfirm}
-            className="rounded-full bg-[#11233f] px-5 text-white shadow-[0_8px_18px_rgba(17,35,63,.14)] hover:bg-[#1b3458]"
+            className="cursor-pointer rounded-full bg-[#11233f] px-5 text-white shadow-[0_8px_18px_rgba(17,35,63,.14)] hover:bg-[#1b3458]"
           >
             {loading ? 'Keluar...' : 'Keluar'}
           </Button>
@@ -49,17 +49,22 @@ const AlertModal: FC<AlertModalProps> = ({
             disabled={loading}
             variant="ghost"
             onClick={onClose}
-            className="rounded-full px-5 text-[#6c7280] hover:bg-[#f6f3eb] hover:text-[#11233f]"
+            className="cursor-pointer rounded-full px-5 text-[#6c7280] hover:bg-[#f6f3eb] hover:text-[#11233f]"
           >
             Batalkan
           </Button>
         </div>
       ) : (
         <div className="flex w-full items-center justify-end space-x-2 pt-6">
-          <Button disabled={loading} variant="destructive" onClick={onConfirm}>
+          <Button
+            disabled={loading}
+            variant="destructive"
+            onClick={onConfirm}
+            className="cursor-pointer"
+          >
             Lanjutkan
           </Button>
-          <Button disabled={loading} variant="outline" onClick={onClose}>
+          <Button disabled={loading} variant="outline" onClick={onClose} className="cursor-pointer">
             Batalkan
           </Button>
         </div>
