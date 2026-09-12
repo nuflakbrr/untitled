@@ -1,15 +1,19 @@
 package auth
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"venturo-skeleton-go/internal/config"
 	"venturo-skeleton-go/internal/middleware"
 	"venturo-skeleton-go/internal/modules/core/auth/handler"
+	authRepo "venturo-skeleton-go/internal/modules/core/auth/repository"
 	"venturo-skeleton-go/internal/modules/core/auth/service"
 	tenantRepo "venturo-skeleton-go/internal/modules/core/tenant/repository"
 	userRepo "venturo-skeleton-go/internal/modules/core/user/repository"
+	emailpkg "venturo-skeleton-go/pkg/email"
 )
 
 type AuthModule struct {
@@ -21,6 +25,20 @@ func Initialize(db *pgxpool.Pool, cfg *config.Config) *AuthModule {
 	userRepository := userRepo.NewUserRepository(db)
 	tenantRepository := tenantRepo.NewTenantRepository(db)
 	authService := service.NewAuthService(userRepository, tenantRepository, cfg)
+	var emailService emailpkg.EmailService
+	smtpService, err := emailpkg.NewSMTPEmailService()
+	if err != nil {
+		if cfg.Server.Env == "production" {
+			panic(err)
+		}
+		smtpService = nil
+	}
+	if smtpService == nil {
+		emailService = &emailpkg.NoOpEmailService{}
+	} else {
+		emailService = smtpService
+	}
+	authService.SetPasswordResetDependencies(authRepo.NewPasswordResetRepository(db), emailService)
 	authHandler := handler.NewAuthHandler(authService)
 
 	return &AuthModule{
@@ -31,11 +49,14 @@ func Initialize(db *pgxpool.Pool, cfg *config.Config) *AuthModule {
 
 func (m *AuthModule) SetupRoutes(router *gin.RouterGroup) {
 	auth := router.Group("/auth")
+	passwordResetLimiter := middleware.NewRateLimiter(5, 15*time.Minute)
 	{
 		// Public routes
 		auth.POST("/signup", m.Handler.SignUp)
 		auth.POST("/signin", m.Handler.SignIn)
 		auth.POST("/refresh", m.Handler.Refresh)
+		auth.POST("/password-reset/request", middleware.IPBasedRateLimiter(passwordResetLimiter, 15*time.Minute), m.Handler.RequestPasswordReset)
+		auth.POST("/password-reset/confirm", middleware.IPBasedRateLimiter(passwordResetLimiter, 15*time.Minute), m.Handler.ConfirmPasswordReset)
 
 		// Protected routes
 		auth.GET("/me", middleware.JWTAuth(), m.Handler.GetMe)

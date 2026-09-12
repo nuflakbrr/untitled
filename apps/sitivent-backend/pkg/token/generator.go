@@ -39,6 +39,10 @@ func GeneratePasswordResetToken() (string, error) {
 	return GenerateSecureToken(32) // 64 character hex string
 }
 
+func HashPasswordResetToken(token string) string {
+	return HashRefreshToken(token)
+}
+
 // GenerateRefreshToken generates a token for refresh tokens
 func GenerateRefreshToken() (string, error) {
 	return GenerateBase64Token(64) // Base64 encoded 64-byte token

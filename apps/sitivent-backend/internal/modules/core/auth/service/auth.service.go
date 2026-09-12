@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"venturo-skeleton-go/internal/config"
 	"venturo-skeleton-go/internal/modules/core/auth/dto"
@@ -13,16 +14,19 @@ import (
 	tenantRepo "venturo-skeleton-go/internal/modules/core/tenant/repository"
 	userDomain "venturo-skeleton-go/internal/modules/core/user/domain"
 	userRepo "venturo-skeleton-go/internal/modules/core/user/repository"
+	emailpkg "venturo-skeleton-go/pkg/email"
 	"venturo-skeleton-go/pkg/jwt"
+	"venturo-skeleton-go/pkg/token"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 var (
-	ErrInvalidCredentials = errors.New("invalid email or password")
-	ErrUserBanned         = errors.New("user account has been banned")
-	ErrTenantNotFound     = errors.New("tenant not found")
-	ErrUnauthorizedSwitch = errors.New("you do not have permission to switch to this tenant")
+	ErrInvalidCredentials       = errors.New("invalid email or password")
+	ErrUserBanned               = errors.New("user account has been banned")
+	ErrTenantNotFound           = errors.New("tenant not found")
+	ErrUnauthorizedSwitch       = errors.New("you do not have permission to switch to this tenant")
+	ErrPasswordResetUnavailable = errors.New("password reset service is unavailable")
 )
 
 const (
@@ -41,6 +45,16 @@ type UserRepository interface {
 	Create(ctx context.Context, user *userDomain.User, password string) error
 }
 
+type PasswordUpdater interface {
+	UpdatePassword(ctx context.Context, userID, newPasswordHash string) error
+}
+
+type PasswordResetStore interface {
+	Create(ctx context.Context, userID, tokenHash string, expiresAt time.Time) error
+	Consume(ctx context.Context, tokenHash string) (string, error)
+	Delete(ctx context.Context, tokenHash string) error
+}
+
 type TenantAccessReader interface {
 	HasTenantAccess(ctx context.Context, userID, tenantID string) (bool, error)
 	ListAccessibleTenants(ctx context.Context, userID string) ([]*userDomain.TenantAccess, error)
@@ -54,10 +68,71 @@ type TenantRepository interface {
 }
 
 type AuthService struct {
-	userRepo         UserRepository
-	tenantRepo       TenantRepository
-	cfg              *config.Config
-	permissionReader PermissionReader
+	userRepo           UserRepository
+	tenantRepo         TenantRepository
+	cfg                *config.Config
+	permissionReader   PermissionReader
+	passwordResetStore PasswordResetStore
+	passwordResetEmail emailpkg.EmailService
+}
+
+func (s *AuthService) SetPasswordResetDependencies(store PasswordResetStore, emailService emailpkg.EmailService) {
+	s.passwordResetStore = store
+	s.passwordResetEmail = emailService
+}
+
+func (s *AuthService) RequestPasswordReset(ctx context.Context, email string) error {
+	if s.passwordResetStore == nil || s.passwordResetEmail == nil {
+		return ErrPasswordResetUnavailable
+	}
+
+	user, err := s.userRepo.FindByEmail(ctx, strings.ToLower(strings.TrimSpace(email)))
+	if errors.Is(err, userRepo.ErrUserNotFound) {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("failed to look up password reset account: %w", err)
+	}
+	if user.PasswordHash == "" || user.IsBanned() {
+		return nil
+	}
+
+	resetToken, err := token.GeneratePasswordResetToken()
+	if err != nil {
+		return fmt.Errorf("failed to generate password reset token: %w", err)
+	}
+	tokenHash := token.HashPasswordResetToken(resetToken)
+	if err := s.passwordResetStore.Create(ctx, user.ID, tokenHash, time.Now().UTC().Add(30*time.Minute)); err != nil {
+		return err
+	}
+	if err := s.passwordResetEmail.SendPasswordResetEmail(user.Email, user.Name, resetToken); err != nil {
+		_ = s.passwordResetStore.Delete(ctx, tokenHash)
+		return fmt.Errorf("failed to send password reset email: %w", err)
+	}
+	return nil
+}
+
+func (s *AuthService) ResetPassword(ctx context.Context, rawToken, newPassword string) error {
+	if s.passwordResetStore == nil {
+		return ErrPasswordResetUnavailable
+	}
+	updater, ok := s.userRepo.(PasswordUpdater)
+	if !ok {
+		return ErrPasswordResetUnavailable
+	}
+
+	userID, err := s.passwordResetStore.Consume(ctx, token.HashPasswordResetToken(rawToken))
+	if err != nil {
+		return err
+	}
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("failed to hash password: %w", err)
+	}
+	if err := updater.UpdatePassword(ctx, userID, string(hashedPassword)); err != nil {
+		return fmt.Errorf("failed to update password: %w", err)
+	}
+	return nil
 }
 
 // NewAuthService wires concrete repository implementations.

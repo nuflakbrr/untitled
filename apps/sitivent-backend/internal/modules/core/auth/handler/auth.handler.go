@@ -6,10 +6,12 @@ import (
 
 	"venturo-skeleton-go/internal/middleware"
 	"venturo-skeleton-go/internal/modules/core/auth/dto"
+	authRepo "venturo-skeleton-go/internal/modules/core/auth/repository"
 	"venturo-skeleton-go/internal/modules/core/auth/service"
 	userRepo "venturo-skeleton-go/internal/modules/core/user/repository"
 	"venturo-skeleton-go/internal/shared/response"
 	"venturo-skeleton-go/pkg/jwt"
+	"venturo-skeleton-go/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -75,6 +77,43 @@ func (h *AuthHandler) SignUp(c *gin.Context) {
 	}
 
 	response.Success(c, http.StatusCreated, "Registration successful", resp)
+}
+
+func (h *AuthHandler) RequestPasswordReset(c *gin.Context) {
+	var req dto.RequestPasswordResetRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, http.StatusBadRequest, "Email tidak valid", err.Error())
+		return
+	}
+
+	if err := h.service.RequestPasswordReset(c.Request.Context(), req.Email); err != nil {
+		logger.Error("Password reset request failed", logger.Err(err))
+	}
+
+	response.Success(c, http.StatusOK, "Jika email terdaftar, tautan reset akan dikirim", nil)
+}
+
+func (h *AuthHandler) ConfirmPasswordReset(c *gin.Context) {
+	var req dto.ConfirmPasswordResetRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, http.StatusBadRequest, "Data reset password tidak valid", err.Error())
+		return
+	}
+
+	if err := h.service.ResetPassword(c.Request.Context(), req.Token, req.NewPassword); err != nil {
+		if errors.Is(err, service.ErrPasswordResetUnavailable) {
+			response.Error(c, http.StatusInternalServerError, "Reset password tidak tersedia", "")
+			return
+		}
+		if errors.Is(err, authRepo.ErrPasswordResetTokenInvalid) {
+			response.Error(c, http.StatusBadRequest, "Token reset password tidak valid atau telah kedaluwarsa", "")
+			return
+		}
+		response.Error(c, http.StatusInternalServerError, "Gagal mereset password", "")
+		return
+	}
+
+	response.Success(c, http.StatusOK, "Password berhasil diperbarui", nil)
 }
 
 // GetMe handles GET /core/v1/auth/me
