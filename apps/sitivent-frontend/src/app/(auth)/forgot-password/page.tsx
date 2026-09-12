@@ -14,10 +14,11 @@ export const metadata: Metadata = genPageMetadata({
 
 const ForgotPassword = () => (
   <main className="min-h-dvh bg-[#f6f3eb] p-3 sm:p-5 lg:p-5.5">
-    <div className="mx-auto grid min-h-[calc(100dvh-44px)] max-w-310 overflow-hidden rounded-[30px] lg:grid-cols-2">
-      <section className="relative flex min-h-80 flex-col justify-between overflow-hidden rounded-[30px] bg-[#11233f] p-7 text-white sm:p-10 lg:min-h-0 lg:p-11">
-        <div className="pointer-events-none absolute -right-28 -top-28 h-80 w-80 rounded-full border-58 border-white/10" />
-        <div className="pointer-events-none absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-[#ff7a45]/20 blur-3xl" />
+    <div className="mx-auto grid min-h-[calc(100dvh-44px)] max-w-310 gap-0 lg:grid-cols-[1.05fr_.95fr]">
+      <section className="relative flex min-h-100 flex-col justify-between overflow-hidden rounded-[30px] bg-[#11233f] p-7 text-white sm:p-10 lg:min-h-[calc(100dvh-44px)] lg:p-11">
+        <div className="pointer-events-none absolute right-[-14%] top-[12%] h-72 w-72 rounded-full bg-[#ff7a45]/90" />
+        <div className="pointer-events-none absolute right-[10%] top-[21%] h-28 w-28 rounded-full bg-[#f7df86]" />
+        <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(135deg,transparent_0_42px,rgba(255,255,255,.025)_43px_44px)]" />
 
         <Link
           href="/"
@@ -32,20 +33,32 @@ const ForgotPassword = () => (
 
         <div className="relative z-10 mt-16 lg:mt-0">
           <h1 className="font-display max-w-150 text-[clamp(44px,6vw,74px)] font-extrabold leading-[.97] tracking-[-.06em]">
-            Kembali ke event yang kamu tunggu.
+            Lupa password? Tenang, kita bantu.
           </h1>
           <p className="mt-5 max-w-120 text-base leading-relaxed text-white/68 sm:text-lg">
-            Atur ulang password dan lanjutkan akses tiket, registrasi, serta sertifikatmu.
+            Masukkan email akunmu. SITIVENT akan mengirim tautan untuk membuat password baru dengan
+            aman.
           </p>
         </div>
 
-        <p className="relative z-10 mt-12 text-xs text-white/50 lg:mt-0">
-          Temukan event, Datang ke venue, Bawa pulang pengalaman.
-        </p>
+        <div className="relative z-10 mt-12 grid gap-3 text-sm text-white/70 lg:mt-0">
+          {[
+            'Masukkan email yang terhubung ke akun SITIVENT.',
+            'Buka tautan reset yang dikirim ke email.',
+            'Buat password baru lalu masuk kembali ke akunmu.',
+          ].map((item, index) => (
+            <div key={item} className="flex items-center gap-3">
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-white/20 bg-white/10 text-xs font-bold text-white">
+                {index + 1}
+              </span>
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
       </section>
 
-      <section className="grid place-items-center bg-[#f6f3eb] px-5 py-10 sm:px-10 lg:px-16 lg:py-12">
-        <div className="w-full max-w-115">
+      <section className="grid place-items-center bg-[#f6f3eb] px-5 py-10 sm:px-10 lg:px-12 lg:py-12">
+        <div className="w-full max-w-117.5">
           <Link
             href="/"
             className="inline-flex items-center group gap-2 text-sm text-[#6c7280] transition hover:text-[#11233f]"

@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, Loader2, ArrowRight } from 'lucide-react';
+import { Mail, Info, Loader2, ArrowRight } from 'lucide-react';
 
 import { authClient } from '@/lib/authClient';
 import { forgotPasswordSchema, type ForgotPasswordValues } from '@/schemas/auth';
@@ -78,13 +78,20 @@ const ForgotPasswordForm: FC = () => {
         )}
       </div>
 
+      <div className="flex gap-3 rounded-[16px] bg-[#ffe5d8] px-4 py-3 text-xs leading-relaxed text-[#8d492e]">
+        <Info className="mt-0.5 h-4 w-4 shrink-0" />
+        <span>
+          Demi keamanan, kami tidak akan memberi tahu apakah email tersebut sudah terdaftar.
+        </span>
+      </div>
+
       <button
         type="submit"
         id="btn-forgot-password-submit"
         disabled={isPending}
         className="inline-flex group w-full items-center justify-center gap-2 rounded-full bg-[#ff7a45] px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-[#f2693a] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isPending ? 'Mengirim...' : 'Kirim tautan reset'}
+        {isPending ? 'Mengirim...' : 'Kirim tautan reset password'}
         {isPending ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
