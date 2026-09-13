@@ -2,13 +2,14 @@ import './globals.css';
 
 import type { Metadata } from 'next';
 
-import { cn } from '@/lib/utils';
-import { Toaster } from '@/components/ui/sonner';
 import { ImageKitProvider } from '@imagekit/next';
 import { Analytics } from '@vercel/analytics/next';
+import { Geist, Inter, Geist_Mono } from 'next/font/google';
+
+import { cn } from '@/lib/utils';
+import { Toaster } from '@/components/ui/sonner';
 import { siteMetadata } from '@/data/siteMetadata';
 import QueryProvider from '@/providers/QueryProvider';
-import { Geist, Inter, Geist_Mono } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
 

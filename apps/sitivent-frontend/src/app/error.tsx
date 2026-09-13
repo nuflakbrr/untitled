@@ -1,8 +1,9 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import type { RequestError } from '@/interfaces/error';
 
-import { useEffect } from 'react';
 import ErrorState from '@/components/Common/ErrorState';
 
 export default function Error({ error }: { error: Error & { digest?: string } }) {

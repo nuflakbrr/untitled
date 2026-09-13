@@ -5,9 +5,9 @@ import type { FC } from 'react';
 import Loader from '@/components/Common/Loader';
 
 const Loading: FC = () => (
-    <div className="flex items-center justify-center w-full h-full min-h-screen">
-      <Loader />
-    </div>
-  );
+  <div className="flex items-center justify-center w-full h-full min-h-screen">
+    <Loader />
+  </div>
+);
 
 export default Loading;

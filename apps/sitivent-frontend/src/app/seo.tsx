@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+
 import type { PageSEOProps } from '@/interfaces/seo';
 
 import { siteMetadata } from '@/data/siteMetadata';
