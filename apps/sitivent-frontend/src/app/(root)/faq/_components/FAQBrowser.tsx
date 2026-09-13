@@ -3,8 +3,8 @@
 import type { FC } from 'react';
 
 import Link from 'next/link';
-import { useMemo, useState, useEffect } from 'react';
 import { X, Plus, SearchX, ArrowRight } from 'lucide-react';
+import { useRef, useMemo, useState, useEffect } from 'react';
 
 import type { FAQBrowserProps } from '@/interfaces/features/faq';
 
@@ -20,10 +20,32 @@ const FAQBrowser: FC<FAQBrowserProps> = ({ selectedCategory, onCategoryChange })
     [selectedCategory]
   );
   const [openFaqId, setOpenFaqId] = useState<string | null>(faqItems[0]?.id ?? null);
+  const categoryNavRef = useRef<HTMLDivElement>(null);
+  const [showLeftFade, setShowLeftFade] = useState(false);
+  const [showRightFade, setShowRightFade] = useState(false);
 
   useEffect(() => {
     setOpenFaqId(filteredFAQs[0]?.id ?? null);
   }, [filteredFAQs]);
+
+  useEffect(() => {
+    const nav = categoryNavRef.current;
+    if (!nav) return;
+
+    const updateFades = () => {
+      setShowLeftFade(nav.scrollLeft > 0);
+      setShowRightFade(nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 1);
+    };
+
+    updateFades();
+    nav.addEventListener('scroll', updateFades, { passive: true });
+    window.addEventListener('resize', updateFades);
+
+    return () => {
+      nav.removeEventListener('scroll', updateFades);
+      window.removeEventListener('resize', updateFades);
+    };
+  }, []);
 
   return (
     <>
@@ -32,22 +54,34 @@ const FAQBrowser: FC<FAQBrowserProps> = ({ selectedCategory, onCategoryChange })
           <p className="shrink-0 text-sm font-bold text-[#11233f]">
             Cari jawaban berdasarkan topik
           </p>
-          <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto pb-1 sm:ml-auto sm:flex-none sm:justify-end">
-            {faqCategories.map((category) => (
-              <button
-                key={category.id}
-                type="button"
-                onClick={() => onCategoryChange(category.id)}
-                className={cn(
-                  'shrink-0 cursor-pointer rounded-full border px-3.5 py-2 text-[13px] font-bold transition',
-                  selectedCategory === category.id
-                    ? 'border-[#11233f] bg-[#11233f] text-white'
-                    : 'border-[#111927]/10 bg-transparent text-[#6c7280] hover:border-[#11233f] hover:bg-[#f6f3eb] hover:text-[#11233f]'
-                )}
-              >
-                {category.label}
-              </button>
-            ))}
+          <div className="relative min-w-0 flex-1 sm:ml-auto sm:w-0 sm:flex-1">
+            <div
+              ref={categoryNavRef}
+              className="flex min-w-0 gap-2 overflow-x-auto overscroll-x-contain pb-1 touch-pan-x select-none sm:justify-end"
+              style={{ scrollbarWidth: 'thin' }}
+            >
+              {faqCategories.map((category) => (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() => onCategoryChange(category.id)}
+                  className={cn(
+                    'shrink-0 cursor-pointer rounded-full border px-3.5 py-2 text-[13px] font-bold transition',
+                    selectedCategory === category.id
+                      ? 'border-[#11233f] bg-[#11233f] text-white'
+                      : 'border-[#111927]/10 bg-transparent text-[#6c7280] hover:border-[#11233f] hover:bg-[#f6f3eb] hover:text-[#11233f]'
+                  )}
+                >
+                  {category.label}
+                </button>
+              ))}
+            </div>
+            {showLeftFade && (
+              <span className="pointer-events-none absolute inset-y-0 left-0 w-3 bg-linear-to-r from-[#f6f3eb] to-transparent" />
+            )}
+            {showRightFade && (
+              <span className="pointer-events-none absolute inset-y-0 right-0 w-3 bg-linear-to-l from-[#f6f3eb] to-transparent" />
+            )}
           </div>
         </div>
       </div>

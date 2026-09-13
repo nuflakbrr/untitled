@@ -38,7 +38,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
         <SearchBanner categories={categories} />
       </Suspense>
 
-      <div className="mx-auto max-w-295 px-4 pb-16 sm:px-6 sm:pb-24">
+      <div className="mx-auto max-w-295 px-4 pb-16 md:px-0 md:pb-24">
         <EventsResults events={events} query={q} />
       </div>
     </section>

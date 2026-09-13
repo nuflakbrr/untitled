@@ -41,7 +41,7 @@ const SearchBanner: FC<EventSearchProps> = ({ categories }) => {
       <section className="px-4 pb-8 sm:px-6 sm:pb-10">
         <div className="mx-auto max-w-295">
           <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="relative min-w-0 flex-1">
+            <div className="relative order-last min-w-0 flex-1 sm:order-0">
               <nav
                 aria-label="Filter kategori event"
                 ref={categoryNavRef}
@@ -82,7 +82,7 @@ const SearchBanner: FC<EventSearchProps> = ({ categories }) => {
               )}
             </div>
 
-            <div className="relative w-full shrink-0 sm:max-w-md">
+            <div className="relative order-first w-full shrink-0 sm:order-0 sm:max-w-md">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6c7280]" />
               <Input
                 type="search"
