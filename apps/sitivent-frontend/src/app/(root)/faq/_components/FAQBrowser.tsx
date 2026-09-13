@@ -3,8 +3,8 @@
 import type { FC } from 'react';
 
 import Link from 'next/link';
-import { useMemo } from 'react';
 import { X, Plus, ArrowRight } from 'lucide-react';
+import { useMemo, useState, useEffect } from 'react';
 
 import type { FAQBrowserProps } from '@/interfaces/features/faq';
 
@@ -18,6 +18,11 @@ const FAQBrowser: FC<FAQBrowserProps> = ({ selectedCategory, onCategoryChange })
       faqItems.filter((faq) => selectedCategory === 'semua' || faq.category === selectedCategory),
     [selectedCategory]
   );
+  const [openFaqId, setOpenFaqId] = useState<string | null>(faqItems[0]?.id ?? null);
+
+  useEffect(() => {
+    setOpenFaqId(filteredFAQs[0]?.id ?? null);
+  }, [filteredFAQs]);
 
   return (
     <>
@@ -58,13 +63,19 @@ const FAQBrowser: FC<FAQBrowserProps> = ({ selectedCategory, onCategoryChange })
       <div className="mt-5 grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="grid gap-3">
           {filteredFAQs.length > 0 ? (
-            filteredFAQs.map((faq, index) => (
+            filteredFAQs.map((faq) => (
               <details
                 key={faq.id}
-                open={index === 0 && selectedCategory === 'semua'}
+                open={openFaqId === faq.id}
                 className="group overflow-hidden rounded-[20px] border border-[#111927]/10 bg-[#fffdf8] shadow-[0_8px_24px_rgba(17,35,63,.03)]"
               >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-5 p-5 text-left marker:hidden sm:p-5.5 [&::-webkit-details-marker]:hidden">
+                <summary
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setOpenFaqId((currentId) => (currentId === faq.id ? null : faq.id));
+                  }}
+                  className="flex cursor-pointer list-none items-center justify-between gap-5 p-5 text-left marker:hidden sm:p-5.5 [&::-webkit-details-marker]:hidden"
+                >
                   <span className="min-w-0">
                     <strong className="font-display block text-base font-extrabold leading-tight text-[#11233f] sm:text-lg">
                       {faq.question}
