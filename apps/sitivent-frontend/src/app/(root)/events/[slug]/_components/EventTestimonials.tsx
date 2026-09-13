@@ -15,10 +15,10 @@ const EventTestimonials: FC<EventTestimonialsProps> = async ({ eventId }) => {
     <div className="space-y-6 pt-4">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h2 className="font-serif text-2xl font-bold text-[#141413]">
+          <h2 className="font-display text-2xl font-extrabold tracking-[-.03em] text-[#11233f]">
             Ulasan & Testimoni Peserta
           </h2>
-          <p className="mt-1 text-xs text-[#87867F]">
+          <p className="mt-1 text-sm text-[#6c7280]">
             Ulasan resmi dari peserta yang telah menghadiri event ini.
           </p>
         </div>

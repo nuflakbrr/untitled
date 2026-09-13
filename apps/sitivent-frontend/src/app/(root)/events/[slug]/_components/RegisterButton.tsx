@@ -48,7 +48,7 @@ const RegisterButton: FC<RegisterButtonProps> = ({
   if (!isEmailVerified) {
     return (
       <Button
-        className={`${actionButtonClass} flex items-center justify-center gap-2 bg-[#ffe5d8] text-[#b84a2a] shadow-none hover:bg-[#ffe5d8]`}
+        className={`${actionButtonClass} flex items-center justify-center gap-2 bg-[#ffe5d8] text-[#b84a2a] shadow-none hover:bg-[#ffd9c7]`}
         asChild
       >
         <Link href="/participant/dashboard">
