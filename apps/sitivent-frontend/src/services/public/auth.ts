@@ -61,7 +61,11 @@ export async function sendPasswordChangeNotificationEmail(..._legacyArgs: unknow
 
 export async function requestPasswordResetAction(email: string) {
   try {
-    await api.post('/core/v1/auth/password-reset/request', { email });
+    await api.post(
+      '/core/v1/auth/password-reset/request',
+      { email },
+      { timeout: 15_000 }
+    );
     return { success: true };
   } catch {
     return { success: false, error: 'Gagal memproses permintaan reset password.' };
