@@ -23,7 +23,6 @@ import type {
 } from '@/interfaces/features/events';
 
 import { genPageMetadata } from '@/app/seo';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { Separator } from '@/components/ui/separator';
@@ -33,6 +32,7 @@ import { GitHubIcon, LinkedInIcon, InstagramIcon } from '@/components/Common/Cus
 
 import RegisterButton from './_components/RegisterButton';
 import { getEventPageData } from './_libs/getEventPageData';
+import { getCoverStyles } from '../../_libs/getCoverStyles';
 import EventTestimonials from './_components/EventTestimonials';
 
 export async function generateMetadata({ params }: EventDetailPageProps): Promise<Metadata> {
@@ -70,108 +70,84 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     slotsLeft,
     totalRegistered,
   } = pageData;
+  const coverStyle = getCoverStyles([event.id])[0];
 
   return (
-    <article className="min-h-screen bg-[#FAF9F5] text-[#141413] font-sans antialiased pt-28 pb-16">
-      <div className="container mx-auto px-4 max-w-6xl">
-        {/* Eyebrow Breadcrumb */}
-        <div className="mb-4">
-          <p
-            className="text-[10px] font-bold uppercase tracking-widest font-mono"
-            style={{ color: '#D97757' }}
-          >
-            Jelajahi · Detail Event
-          </p>
-        </div>
-
-        {/* Banner Area */}
+    <article className="min-h-screen bg-[#f6f3eb] pt-24 pb-20 text-[#11233f] antialiased sm:pt-28">
+      <div className="mx-auto max-w-295 px-4 md:px-0">
         <div
-          className="relative w-full aspect-video md:aspect-3/1 rounded-3xl overflow-hidden border shadow-xs mb-8"
-          style={{ borderColor: '#D1CFC5' }}
+          className={`relative mb-8 aspect-video w-full overflow-hidden rounded-[28px] shadow-[0_18px_50px_rgba(17,35,63,.08)] md:aspect-3/1 ${coverStyle}`}
         >
-          {event.banner ? (
-            <img src={event.banner} alt={event.title} className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center bg-[#141413] text-center p-8">
-              <span
-                className="text-[10px] font-bold uppercase tracking-widest font-mono mb-3"
-                style={{ color: '#D97757' }}
-              >
-                SITIVENT · EVENT
-              </span>
-              <h1
-                className="font-serif text-2xl md:text-4xl font-bold leading-tight max-w-2xl"
-                style={{ color: '#FAF9F5' }}
-              >
-                {event.title}
-              </h1>
-            </div>
-          )}
-          <div className="absolute top-4 left-4 flex gap-2">
-            <Badge
-              variant="outline"
-              className="font-mono text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 shadow-xs border"
-              style={
-                event.eventType === 'ONLINE'
-                  ? {
-                      backgroundColor: 'rgba(120, 140, 93, 0.08)',
-                      borderColor: 'rgba(120, 140, 93, 0.3)',
-                      color: '#788C5D',
-                    }
-                  : {
-                      backgroundColor: 'rgba(217, 119, 87, 0.08)',
-                      borderColor: 'rgba(217, 119, 87, 0.3)',
-                      color: '#D97757',
-                    }
-              }
-            >
-              {event.eventType === 'ONLINE' ? (
-                <span className="flex items-center gap-1">
-                  <Globe className="h-3 w-3" /> Online
-                </span>
-              ) : (
-                <span className="flex items-center gap-1">
-                  <Landmark className="h-3 w-3" /> Offline
-                </span>
-              )}
-            </Badge>
+          <div className="relative flex h-full w-full flex-col justify-between p-6 sm:p-8 lg:p-10">
+            <span className="relative z-10 text-xs font-extrabold uppercase tracking-[.08em]">
+              {event.category?.name ?? 'Event'}
+            </span>
+            <h1 className="font-display relative z-10 max-w-[85%] text-[clamp(34px,5vw,68px)] font-extrabold leading-[.97] tracking-[-.045em] sm:max-w-[70%] lg:max-w-160">
+              {event.title}
+            </h1>
           </div>
         </div>
 
         {/* Content Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-10">
           {/* Left Column: Title & Description (col-span-2) */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="space-y-10 lg:col-span-2">
             <div className="space-y-4">
-              <h1 className="font-serif text-3xl md:text-4xl font-bold tracking-tight text-[#141413] leading-tight">
+              {/* <h1 className="font-display text-3xl font-extrabold leading-[1.02] tracking-[-.04em] text-[#11233f] md:text-5xl">
                 {event.title}
-              </h1>
-              <div
-                className="flex flex-wrap gap-x-6 gap-y-3 text-xs font-mono uppercase tracking-wider"
-                style={{ color: '#87867F' }}
-              >
+              </h1> */}
+              <div className="flex flex-wrap gap-x-5 gap-y-3 text-sm text-[#6c7280]">
                 <span className="flex items-center gap-1.5">
-                  <Calendar className="h-4 w-4 shrink-0" style={{ color: '#D97757' }} />{' '}
-                  {formattedStartDate}
+                  {event.eventType === 'ONLINE' ? (
+                    <Globe className="h-4 w-4 shrink-0 text-[#ff7a45]" />
+                  ) : (
+                    <Landmark className="h-4 w-4 shrink-0 text-[#ff7a45]" />
+                  )}
+                  {event.eventType === 'ONLINE' ? 'Online' : 'Offline'}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Clock className="h-4 w-4 shrink-0" style={{ color: '#D97757' }} />{' '}
-                  {event.startTime} - {event.endTime} WIB
+                  <Calendar className="h-4 w-4 shrink-0 text-[#ff7a45]" /> {formattedStartDate}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <MapPin className="h-4 w-4 shrink-0" style={{ color: '#D97757' }} />
+                  <Clock className="h-4 w-4 shrink-0 text-[#ff7a45]" /> {event.startTime} -{' '}
+                  {event.endTime} WIB
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="h-4 w-4 shrink-0 text-[#ff7a45]" />
                   <span className="line-clamp-1">{event.location}</span>
                 </span>
               </div>
             </div>
 
-            <Separator style={{ backgroundColor: '#E3DACC' }} />
+            <Separator className="bg-[#111927]/10" />
 
             {/* Description HTML content */}
             <div className="space-y-4">
-              <h2 className="font-serif text-2xl font-bold text-[#141413]">Detail Event</h2>
+              <div className="relative aspect-[1.45] overflow-hidden rounded-[24px] border border-[#111927]/10 bg-[#11233f] shadow-[0_18px_50px_rgba(17,35,63,.08)]">
+                {event.banner ? (
+                  <img
+                    src={event.banner}
+                    alt={event.title}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className={`relative flex h-full flex-col justify-between p-6 sm:p-8 ${coverStyle}`}
+                  >
+                    <span className="relative z-10 text-xs font-extrabold uppercase tracking-[.08em]">
+                      {event.category?.name ?? 'Event'}
+                    </span>
+                    <h1 className="font-display relative z-10 max-w-[85%] text-[clamp(34px,5vw,68px)] font-extrabold leading-[.97] tracking-[-.045em] sm:max-w-[70%] lg:max-w-160">
+                      {event.title}
+                    </h1>
+                  </div>
+                )}
+              </div>
+              <h2 className="font-display text-2xl font-extrabold tracking-[-.03em] text-[#11233f]">
+                Detail Event
+              </h2>
               <div
-                className="prose max-w-none text-[#3D3D3A] leading-relaxed min-h-37.5"
+                className="prose min-h-37.5 max-w-none leading-relaxed text-[#4b5565] prose-headings:font-display prose-headings:text-[#11233f] prose-a:text-[#ff7a45] prose-strong:text-[#11233f]"
                 dangerouslySetInnerHTML={{
                   __html: (event.description || '').replace(
                     /<a\s+(?:[^>]*?\s+)?href=["']([^"']+)["']/gi,
@@ -194,18 +170,16 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
             {/* Benefits Section */}
             {event.benefits.length > 0 && (
               <div className="space-y-4">
-                <h2 className="font-serif text-2xl font-bold text-[#141413]">Benefit Event</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <h2 className="font-display text-2xl font-extrabold tracking-[-.03em] text-[#11233f]">
+                  Benefit Event
+                </h2>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {event.benefits.map((benefit: EventBenefit, idx: number) => (
                     <div
                       key={benefit.id || idx}
-                      className="flex items-start gap-3 p-4 rounded-xl border bg-white"
-                      style={{ borderColor: '#E3DACC' }}
+                      className="flex items-start gap-3 rounded-[18px] border border-[#111927]/10 bg-[#fffdf8] p-4"
                     >
-                      <div
-                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                        style={{ backgroundColor: 'rgba(217, 119, 87, 0.1)', color: '#D97757' }}
-                      >
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#ffe5d8] text-[#ff7a45]">
                         {(() => {
                           if (!benefit.icon) return <Sparkles className="h-4 w-4" />;
                           const pascalName = benefit.icon
@@ -222,9 +196,9 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                         })()}
                       </div>
                       <div className="space-y-1">
-                        <p className="font-semibold text-sm text-[#141413]">{benefit.title}</p>
+                        <p className="text-sm font-bold text-[#11233f]">{benefit.title}</p>
                         {benefit.description && (
-                          <p className="text-xs text-[#87867F] leading-relaxed">
+                          <p className="text-xs leading-relaxed text-[#6c7280]">
                             {benefit.description}
                           </p>
                         )}
@@ -235,51 +209,50 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
               </div>
             )}
 
-            <Separator style={{ backgroundColor: '#E3DACC' }} />
+            <Separator className="bg-[#111927]/10" />
 
             {/* Testimonials Section */}
             <EventTestimonials eventId={event.id} />
           </div>
 
           {/* Right Column: Pricing & Registration (col-span-1) */}
-          <div className="sticky top-20 self-start lg:col-span-1 space-y-4">
-            <Card
-              className="py-0 border shadow-xs bg-white overflow-hidden rounded-2xl"
-              style={{ borderColor: '#D1CFC5' }}
-            >
-              <CardContent className="p-6 space-y-6">
+          <div className="space-y-4 self-start lg:sticky lg:top-28 lg:col-span-1">
+            <Card className="overflow-hidden rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] py-0 shadow-[0_18px_50px_rgba(17,35,63,.04)] ring-0">
+              <CardContent className="space-y-6 p-6">
                 {/* Price block */}
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-[#87867F] font-mono uppercase tracking-widest">
+                  <span className="text-[11px] font-extrabold uppercase tracking-[.08em] text-[#6c7280]">
                     Biaya Pendaftaran
                   </span>
                   <div className="flex items-baseline gap-1">
                     {isFree ? (
-                      <span className="text-3xl font-serif font-bold text-[#788C5D]">Gratis</span>
+                      <span className="font-display text-3xl font-extrabold text-[#36784b]">
+                        Gratis
+                      </span>
                     ) : (
-                      <span className="text-3xl font-serif font-bold text-[#141413]">
+                      <span className="font-display text-3xl font-extrabold text-[#11233f]">
                         {formatCurrency(event.price)}
                       </span>
                     )}
                   </div>
                 </div>
 
-                <Separator style={{ backgroundColor: '#E3DACC' }} />
+                <Separator className="bg-[#111927]/10" />
 
                 {/* Key stats details */}
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider">
-                    <span className="text-[#87867F] flex items-center gap-1.5">
-                      <Users className="h-4 w-4" style={{ color: '#D97757' }} /> Sisa Kuota
+                  <div className="flex items-center justify-between gap-4 text-sm">
+                    <span className="flex items-center gap-1.5 text-[#6c7280]">
+                      <Users className="h-4 w-4 text-[#ff7a45]" /> Sisa Kuota
                     </span>
-                    <span className="font-bold text-[#141413]">{slotsLeft} Kursi</span>
+                    <span className="font-bold text-[#11233f]">{slotsLeft} kursi</span>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider">
-                    <span className="text-[#87867F] flex items-center gap-1.5">
-                      <Clock className="h-4 w-4" style={{ color: '#D97757' }} /> Batas Pendaftaran
+                  <div className="flex items-center justify-between gap-4 text-sm">
+                    <span className="flex items-center gap-1.5 text-[#6c7280]">
+                      <Clock className="h-4 w-4 text-[#ff7a45]" /> Batas pendaftaran
                     </span>
-                    <span className="font-bold text-[#141413] text-right">{formattedDeadline}</span>
+                    <span className="text-right font-bold text-[#11233f]">{formattedDeadline}</span>
                   </div>
                 </div>
 
@@ -288,11 +261,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                   {event.status !== 'PUBLISHED' ? (
                     <Button
                       disabled
-                      className="w-full py-6 text-xs font-bold font-mono uppercase tracking-wider flex items-center justify-center gap-2 rounded-xl"
-                      style={{
-                        backgroundColor: '#87867F',
-                        color: '#FAF9F5',
-                      }}
+                      className="flex w-full items-center justify-center gap-2 rounded-[14px] bg-[#f6f3eb] py-6 text-xs font-bold uppercase tracking-wider text-[#6c7280]"
                     >
                       <BadgeAlert className="h-5 w-5" /> Pendaftaran Ditutup
                     </Button>
@@ -315,15 +284,12 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
             {/* Creator Card */}
             {event.createdBy && (
-              <Card
-                className="py-0 border shadow-xs bg-white overflow-hidden rounded-2xl"
-                style={{ borderColor: '#D1CFC5' }}
-              >
-                <CardContent className="p-6 space-y-3">
-                  <span className="text-[10px] font-bold text-[#87867F] font-mono uppercase tracking-widest">
+              <Card className="overflow-hidden rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] py-0 shadow-[0_18px_50px_rgba(17,35,63,.04)] ring-0">
+                <CardContent className="space-y-3 p-6">
+                  <span className="text-[11px] font-extrabold uppercase tracking-[.08em] text-[#6c7280]">
                     Diselenggarakan Oleh
                   </span>
-                  <div className="flex mt-2 items-center gap-3">
+                  <div className="mt-2 flex items-center gap-3">
                     {event.createdBy.image ? (
                       <img
                         src={event.createdBy.image}
@@ -331,14 +297,11 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                         className="h-11 w-11 rounded-full object-cover"
                       />
                     ) : (
-                      <div
-                        className="h-11 w-11 rounded-full flex items-center justify-center"
-                        style={{ backgroundColor: 'rgba(217, 119, 87, 0.1)', color: '#D97757' }}
-                      >
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#ffe5d8] text-[#ff7a45]">
                         <User className="h-5 w-5" />
                       </div>
                     )}
-                    <p className="font-semibold text-sm text-[#141413]">
+                    <p className="text-sm font-bold text-[#11233f]">
                       {event.createdBy.name || 'SITIVENT'}
                     </p>
                   </div>
@@ -348,15 +311,12 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
             {/* Speakers Card */}
             {event.speakers.length > 0 && (
-              <Card
-                className="py-0 border shadow-xs bg-white overflow-hidden rounded-2xl"
-                style={{ borderColor: '#D1CFC5' }}
-              >
-                <CardContent className="p-6 space-y-4">
-                  <span className="text-[10px] font-bold text-[#87867F] font-mono uppercase tracking-widest">
+              <Card className="overflow-hidden rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] py-0 shadow-[0_18px_50px_rgba(17,35,63,.04)] ring-0">
+                <CardContent className="space-y-4 p-6">
+                  <span className="text-[11px] font-extrabold uppercase tracking-[.08em] text-[#6c7280]">
                     Pemateri
                   </span>
-                  <div className="space-y-4 mt-2">
+                  <div className="mt-2 space-y-4">
                     {event.speakers.map((speaker: EventSpeaker, idx: number) => (
                       <div key={speaker.id || idx} className="flex gap-3">
                         {speaker.avatar ? (
@@ -366,17 +326,14 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                             className="h-12 w-12 rounded-full object-cover shrink-0"
                           />
                         ) : (
-                          <div
-                            className="h-12 w-12 rounded-full flex items-center justify-center shrink-0"
-                            style={{ backgroundColor: 'rgba(120, 140, 93, 0.1)', color: '#788C5D' }}
-                          >
+                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#e5f2e8] text-[#36784b]">
                             <User className="h-5 w-5" />
                           </div>
                         )}
                         <div className="space-y-1 min-w-0">
-                          <p className="font-semibold text-sm text-[#141413]">{speaker.name}</p>
+                          <p className="text-sm font-bold text-[#11233f]">{speaker.name}</p>
                           {speaker.title && (
-                            <p className="text-xs text-[#87867F] flex items-center gap-1">
+                            <p className="flex items-center gap-1 text-xs text-[#6c7280]">
                               <Briefcase className="h-3 w-3" /> {speaker.title}
                             </p>
                           )}
@@ -388,13 +345,13 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                                   href={speaker.companyUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-[#87867F] hover:text-[#D97757] hover:underline flex items-center gap-0.5 text-[11px]"
+                                  className="flex items-center gap-0.5 text-[11px] text-[#6c7280] hover:text-[#ff7a45] hover:underline"
                                 >
                                   {speaker.company}
                                   <ExternalLink className="h-3 w-3" />
                                 </a>
                               ) : (
-                                <p className="text-xs ">{speaker.company}</p>
+                                <p className="text-xs text-[#6c7280]">{speaker.company}</p>
                               )}
                             </div>
                           )}
@@ -404,7 +361,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                                 href={speaker.github}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-[#141413] hover:underline flex items-center gap-0.5 text-[11px]"
+                                className="flex items-center gap-0.5 text-[11px] text-[#11233f] hover:underline"
                               >
                                 <GitHubIcon className="w-3 h-3" /> GitHub
                               </a>
@@ -414,7 +371,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                                 href={speaker.instagram}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-[#D97757] hover:underline flex items-center gap-0.5 text-[11px]"
+                                className="flex items-center gap-0.5 text-[11px] text-[#ff7a45] hover:underline"
                               >
                                 <InstagramIcon className="h-3 w-3" /> Instagram
                               </a>
