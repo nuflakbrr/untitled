@@ -17,6 +17,8 @@ const FeaturedEvents: FC<FeaturedEventsProps> = ({ events, categories }) => {
   const visibleEvents = events.slice(0, 3);
   const coverStylesByEvent = getCoverStyles(visibleEvents.map((event) => event.id));
 
+  if (visibleEvents.length === 0) return null;
+
   return (
     <section id="event" className="px-4 py-24 sm:px-6">
       <div className="mx-auto max-w-295">
@@ -41,13 +43,8 @@ const FeaturedEvents: FC<FeaturedEventsProps> = ({ events, categories }) => {
 
         <CategoryLinks categories={categories} />
 
-        {visibleEvents.length === 0 ? (
-          <div className="rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] p-12 text-center text-[#6c7280]">
-            Belum ada event yang tersedia.
-          </div>
-        ) : (
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {visibleEvents.map((event, index) => {
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {visibleEvents.map((event, index) => {
               const slotsLeft = Math.max(0, event.quota - event.registrationCount);
               const isFull = slotsLeft === 0;
               const isLimited = !isFull && slotsLeft < 30;
@@ -69,9 +66,7 @@ const FeaturedEvents: FC<FeaturedEventsProps> = ({ events, categories }) => {
                     {(isFull || isLimited) && (
                       <span
                         className={`absolute right-4 top-4 rounded-full px-3 py-1 text-xs font-bold ${
-                          isFull
-                            ? 'bg-[#11233f]/80 text-white'
-                            : 'bg-[#ffe5d8] text-[#a94e29]'
+                          isFull ? 'bg-[#11233f]/80 text-white' : 'bg-[#ffe5d8] text-[#a94e29]'
                         }`}
                       >
                         {isFull ? 'Kuota penuh' : `${slotsLeft} kursi tersisa`}
@@ -103,9 +98,8 @@ const FeaturedEvents: FC<FeaturedEventsProps> = ({ events, categories }) => {
                   </div>
                 </Link>
               );
-            })}
-          </div>
-        )}
+          })}
+        </div>
       </div>
     </section>
   );
