@@ -1,17 +1,9 @@
 import type { FC } from 'react';
-import type { Zap, Users, Award, Shield } from 'lucide-react';
 
-export interface ValueItem {
-  icon: typeof Zap | typeof Shield | typeof Users | typeof Award;
-  title: string;
-  desc: string;
-  color: string;
-  bg: string;
-  border: string;
-}
+import type { AboutValue } from '@/interfaces/features/about';
 
 interface AboutValuesProps {
-  items: ValueItem[];
+  items: AboutValue[];
 }
 
 export const AboutValues: FC<AboutValuesProps> = ({ items }) => (

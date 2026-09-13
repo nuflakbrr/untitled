@@ -1,11 +1,10 @@
 import type { FC } from 'react';
 import type { Metadata } from 'next';
 
-import { Zap, Users, Award, Shield } from 'lucide-react';
-
+import { aboutValues } from './_constants/values';
 import { AboutHeader } from './_components/AboutHeader';
+import { AboutValues } from './_components/AboutValues';
 import { AboutIntroduction } from './_components/AboutIntroduction';
-import { AboutValues, type ValueItem } from './_components/AboutValues';
 
 export const metadata: Metadata = {
   title: 'Tentang SITIVENT — Platform Manajemen Event',
@@ -13,43 +12,7 @@ export const metadata: Metadata = {
     'SITIVENT adalah platform manajemen event dan tiket digital untuk seminar, workshop, webinar, dan bootcamp di Indonesia.',
 };
 
-const About: FC = () => {
-  const values: ValueItem[] = [
-    {
-      icon: Zap,
-      title: 'Efisiensi',
-      desc: 'Proses pendaftaran cepat dan mudah, tanpa kerumitan.',
-      color: '#D97757',
-      bg: 'rgba(217,119,87,0.08)',
-      border: 'rgba(217,119,87,0.3)',
-    },
-    {
-      icon: Shield,
-      title: 'Transparansi',
-      desc: 'Setiap transaksi dan status terpantau secara real-time.',
-      color: '#788C5D',
-      bg: 'rgba(120,140,93,0.08)',
-      border: 'rgba(120,140,93,0.3)',
-    },
-    {
-      icon: Users,
-      title: 'Inklusif',
-      desc: 'Terbuka untuk semua kalangan, dari pelajar hingga profesional.',
-      color: '#D97757',
-      bg: 'rgba(217,119,87,0.08)',
-      border: 'rgba(217,119,87,0.3)',
-    },
-    {
-      icon: Award,
-      title: 'Bermutu',
-      desc: 'Event terkurasi dengan materi berkualitas dan instruktur berpengalaman.',
-      color: '#788C5D',
-      bg: 'rgba(120,140,93,0.08)',
-      border: 'rgba(120,140,93,0.3)',
-    },
-  ];
-
-  return (
+const About: FC = () => (
     <div className="min-h-screen bg-[#FAF9F5] text-[#141413] font-sans antialiased">
       <AboutHeader
         title="Tentang SITIVENT"
@@ -58,9 +21,8 @@ const About: FC = () => {
       <div className="container mx-auto px-4 max-w-5xl py-16 md:py-24">
         <AboutIntroduction />
       </div>
-      <AboutValues items={values} />
+      <AboutValues items={aboutValues} />
     </div>
   );
-};
 
 export default About;
