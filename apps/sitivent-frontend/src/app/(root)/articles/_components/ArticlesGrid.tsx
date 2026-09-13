@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, type FC, useState } from 'react';
 import { Clock, Search, BookOpen, ArrowRight } from 'lucide-react';
+import { useRef, useMemo, type FC, useState, useEffect } from 'react';
 
 import type { ArticleItem } from '@/interfaces/features/articles';
 
@@ -20,6 +20,9 @@ const ArticlesGrid: FC<ArticlesGridProps> = ({ initialItems, categories: availab
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useDebounce('', 500);
   const [categoryFilter, setCategoryFilter] = useState('Semua');
+  const categoryListRef = useRef<HTMLDivElement>(null);
+  const [showLeftFade, setShowLeftFade] = useState(false);
+  const [showRightFade, setShowRightFade] = useState(false);
 
   const categories = useMemo(
     () => ['Semua', ...new Set(availableCategories.filter(Boolean))],
@@ -47,6 +50,27 @@ const ArticlesGrid: FC<ArticlesGridProps> = ({ initialItems, categories: availab
   const featured = filteredItems[0];
   const remainingItems = filteredItems.slice(1);
 
+  useEffect(() => {
+    const categoryList = categoryListRef.current;
+    if (!categoryList) return;
+
+    const updateFades = () => {
+      setShowLeftFade(categoryList.scrollLeft > 0);
+      setShowRightFade(
+        categoryList.scrollLeft + categoryList.clientWidth < categoryList.scrollWidth - 1
+      );
+    };
+
+    updateFades();
+    categoryList.addEventListener('scroll', updateFades, { passive: true });
+    window.addEventListener('resize', updateFades);
+
+    return () => {
+      categoryList.removeEventListener('scroll', updateFades);
+      window.removeEventListener('resize', updateFades);
+    };
+  }, [categories.length]);
+
   const updateSearch = (value: string) => {
     setSearchTerm(value);
     setDebouncedSearchTerm(value);
@@ -55,17 +79,29 @@ const ArticlesGrid: FC<ArticlesGridProps> = ({ initialItems, categories: availab
   return (
     <div className="space-y-8 pb-24">
       <div className="flex flex-col gap-4 border-b border-[#111927]/10 pb-6 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex min-w-0 gap-2 overflow-x-auto pb-1">
-          {categories.map((category) => (
-            <button
-              key={category}
-              type="button"
-              onClick={() => setCategoryFilter(category)}
-              className={`shrink-0 rounded-full border px-3.5 py-2 text-[13px] font-bold transition ${categoryFilter === category ? 'border-[#11233f] bg-[#11233f] text-white' : 'border-[#111927]/10 bg-white/45 text-[#4b5565] hover:border-[#11233f]/35 hover:text-[#11233f]'}`}
-            >
-              {category}
-            </button>
-          ))}
+        <div className="relative min-w-0 flex-1">
+          <div
+            ref={categoryListRef}
+            className="flex min-w-0 gap-2 overflow-x-auto pb-1"
+            style={{ scrollbarWidth: 'thin' }}
+          >
+            {categories.map((category) => (
+              <button
+                key={category}
+                type="button"
+                onClick={() => setCategoryFilter(category)}
+                className={`shrink-0 rounded-full border px-3.5 py-2 text-[13px] font-bold transition ${categoryFilter === category ? 'border-[#11233f] bg-[#11233f] text-white' : 'border-[#111927]/10 bg-white/45 text-[#4b5565] hover:border-[#11233f]/35 hover:text-[#11233f]'}`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+          {showLeftFade && (
+            <span className="pointer-events-none absolute inset-y-0 left-0 w-3 bg-linear-to-r from-[#f6f3eb] to-transparent" />
+          )}
+          {showRightFade && (
+            <span className="pointer-events-none absolute inset-y-0 right-0 w-3 bg-linear-to-l from-[#f6f3eb] to-transparent" />
+          )}
         </div>
         <label className="relative block w-full shrink-0 lg:max-w-100">
           <span className="sr-only">Cari artikel</span>
