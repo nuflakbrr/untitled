@@ -28,14 +28,10 @@ export interface MediaResponse {
   error?: string;
 }
 
-export interface SingleMediaResponse {
-  success: boolean;
-  data?: Media;
-  message?: string;
-  error?: string;
-}
+export type SingleMediaResponse = ApiResponse<Media>;
 
 export interface MediaValues {
   name?: string;
   folder?: string;
 }
+import type { ApiResponse } from './common';

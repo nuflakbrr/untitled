@@ -3,8 +3,7 @@ import 'moment/locale/id';
 
 import moment from 'moment';
 
-import type { ArticleDetail } from '@/interfaces/features/articles';
-import type { ArticleDetailApiRecord } from '@/interfaces/features/articleDetail';
+import type { ArticleDetail, ArticleDetailApiRecord } from '@/interfaces/features/articles';
 
 import api from '@/lib/api';
 

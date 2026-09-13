@@ -1,3 +1,5 @@
+import type { ApiResponse, PaginatedResponse } from './common';
+
 export interface Role {
   id: string;
   name: string;
@@ -14,20 +16,5 @@ export interface Role {
   };
 }
 
-export interface RoleResponse {
-  success: boolean;
-  data?: Role;
-  message?: string;
-  error?: string;
-}
-
-export interface RolePaginationResponse {
-  success: boolean;
-  data: Role[];
-  meta: {
-    total: number;
-    page: number;
-    lastPage: number;
-  };
-  error?: string;
-}
+export type RoleResponse = ApiResponse<Role>;
+export type RolePaginationResponse = PaginatedResponse<Role>;

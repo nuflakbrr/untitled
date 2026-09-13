@@ -1,3 +1,5 @@
+import type { ApiResponse, PaginatedResponse } from './common';
+
 export interface Article {
   id: string;
   title: string;
@@ -20,41 +22,10 @@ export interface ArticleCategory {
   deletedAt?: Date | string | null;
 }
 
-export interface ArticleResponse {
-  success: boolean;
-  data?: Article;
-  message?: string;
-  error?: string;
-}
-
-export interface ArticlePaginationResponse {
-  success: boolean;
-  data: Article[];
-  meta: {
-    total: number;
-    page: number;
-    lastPage: number;
-  };
-  error?: string;
-}
-
-export interface ArticleCategoryResponse {
-  success: boolean;
-  data?: ArticleCategory;
-  message?: string;
-  error?: string;
-}
-
-export interface ArticleCategoryPaginationResponse {
-  success: boolean;
-  data: ArticleCategory[];
-  meta: {
-    total: number;
-    page: number;
-    lastPage: number;
-  };
-  error?: string;
-}
+export type ArticleResponse = ApiResponse<Article>;
+export type ArticlePaginationResponse = PaginatedResponse<Article>;
+export type ArticleCategoryResponse = ApiResponse<ArticleCategory>;
+export type ArticleCategoryPaginationResponse = PaginatedResponse<ArticleCategory>;
 
 export interface ArticleItem {
   id: string;
@@ -107,4 +78,28 @@ export interface ArticleDetail {
   jargon?: Record<string, string>;
   flowchart?: ArticleDetailFlowchartItem[];
   isDb?: boolean;
+}
+
+export interface ArticleDetailClientProps {
+  initialArticle: ArticleDetail;
+}
+
+export interface ArticleTocItem {
+  id: string;
+  label: string;
+}
+
+export interface ArticleDetailApiRecord {
+  id: string;
+  title: string;
+  content: string;
+  cover?: string | null;
+  created_at?: string | null;
+  createdAt?: string | null;
+  created_by_id?: string | null;
+  createdById?: string | null;
+  created_by_name?: string | null;
+  createdByName?: string | null;
+  category?: { name?: string | null } | null;
+  articleCategories?: Array<{ name?: string | null }>;
 }

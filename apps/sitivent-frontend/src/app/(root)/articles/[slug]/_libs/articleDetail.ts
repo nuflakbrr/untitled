@@ -1,5 +1,4 @@
-import type { ArticleDetail } from '@/interfaces/features/articles';
-import type { ArticleTocItem } from '@/interfaces/features/articleDetail';
+import type { ArticleDetail, ArticleTocItem } from '@/interfaces/features/articles';
 
 export const getArticleWordCount = (article: ArticleDetail): number => {
   if (article.content) {

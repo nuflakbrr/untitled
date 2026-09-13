@@ -3,7 +3,7 @@ import type { FC } from 'react';
 import Link from 'next/link';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 
-import type { ForgotPasswordSuccessProps } from '@/interfaces/auth';
+import type { ForgotPasswordSuccessProps } from '@/interfaces/features/auth';
 
 const ForgotPasswordSuccess: FC<ForgotPasswordSuccessProps> = ({ email, onRetry }) => (
   <div className="rounded-[20px] bg-[#bfe4c7] p-6 text-left sm:p-7">

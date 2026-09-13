@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import { X, Plus, ArrowRight } from 'lucide-react';
 
-import type { FAQBrowserProps } from '@/interfaces/faq';
+import type { FAQBrowserProps } from '@/interfaces/features/faq';
 
 import { cn } from '@/lib/utils';
 

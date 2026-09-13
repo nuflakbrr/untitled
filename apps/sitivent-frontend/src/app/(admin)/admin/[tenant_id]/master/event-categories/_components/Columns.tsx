@@ -1,7 +1,7 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import type { EventCategory } from '@/interfaces/features/event-categories';
+import type { EventCategory } from '@/interfaces/features/events';
 
 import { ChevronsUpDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';

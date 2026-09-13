@@ -2,7 +2,7 @@ import type { FC } from 'react';
 
 import { Eye, Lock, EyeOff } from 'lucide-react';
 
-import type { PasswordFieldProps } from '@/interfaces/auth';
+import type { PasswordFieldProps } from '@/interfaces/features/auth';
 
 import { getResetPasswordInputClass } from '../_libs/getResetPasswordInputClass';
 

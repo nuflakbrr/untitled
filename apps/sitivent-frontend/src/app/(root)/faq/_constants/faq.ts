@@ -1,4 +1,4 @@
-import type { FAQItem } from '@/interfaces/faq';
+import type { FAQItem } from '@/interfaces/features/faq';
 
 export const faqCategories = [
   { id: 'semua', label: 'Semua Pertanyaan' },

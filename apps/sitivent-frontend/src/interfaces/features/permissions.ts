@@ -1,3 +1,5 @@
+import type { ApiResponse, PaginatedResponse } from './common';
+
 export interface Permission {
   id: string;
   name: string;
@@ -11,20 +13,6 @@ export interface Permission {
   };
 }
 
-export interface PermissionResponse {
-  success: boolean;
-  message?: string;
-  data?: Permission | Permission[];
-  error?: string;
-}
+export type PermissionResponse = ApiResponse<Permission | Permission[]>;
 
-export interface PermissionPaginationResponse {
-  success: boolean;
-  data: Permission[];
-  meta: {
-    total: number;
-    page: number;
-    lastPage: number;
-  };
-  error?: string;
-}
+export type PermissionPaginationResponse = PaginatedResponse<Permission>;

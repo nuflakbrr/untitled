@@ -1,3 +1,7 @@
+import type { UseFormReturn } from 'react-hook-form';
+
+import type { PaginationMeta } from './common';
+
 export interface SupportMessage {
   id: string;
   email: string;
@@ -21,14 +25,21 @@ export interface CreateSupportMessageInput {
   chronology: string;
 }
 
+export interface HelpFormProps {
+  form: UseFormReturn<CreateSupportMessageInput>;
+  isAuthenticated: boolean;
+  isPending: boolean;
+  onSubmit: (values: CreateSupportMessageInput) => void;
+}
+
+export interface HelpSuccessStateProps {
+  onReset: () => void;
+}
+
 export interface SupportMessagesResponse {
   success: boolean;
   data?: SupportMessage[];
-  meta?: {
-    total: number;
-    page: number;
-    lastPage: number;
-  };
+  meta?: PaginationMeta;
   error?: string;
 }
 

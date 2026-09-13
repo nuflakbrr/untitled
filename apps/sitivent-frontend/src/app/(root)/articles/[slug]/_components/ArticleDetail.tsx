@@ -16,7 +16,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 
-import type { ArticleDetailClientProps } from '@/interfaces/features/articleDetail';
+import type { ArticleDetailClientProps } from '@/interfaces/features/articles';
 
 import { LinkedInIcon, WhatsAppIcon } from '@/components/Common/CustomIcons';
 

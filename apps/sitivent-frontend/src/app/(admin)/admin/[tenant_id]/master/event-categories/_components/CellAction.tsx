@@ -2,7 +2,7 @@
 
 import type { FC } from 'react';
 import type { Route } from 'next';
-import type { EventCategory } from '@/interfaces/features/event-categories';
+import type { EventCategory } from '@/interfaces/features/events';
 
 import { Button } from '@/components/ui/button';
 import { copyToClipboard } from '@/lib/clipboard';

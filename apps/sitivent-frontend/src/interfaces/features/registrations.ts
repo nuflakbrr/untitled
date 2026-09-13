@@ -1,4 +1,5 @@
 import type { RegistrationStatus } from '@/interfaces/enums';
+import type { ApiResponse, PaginatedResponse } from './common';
 
 export interface Registration {
   id: string;
@@ -23,20 +24,5 @@ export interface Registration {
   };
 }
 
-export interface RegistrationResponse {
-  success: boolean;
-  data?: Registration;
-  error?: string;
-  message?: string;
-}
-
-export interface RegistrationPaginationResponse {
-  success: boolean;
-  data: Registration[];
-  meta: {
-    total: number;
-    page: number;
-    lastPage: number;
-  };
-  error?: string;
-}
+export type RegistrationResponse = ApiResponse<Registration>;
+export type RegistrationPaginationResponse = PaginatedResponse<Registration>;

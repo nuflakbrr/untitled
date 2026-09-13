@@ -6,7 +6,7 @@ import type {
   EventCategory,
   EventCategoryResponse,
   EventCategoryPaginationResponse,
-} from '@/interfaces/features/event-categories';
+} from '@/interfaces/features/events';
 
 import api from '@/lib/api';
 import { slugify } from '@/lib/slugify';

@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Tag, Mic2, Code2, Laptop, MonitorPlay, MessageSquare } from 'lucide-react';
 
-import type { EventCategory } from '@/interfaces/features/event-categories';
+import type { EventCategory } from '@/interfaces/features/events';
 
 import { cn } from '@/lib/utils';
 

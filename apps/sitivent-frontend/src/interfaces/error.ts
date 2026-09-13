@@ -27,3 +27,8 @@ export interface ErrorTheme {
   borderType: string;
   errorColor: string;
 }
+
+export interface ErrorAction {
+  href: string;
+  label: string;
+}

@@ -1,4 +1,5 @@
 import type { Role } from './roles';
+import type { ApiResponse, PaginatedResponse } from './common';
 
 export interface User {
   deletedAt?: string | null;
@@ -15,20 +16,5 @@ export interface User {
   banReason?: string | null;
 }
 
-export interface UserResponse {
-  success: boolean;
-  data?: User;
-  error?: string;
-  message?: string;
-}
-
-export interface UserPaginationResponse {
-  success: boolean;
-  data: User[];
-  meta: {
-    total: number;
-    page: number;
-    lastPage: number;
-  };
-  error?: string;
-}
+export type UserResponse = ApiResponse<User>;
+export type UserPaginationResponse = PaginatedResponse<User>;

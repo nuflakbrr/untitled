@@ -1,4 +1,4 @@
-import type { EventCategory } from './event-categories';
+import type { ApiResponse, PaginatedResponse } from './common';
 import type { EventType, EventStatus } from '@/interfaces/enums';
 
 export interface EventSpeaker {
@@ -64,23 +64,8 @@ export interface Event {
   };
 }
 
-export interface EventResponse {
-  success: boolean;
-  data?: Event;
-  error?: string;
-  message?: string;
-}
-
-export interface EventPaginationResponse {
-  success: boolean;
-  data: Event[];
-  meta: {
-    total: number;
-    page: number;
-    lastPage: number;
-  };
-  error?: string;
-}
+export type EventResponse = ApiResponse<Event>;
+export type EventPaginationResponse = PaginatedResponse<Event>;
 
 export interface EventSearchResult {
   id: string;
@@ -94,3 +79,40 @@ export interface EventSearchResult {
 export interface EventSearchResponse {
   data: EventSearchResult[];
 }
+
+export interface EventsResultsProps {
+  events: Event[];
+  query?: string;
+}
+
+export interface EventDetailPageData {
+  event: Event;
+  formattedDeadline: string;
+  formattedStartDate: string;
+  isAuthenticated: boolean;
+  isDeadlinePassed: boolean;
+  isEmailVerified: boolean;
+  isFree: boolean;
+  isQuotaFull: boolean;
+  isRegistered: boolean;
+  registrationStatus: string | null;
+  slotsLeft: number;
+  totalRegistered: number;
+}
+
+export interface EventCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date | null;
+  eventsCount?: number;
+  _count?: {
+    events: number;
+  };
+}
+
+export type EventCategoryResponse = ApiResponse<EventCategory>;
+export type EventCategoryPaginationResponse = PaginatedResponse<EventCategory>;

@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { MapPin, ArrowRight, CalendarDays } from 'lucide-react';
 
 import type { Event } from '@/interfaces/features/events';
-import type { EventCategory } from '@/interfaces/features/event-categories';
+import type { EventCategory } from '@/interfaces/features/events';
 
 import { formatCurrency } from '@/lib/formatCurrency';
 

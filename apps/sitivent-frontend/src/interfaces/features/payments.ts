@@ -1,4 +1,5 @@
 import type { PaymentStatus } from '@/interfaces/enums';
+import type { ApiResponse, PaginatedResponse } from './common';
 
 export interface Payment {
   id: string;
@@ -32,20 +33,5 @@ export interface Payment {
   } | null;
 }
 
-export interface PaymentResponse {
-  success: boolean;
-  data?: Payment;
-  error?: string;
-  message?: string;
-}
-
-export interface PaymentPaginationResponse {
-  success: boolean;
-  data: Payment[];
-  meta: {
-    total: number;
-    page: number;
-    lastPage: number;
-  };
-  error?: string;
-}
+export type PaymentResponse = ApiResponse<Payment>;
+export type PaymentPaginationResponse = PaginatedResponse<Payment>;

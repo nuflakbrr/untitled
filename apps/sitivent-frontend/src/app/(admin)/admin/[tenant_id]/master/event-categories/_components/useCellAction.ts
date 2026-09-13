@@ -1,6 +1,6 @@
 'use client';
 
-import type { EventCategory } from '@/interfaces/features/event-categories';
+import type { EventCategory } from '@/interfaces/features/events';
 
 import { toast } from 'sonner';
 import { useState } from 'react';

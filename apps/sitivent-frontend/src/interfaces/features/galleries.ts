@@ -1,3 +1,5 @@
+import type { ApiResponse, PaginatedResponse } from './common';
+
 export interface Gallery {
   id: string;
   tenantId?: string | null;
@@ -23,20 +25,5 @@ export interface CreateGalleryInput {
   eventId?: string | null;
 }
 
-export interface GalleryResponse {
-  success: boolean;
-  data?: Gallery;
-  error?: string;
-  message?: string;
-}
-
-export interface GalleryPaginationResponse {
-  success: boolean;
-  data: Gallery[];
-  meta: {
-    total: number;
-    page: number;
-    lastPage: number;
-  };
-  error?: string;
-}
+export type GalleryResponse = ApiResponse<Gallery>;
+export type GalleryPaginationResponse = PaginatedResponse<Gallery>;

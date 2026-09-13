@@ -1,4 +1,4 @@
-import type { ErrorAction } from '@/interfaces/error-action';
+import type { ErrorAction } from '@/interfaces/error';
 
 export const getErrorActions = (code: number): [ErrorAction, ErrorAction] => {
   if (code === 401 || code === 403) {
