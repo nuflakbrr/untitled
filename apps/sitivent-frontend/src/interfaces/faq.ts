@@ -6,3 +6,8 @@ export interface FAQItem {
   question: string;
   answer: string;
 }
+
+export interface FAQBrowserProps {
+  selectedCategory: string;
+  onCategoryChange: (category: string) => void;
+}
