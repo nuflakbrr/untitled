@@ -158,24 +158,3 @@ export async function getAllEvents() {
     return [];
   }
 }
-export async function getPublicEvents(search = '', categorySlug = ''): Promise<Event[]> {
-  try {
-    return (
-      (await api.get('/features/v1/events', {
-        params: { status: 'PUBLISHED', limit: 100, search, category_slug: categorySlug },
-        headers: { 'X-Skip-Tenant': 'true' },
-      })).data.data ?? []
-    ).map(normalizeEvent);
-  } catch {
-    return [];
-  }
-}
-
-export async function getPublicEventBySlug(slug: string): Promise<Event | null> {
-  try {
-    const event = (await api.get(`/features/v1/events/${slug}`)).data.data;
-    return event ? normalizeEvent(event) : null;
-  } catch {
-    return null;
-  }
-}

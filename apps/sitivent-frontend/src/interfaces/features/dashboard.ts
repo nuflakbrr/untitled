@@ -48,6 +48,12 @@ export interface AdminDashboardStats {
   }>;
 }
 
+export interface PublicStats {
+  events: number;
+  registrations: number;
+  certificates: number;
+}
+
 export interface ParticipantDashboardStats {
   upcomingEvent: {
     id: string;

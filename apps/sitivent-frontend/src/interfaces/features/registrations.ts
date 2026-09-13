@@ -24,5 +24,24 @@ export interface Registration {
   };
 }
 
+export interface ParticipantRegistration extends Registration {
+  event: Registration['event'] & {
+    slug: string;
+    startTime: string;
+    endTime: string;
+    location: string;
+    status: string;
+    certificateEnabled: boolean;
+    eventType: string;
+    meetingLink: string | null;
+  };
+  certificates: Array<{ id: string; downloadUrl: string }>;
+  testimonial?: {
+    id: string;
+    rating: number;
+    comment: string;
+  } | null;
+}
+
 export type RegistrationResponse = ApiResponse<Registration>;
 export type RegistrationPaginationResponse = PaginatedResponse<Registration>;

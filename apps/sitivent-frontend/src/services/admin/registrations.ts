@@ -1,12 +1,13 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
+
 import type {
   Registration,
   RegistrationPaginationResponse,
 } from '@/interfaces/features/registrations';
 
 import api from '@/lib/api';
-import { revalidatePath } from 'next/cache';
 
 const endpoint = '/features/v1/registrations';
 function normalizeRegistration(item: Record<string, unknown>): Registration {
@@ -33,13 +34,6 @@ function normalizeRegistration(item: Record<string, unknown>): Registration {
       startDate: new Date(String(item.eventStartDate ?? item.event_start_date)),
     },
   } as Registration;
-}
-export async function getParticipantRegistrations() {
-  try {
-    return ((await api.get(`${endpoint}/me`)).data.data ?? []).map(normalizeRegistration);
-  } catch {
-    return [];
-  }
 }
 export async function getRegistrations(
   page = 1,
@@ -78,17 +72,6 @@ export async function exportRegistrationsData(
     responseType: 'blob',
   });
   return { success: true, data: result.data };
-}
-export async function registerToEvent(eventId: string): Promise<any> {
-  try {
-    return { success: true, data: (await api.post(endpoint, { event_id: eventId })).data.data };
-  } catch {
-    return { success: false, error: 'Gagal mendaftar event.' };
-  }
-}
-export async function getEventRegistrationStatus(eventId: string): Promise<Registration | null> {
-  const registrations = await getParticipantRegistrations();
-  return registrations.find((registration: Registration) => registration.eventId === eventId && !registration.deletedAt) ?? null;
 }
 export async function cancelRegistration(registrationId: string): Promise<any> {
   try {

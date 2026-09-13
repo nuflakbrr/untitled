@@ -6,7 +6,6 @@ import { revalidatePath } from 'next/cache';
 
 import type { articleSchema } from '@/schemas/articles';
 import type {
-  Article,
   ArticleResponse,
   ArticleCategoryResponse,
   ArticlePaginationResponse,
@@ -154,17 +153,5 @@ export async function permanentlyDeleteCategory(id: string): Promise<ArticleCate
     return { success: true, message: 'Kategori berhasil dihapus permanen.' };
   } catch {
     return { success: false, error: 'Gagal menghapus kategori permanen.' };
-  }
-}
-export async function getPublicArticles(): Promise<Article[]> {
-  try {
-    const items = (await api.get(endpoint, { params: { limit: 100 } })).data.data ?? [];
-
-    return items.map((item: Article & { category_ids?: string[] }) => ({
-      ...item,
-      categoryIds: item.categoryIds ?? item.category_ids ?? [],
-    }));
-  } catch {
-    return [];
   }
 }

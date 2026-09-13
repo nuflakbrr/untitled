@@ -1,3 +1,5 @@
+import type { LucideIcon } from 'lucide-react';
+
 import type { ApiResponse, PaginatedResponse } from './common';
 import type { EventType, EventStatus } from '@/interfaces/enums';
 
@@ -112,6 +114,68 @@ export interface EventCategory {
   _count?: {
     events: number;
   };
+}
+
+export interface CategoryLinksProps {
+  categories: EventCategory[];
+}
+
+export interface FeaturedEventsProps {
+  events: Event[];
+  categories: EventCategory[];
+}
+
+export interface HeroBannerProps {
+  events: Event[];
+}
+
+export interface EventCardProps {
+  event: Event;
+  formattedStartDate: string;
+  coverStyle: string;
+}
+
+export interface EventSearchProps {
+  categories: EventCategory[];
+}
+
+export interface EventTestimonialsProps {
+  eventId: string;
+}
+
+export interface RegisterButtonProps {
+  eventId: string;
+  isAuthenticated: boolean;
+  isEmailVerified: boolean;
+  isRegistered: boolean;
+  registrationStatus?: string | null;
+  isDeadlinePassed: boolean;
+  isQuotaFull: boolean;
+  price: number;
+  slug: string;
+  userRole?: string | null;
+}
+
+export interface RegisterDialogProps {
+  isOpen: boolean;
+  isPending: boolean;
+  onConfirm: () => void;
+  onOpenChange: (open: boolean) => void;
+  price: number;
+}
+
+export interface RegistrationStatusButtonProps {
+  className?: string;
+  icon: LucideIcon;
+  label: string;
+}
+
+export interface EventsPageProps {
+  searchParams: Promise<{ q?: string; category?: string }>;
+}
+
+export interface EventDetailPageProps {
+  params: Promise<{ slug: string }>;
 }
 
 export type EventCategoryResponse = ApiResponse<EventCategory>;

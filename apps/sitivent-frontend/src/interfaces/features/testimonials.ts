@@ -19,6 +19,19 @@ export interface Testimonial {
   };
 }
 
+export interface TestimonialsCarouselProps {
+  testimonials: Testimonial[];
+}
+
+export interface EventTestimonialsSummaryProps {
+  averageRating: number;
+  totalCount: number;
+}
+
+export interface EventTestimonialCardProps {
+  testimonial: Testimonial;
+}
+
 export interface CreateTestimonialInput {
   registrationId: string;
   rating: number;

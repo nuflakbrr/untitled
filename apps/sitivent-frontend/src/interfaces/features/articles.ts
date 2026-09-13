@@ -39,6 +39,24 @@ export interface ArticleItem {
   categories?: string[];
 }
 
+export interface ArticleCoverProps {
+  className: string;
+}
+
+export interface ArticlesGridProps {
+  initialItems: ArticleItem[];
+  categories: string[];
+}
+
+export interface ArticlesPageData {
+  articles: ArticleItem[];
+  categories: string[];
+}
+
+export interface ArticleDetailPageProps {
+  params: Promise<{ slug: string }>;
+}
+
 export interface ArticleDetailStep {
   title: string;
   location: string;

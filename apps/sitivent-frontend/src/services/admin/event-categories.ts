@@ -172,15 +172,3 @@ export async function permanentlyDeleteEventCategory(id: string): Promise<EventC
     };
   }
 }
-
-export async function getPublicEventCategories(): Promise<EventCategory[]> {
-  try {
-    return (
-      await api.get('/features/v1/event-categories', {
-        headers: { 'X-Skip-Tenant': 'true' },
-      })
-    ).data.data ?? [];
-  } catch {
-    return [];
-  }
-}

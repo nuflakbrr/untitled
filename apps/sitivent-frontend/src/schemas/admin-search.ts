@@ -1,13 +1,11 @@
 import { z } from 'zod';
 
-// User search params schema
 export const userSearchSchema = z.object({
   search: z.string().max(100).optional(),
   page: z.coerce.number().min(1).optional(),
   limit: z.coerce.number().min(1).max(100).optional(),
 });
 
-// Event search params schema
 export const eventSearchSchema = z.object({
   search: z.string().max(100).optional(),
   categoryId: z.string().optional(),
@@ -17,14 +15,12 @@ export const eventSearchSchema = z.object({
   limit: z.coerce.number().min(1).max(100).optional(),
 });
 
-// Category search params schema
 export const categorySearchSchema = z.object({
   search: z.string().max(100).optional(),
   page: z.coerce.number().min(1).optional(),
   limit: z.coerce.number().min(1).max(100).optional(),
 });
 
-// Registration search params schema
 export const registrationSearchSchema = z.object({
   search: z.string().max(100).optional(),
   eventId: z.string().optional(),
@@ -33,21 +29,18 @@ export const registrationSearchSchema = z.object({
   limit: z.coerce.number().min(1).max(100).optional(),
 });
 
-// Permission search params schema
 export const permissionSearchSchema = z.object({
   search: z.string().max(100).optional(),
   page: z.coerce.number().min(1).optional(),
   limit: z.coerce.number().min(1).max(100).optional(),
 });
 
-// Role search params schema
 export const roleSearchSchema = z.object({
   search: z.string().max(100).optional(),
   page: z.coerce.number().min(1).optional(),
   limit: z.coerce.number().min(1).max(100).optional(),
 });
 
-// Generic search params for any admin module
 export const genericSearchSchema = z.object({
   search: z.string().max(100).optional(),
   page: z.coerce.number().min(1).optional(),

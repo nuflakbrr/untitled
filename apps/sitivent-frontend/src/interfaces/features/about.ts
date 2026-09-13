@@ -8,3 +8,12 @@ export interface AboutValue {
   bg: string;
   border: string;
 }
+
+export interface AboutHeaderProps {
+  title: string;
+  subtitle: string;
+}
+
+export interface AboutValuesProps {
+  items: AboutValue[];
+}

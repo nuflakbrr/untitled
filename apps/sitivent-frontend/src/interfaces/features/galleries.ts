@@ -25,5 +25,9 @@ export interface CreateGalleryInput {
   eventId?: string | null;
 }
 
+export interface GalleryGridProps {
+  initialItems: Gallery[];
+}
+
 export type GalleryResponse = ApiResponse<Gallery>;
 export type GalleryPaginationResponse = PaginatedResponse<Gallery>;
