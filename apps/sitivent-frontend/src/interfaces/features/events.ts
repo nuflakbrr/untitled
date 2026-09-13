@@ -136,6 +136,30 @@ export interface EventCoverProps {
   title: string;
 }
 
+export interface EventInformationProps {
+  event: Event;
+  formattedStartDate: string;
+  coverStyle: string;
+}
+
+export interface EventBenefitsProps {
+  benefits: EventBenefit[];
+}
+
+export type EventSidebarProps = Pick<
+  EventDetailPageData,
+  | 'event'
+  | 'formattedDeadline'
+  | 'isAuthenticated'
+  | 'isDeadlinePassed'
+  | 'isEmailVerified'
+  | 'isFree'
+  | 'isQuotaFull'
+  | 'isRegistered'
+  | 'registrationStatus'
+  | 'slotsLeft'
+>;
+
 export interface EventCardProps {
   event: Event;
   formattedStartDate: string;
