@@ -6,8 +6,7 @@ import moment from 'moment';
 import Link from 'next/link';
 import { MapPin, ArrowRight, CalendarDays } from 'lucide-react';
 
-import type { Event } from '@/interfaces/features/events';
-import type { EventCategory } from '@/interfaces/features/events';
+import type { Event, EventCategory } from '@/interfaces/features/events';
 
 import { formatCurrency } from '@/lib/formatCurrency';
 
@@ -53,6 +52,7 @@ const FeaturedEvents: FC<Props> = ({ events, categories }) => {
             {visibleEvents.map((event, index) => {
               const slotsLeft = Math.max(0, event.quota - event.registrationCount);
               const isFull = slotsLeft === 0;
+              const isLimited = !isFull && slotsLeft < 30;
               return (
                 <Link
                   key={event.id}
@@ -68,9 +68,15 @@ const FeaturedEvents: FC<Props> = ({ events, categories }) => {
                     <h3 className="font-display relative z-10 max-w-65 text-[34px] font-extrabold leading-[.97] tracking-[-.045em]">
                       {event.title}
                     </h3>
-                    {isFull && (
-                      <span className="absolute right-4 top-4 rounded-full bg-[#11233f]/80 px-3 py-1 text-xs font-bold text-white">
-                        Kuota penuh
+                    {(isFull || isLimited) && (
+                      <span
+                        className={`absolute right-4 top-4 rounded-full px-3 py-1 text-xs font-bold ${
+                          isFull
+                            ? 'bg-[#11233f]/80 text-white'
+                            : 'bg-[#ffe5d8] text-[#a94e29]'
+                        }`}
+                      >
+                        {isFull ? 'Kuota penuh' : `${slotsLeft} kursi tersisa`}
                       </span>
                     )}
                   </div>

@@ -8,41 +8,51 @@ import Link from 'next/link';
 
 import type { EventsResultsProps } from '@/interfaces/features/events';
 
-import { Button } from '@/components/ui/button';
-import { Empty, EmptyTitle, EmptyHeader, EmptyDescription } from '@/components/ui/empty';
-
 import EventCard from './EventCard';
+import { getCoverStyles } from '../../_libs/getCoverStyles';
 
 const EventsResults: FC<EventsResultsProps> = ({ events, query }) => {
   if (events.length === 0) {
     return (
-      <Empty className="border border-[#111927]/10 bg-[#fffdf8] py-24 shadow-[0_18px_50px_rgba(17,35,63,.05)]">
-        <EmptyHeader>
-          <EmptyTitle>Event Tidak Ditemukan</EmptyTitle>
-          <EmptyDescription>
+      <div className="rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] px-6 py-24 text-center shadow-[0_18px_50px_rgba(17,35,63,.05)]">
+        <h2 className="font-display text-2xl font-extrabold text-[#11233f]">
+          Event tidak ditemukan
+        </h2>
+        <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-[#6c7280]">
             {query
               ? `Tidak ada event aktif yang cocok dengan kata kunci "${query}".`
               : 'Saat ini belum ada event aktif yang tersedia.'}
-          </EmptyDescription>
-        </EmptyHeader>
+        </p>
         {query && (
-          <Button asChild className="mt-4 bg-[#11233f] text-white hover:bg-[#1b3458]">
-            <Link href="/events">Lihat Semua Event</Link>
-          </Button>
+          <Link
+            href="/events"
+            className="mt-5 inline-flex rounded-full bg-[#11233f] px-4.5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#1b3458]"
+          >
+            Lihat semua event
+          </Link>
         )}
-      </Empty>
+      </div>
     );
   }
 
+  const coverStyles = getCoverStyles(events.map((event) => event.id));
+
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
-      {events.map((event) => {
+      {events.map((event, index) => {
         const formattedStartDate = moment(event.startDate)
           .tz('Asia/Jakarta')
           .locale('id')
           .format('DD MMMM YYYY');
 
-        return <EventCard key={event.id} event={event} formattedStartDate={formattedStartDate} />;
+        return (
+          <EventCard
+            key={event.id}
+            event={event}
+            formattedStartDate={formattedStartDate}
+            coverStyle={coverStyles[index]}
+          />
+        );
       })}
     </div>
   );

@@ -66,6 +66,21 @@ const RegisterButton: FC<Props> = ({
     },
   });
 
+  if (isQuotaFull && !isRegistered) {
+    return (
+      <Button
+        disabled
+        className="flex w-full items-center justify-center gap-2 rounded-xl py-6 text-xs font-bold uppercase tracking-wider"
+        style={{
+          backgroundColor: '#87867F',
+          color: '#FAF9F5',
+        }}
+      >
+        <AlertCircle className="h-4 w-4" /> Kuota Penuh
+      </Button>
+    );
+  }
+
   if (!isAuthenticated) {
     return (
       <Button

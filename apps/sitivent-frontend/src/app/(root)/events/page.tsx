@@ -3,8 +3,9 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 
 import { getPublicEvents } from '@/services/admin/events';
+import { getPublicEventCategories } from '@/services/admin/event-categories';
 
-import SearchBanner from './_components/SearchBanner';
+import SearchBanner from './_components/EventSearch';
 import EventsResults from './_components/EventsResults';
 
 type Props = {
@@ -19,7 +20,10 @@ export const metadata: Metadata = {
 
 export default async function EventsPage({ searchParams }: Props) {
   const { q, category } = await searchParams;
-  const events = await getPublicEvents(q, category);
+  const [events, categories] = await Promise.all([
+    getPublicEvents(q, category),
+    getPublicEventCategories(),
+  ]);
 
   return (
     <section className="min-h-screen bg-[#f6f3eb] pb-16">
@@ -34,10 +38,10 @@ export default async function EventsPage({ searchParams }: Props) {
           </div>
         }
       >
-        <SearchBanner />
+        <SearchBanner categories={categories} />
       </Suspense>
 
-      <div className="mx-auto mt-12 max-w-295 px-4">
+      <div className="mx-auto max-w-295 px-4 pb-16 sm:px-6 sm:pb-24">
         <EventsResults events={events} query={q} />
       </div>
     </section>

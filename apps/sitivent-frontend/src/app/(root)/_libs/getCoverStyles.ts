@@ -1,23 +1,24 @@
-const coverStyles = ['featured-cover-orange', 'featured-cover-green', 'featured-cover-yellow'];
+const coverStyles = [
+  'featured-cover-orange',
+  'featured-cover-green',
+  'featured-cover-yellow',
+  'featured-cover-accent',
+];
 
-export const getCoverStyles = (eventIds: string[]): string[] =>
-  eventIds.reduce<string[]>((styles, eventId, index) => {
-    if (index === 0) {
-      styles.push(coverStyles[0]);
-      return styles;
-    }
+export const getCoverStyles = (eventIds: string[]): string[] => {
+  const seed = eventIds.reduce(
+    (total, eventId) =>
+      [...eventId].reduce((hash, character) => hash * 31 + character.charCodeAt(0), total),
+    0
+  );
+  const variantCount = coverStyles.length - 1;
+  const offset = Math.abs(seed) % variantCount;
+  const patternOrder = [
+    0,
+    1 + offset,
+    1 + ((offset + 1) % variantCount),
+    1 + ((offset + 2) % variantCount),
+  ];
 
-    const hash = [...eventId].reduce(
-      (total, character) => total * 31 + character.charCodeAt(0),
-      0
-    );
-    const previousStyle = styles.at(-1);
-    const initialIndex = Math.abs(hash) % coverStyles.length;
-    const styleIndex =
-      coverStyles[initialIndex] === previousStyle
-        ? (initialIndex + 1) % coverStyles.length
-        : initialIndex;
-
-    styles.push(coverStyles[styleIndex]);
-    return styles;
-  }, []);
+  return eventIds.map((_, index) => coverStyles[patternOrder[index % patternOrder.length]]);
+};

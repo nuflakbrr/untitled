@@ -1,200 +1,85 @@
-'use client';
-
 import type { FC } from 'react';
 
 import Link from 'next/link';
-import {
-  Clock,
-  Users,
-  Globe,
-  MapPin,
-  Calendar,
-  Landmark,
-  ImageIcon,
-  ArrowRight,
-} from 'lucide-react';
+import { MapPin, ArrowRight, CalendarDays } from 'lucide-react';
 
 import type { Event } from '@/interfaces/features/events';
 
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { formatCurrency } from '@/lib/formatCurrency';
 
 interface EventCardProps {
   event: Event;
   formattedStartDate: string;
+  coverStyle: string;
 }
 
-export const EventCard: FC<EventCardProps> = ({ event, formattedStartDate }) => {
-  const totalRegistered = event.registrationCount;
-  const slotsLeft = Math.max(0, event.quota - totalRegistered);
-  const isFree = event.price === 0;
+const EventCard: FC<EventCardProps> = ({ event, formattedStartDate, coverStyle }) => {
+  const slotsLeft = Math.max(0, event.quota - event.registrationCount);
+  const isClosed = event.status !== 'PUBLISHED';
+  const isFull = !isClosed && slotsLeft === 0;
+  const isLimited = !isClosed && !isFull && slotsLeft < 30;
 
   return (
-    <Card
-      className="group flex p-0 flex-col justify-between border shadow-xs hover:shadow-lg hover:border-[#D97757] transition-all duration-500 rounded-3xl overflow-hidden"
-      style={{ borderColor: '#E3DACC', background: '#FFFFFF' }}
+    <Link
+      href={`/events/${event.slug}`}
+      className="group overflow-hidden rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(17,35,63,.08)]"
     >
-      <div className="space-y-4">
-        {/* Event Banner */}
-        <div className="relative aspect-16/10 w-full overflow-hidden bg-muted">
-          {event.banner ? (
-            <img
-              src={event.banner}
-              alt={event.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-            />
-          ) : (
-            <div
-              className="w-full h-full flex items-center justify-center p-4 bg-muted/40"
-              style={{
-                background: 'linear-gradient(135deg, #F0EEE6 0%, #E3DACC 100%)',
-              }}
-            >
-              <ImageIcon className="h-8 w-8 opacity-20 text-[#141413]" />
-            </div>
-          )}
-          {/* Badge Top Left overlay */}
-          <div className="absolute top-4 left-4 flex gap-2">
-            <Badge
-              variant="outline"
-              className="font-bold text-[9px] uppercase tracking-wider px-2.5 py-1 shadow-xs border rounded-md"
-              style={
-                event.eventType === 'ONLINE'
-                  ? {
-                      background: 'rgba(120,140,93,0.12)',
-                      borderColor: 'rgba(120,140,93,0.3)',
-                      color: '#788C5D',
-                    }
-                  : {
-                      background: 'rgba(217,119,87,0.12)',
-                      borderColor: 'rgba(217,119,87,0.3)',
-                      color: '#D97757',
-                    }
-              }
-            >
-              {event.eventType === 'ONLINE' ? (
-                <span className="flex items-center gap-1">
-                  <Globe className="h-3 w-3" /> Online
-                </span>
-              ) : (
-                <span className="flex items-center gap-1">
-                  <Landmark className="h-3 w-3" /> Offline
-                </span>
-              )}
-            </Badge>
-          </div>
-        </div>
-
-        {/* Card Header Content */}
-        <div className="px-6 pt-1 space-y-3">
-          <h3
-            className="font-serif font-bold text-lg md:text-xl leading-snug transition-colors line-clamp-2 wrap-break-word"
-            style={{ color: '#141413' }}
-          >
-            <Link
-              href={`/events/${event.slug}`}
-              className="hover:text-[#D97757] transition-colors duration-300"
-            >
-              {event.title}
-            </Link>
-          </h3>
-
-          <div className="space-y-2">
-            {/* Date text */}
-            <div className="flex items-center gap-1.5 text-xs" style={{ color: '#87867F' }}>
-              <Calendar className="h-3.5 w-3.5 shrink-0" style={{ color: '#D97757' }} />
-              <span>{formattedStartDate}</span>
-            </div>
-
-            {/* Time text */}
-            <div className="flex items-center gap-1.5 text-xs" style={{ color: '#87867F' }}>
-              <Clock className="h-3.5 w-3.5 shrink-0" style={{ color: '#D97757' }} />
-              <span>{event.startTime} WIB</span>
-            </div>
-
-            {/* Location text */}
-            <div className="flex items-center gap-1.5 text-xs" style={{ color: '#87867F' }}>
-              <MapPin className="h-3.5 w-3.5 shrink-0" style={{ color: '#D97757' }} />
-              <span className="line-clamp-1">{event.location}</span>
-            </div>
-          </div>
-        </div>
+      <div
+        className={`relative flex aspect-[1.45] flex-col justify-between overflow-hidden p-5.5 ${coverStyle}`}
+      >
+        <span className="relative z-10 text-xs font-extrabold uppercase tracking-[.08em]">
+          {event.eventType === 'ONLINE' ? 'Online' : 'Offline'} · {event.category?.name ?? 'Event'}
+        </span>
+        <h2 className="font-display relative z-10 max-w-65 text-[32px] font-extrabold leading-[.98] tracking-[-.045em]">
+          {event.title}
+        </h2>
       </div>
 
-      <div className="px-6 pb-6 space-y-5">
-        <Separator style={{ borderColor: '#F0EEE6' }} />
-        <div className="flex items-center justify-between">
-          {/* Price tag */}
-          {event.status !== 'COMPLETED' && event.status !== 'CLOSED' && (
-            <>
-              <div className="flex flex-col">
-                <span
-                  className="text-[9px] font-bold uppercase tracking-widest font-mono"
-                  style={{ color: '#87867F' }}
-                >
-                  Biaya
-                </span>
-                {isFree ? (
-                  <span className="font-extrabold text-lg mt-0.5" style={{ color: '#788C5D' }}>
-                    Gratis
-                  </span>
-                ) : (
-                  <span className="font-extrabold text-lg mt-0.5" style={{ color: '#141413' }}>
-                    {formatCurrency(event.price)}
-                  </span>
-                )}
-              </div>
+      <div className="p-5.5">
+        <span
+          className={`inline-flex items-center rounded-full px-2.5 py-1.5 text-[11px] font-extrabold ${
+            isClosed
+              ? 'bg-[#f0ece7] text-[#756a61]'
+              : isFull
+                ? 'bg-[#ffe5d8] text-[#a94e29]'
+              : isLimited
+                ? 'bg-[#ffe5d8] text-[#a94e29]'
+                : 'bg-[#e6f3e9] text-[#36784b]'
+          }`}
+        >
+          {isClosed
+            ? 'Pendaftaran ditutup'
+            : isFull
+              ? 'Kuota penuh'
+            : isLimited
+              ? `${slotsLeft} kursi tersisa`
+              : 'Pendaftaran dibuka'}
+        </span>
 
-              {/* Quota tag */}
-              <div className="flex flex-col items-end">
-                <span
-                  className="text-[9px] font-bold uppercase tracking-widest font-mono"
-                  style={{ color: '#87867F' }}
-                >
-                  Sisa Kursi
-                </span>
-                <span
-                  className="font-bold text-sm mt-0.5 flex items-center gap-1"
-                  style={{ color: '#3D3D3A' }}
-                >
-                  <Users className="h-3.5 w-3.5 opacity-60" style={{ color: '#D97757' }} />{' '}
-                  {slotsLeft}
-                </span>
-              </div>
-            </>
-          )}
+        <h3 className="font-display mt-3 line-clamp-2 text-xl font-bold leading-tight tracking-tight text-[#11233f]">
+          {event.title}
+        </h3>
+        <div className="mt-3 grid gap-2 text-[13px] text-[#6c7280]">
+          <span className="flex items-center gap-2">
+            <CalendarDays className="h-4 w-4 shrink-0 text-[#ff7a45]" />
+            {formattedStartDate} · {event.startTime} WIB
+          </span>
+          <span className="flex items-center gap-2">
+            <MapPin className="h-4 w-4 shrink-0 text-[#ff7a45]" />
+            <span className="line-clamp-1">{event.location}</span>
+          </span>
         </div>
 
-        {event.status === 'PUBLISHED' ? (
-          <Button
-            className="w-full h-11 rounded-xl font-bold uppercase tracking-wider text-[10px] flex items-center justify-center gap-1.5 shadow-xs text-white transition-all duration-300"
-            style={{ background: '#D97757' }}
-            asChild
-          >
-            <Link href={`/events/${event.slug}`} className="group-hover:gap-2.5 transition-all">
-              Detail Event{' '}
-              <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
-          </Button>
-        ) : (
-          <Button
-            className="w-full h-11 rounded-xl font-bold uppercase tracking-wider text-[10px] flex items-center justify-center gap-1.5 shadow-xs border transition-all duration-300"
-            style={{
-              background: '#F0EEE6',
-              borderColor: '#D1CFC5',
-              color: '#87867F',
-            }}
-            disabled
-            onClick={(e) => e.preventDefault()}
-          >
-            {event.status === 'COMPLETED' ? 'Event Selesai' : 'Pendaftaran Ditutup'}{' '}
-          </Button>
-        )}
+        <div className="mt-4.5 flex items-center justify-between border-t border-[#111927]/10 pt-4">
+          <strong className="text-[#11233f]">
+            {event.price ? formatCurrency(event.price) : 'Gratis'}
+          </strong>
+          <span className="grid h-9.5 w-9.5 place-items-center rounded-full bg-[#11233f] text-white transition duration-200 group-hover:-rotate-45">
+            <ArrowRight className="h-4 w-4" />
+          </span>
+        </div>
       </div>
-    </Card>
+    </Link>
   );
 };
 
