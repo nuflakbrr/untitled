@@ -5,6 +5,7 @@ import type { FC } from 'react';
 
 import moment from 'moment';
 import { Star, User, MessageSquare } from 'lucide-react';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { getEventTestimonials } from '@/services/public/testimonials';
 

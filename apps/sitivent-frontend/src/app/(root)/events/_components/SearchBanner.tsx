@@ -3,10 +3,11 @@
 import type { Route } from 'next';
 
 import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { useRef, type FC, useState, useEffect, useCallback } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 export const SearchBanner: FC = () => {
   const router = useRouter();

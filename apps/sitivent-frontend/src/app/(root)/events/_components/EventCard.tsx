@@ -1,14 +1,8 @@
 'use client';
 
 import type { FC } from 'react';
-import type { Event } from '@/interfaces/features/events';
 
 import Link from 'next/link';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { formatCurrency } from '@/lib/formatCurrency';
 import {
   Clock,
   Users,
@@ -19,6 +13,14 @@ import {
   ImageIcon,
   ArrowRight,
 } from 'lucide-react';
+
+import type { Event } from '@/interfaces/features/events';
+
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { formatCurrency } from '@/lib/formatCurrency';
 
 interface EventCardProps {
   event: Event;

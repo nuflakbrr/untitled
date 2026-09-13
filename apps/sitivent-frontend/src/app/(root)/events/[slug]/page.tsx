@@ -1,20 +1,6 @@
-import 'moment-timezone';
-import 'moment/locale/id';
-
 import type { Metadata } from 'next';
-import type { EventBenefit, EventSpeaker } from '@/interfaces/features/events';
 
-import moment from 'moment';
-import { auth } from '@/lib/auth';
 import { notFound } from 'next/navigation';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { formatCurrency } from '@/lib/formatCurrency';
-import { Separator } from '@/components/ui/separator';
-import { Card, CardContent } from '@/components/ui/card';
-import { getEventRegistrationStatus } from '@/services/admin/registrations';
-import { getPublicEventBySlug } from '@/services/admin/events';
-import { GitHubIcon, LinkedInIcon, InstagramIcon } from '@/components/Common/CustomIcons';
 import {
   User,
   Clock,
@@ -30,7 +16,18 @@ import {
   ExternalLink,
 } from 'lucide-react';
 
+import type { EventBenefit, EventSpeaker } from '@/interfaces/features/events';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { formatCurrency } from '@/lib/formatCurrency';
+import { Separator } from '@/components/ui/separator';
+import { Card, CardContent } from '@/components/ui/card';
+import { getPublicEventBySlug } from '@/services/admin/events';
+import { GitHubIcon, LinkedInIcon, InstagramIcon } from '@/components/Common/CustomIcons';
+
 import RegisterButton from './_components/RegisterButton';
+import { getEventPageData } from './_libs/getEventPageData';
 import EventTestimonials from './_components/EventTestimonials';
 
 type Props = {
@@ -55,43 +52,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function EventDetailPage({ params }: Props) {
   const { slug } = await params;
+  const pageData = await getEventPageData(slug);
 
-  // Retrieve event details
-  const event = await getPublicEventBySlug(slug);
+  if (!pageData) return notFound();
 
-  if (!event) {
-    return notFound();
-  }
-
-  // Get current user session
-  const session = await auth.api.getSession();
-
-  const isAuthenticated = !!(session && session.user);
-  let isRegistered = false;
-  let registrationStatus: string | null = null;
-
-  if (isAuthenticated && session?.user?.id) {
-    const reg = await getEventRegistrationStatus(event.id);
-    if (reg) {
-      isRegistered = true;
-      registrationStatus = reg.status;
-    }
-  }
-
-  const totalRegistered = event.registrationCount;
-  const slotsLeft = Math.max(0, event.quota - totalRegistered);
-  const isQuotaFull = slotsLeft <= 0;
-  const isDeadlinePassed = new Date() > new Date(event.registrationDeadline);
-  const isFree = event.price === 0;
-
-  const formattedStartDate = moment(event.startDate)
-    .tz('Asia/Jakarta')
-    .locale('id')
-    .format('DD MMMM YYYY');
-  const formattedDeadline = moment(event.registrationDeadline)
-    .tz('Asia/Jakarta')
-    .locale('id')
-    .format('DD MMMM YYYY, HH:mm');
+  const {
+    event,
+    formattedDeadline,
+    formattedStartDate,
+    isAuthenticated,
+    isDeadlinePassed,
+    isEmailVerified,
+    isFree,
+    isQuotaFull,
+    isRegistered,
+    registrationStatus,
+    slotsLeft,
+    totalRegistered,
+  } = pageData;
 
   return (
     <article className="min-h-screen bg-[#FAF9F5] text-[#141413] font-sans antialiased pt-28 pb-16">
@@ -322,7 +300,7 @@ export default async function EventDetailPage({ params }: Props) {
                     <RegisterButton
                       eventId={event.id}
                       isAuthenticated={isAuthenticated}
-                      isEmailVerified={session?.user?.emailVerified ?? false}
+                      isEmailVerified={isEmailVerified}
                       isRegistered={isRegistered}
                       registrationStatus={registrationStatus}
                       isDeadlinePassed={isDeadlinePassed}

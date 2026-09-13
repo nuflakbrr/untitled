@@ -4,11 +4,12 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { type FC, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { useMutation } from '@tanstack/react-query';
+import { CreditCard, AlertCircle, CheckCircle2 } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 import { usePermission } from '@/providers/PermissionProvider';
 import { registerToEvent } from '@/services/admin/registrations';
-import { CreditCard, AlertCircle, CheckCircle2 } from 'lucide-react';
 import {
   Dialog,
   DialogTitle,
