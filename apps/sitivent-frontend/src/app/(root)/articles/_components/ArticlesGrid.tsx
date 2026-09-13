@@ -29,7 +29,7 @@ const ArticlesGrid: FC<ArticlesGridProps> = ({ initialItems, categories: availab
   return (
     <div className="space-y-8 pb-24">
       <div className="flex flex-col gap-4 border-b border-[#111927]/10 pb-6 lg:flex-row lg:items-center lg:justify-between">
-        <div className="relative min-w-0 flex-1">
+        <div className="relative order-last min-w-0 flex-1 lg:order-0">
           <div
             ref={categoryListRef}
             className="flex min-w-0 gap-2 overflow-x-auto"
@@ -53,7 +53,7 @@ const ArticlesGrid: FC<ArticlesGridProps> = ({ initialItems, categories: availab
             <span className="pointer-events-none absolute inset-y-0 right-0 w-3 bg-linear-to-l from-[#f6f3eb] to-transparent" />
           )}
         </div>
-        <label className="relative block w-full shrink-0 lg:max-w-100">
+        <label className="relative order-first block w-full shrink-0 lg:order-0 lg:max-w-100">
           <span className="sr-only">Cari artikel</span>
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6c7280]" />
           <input
@@ -68,15 +68,17 @@ const ArticlesGrid: FC<ArticlesGridProps> = ({ initialItems, categories: availab
 
       {featured ? (
         <>
-          <article className="group grid overflow-hidden rounded-[28px] bg-[#11233f] text-white shadow-[0_18px_50px_rgba(17,35,63,.08)] lg:grid-cols-[1.12fr_.88fr]">
+          <article className="group grid min-w-0 overflow-hidden rounded-[28px] bg-[#11233f] text-white shadow-[0_18px_50px_rgba(17,35,63,.08)] lg:grid-cols-[1.12fr_.88fr]">
             <ArticleCover className={`${coverStyles[0]} min-h-82.5 sm:min-h-100 lg:min-h-115`} />
-            <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-10">
-              <div className="flex items-center gap-2 text-xs font-bold text-white/65">
-                <span>{featured.categories?.join(' · ') || featured.category}</span>
-                <span>·</span>
-                <span>{featured.readTime}</span>
+            <div className="flex min-w-0 flex-col justify-center p-6 sm:p-9 lg:p-10">
+              <div className="flex min-w-0 items-center gap-2 text-xs font-bold text-white/65">
+                <span className="min-w-0 truncate">
+                  {featured.categories?.join(' · ') || featured.category}
+                </span>
+                <span className="shrink-0">·</span>
+                <span className="shrink-0 whitespace-nowrap">{featured.readTime}</span>
               </div>
-              <h2 className="font-display mt-4 max-w-125 text-[clamp(32px,4vw,52px)] font-extrabold leading-[1.02] tracking-tighter">
+              <h2 className="font-display mt-4 max-w-125 wrap-break-word text-[clamp(32px,4vw,52px)] font-extrabold leading-[1.02] tracking-tighter">
                 {featured.title}
               </h2>
               <p className="mt-5 max-w-120 text-sm leading-relaxed text-white/68 sm:text-base">
