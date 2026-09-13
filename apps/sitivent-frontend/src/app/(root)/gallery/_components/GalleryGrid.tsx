@@ -88,7 +88,7 @@ const GalleryGrid: FC<GalleryGridProps> = ({ initialItems }) => {
 
               <div className="flex w-full shrink-0 flex-col justify-between overflow-y-auto border-t border-[#111927]/10 bg-[#fffdf8] p-6 sm:p-8 md:w-90 md:border-l md:border-t-0">
                 <div className="space-y-8">
-                  <div className="flex items-center gap-2">
+                  {/* <div className="flex items-center gap-2">
                     <span className="inline-flex items-center gap-2 rounded-full border border-[#111927]/10 bg-white/70 px-3 py-2 text-[11px] font-bold text-[#11233f]">
                       Dokumentasi
                     </span>
@@ -97,7 +97,7 @@ const GalleryGrid: FC<GalleryGridProps> = ({ initialItems }) => {
                         Featured
                       </span>
                     )}
-                  </div>
+                  </div> */}
 
                   <div className="space-y-3">
                     <DialogTitle className="font-display text-[clamp(24px,3vw,32px)] font-extrabold leading-[1.05] tracking-[-.04em] text-[#11233f]">
