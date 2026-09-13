@@ -22,7 +22,10 @@ const EventTestimonials: FC<EventTestimonialsProps> = async ({ eventId }) => {
             Ulasan resmi dari peserta yang telah menghadiri event ini.
           </p>
         </div>
-        <EventTestimonialsSummary averageRating={averageRating} totalCount={totalCount} />
+        <EventTestimonialsSummary
+          averageRating={averageRating}
+          totalCount={totalCount}
+        />
       </div>
 
       {totalCount === 0 ? (

@@ -1,6 +1,9 @@
+import { Image as ImageIcon } from 'lucide-react';
+
 import { genPageMetadata } from '@/app/seo';
 import { getPublicGalleries } from '@/services/public/galleries';
 
+import EmptyState from '../_components/EmptyState';
 import GalleryGrid from './_components/GalleryGrid';
 import GalleryHeader from './_components/GalleryHeader';
 
@@ -19,17 +22,11 @@ export default async function PublicGalleryPage() {
 
       <div className="mx-auto max-w-295 px-4 md:px-0">
         {galleries.length === 0 ? (
-          <div className="mx-auto flex max-w-md flex-col items-center rounded-[24px] border border-[#111927]/10 bg-[#fffdf8] px-6 py-16 text-center shadow-[0_18px_50px_rgba(17,35,63,.05)]">
-            <div className="grid h-14 w-14 place-items-center rounded-full bg-[#ffe5d8] text-[#ff7a45]">
-              <span className="font-display text-xl font-extrabold">S</span>
-            </div>
-            <h2 className="font-display mt-5 text-2xl font-extrabold tracking-[-.03em] text-[#11233f]">
-              Dokumentasi belum tersedia
-            </h2>
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#6c7280]">
-              Foto kegiatan akan tampil di sini setelah dokumentasi event diunggah.
-            </p>
-          </div>
+          <EmptyState
+            icon={ImageIcon}
+            title="Dokumentasi belum tersedia"
+            description="Foto kegiatan akan tampil di sini setelah dokumentasi event diunggah."
+          />
         ) : (
           <GalleryGrid initialItems={galleries} />
         )}

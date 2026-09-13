@@ -3,13 +3,14 @@
 import type { FC } from 'react';
 
 import Link from 'next/link';
-import { X, Plus, ArrowRight } from 'lucide-react';
 import { useMemo, useState, useEffect } from 'react';
+import { X, Plus, SearchX, ArrowRight } from 'lucide-react';
 
 import type { FAQBrowserProps } from '@/interfaces/features/faq';
 
 import { cn } from '@/lib/utils';
 
+import EmptyState from '../../_components/EmptyState';
 import { faqItems, faqCategories, faqCategoryLabels } from '../_constants/faq';
 
 const FAQBrowser: FC<FAQBrowserProps> = ({ selectedCategory, onCategoryChange }) => {
@@ -97,12 +98,11 @@ const FAQBrowser: FC<FAQBrowserProps> = ({ selectedCategory, onCategoryChange })
               </details>
             ))
           ) : (
-            <div className="rounded-[20px] border border-dashed border-[#111927]/15 bg-[#fffdf8] px-6 py-12 text-center">
-              <h3 className="font-display text-lg font-extrabold text-[#11233f]">
-                Tidak ada pertanyaan yang cocok.
-              </h3>
-              <p className="mt-1 text-sm text-[#6c7280]">Coba pilih kategori lain.</p>
-            </div>
+            <EmptyState
+              icon={SearchX}
+              title="Tidak ada pertanyaan yang cocok"
+              description="Coba pilih kategori lain."
+            />
           )}
         </div>
 

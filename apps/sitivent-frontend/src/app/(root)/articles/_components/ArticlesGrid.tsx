@@ -8,6 +8,7 @@ import { Clock, Search, BookOpen, ArrowRight } from 'lucide-react';
 import type { ArticlesGridProps } from '@/interfaces/features/articles';
 
 import ArticleCover from './ArticleCover';
+import EmptyState from '../../_components/EmptyState';
 import { useArticlesGrid } from '../_hooks/useArticlesGrid';
 
 const ArticlesGrid: FC<ArticlesGridProps> = ({ initialItems, categories: availableCategories }) => {
@@ -127,17 +128,11 @@ const ArticlesGrid: FC<ArticlesGridProps> = ({ initialItems, categories: availab
           )}
         </>
       ) : (
-        <div className="flex flex-col items-center rounded-[24px] border border-[#111927]/10 bg-[#fffdf8] px-6 py-16 text-center">
-          <div className="grid h-14 w-14 place-items-center rounded-full bg-[#ffe5d8] text-[#ff7a45]">
-            <BookOpen className="h-6 w-6" />
-          </div>
-          <h2 className="font-display mt-5 text-2xl font-extrabold tracking-[-.03em] text-[#11233f]">
-            Artikel belum ditemukan
-          </h2>
-          <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#6c7280]">
-            Coba gunakan kata kunci lain atau pilih kategori yang berbeda.
-          </p>
-        </div>
+        <EmptyState
+          icon={BookOpen}
+          title="Artikel belum ditemukan"
+          description="Coba gunakan kata kunci lain atau pilih kategori yang berbeda."
+        />
       )}
     </div>
   );
