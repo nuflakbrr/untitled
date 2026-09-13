@@ -30,6 +30,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { getPublicEventBySlug } from '@/services/public/events';
 import { GitHubIcon, LinkedInIcon, InstagramIcon } from '@/components/Common/CustomIcons';
 
+import EventCover from './_components/EventCover';
 import RegisterButton from './_components/RegisterButton';
 import { getEventPageData } from './_libs/getEventPageData';
 import { getCoverStyles } from '../../_libs/getCoverStyles';
@@ -89,13 +90,16 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
         </div>
 
         {/* Content Layout */}
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-10">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-4">
           {/* Left Column: Title & Description (col-span-2) */}
           <div className="space-y-10 lg:col-span-2">
             <div className="space-y-4">
               {/* <h1 className="font-display text-3xl font-extrabold leading-[1.02] tracking-[-.04em] text-[#11233f] md:text-5xl">
                 {event.title}
               </h1> */}
+              <h2 className="font-display text-2xl font-extrabold tracking-[-.03em] text-[#11233f]">
+                Informasi Event
+              </h2>
               <div className="flex flex-wrap gap-x-5 gap-y-3 text-sm text-[#6c7280]">
                 <span className="flex items-center gap-1.5">
                   {event.eventType === 'ONLINE' ? (
@@ -119,29 +123,17 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
               </div>
             </div>
 
-            <Separator className="bg-[#111927]/10" />
+            {/* <Separator className="bg-[#111927]/10" /> */}
 
             {/* Description HTML content */}
             <div className="space-y-4">
               <div className="relative aspect-[1.45] overflow-hidden rounded-[24px] border border-[#111927]/10 bg-[#11233f] shadow-[0_18px_50px_rgba(17,35,63,.08)]">
-                {event.banner ? (
-                  <img
-                    src={event.banner}
-                    alt={event.title}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div
-                    className={`relative flex h-full flex-col justify-between p-6 sm:p-8 ${coverStyle}`}
-                  >
-                    <span className="relative z-10 text-xs font-extrabold uppercase tracking-[.08em]">
-                      {event.category?.name ?? 'Event'}
-                    </span>
-                    <h1 className="font-display relative z-10 max-w-[85%] text-[clamp(34px,5vw,68px)] font-extrabold leading-[.97] tracking-[-.045em] sm:max-w-[70%] lg:max-w-160">
-                      {event.title}
-                    </h1>
-                  </div>
-                )}
+                <EventCover
+                  banner={event.banner}
+                  category={event.category?.name}
+                  coverStyle={coverStyle}
+                  title={event.title}
+                />
               </div>
               <h2 className="font-display text-2xl font-extrabold tracking-[-.03em] text-[#11233f]">
                 Detail Event

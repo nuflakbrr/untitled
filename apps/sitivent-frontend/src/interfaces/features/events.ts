@@ -129,6 +129,13 @@ export interface HeroBannerProps {
   events: Event[];
 }
 
+export interface EventCoverProps {
+  banner?: string | null;
+  category?: string;
+  coverStyle: string;
+  title: string;
+}
+
 export interface EventCardProps {
   event: Event;
   formattedStartDate: string;
