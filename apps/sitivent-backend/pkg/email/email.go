@@ -25,15 +25,24 @@ type EmailService interface {
 
 // EmailData represents common data for email templates
 type EmailData struct {
-	Name             string
-	AppName          string
-	AppURL           string
-	VerificationURL  string
-	ResetPasswordURL string
-	OTPCode          string
-	SupportEmail     string
-	Year             int
-	Email            string
+	Name               string
+	AppName            string
+	AppURL             string
+	VerificationURL    string
+	ResetPasswordURL   string
+	OTPCode            string
+	SupportEmail       string
+	Year               int
+	Email              string
+	EventTitle         string
+	EventDate          string
+	EventTime          string
+	EventLocation      string
+	RegistrationNumber string
+	PaymentURL         string
+	TicketQRURL        string
+	FailureReason      string
+	AttendanceURL      string
 }
 
 // renderTemplate renders an email template with the given data from embedded filesystem

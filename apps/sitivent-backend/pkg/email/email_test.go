@@ -62,6 +62,12 @@ func TestSMTPEmailService_TemplateFiles(t *testing.T) {
 		"reset_password.html",
 		"account_locked.html",
 		"password_changed.html",
+		"account_verified.html",
+		"event_registration_success.html",
+		"event_registration_pending_payment.html",
+		"event_payment_verified.html",
+		"event_payment_failed.html",
+		"event_attendance_verified.html",
 	}
 
 	for _, tmpl := range templates {
