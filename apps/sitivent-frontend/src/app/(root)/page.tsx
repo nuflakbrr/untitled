@@ -1,12 +1,11 @@
-import type { Metadata } from 'next';
-
 import dynamic from 'next/dynamic';
 
 import type { Event } from '@/interfaces/features/events';
 
-import { getPublicEvents } from '@/services/admin/events';
+import { genPageMetadata } from '@/app/seo';
+import { getPublicEvents } from '@/services/public/events';
 import { getFeaturedTestimonials } from '@/services/public/testimonials';
-import { getPublicEventCategories } from '@/services/admin/event-categories';
+import { getPublicEventCategories } from '@/services/public/event-categories';
 
 import Features from './_components/Features';
 import HeroBanner from './_components/HeroBanner';
@@ -16,11 +15,11 @@ import TestimonialsCarousel from './_components/TestimonialsCarousel';
 
 const CTABanner = dynamic(() => import('./_components/CTABanner'));
 
-export const metadata: Metadata = {
-  title: 'SITIVENT — Platform Manajemen Event & Tiket',
+export const metadata = genPageMetadata({
+  title: 'Platform Manajemen Event & Tiket',
   description:
     'Temukan dan daftar seminar, workshop, webinar, serta bootcamp teknologi terbaik di Indonesia. Satu platform untuk semua event.',
-};
+});
 
 export default async function HomePage() {
   const [events, categories, testimonials] = await Promise.all([

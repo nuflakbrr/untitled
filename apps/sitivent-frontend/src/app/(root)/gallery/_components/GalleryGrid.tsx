@@ -8,16 +8,12 @@ import Image from 'next/image';
 import { type FC, useState } from 'react';
 import { Tag, Calendar } from 'lucide-react';
 
-import type { Gallery } from '@/interfaces/features/galleries';
+import type { Gallery, GalleryGridProps } from '@/interfaces/features/galleries';
 
 import { Dialog, DialogTitle, DialogContent, DialogDescription } from '@/components/ui/dialog';
 
 import { getBentoSpans } from '../../_libs/getBentoSpans';
 import { useGalleryPagination } from '../_hooks/useGalleryPagination';
-
-interface GalleryGridProps {
-  initialItems: Gallery[];
-}
 
 const GalleryGrid: FC<GalleryGridProps> = ({ initialItems }) => {
   const { hasMore, items, observerRef } = useGalleryPagination(initialItems);

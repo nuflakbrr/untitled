@@ -9,21 +9,11 @@ import moment from 'moment';
 import Link from 'next/link';
 import { Check, ArrowRight } from 'lucide-react';
 
-import type { Event } from '@/interfaces/features/events';
+import type { HeroBannerProps } from '@/interfaces/features/events';
 
-const eventCategories = [
-  'Seminar',
-  'Workshop',
-  'Kompetisi',
-  'Webinar',
-  'Talkshow',
-  'Festival Kampus',
-  'Career Event',
-];
+import { eventCategories } from '../_constants/eventCategories';
 
-type Props = { events: Event[] };
-
-const HeroBanner: FC<Props> = ({ events }) => {
+const HeroBanner: FC<HeroBannerProps> = ({ events }) => {
   const event = events[0];
   const eventTitle = event?.title ?? "Future Creators Summit '26";
 

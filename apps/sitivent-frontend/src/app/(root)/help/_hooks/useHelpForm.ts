@@ -10,7 +10,7 @@ import type { CreateSupportMessageInput } from '@/interfaces/features/support';
 
 import { getMeAction } from '@/services/public/auth';
 import { supportMessageSchema } from '@/schemas/support';
-import { createSupportMessageAction } from '@/services/participant/support';
+import { createSupportMessageAction } from '@/services/public/support';
 
 const useHelpForm = () => {
   const { data: meData } = useQuery({

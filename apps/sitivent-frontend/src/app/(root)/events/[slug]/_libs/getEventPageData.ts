@@ -6,8 +6,8 @@ import moment from 'moment';
 import type { EventDetailPageData } from '@/interfaces/features/events';
 
 import { auth } from '@/lib/auth';
-import { getPublicEventBySlug } from '@/services/admin/events';
-import { getEventRegistrationStatus } from '@/services/admin/registrations';
+import { getPublicEventBySlug } from '@/services/public/events';
+import { getEventRegistrationStatus } from '@/services/participant/registrations';
 
 export async function getEventPageData(slug: string): Promise<EventDetailPageData | null> {
   const event = await getPublicEventBySlug(slug);

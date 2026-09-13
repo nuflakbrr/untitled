@@ -6,16 +6,14 @@ import moment from 'moment';
 import Link from 'next/link';
 import { MapPin, ArrowRight, CalendarDays } from 'lucide-react';
 
-import type { Event, EventCategory } from '@/interfaces/features/events';
+import type { FeaturedEventsProps } from '@/interfaces/features/events';
 
 import { formatCurrency } from '@/lib/formatCurrency';
 
 import CategoryLinks from './CategoryLinks';
 import { getCoverStyles } from '../_libs/getCoverStyles';
 
-type Props = { events: Event[]; categories: EventCategory[] };
-
-const FeaturedEvents: FC<Props> = ({ events, categories }) => {
+const FeaturedEvents: FC<FeaturedEventsProps> = ({ events, categories }) => {
   const visibleEvents = events.slice(0, 3);
   const coverStylesByEvent = getCoverStyles(visibleEvents.map((event) => event.id));
 

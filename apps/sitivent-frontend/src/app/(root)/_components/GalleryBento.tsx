@@ -5,12 +5,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, ArrowUpRight, Image as ImageIcon } from 'lucide-react';
 
-import { getGalleries } from '@/services/admin/galleries';
+import { getPublicGalleries } from '@/services/public/galleries';
 
 import { getBentoSpans } from '../_libs/getBentoSpans';
 
 const GalleryBento: FC = async () => {
-  const response = await getGalleries(1, 5, '', true);
+  const response = await getPublicGalleries(1, 5, true);
   const galleries = (response.data || []).filter((item) => item.imageUrl?.trim());
 
   return (

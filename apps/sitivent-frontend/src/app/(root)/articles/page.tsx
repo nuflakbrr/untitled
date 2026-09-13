@@ -1,14 +1,14 @@
-import type { Metadata } from 'next';
+import { genPageMetadata } from '@/app/seo';
 
 import ArticlesGrid from './_components/ArticlesGrid';
 import ArticlesHeader from './_components/ArticlesHeader';
 import { getArticlesPageData } from './_libs/getArticlesPageData';
 
-export const metadata: Metadata = {
-  title: 'Pusat Artikel & Edukasi - SITIVENT',
+export const metadata = genPageMetadata({
+  title: 'Pusat Artikel & Edukasi',
   description:
     'Temukan artikel teknologi, panduan event, tips & trik, serta tutorial integrasi terbaik dari SITIVENT.',
-};
+});
 
 export const revalidate = 0; // Dynamic rendering
 

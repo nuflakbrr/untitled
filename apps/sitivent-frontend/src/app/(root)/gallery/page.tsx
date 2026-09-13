@@ -1,18 +1,17 @@
-import type { Metadata } from 'next';
-
-import { getGalleries } from '@/services/admin/galleries';
+import { genPageMetadata } from '@/app/seo';
+import { getPublicGalleries } from '@/services/public/galleries';
 
 import GalleryGrid from './_components/GalleryGrid';
 import GalleryHeader from './_components/GalleryHeader';
 
-export const metadata: Metadata = {
-  title: 'Galeri Foto - SITIVENT',
+export const metadata = genPageMetadata({
+  title: 'Galeri Foto',
   description:
     'Lihat dokumentasi foto keseruan dan kenangan indah dari event-event teknologi terbaik kami.',
-};
+});
 
 export default async function PublicGalleryPage() {
-  const { data: galleries } = await getGalleries(1, 10);
+  const { data: galleries } = await getPublicGalleries(1, 10);
 
   return (
     <section className="min-h-screen bg-[#f6f3eb] pb-24 text-[#111927]">

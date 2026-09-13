@@ -1,103 +1,28 @@
 'use client';
 
-import type { Route } from 'next';
-import type { FC, ChangeEvent } from 'react';
+import type { FC } from 'react';
 
 import Link from 'next/link';
 import { Search } from 'lucide-react';
-import { useRef, useState, useEffect, useCallback } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
-import type { EventCategory } from '@/interfaces/features/events';
+import type { EventSearchProps } from '@/interfaces/features/events';
 
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 
-interface SearchBannerProps {
-  categories: EventCategory[];
-}
+import { useEventSearch } from '../_hooks/useEventSearch';
 
-const SearchBanner: FC<SearchBannerProps> = ({ categories }) => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const query = searchParams.get('q') ?? '';
-  const activeCategory = searchParams.get('category');
-  const [value, setValue] = useState(query);
-  const categoryNavRef = useRef<HTMLElement>(null);
-  const [showLeftFade, setShowLeftFade] = useState(false);
-  const [showRightFade, setShowRightFade] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    const nav = categoryNavRef.current;
-    if (!nav) return;
-
-    const updateFades = () => {
-      setShowLeftFade(nav.scrollLeft > 0);
-      setShowRightFade(nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 1);
-    };
-
-    updateFades();
-    nav.addEventListener('scroll', updateFades, { passive: true });
-    window.addEventListener('resize', updateFades);
-
-    return () => {
-      nav.removeEventListener('scroll', updateFades);
-      window.removeEventListener('resize', updateFades);
-    };
-  }, [categories.length]);
-
-  useEffect(() => {
-    setValue(query);
-  }, [query]);
-
-  useEffect(
-    () => () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    },
-    []
-  );
-
-  const updateUrl = useCallback(
-    (newQuery: string) => {
-      const trimmed = newQuery.trim();
-      if (trimmed === query) return;
-
-      const params = new URLSearchParams(searchParams.toString());
-      if (trimmed) params.set('q', trimmed);
-      else params.delete('q');
-      params.delete('page');
-
-      const queryString = params.toString();
-      router.replace((queryString ? `${pathname}?${queryString}` : pathname) as Route, {
-        scroll: false,
-      });
-    },
-    [pathname, query, router, searchParams]
-  );
-
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const nextValue = event.target.value;
-    setValue(nextValue);
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => updateUrl(nextValue), 400);
-  };
-
-  const submitSearch = () => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    updateUrl(value);
-  };
-
-  const categoryHref = (slug?: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('page');
-    if (slug) params.set('category', slug);
-    else params.delete('category');
-
-    const queryString = params.toString();
-    return (queryString ? `${pathname}?${queryString}` : pathname) as Route;
-  };
+const SearchBanner: FC<EventSearchProps> = ({ categories }) => {
+  const {
+    activeCategory,
+    categoryHref,
+    categoryNavRef,
+    handleInputChange,
+    showLeftFade,
+    showRightFade,
+    submitSearch,
+    value,
+  } = useEventSearch({ categoryCount: categories.length });
 
   return (
     <>

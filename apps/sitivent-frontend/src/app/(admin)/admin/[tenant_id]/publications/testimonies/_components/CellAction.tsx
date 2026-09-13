@@ -1,16 +1,17 @@
 'use client';
 
-import type { Testimonial } from '@/interfaces/features/testimonials';
-
 import { toast } from 'sonner';
 import { type FC, useState } from 'react';
+import { Copy, Trash, MoreHorizontal } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import type { Testimonial } from '@/interfaces/features/testimonials';
+
 import { Button } from '@/components/ui/button';
 import { copyToClipboard } from '@/lib/clipboard';
-import { Copy, Trash, MoreHorizontal } from 'lucide-react';
 import { usePermission } from '@/providers/PermissionProvider';
 import AlertModal from '@/components/Common/Modals/AlertModal';
-import { deleteTestimonial } from '@/services/public/testimonials';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { deleteTestimonial } from '@/services/admin/testimonials';
 import {
   DropdownMenu,
   DropdownMenuItem,

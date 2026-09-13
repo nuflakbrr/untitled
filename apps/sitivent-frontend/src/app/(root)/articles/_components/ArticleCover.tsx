@@ -1,8 +1,6 @@
 import type { FC } from 'react';
 
-interface ArticleCoverProps {
-  className: string;
-}
+import type { ArticleCoverProps } from '@/interfaces/features/articles';
 
 const ArticleCover: FC<ArticleCoverProps> = ({ className }) => (
   <div className={`relative overflow-hidden ${className}`} />

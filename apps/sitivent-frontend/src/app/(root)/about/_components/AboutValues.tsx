@@ -1,10 +1,6 @@
 import type { FC } from 'react';
 
-import type { AboutValue } from '@/interfaces/features/about';
-
-interface AboutValuesProps {
-  items: AboutValue[];
-}
+import type { AboutValuesProps } from '@/interfaces/features/about';
 
 export const AboutValues: FC<AboutValuesProps> = ({ items }) => (
     <section

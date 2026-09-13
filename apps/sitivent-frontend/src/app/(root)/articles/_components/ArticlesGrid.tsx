@@ -1,80 +1,29 @@
 'use client';
 
+import type { FC } from 'react';
+
 import Link from 'next/link';
 import { Clock, Search, BookOpen, ArrowRight } from 'lucide-react';
-import { useRef, useMemo, type FC, useState, useEffect } from 'react';
 
-import type { ArticleItem } from '@/interfaces/features/articles';
-
-import { useDebounce } from '@/hooks/useDebounce';
+import type { ArticlesGridProps } from '@/interfaces/features/articles';
 
 import ArticleCover from './ArticleCover';
-import { getCoverStyles } from '../../_libs/getCoverStyles';
-
-interface ArticlesGridProps {
-  initialItems: ArticleItem[];
-  categories: string[];
-}
+import { useArticlesGrid } from '../_hooks/useArticlesGrid';
 
 const ArticlesGrid: FC<ArticlesGridProps> = ({ initialItems, categories: availableCategories }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useDebounce('', 500);
-  const [categoryFilter, setCategoryFilter] = useState('Semua');
-  const categoryListRef = useRef<HTMLDivElement>(null);
-  const [showLeftFade, setShowLeftFade] = useState(false);
-  const [showRightFade, setShowRightFade] = useState(false);
-
-  const categories = useMemo(
-    () => ['Semua', ...new Set(availableCategories.filter(Boolean))],
-    [availableCategories]
-  );
-
-  const filteredItems = useMemo(() => {
-    const query = debouncedSearchTerm.toLowerCase();
-
-    return initialItems.filter((item) => {
-      const matchesSearch =
-        item.title.toLowerCase().includes(query) || item.description.toLowerCase().includes(query);
-      const matchesCategory =
-        categoryFilter === 'Semua' ||
-        item.categories?.includes(categoryFilter) ||
-        item.category === categoryFilter;
-      return matchesSearch && matchesCategory;
-    });
-  }, [categoryFilter, debouncedSearchTerm, initialItems]);
-
-  const coverStyles = useMemo(
-    () => getCoverStyles(filteredItems.map((item) => item.id)),
-    [filteredItems]
-  );
-  const featured = filteredItems[0];
-  const remainingItems = filteredItems.slice(1);
-
-  useEffect(() => {
-    const categoryList = categoryListRef.current;
-    if (!categoryList) return;
-
-    const updateFades = () => {
-      setShowLeftFade(categoryList.scrollLeft > 0);
-      setShowRightFade(
-        categoryList.scrollLeft + categoryList.clientWidth < categoryList.scrollWidth - 1
-      );
-    };
-
-    updateFades();
-    categoryList.addEventListener('scroll', updateFades, { passive: true });
-    window.addEventListener('resize', updateFades);
-
-    return () => {
-      categoryList.removeEventListener('scroll', updateFades);
-      window.removeEventListener('resize', updateFades);
-    };
-  }, [categories.length]);
-
-  const updateSearch = (value: string) => {
-    setSearchTerm(value);
-    setDebouncedSearchTerm(value);
-  };
+  const {
+    categoryFilter,
+    categoryListRef,
+    categories,
+    coverStyles,
+    featured,
+    remainingItems,
+    searchTerm,
+    setCategoryFilter,
+    showLeftFade,
+    showRightFade,
+    updateSearch,
+  } = useArticlesGrid(initialItems, availableCategories);
 
   return (
     <div className="space-y-8 pb-24">
@@ -82,7 +31,7 @@ const ArticlesGrid: FC<ArticlesGridProps> = ({ initialItems, categories: availab
         <div className="relative min-w-0 flex-1">
           <div
             ref={categoryListRef}
-            className="flex min-w-0 gap-2 overflow-x-auto pb-1"
+            className="flex min-w-0 gap-2 overflow-x-auto"
             style={{ scrollbarWidth: 'thin' }}
           >
             {categories.map((category) => (

@@ -1,88 +1,25 @@
 'use client';
 
-import type { Route } from 'next';
-import type { FC, WheelEvent } from 'react';
+import type { FC } from 'react';
 
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { useRef, useState, useEffect } from 'react';
-import { Tag, Mic2, Code2, Laptop, MonitorPlay, MessageSquare } from 'lucide-react';
 
-import type { EventCategory } from '@/interfaces/features/events';
+import type { CategoryLinksProps } from '@/interfaces/features/events';
 
 import { cn } from '@/lib/utils';
 
-// Keep category icons recognizable while the visual treatment stays on-brand.
-const getCategoryConfig = (slug: string) => {
-  const norm = slug.toLowerCase();
-  if (norm.includes('seminar')) {
-    return { icon: Mic2 };
-  }
-  if (norm.includes('workshop')) {
-    return { icon: Laptop };
-  }
-  if (norm.includes('webinar')) {
-    return { icon: MonitorPlay };
-  }
-  if (norm.includes('bootcamp')) {
-    return { icon: Code2 };
-  }
-  if (norm.includes('talk') || norm.includes('show') || norm.includes('wicara')) {
-    return { icon: MessageSquare };
-  }
-  return { icon: Tag };
-};
-
-interface CategoryLinksProps {
-  categories: EventCategory[];
-}
+import { useCategoryLinks } from '../_hooks/useCategoryLinks';
+import { getCategoryConfig } from '../_libs/getCategoryConfig';
 
 const CategoryLinks: FC<CategoryLinksProps> = ({ categories }) => {
-  const searchParams = useSearchParams();
-  const activeCategory = searchParams.get('category');
-  const categoryNavRef = useRef<HTMLElement>(null);
-  const [showLeftFade, setShowLeftFade] = useState(false);
-  const [showRightFade, setShowRightFade] = useState(false);
-
-  useEffect(() => {
-    const nav = categoryNavRef.current;
-    if (!nav) return;
-
-    const updateFades = () => {
-      setShowLeftFade(nav.scrollLeft > 0);
-      setShowRightFade(nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 1);
-    };
-
-    updateFades();
-    nav.addEventListener('scroll', updateFades, { passive: true });
-    window.addEventListener('resize', updateFades);
-
-    return () => {
-      nav.removeEventListener('scroll', updateFades);
-      window.removeEventListener('resize', updateFades);
-    };
-  }, [categories.length]);
-
-  const handleCategoryWheel = (event: WheelEvent<HTMLElement>) => {
-    const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-    if (!delta || event.currentTarget.scrollWidth <= event.currentTarget.clientWidth) return;
-
-    event.preventDefault();
-    event.currentTarget.scrollLeft += delta;
-  };
-
-  // Dynamic helper to create target href maintaining existing params
-  const createCategoryHref = (categorySlug?: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('page'); // Reset pagination on category change
-    if (categorySlug) {
-      params.set('category', categorySlug);
-    } else {
-      params.delete('category');
-    }
-    const queryString = params.toString();
-    return (queryString ? `/events?${queryString}` : '/events') as Route;
-  };
+  const {
+    activeCategory,
+    categoryNavRef,
+    createCategoryHref,
+    handleCategoryWheel,
+    showLeftFade,
+    showRightFade,
+  } = useCategoryLinks(categories.length);
 
   return (
     <div className="mb-10 border-y border-[#111927]/10 py-4">

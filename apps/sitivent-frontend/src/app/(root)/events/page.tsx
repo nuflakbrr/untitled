@@ -1,24 +1,21 @@
-import type { Metadata } from 'next';
-
 import { Suspense } from 'react';
 
-import { getPublicEvents } from '@/services/admin/events';
-import { getPublicEventCategories } from '@/services/admin/event-categories';
+import type { EventsPageProps } from '@/interfaces/features/events';
+
+import { genPageMetadata } from '@/app/seo';
+import { getPublicEvents } from '@/services/public/events';
+import { getPublicEventCategories } from '@/services/public/event-categories';
 
 import SearchBanner from './_components/EventSearch';
 import EventsResults from './_components/EventsResults';
 
-type Props = {
-  searchParams: Promise<{ q?: string; category?: string }>;
-};
-
-export const metadata: Metadata = {
-  title: 'Jelajahi Event - SITIVENT',
+export const metadata = genPageMetadata({
+  title: 'Jelajahi Event',
   description:
     'Temukan seminar, workshop, webinar, dan bootcamp terbaik untuk meningkatkan keahlian Anda.',
-};
+});
 
-export default async function EventsPage({ searchParams }: Props) {
+export default async function EventsPage({ searchParams }: EventsPageProps) {
   const { q, category } = await searchParams;
   const [events, categories] = await Promise.all([
     getPublicEvents(q, category),

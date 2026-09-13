@@ -2,35 +2,34 @@ import type { Metadata } from 'next';
 
 import { notFound } from 'next/navigation';
 
+import type { ArticleDetailPageProps } from '@/interfaces/features/articles';
+
+import { genPageMetadata } from '@/app/seo';
+import { getArticleDetail } from '@/services/public/articles';
+
+import { mapArticleDetail } from './_libs/mapArticleDetail';
 import ArticleDetailClient from './_components/ArticleDetail';
-import { getArticleDetail, mapArticleDetail } from './_libs/getArticleDetail';
 
-interface Props {
-  params: Promise<{ slug: string }>;
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: ArticleDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
 
   const article = await getArticleDetail(slug);
 
   if (!article) {
-    return {
-      title: 'Artikel Tidak Ditemukan - SITIVENT',
-    };
+    return genPageMetadata({ title: 'Artikel Tidak Ditemukan' });
   }
 
-  // Strip HTML tags for clean description excerpt
   const plainText = article.content.replace(/<[^>]*>/g, '');
-  return {
-    title: `${article.title} - SITIVENT`,
+  return genPageMetadata({
+    title: article.title,
     description: plainText.substring(0, 150),
-  };
+    image: article.cover ?? undefined,
+  });
 }
 
 export const revalidate = 0; // Dynamic rendering
 
-export default async function ArticleDetailPage({ params }: Props) {
+export default async function ArticleDetailPage({ params }: ArticleDetailPageProps) {
   const { slug } = await params;
 
   const article = await getArticleDetail(slug);

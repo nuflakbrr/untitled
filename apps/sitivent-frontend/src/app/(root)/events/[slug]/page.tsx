@@ -16,41 +16,41 @@ import {
   ExternalLink,
 } from 'lucide-react';
 
-import type { EventBenefit, EventSpeaker } from '@/interfaces/features/events';
+import type {
+  EventBenefit,
+  EventSpeaker,
+  EventDetailPageProps,
+} from '@/interfaces/features/events';
 
+import { genPageMetadata } from '@/app/seo';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent } from '@/components/ui/card';
-import { getPublicEventBySlug } from '@/services/admin/events';
+import { getPublicEventBySlug } from '@/services/public/events';
 import { GitHubIcon, LinkedInIcon, InstagramIcon } from '@/components/Common/CustomIcons';
 
 import RegisterButton from './_components/RegisterButton';
 import { getEventPageData } from './_libs/getEventPageData';
 import EventTestimonials from './_components/EventTestimonials';
 
-type Props = {
-  params: Promise<{ slug: string }>;
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: EventDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const event = await getPublicEventBySlug(slug);
 
   if (!event) {
-    return {
-      title: 'Event Tidak Ditemukan - SITIVENT',
-    };
+    return genPageMetadata({ title: 'Event Tidak Ditemukan' });
   }
 
-  return {
-    title: `${event.title} - SITIVENT`,
+  return genPageMetadata({
+    title: event.title,
     description: event.description.replace(/<[^>]*>/g, '').substring(0, 160),
-  };
+    image: event.banner ?? undefined,
+  });
 }
 
-export default async function EventDetailPage({ params }: Props) {
+export default async function EventDetailPage({ params }: EventDetailPageProps) {
   const { slug } = await params;
   const pageData = await getEventPageData(slug);
 

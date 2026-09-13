@@ -5,21 +5,8 @@ import 'moment/locale/id';
 
 import moment from 'moment';
 import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
-import Heading from '@/components/Common/Heading';
-import { Separator } from '@/components/ui/separator';
 import { type ColumnDef } from '@tanstack/react-table';
-import { DataTable } from '@/components/ui/data-table';
-import { getParticipantRegistrations } from '@/services/admin/registrations';
-import {
-  Empty,
-  EmptyMedia,
-  EmptyTitle,
-  EmptyHeader,
-  EmptyDescription,
-} from '@/components/ui/empty';
 import {
   Star,
   Award,
@@ -30,33 +17,25 @@ import {
   MessageSquarePlus,
 } from 'lucide-react';
 
+import type { ParticipantRegistration } from '@/interfaces/features/registrations';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import Heading from '@/components/Common/Heading';
+import { Separator } from '@/components/ui/separator';
+import { DataTable } from '@/components/ui/data-table';
+import { getParticipantRegistrations } from '@/services/participant/registrations';
+import {
+  Empty,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyHeader,
+  EmptyDescription,
+} from '@/components/ui/empty';
+
 import TestimonialModal from './_components/TestimonialModal';
 
-interface RegistrationWithParticipant {
-  id: string;
-  registrationNumber: string;
-  status: string;
-  createdAt: Date;
-  event: {
-    id: string;
-    title: string;
-    slug: string;
-    startDate: Date;
-    startTime: string;
-    endTime: string;
-    location: string;
-    status: string;
-    certificateEnabled: boolean;
-    eventType: string;
-    meetingLink: string | null;
-  };
-  certificates: Array<{ id: string; downloadUrl: string }>;
-  testimonial?: {
-    id: string;
-    rating: number;
-    comment: string;
-  } | null;
-}
+type RegistrationWithParticipant = ParticipantRegistration;
 
 const getColumns = (
   onOpenTestimonial: (registration: RegistrationWithParticipant) => void

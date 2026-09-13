@@ -1,32 +1,11 @@
 import type { FC } from 'react';
 
-import api from '@/lib/api';
+import { getPublicStats } from '@/services/public/stats';
+
+import { getPublicStatsDisplay } from '../_libs/getPublicStatsDisplay';
 
 const Stats: FC = async () => {
-  let eventCount = 0;
-  let registrationCount = 0;
-  let certificateCount = 0;
-  try {
-    const result = await api.get('/features/v1/dashboard/stats');
-    eventCount = result.data.data?.events ?? 0;
-    registrationCount = result.data.data?.registrations ?? 0;
-    certificateCount = result.data.data?.certificates ?? 0;
-  } catch {
-    /* public stats are optional */
-  }
-
-  // Fallback values if DB is empty to make it look premium
-  const stats = [
-    { value: `${Math.max(eventCount, 12)}+`, label: 'Event Aktif' },
-    {
-      value: `${Math.max(registrationCount, 300).toLocaleString('id-ID')}+`,
-      label: 'Peserta Terdaftar',
-    },
-    {
-      value: `${Math.max(certificateCount, 300).toLocaleString('id-ID')}+`,
-      label: 'Sertifikat Diterbitkan',
-    },
-  ];
+  const stats = getPublicStatsDisplay(await getPublicStats());
 
   return (
     <section className="py-12 border-t" style={{ background: '#FFFFFF', borderColor: '#E3DACC' }}>

@@ -2,11 +2,12 @@
 
 import { type FC, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+
 import Heading from '@/components/Common/Heading';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Separator } from '@/components/ui/separator';
 import { DataTable } from '@/components/ui/data-table';
-import { getTestimonies } from '@/services/public/testimonials';
+import { getTestimonies } from '@/services/admin/testimonials';
 import { getEventsForFilter } from '@/services/admin/registrations';
 import {
   Select,

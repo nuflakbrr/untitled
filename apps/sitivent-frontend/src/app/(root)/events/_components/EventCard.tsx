@@ -3,15 +3,9 @@ import type { FC } from 'react';
 import Link from 'next/link';
 import { MapPin, ArrowRight, CalendarDays } from 'lucide-react';
 
-import type { Event } from '@/interfaces/features/events';
+import type { EventCardProps } from '@/interfaces/features/events';
 
 import { formatCurrency } from '@/lib/formatCurrency';
-
-interface EventCardProps {
-  event: Event;
-  formattedStartDate: string;
-  coverStyle: string;
-}
 
 const EventCard: FC<EventCardProps> = ({ event, formattedStartDate, coverStyle }) => {
   const slotsLeft = Math.max(0, event.quota - event.registrationCount);

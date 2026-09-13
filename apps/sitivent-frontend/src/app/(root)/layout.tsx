@@ -1,18 +1,15 @@
-import type { ReactNode } from 'react';
+import { headers } from 'next/headers';
+import { Geist, Inter, Geist_Mono, Plus_Jakarta_Sans } from 'next/font/google';
+
+import type { PublicLayoutProps } from '@/interfaces/layout';
 
 import { cn } from '@/lib/utils';
 import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
 import Footer from '@/components/Mixins/Footer';
 import Navbar from '@/components/Mixins/Navbar';
 import ScrollToTop from '@/components/Common/ScrollToTop';
 import { PermissionProvider } from '@/providers/PermissionProvider';
-import { getUserPermissionsAndRoles } from '@/services/admin/security';
-import { Geist, Inter, Geist_Mono, Plus_Jakarta_Sans } from 'next/font/google';
-
-type Props = {
-  children: ReactNode;
-};
+import { getUserPermissionsAndRoles } from '@/services/public/session';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -32,7 +29,7 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-const LandingPageLayout = async ({ children }: Props) => {
+const LandingPageLayout = async ({ children }: PublicLayoutProps) => {
   // 1. Ambil session di server
   const session = await auth.api.getSession({
     headers: await headers(),

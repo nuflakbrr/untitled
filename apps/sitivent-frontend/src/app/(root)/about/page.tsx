@@ -1,16 +1,17 @@
 import type { FC } from 'react';
-import type { Metadata } from 'next';
+
+import { genPageMetadata } from '@/app/seo';
 
 import { aboutValues } from './_constants/values';
 import { AboutHeader } from './_components/AboutHeader';
 import { AboutValues } from './_components/AboutValues';
 import { AboutIntroduction } from './_components/AboutIntroduction';
 
-export const metadata: Metadata = {
+export const metadata = genPageMetadata({
   title: 'Tentang SITIVENT — Platform Manajemen Event',
   description:
     'SITIVENT adalah platform manajemen event dan tiket digital untuk seminar, workshop, webinar, dan bootcamp di Indonesia.',
-};
+});
 
 const About: FC = () => (
     <div className="min-h-screen bg-[#FAF9F5] text-[#141413] font-sans antialiased">

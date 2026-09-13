@@ -1,9 +1,6 @@
 import type { FC } from 'react';
 
-interface AboutHeaderProps {
-  title: string;
-  subtitle: string;
-}
+import type { AboutHeaderProps } from '@/interfaces/features/about';
 
 export const AboutHeader: FC<AboutHeaderProps> = ({ title, subtitle }) => (
   <div

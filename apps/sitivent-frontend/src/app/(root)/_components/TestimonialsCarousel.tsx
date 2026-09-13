@@ -7,7 +7,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import { useMemo, useState, useEffect } from 'react';
 import { Star, User, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 
-import type { Testimonial } from '@/interfaces/features/testimonials';
+import type { TestimonialsCarouselProps } from '@/interfaces/features/testimonials';
 
 import {
   Carousel,
@@ -16,13 +16,9 @@ import {
   type CarouselApi,
 } from '@/components/ui/carousel';
 
-interface Props {
-  testimonials: Testimonial[];
-}
-
-const TestimonialsCarousel: FC<Props> = ({ testimonials }) => {
+const TestimonialsCarousel: FC<TestimonialsCarouselProps> = ({ testimonials }) => {
   const [api, setApi] = useState<CarouselApi>();
-  const [, setCurrent] = useState(0);
+  const [_current, setCurrent] = useState(0);
   const autoplayPlugin = useMemo(
     () => Autoplay({ delay: 4000, stopOnInteraction: false, stopOnMouseEnter: false }),
     []
