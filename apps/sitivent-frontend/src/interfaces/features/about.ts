@@ -1,12 +1,8 @@
-import type { LucideIcon } from 'lucide-react';
-
 export interface AboutValue {
-  icon: LucideIcon;
+  label: string;
   title: string;
-  desc: string;
-  color: string;
-  bg: string;
-  border: string;
+  description: string;
+  className: string;
 }
 
 export interface AboutHeaderProps {

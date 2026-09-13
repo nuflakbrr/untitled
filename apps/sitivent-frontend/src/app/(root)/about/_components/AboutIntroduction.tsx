@@ -1,44 +1,48 @@
-import type { FC } from 'react';
-
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-
-export const AboutIntroduction: FC = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-      <div className="space-y-6">
-        <h2 className="font-serif text-3xl font-bold tracking-tight text-[#141413]">
-          Apa itu SITIVENT?
-        </h2>
-        <p className="text-sm md:text-base leading-relaxed text-[#3D3D3A]">
-          <strong className="text-[#D97757]">SITIVENT</strong> adalah sistem manajemen event
-          berbasis web yang dirancang untuk mempermudah proses pendaftaran, pembayaran, dan
-          kehadiran peserta pada berbagai jenis acara — mulai dari seminar, workshop, webinar,
-          hingga bootcamp.
-        </p>
-        <p className="text-sm md:text-base leading-relaxed text-[#3D3D3A]">
-          Platform ini hadir sebagai jembatan antara penyelenggara event dan peserta, memastikan
-          setiap proses berjalan transparan, cepat, dan terorganisir — dari pendaftaran awal hingga
-          penerbitan sertifikat digital.
-        </p>
-        <div className="pt-2">
-          <Link
-            href="/events"
-            className="inline-flex items-center gap-2 text-xs font-bold text-[#D97757] hover:text-[#141413] transition-colors group/link"
-          >
-            Jelajahi Event Sekarang
-            <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
-          </Link>
-        </div>
-      </div>
-
-      <div className="relative h-64 md:h-80 rounded-2xl overflow-hidden border border-[#D1CFC5] shadow-xs">
-        <img
-          src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&q=80&fit=crop&w=800&h=600"
-          alt="Event audience"
-          className="w-full h-full object-cover"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-linear-to-t from-[#141413]/30 to-transparent" />
+export const AboutIntroduction = () => (
+  <section id="story" className="px-4 py-20 sm:px-6 sm:py-24">
+    <div className="mx-auto max-w-295">
+      {/* <span className="inline-flex items-center gap-2 rounded-full border border-[#111927]/12 bg-white/60 px-3 py-2 text-xs font-bold text-[#11233f]">
+        <span className="h-2 w-2 rounded-full bg-[#ff7a45]" /> Masalah yang kami lihat
+      </span> */}
+      <h2 className="font-display mt-5 max-w-215 text-[clamp(36px,5vw,58px)] font-extrabold leading-[1.02] tracking-tighter">
+        Banyak event masih berjalan dengan proses yang terpisah-pisah.
+      </h2>
+      <p className="mt-5 max-w-175 text-lg leading-relaxed text-[#6c7280]">
+        Form pendaftaran, spreadsheet peserta, daftar hadir, tiket, dan sertifikat sering dikelola
+        di tempat berbeda. Akibatnya, pekerjaan administrasi menjadi lebih panjang dari yang
+        seharusnya.
+      </p>
+      <div className="mt-11 grid gap-6 lg:grid-cols-2">
+        <article className="rounded-[24px] bg-[#11233f] p-7 text-white sm:p-8">
+          <h3 className="font-display text-3xl font-extrabold leading-[1.05] tracking-[-.04em]">
+            Yang sering terjadi di lapangan.
+          </h3>
+          <div className="mt-6 grid gap-2.5 text-sm text-white/85">
+            {[
+              'Form registrasi dan data peserta tidak terhubung.',
+              'Absensi harus direkap ulang setelah acara.',
+              'Sertifikat dibagikan manual setelah event selesai.',
+            ].map((item) => (
+              <div key={item} className="rounded-[14px] border border-white/15 bg-white/10 p-3.5">
+                {item}
+              </div>
+            ))}
+          </div>
+        </article>
+        <article className="rounded-[24px] border border-[#111927]/12 bg-[#fffdf8] p-7 sm:p-8">
+          <h3 className="font-display text-3xl font-extrabold leading-[1.05] tracking-[-.04em] text-[#111927]">
+            SITIVENT mencoba menyederhanakannya.
+          </h3>
+          <p className="mt-5 text-base leading-relaxed text-[#6c7280]">
+            Satu platform menghubungkan perjalanan peserta dari sebelum event sampai setelah event
+            selesai.
+          </p>
+          <p className="mt-4 text-base leading-relaxed text-[#6c7280]">
+            Tujuannya bukan menambah alat, tapi mengurangi perpindahan platform dan pekerjaan
+            repetitif.
+          </p>
+        </article>
       </div>
     </div>
-  );
+  </section>
+);

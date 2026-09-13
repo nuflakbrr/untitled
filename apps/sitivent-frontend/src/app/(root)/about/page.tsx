@@ -1,10 +1,10 @@
-import type { FC } from 'react';
-
 import { genPageMetadata } from '@/app/seo';
 
 import { aboutValues } from './_constants/values';
+import { AboutCta } from './_components/AboutCta';
 import { AboutHeader } from './_components/AboutHeader';
 import { AboutValues } from './_components/AboutValues';
+import { AboutJourney } from './_components/AboutJourney';
 import { AboutIntroduction } from './_components/AboutIntroduction';
 
 export const metadata = genPageMetadata({
@@ -13,17 +13,17 @@ export const metadata = genPageMetadata({
     'SITIVENT adalah platform manajemen event dan tiket digital untuk seminar, workshop, webinar, dan bootcamp di Indonesia.',
 });
 
-const About: FC = () => (
-    <div className="min-h-screen bg-[#FAF9F5] text-[#141413] font-sans antialiased">
-      <AboutHeader
-        title="Tentang SITIVENT"
-        subtitle="Satu platform untuk menemukan, mendaftar, dan mengikuti event teknologi terbaik di Indonesia."
-      />
-      <div className="container mx-auto px-4 max-w-5xl py-16 md:py-24">
-        <AboutIntroduction />
-      </div>
-      <AboutValues items={aboutValues} />
-    </div>
-  );
+const About = () => (
+  <div className="w-full overflow-hidden bg-[#f6f3eb] text-[#111927]">
+    <AboutHeader
+      title="Event yang baik dimulai jauh sebelum hari-H."
+      subtitle="SITIVENT membantu menghubungkan perjalanan peserta dari menemukan event, mendaftar, menerima tiket, check-in, hingga memperoleh sertifikat tanpa proses administratif yang tercecer."
+    />
+    <AboutIntroduction />
+    <AboutValues items={aboutValues} />
+    <AboutJourney />
+    <AboutCta />
+  </div>
+);
 
 export default About;

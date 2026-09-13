@@ -1,38 +1,28 @@
-import { Zap, Award, Users, Shield } from 'lucide-react';
-
 import type { AboutValue } from '@/interfaces/features/about';
 
 export const aboutValues: AboutValue[] = [
   {
-    icon: Zap,
-    title: 'Efisiensi',
-    desc: 'Proses pendaftaran cepat dan mudah, tanpa kerumitan.',
-    color: '#ff7a45',
-    bg: 'rgba(255,122,69,.08)',
-    border: 'rgba(255,122,69,.3)',
+    label: '01 / SIMPLE',
+    title: 'Mudah dipahami.',
+    description: 'Alur peserta jelas dari registrasi hingga sertifikat.',
+    className: 'bg-[#ff7a45] text-white',
   },
   {
-    icon: Shield,
-    title: 'Transparansi',
-    desc: 'Setiap transaksi dan status terpantau secara real-time.',
-    color: '#36784b',
-    bg: 'rgba(54,120,75,.08)',
-    border: 'rgba(54,120,75,.3)',
+    label: '02 / CONNECTED',
+    title: 'Satu alur.',
+    description: 'Data peserta, tiket, dan kehadiran saling terhubung.',
+    className: 'bg-[#bfe4c7] text-[#111927]',
   },
   {
-    icon: Users,
-    title: 'Inklusif',
-    desc: 'Terbuka untuk semua kalangan, dari pelajar hingga profesional.',
-    color: '#ff7a45',
-    bg: 'rgba(255,122,69,.08)',
-    border: 'rgba(255,122,69,.3)',
+    label: '03 / RELIABLE',
+    title: 'Informasi jelas.',
+    description: 'Status event, kuota, dan tiket mudah dipantau.',
+    className: 'bg-[#f7df86] text-[#111927]',
   },
   {
-    icon: Award,
-    title: 'Bermutu',
-    desc: 'Event terkurasi dengan materi berkualitas dan instruktur berpengalaman.',
-    color: '#36784b',
-    bg: 'rgba(54,120,75,.08)',
-    border: 'rgba(54,120,75,.3)',
+    label: '04 / HUMAN',
+    title: 'Tetap personal.',
+    description: 'Teknologi membantu acara, bukan mengambil alih pengalaman manusia.',
+    className: 'bg-[#fffdf8] text-[#111927]',
   },
 ];
