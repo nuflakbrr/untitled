@@ -53,7 +53,9 @@ const Footer: FC = () => {
 
         <div className="flex flex-col justify-between gap-3 border-t border-[#111927]/10 py-5 text-xs text-[#6c7280] sm:flex-row">
           <p>© {year} EVENTKAN. Seluruh hak cipta dilindungi undang-undang.</p>
-          <p>Made with &hearts; for better campus events.</p>
+          <p>
+            Made with <span className="text-[#ff7a45]">&#x2665;</span> for better campus events.
+          </p>
         </div>
       </div>
     </footer>

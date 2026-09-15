@@ -27,6 +27,7 @@ export const participantUserMenuLinks: ParticipantUserMenuLink[] = [
     href: '/participant/certificates',
     icon: Award,
     mobileOnly: true,
+    tourTarget: 'certificates',
   },
   {
     label: 'Riwayat Event',

@@ -23,23 +23,16 @@ export default function DashboardHeader({ userName, emailVerified }: DashboardHe
 
       <div className="mb-8 flex flex-col items-start justify-between gap-7 border-b border-[#111927]/10 pb-8 sm:flex-row sm:items-end">
         <div>
-          <span className="block text-xs font-extrabold uppercase tracking-[.08em] text-[#ff7a45]">
-            Dashboard Peserta
-          </span>
-          <h1 id="dashboard-title" className="font-display mt-2 text-[clamp(38px,5vw,58px)] font-extrabold leading-none tracking-[-.05em] text-[#111927]">
-            Halo, {userName}.
+          <h1
+            id="dashboard-title"
+            className="font-display mt-2 text-[clamp(38px,5vw,58px)] font-extrabold leading-none tracking-tighter text-[#111927]"
+          >
+            Halo, <span className="text-[#ff7a45]">{userName}</span>.
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6c7280]">
-            Semua aktivitas event kamu ada di satu tempat: registrasi, kehadiran, pembayaran, dan sertifikat.
+            Lagi cari event seru? Pilih yang paling cocok buat kamu, daftar, lalu tinggal gas!
+            Tiket, kehadiran, pembayaran, sampai sertifikat bisa kamu cek di sini.
           </p>
-        </div>
-        <div className="flex w-full shrink-0 gap-2 sm:w-auto">
-          <a href="/events" className="inline-flex flex-1 items-center justify-center rounded-full bg-[#11233f] px-4 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#1b3458] sm:flex-none">
-            Jelajahi Event ↗
-          </a>
-          <a href="/participant/profile" className="inline-flex flex-1 items-center justify-center rounded-full border border-[#111927]/12 px-4 py-3 text-sm font-bold text-[#11233f] transition hover:bg-[#fffdf8] sm:flex-none">
-            Profil Saya
-          </a>
         </div>
       </div>
     </>

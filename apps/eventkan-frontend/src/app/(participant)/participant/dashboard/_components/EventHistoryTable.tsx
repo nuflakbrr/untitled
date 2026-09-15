@@ -2,7 +2,13 @@ import { Award, Video, FileDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { formatLongDate } from '@/lib/formatLongDate';
-import { Empty, EmptyMedia, EmptyTitle, EmptyHeader, EmptyDescription } from '@/components/ui/empty';
+import {
+  Empty,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyHeader,
+  EmptyDescription,
+} from '@/components/ui/empty';
 
 import { canDownloadCertificate } from '../_libs/canDownloadCertificate';
 import { getDashboardStatusStyle } from '../_libs/getDashboardStatusStyle';
@@ -27,7 +33,6 @@ const PanelHeader = () => (
   <div className="flex items-center gap-2 border-b border-[#111927]/10 px-5 py-4">
     <Award className="h-4 w-4 text-[#ff7a45]" />
     <h2 className="font-display text-base font-extrabold text-[#111927]">Riwayat Event</h2>
-    <p className="ml-auto text-xs text-[#6c7280]">Seluruh event yang pernah Anda daftarkan</p>
   </div>
 );
 
@@ -42,7 +47,9 @@ export default function EventHistoryTable({ history }: EventHistoryTableProps) {
         <div className="p-5">
           <Empty className="border-0 p-0">
             <EmptyHeader>
-              <EmptyMedia variant="icon"><Award className="h-6 w-6" /></EmptyMedia>
+              <EmptyMedia variant="icon">
+                <Award className="h-6 w-6" />
+              </EmptyMedia>
               <EmptyTitle>Belum ada riwayat event</EmptyTitle>
               <EmptyDescription>Anda belum pernah mendaftar ke event apapun.</EmptyDescription>
             </EmptyHeader>
@@ -101,21 +108,43 @@ export default function EventHistoryTable({ history }: EventHistoryTableProps) {
                     </td>
                     <td className="whitespace-nowrap px-4 py-4">
                       {item.event?.eventType === 'ONLINE' && item.event.meetingLink ? (
-                        <Button asChild variant="outline" size="xs" className="h-8 gap-1.5 rounded-full border-[#111927]/12">
-                          <a href={item.event.meetingLink} target="_blank" rel="noopener noreferrer">
+                        <Button
+                          asChild
+                          variant="outline"
+                          size="xs"
+                          className="h-8 gap-1.5 rounded-full border-[#111927]/12"
+                        >
+                          <a
+                            href={item.event.meetingLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             <Video className="h-3.5 w-3.5" /> Gabung
                           </a>
                         </Button>
-                      ) : <span className="text-xs text-[#c4c6c8]">-</span>}
+                      ) : (
+                        <span className="text-xs text-[#c4c6c8]">-</span>
+                      )}
                     </td>
                     <td className="whitespace-nowrap py-4 pl-4 text-right">
                       {canDownload ? (
-                        <Button asChild variant="outline" size="xs" className="h-8 gap-1.5 rounded-full border-[#111927]/12">
-                          <a href={item.certificates[0].downloadUrl} target="_blank" rel="noopener noreferrer">
+                        <Button
+                          asChild
+                          variant="outline"
+                          size="xs"
+                          className="h-8 gap-1.5 rounded-full border-[#111927]/12"
+                        >
+                          <a
+                            href={item.certificates[0].downloadUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             <FileDown className="h-3.5 w-3.5" /> Unduh
                           </a>
                         </Button>
-                      ) : <span className="text-xs text-[#c4c6c8]">-</span>}
+                      ) : (
+                        <span className="text-xs text-[#c4c6c8]">-</span>
+                      )}
                     </td>
                   </tr>
                 );

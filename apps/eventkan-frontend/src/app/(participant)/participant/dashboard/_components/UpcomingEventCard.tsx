@@ -7,6 +7,7 @@ import { Clock, Video, MapPin, Calendar, AlertCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { formatLongDate } from '@/lib/formatLongDate';
+import { formatEventTimeRange } from '@/lib/formatEventTimeRange';
 import { getCoverStyles } from '@/app/(root)/_libs/getCoverStyles';
 import {
   Empty,
@@ -48,15 +49,12 @@ export default function UpcomingEventCard({ upcomingEvent }: UpcomingEventCardPr
         <div className="flex items-center gap-2 border-b border-[#111927]/10 px-5 py-4">
           <Calendar className="h-4 w-4 text-[#ff7a45]" />
           <h2 className="font-display text-base font-extrabold text-[#111927]">Event Terdekat</h2>
-          <p className="ml-auto text-xs text-[#6c7280]">
-            Yang akan Anda ikuti
-          </p>
         </div>
 
         <div className="flex flex-1 flex-col p-5">
           {upcomingEvent ? (
             <div className="space-y-5 flex-1">
-              <div className="relative aspect-[1.5] w-full overflow-hidden rounded-[18px] border border-[#111927]/10 bg-[#11233f]">
+              <div className="relative aspect-[1.5] w-full overflow-hidden rounded-[18px] bg-[#11233f]">
                 {upcomingEvent.banner ? (
                   <img
                     src={upcomingEvent.banner}
@@ -65,10 +63,10 @@ export default function UpcomingEventCard({ upcomingEvent }: UpcomingEventCardPr
                   />
                 ) : (
                   <div className={`relative flex h-full flex-col justify-end p-5 ${coverStyle}`}>
-                    <span className="relative z-10 text-[11px] font-extrabold uppercase tracking-[.08em] text-[#11233f]">
+                    <span className="relative z-10 text-[11px] font-extrabold uppercase tracking-[.08em]">
                       Event terdekat
                     </span>
-                    <h3 className="font-display relative z-10 mt-2 max-w-[90%] text-2xl font-extrabold leading-[.98] tracking-[-.04em] text-[#11233f]">
+                    <h3 className="font-display relative z-10 mt-2 max-w-[90%] text-2xl font-extrabold leading-[.98] tracking-[-.04em]">
                       {upcomingEvent.title}
                     </h3>
                   </div>
@@ -88,7 +86,11 @@ export default function UpcomingEventCard({ upcomingEvent }: UpcomingEventCardPr
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4 shrink-0 text-[#ff7a45]" />
                     <span>
-                      {upcomingEvent.startTime} - {upcomingEvent.endTime} WIB
+                      {formatEventTimeRange(
+                        upcomingEvent.startDate,
+                        upcomingEvent.startTime,
+                        upcomingEvent.endTime
+                      ) || 'Waktu belum tersedia'}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
