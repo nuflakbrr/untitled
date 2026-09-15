@@ -1,9 +1,9 @@
 import { Image as ImageIcon } from 'lucide-react';
 
 import { genPageMetadata } from '@/app/seo';
+import EmptyState from '@/components/Common/EmptyState';
 import { getPublicGalleries } from '@/services/public/galleries';
 
-import EmptyState from '../_components/EmptyState';
 import GalleryGrid from './_components/GalleryGrid';
 import GalleryHeader from './_components/GalleryHeader';
 

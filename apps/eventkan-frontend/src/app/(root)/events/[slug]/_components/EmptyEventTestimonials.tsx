@@ -1,6 +1,6 @@
 import { MessageSquare } from 'lucide-react';
 
-import EmptyState from '../../../_components/EmptyState';
+import EmptyState from '@/components/Common/EmptyState';
 
 const EmptyEventTestimonials = () => (
   <EmptyState

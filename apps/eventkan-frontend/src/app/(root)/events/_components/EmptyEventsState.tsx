@@ -2,7 +2,7 @@ import type { FC } from 'react';
 
 import { CalendarX2 } from 'lucide-react';
 
-import EmptyState from '../../_components/EmptyState';
+import EmptyState from '@/components/Common/EmptyState';
 
 interface EmptyEventsStateProps {
   query?: string;

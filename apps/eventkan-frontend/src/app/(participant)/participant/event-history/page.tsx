@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ParticipantRegistration } from '@/interfaces/features/registrations';
 
 import { DataTable } from '@/components/ui/data-table';
-import EmptyState from '@/app/(root)/_components/EmptyState';
+import EmptyState from '@/components/Common/EmptyState';
 import { getParticipantRegistrations } from '@/services/participant/registrations';
 
 import Columns from './_components/Columns';

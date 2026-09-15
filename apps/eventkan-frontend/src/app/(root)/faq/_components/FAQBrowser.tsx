@@ -9,8 +9,8 @@ import { useRef, useMemo, useState, useEffect } from 'react';
 import type { FAQBrowserProps } from '@/interfaces/features/faq';
 
 import { cn } from '@/lib/utils';
+import EmptyState from '@/components/Common/EmptyState';
 
-import EmptyState from '../../_components/EmptyState';
 import { faqItems, faqCategories, faqCategoryLabels } from '../_constants/faq';
 
 const FAQBrowser: FC<FAQBrowserProps> = ({ selectedCategory, onCategoryChange }) => {

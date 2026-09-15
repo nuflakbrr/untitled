@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ParticipantPayment } from '@/interfaces/features/payments';
 
 import { DataTable } from '@/components/ui/data-table';
-import EmptyState from '@/app/(root)/_components/EmptyState';
+import EmptyState from '@/components/Common/EmptyState';
 import { getParticipantPayments } from '@/services/admin/payments';
 
 import Columns from './_components/Columns';

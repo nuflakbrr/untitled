@@ -4,7 +4,7 @@ import { Clock, Video, MapPin, Calendar, ArrowRight, AlertCircle } from 'lucide-
 
 import { Button } from '@/components/ui/button';
 import { formatLongDate } from '@/lib/formatLongDate';
-import EmptyState from '@/app/(root)/_components/EmptyState';
+import EmptyState from '@/components/Common/EmptyState';
 import { formatEventTimeRange } from '@/lib/formatEventTimeRange';
 import { getCoverStyles } from '@/app/(root)/_libs/getCoverStyles';
 

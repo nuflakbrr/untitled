@@ -7,8 +7,9 @@ import { Clock, Search, BookOpen, ArrowRight } from 'lucide-react';
 
 import type { ArticlesGridProps } from '@/interfaces/features/articles';
 
+import EmptyState from '@/components/Common/EmptyState';
+
 import ArticleCover from './ArticleCover';
-import EmptyState from '../../_components/EmptyState';
 import { useArticlesGrid } from '../_hooks/useArticlesGrid';
 
 const ArticlesGrid: FC<ArticlesGridProps> = ({ initialItems, categories: availableCategories }) => {
