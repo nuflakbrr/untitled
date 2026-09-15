@@ -73,9 +73,7 @@ const GreetingCard: FC = () => {
   };
 
   return (
-    <div
-      className="w-full bg-white dark:bg-sidebar rounded-lg shadow-md p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
-    >
+    <div className="w-full bg-white dark:bg-sidebar rounded-lg shadow-md p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
         <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white">
           {greeting}!

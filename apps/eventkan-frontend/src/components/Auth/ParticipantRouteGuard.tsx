@@ -1,6 +1,7 @@
 import type { Route } from 'next';
 
 import { redirect } from 'next/navigation';
+
 import { verifySession, verifyPermission } from '@/services/admin/security';
 
 export const ParticipantRouteGuard = async ({ children }: { children: React.ReactNode }) => {

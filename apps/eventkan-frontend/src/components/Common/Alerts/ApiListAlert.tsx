@@ -1,6 +1,7 @@
 'use client';
 
 import type { FC } from 'react';
+
 import type { ApiListAlert as ApiListProps } from '@/interfaces/alert';
 
 import { useOrigin } from '@/hooks/useOrigin';

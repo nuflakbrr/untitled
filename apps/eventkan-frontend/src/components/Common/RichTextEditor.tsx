@@ -5,25 +5,26 @@ import { Link } from '@tiptap/extension-link';
 import { Table } from '@tiptap/extension-table';
 import React, { useRef, useEffect } from 'react';
 import TextAlign from '@tiptap/extension-text-align';
-// UI Components
-import { Separator } from '@/components/ui/separator';
 import { TableRow } from '@tiptap/extension-table-row';
 import { Underline } from '@tiptap/extension-underline';
 import { Subscript } from '@tiptap/extension-subscript';
-import { uploadImage } from '@/services/public/uploads';
 import { useEditor, EditorContent } from '@tiptap/react';
 // Tiptap Extensions
 import { TextStyle } from '@tiptap/extension-text-style';
 import { TableCell } from '@tiptap/extension-table-cell';
 import { FontFamily } from '@tiptap/extension-font-family';
 import { Superscript } from '@tiptap/extension-superscript';
+import { TableHeader } from '@tiptap/extension-table-header';
+
+// UI Components
+import { Separator } from '@/components/ui/separator';
+import { uploadImage } from '@/services/public/uploads';
 // Toolbar Components
 import { UndoToolbar } from '@/components/ui/toolbars/undo';
 import { RedoToolbar } from '@/components/ui/toolbars/redo';
 import { BoldToolbar } from '@/components/ui/toolbars/bold';
 import { LinkToolbar } from '@/components/ui/toolbars/link';
 import { CodeToolbar } from '@/components/ui/toolbars/code';
-import { TableHeader } from '@tiptap/extension-table-header';
 import { TableToolbar } from '@/components/ui/toolbars/table';
 import { EmojiToolbar } from '@/components/ui/toolbars/emoji';
 import { ItalicToolbar } from '@/components/ui/toolbars/italic';
@@ -159,10 +160,9 @@ const RichTextEditor = ({ value, onChange, placeholder, folderName }: RichTextEd
       onChange(html);
     },
     editorProps: {
-      handleDrop: (view, event) => 
+      handleDrop: (view, event) =>
         // Prevent files from being dropped into the editor
-         true
-      ,
+        true,
       handleKeyDown: (view, event) => {
         const isMod = event.ctrlKey || event.metaKey;
         const isShift = event.shiftKey;
