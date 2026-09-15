@@ -42,10 +42,10 @@ dev:
 	@bun run dev
 
 dev-fe:
-	@bun run --filter sitivent-frontend dev
+	@bun run --filter eventkan-frontend dev
 
 dev-be:
-	@bun run --filter sitivent-backend dev
+	@bun run --filter eventkan-backend dev
 
 build:
 	@bun run build
@@ -57,19 +57,19 @@ test:
 	@bun run test
 
 test-e2e:
-	@E2E_ROOT_ADMIN_EMAIL=$(E2E_ROOT_ADMIN_EMAIL) E2E_PASSWORD=$(E2E_PASSWORD) bun run --cwd apps/sitivent-frontend test
+	@E2E_ROOT_ADMIN_EMAIL=$(E2E_ROOT_ADMIN_EMAIL) E2E_PASSWORD=$(E2E_PASSWORD) bun run --cwd apps/eventkan-frontend test
 
 test-e2e-headed:
-	@E2E_ROOT_ADMIN_EMAIL=$(E2E_ROOT_ADMIN_EMAIL) E2E_PASSWORD=$(E2E_PASSWORD) bun run --cwd apps/sitivent-frontend test:headed
+	@E2E_ROOT_ADMIN_EMAIL=$(E2E_ROOT_ADMIN_EMAIL) E2E_PASSWORD=$(E2E_PASSWORD) bun run --cwd apps/eventkan-frontend test:headed
 
 test-e2e-ui:
-	@cd apps/sitivent-frontend && E2E_ROOT_ADMIN_EMAIL=$(E2E_ROOT_ADMIN_EMAIL) E2E_PASSWORD=$(E2E_PASSWORD) bunx playwright test --ui
+	@cd apps/eventkan-frontend && E2E_ROOT_ADMIN_EMAIL=$(E2E_ROOT_ADMIN_EMAIL) E2E_PASSWORD=$(E2E_PASSWORD) bunx playwright test --ui
 
 test-e2e-validate:
-	@bun run --cwd apps/sitivent-frontend test:validate
+	@bun run --cwd apps/eventkan-frontend test:validate
 
 playwright-install:
-	@cd apps/sitivent-frontend && ./node_modules/.bin/playwright install chromium
+	@cd apps/eventkan-frontend && ./node_modules/.bin/playwright install chromium
 
 test-api:
 	@$(MAKE) -C apps/backend test-api

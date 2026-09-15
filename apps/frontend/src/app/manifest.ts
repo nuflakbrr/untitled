@@ -16,6 +16,6 @@ export default function manifest(): MetadataRoute.Manifest {
     display: 'browser',
     background_color: '#F7F8FC',
     theme_color: primary.main,
-    icons: [{ src: '/sitivent-mark.svg', sizes: 'any', type: 'image/svg+xml' }],
+    icons: [{ src: '/eventkan-mark.svg', sizes: 'any', type: 'image/svg+xml' }],
   };
 }

@@ -1,4 +1,4 @@
-# Event Module - SITIVENT (SITIVENT Monorepo)
+# Event Module - EVENTKAN (EVENTKAN Monorepo)
 
 > **Version**: 1.0.0  
 > Modul utama penyelenggaraan event kampus yang mengelola informasi acara per fakultas/rektorat, pembicara, fasilitas, kuota, harga, dan siklus hidup penerbitan event.

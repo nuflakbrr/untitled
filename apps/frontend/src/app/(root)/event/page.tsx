@@ -12,7 +12,7 @@ import { getPublicEvents, getPublicCategories } from 'src/lib/api/events';
 
 import { EventCard } from 'src/sections/home/home-event-card';
 
-export const metadata: Metadata = { title: 'Event | SITIVENT' };
+export const metadata: Metadata = { title: 'Event | EVENTKAN' };
 
 export default async function EventListPage({
   searchParams,

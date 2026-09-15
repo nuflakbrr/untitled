@@ -170,7 +170,7 @@ export function EventSearch() {
               >
                 <Box
                   component="img"
-                  src={event.banner ?? '/sitivent-mark.svg'}
+                  src={event.banner ?? '/eventkan-mark.svg'}
                   alt=""
                   sx={{ width: 52, height: 40, objectFit: 'cover', borderRadius: 1 }}
                 />

@@ -66,7 +66,7 @@ make db-setup
 Salin file `.env` di frontend:
 
 ```bash
-cp apps/sitivent-frontend/.env.example apps/sitivent-frontend/.env.local
+cp apps/eventkan-frontend/.env.example apps/eventkan-frontend/.env.local
 ```
 
 _(Opsional: Jika ingin menggunakan Docker untuk database, tersedia `make docker-up` dan `make docker-down`)_

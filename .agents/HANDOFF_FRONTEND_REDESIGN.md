@@ -3,7 +3,7 @@
 ## Status
 
 - Branch: `feat/fe/total-redesign`
-- Scope delivered: shared SITIVENT identity, public root, sign-in, dashboard shell, dashboard overview, and event module placeholder.
+- Scope delivered: shared EVENTKAN identity, public root, sign-in, dashboard shell, dashboard overview, and event module placeholder.
 - Route slugs and authentication flow are unchanged.
 - The branch has not been committed or pushed.
 
@@ -28,7 +28,7 @@
 ## Main files
 
 - `src/theme/theme-config.ts` and `src/theme/core/palette.ts`: brand tokens and color schemes.
-- `src/components/logo/logo.tsx`: shared SITIVENT identity.
+- `src/components/logo/logo.tsx`: shared EVENTKAN identity.
 - `src/components/color-mode-button.tsx`: shared theme control.
 - `src/layouts/main/`: public header, navigation, and footer.
 - `src/sections/home/view/home-view.tsx`: redesigned public root.
@@ -50,10 +50,10 @@ Outside the shared navbar and footer, the root page now follows the approved sev
 
 ## Deliberate boundaries
 
-- Article and support pages remain legacy surfaces and are no longer linked from the redesigned root. Redesign them when they become part of the SITIVENT content roadmap.
+- Article and support pages remain legacy surfaces and are no longer linked from the redesigned root. Redesign them when they become part of the EVENTKAN content roadmap.
 - Event cards do not link to a public detail page because that route does not exist yet. Add the route and CTA together to avoid broken navigation.
 - Event create/list controls remain disabled until Sprint 7.2 connects the admin module to the backend.
-- Static legacy Open Graph PNG files still exist, but root metadata now uses SITIVENT event imagery and no longer references them.
+- Static legacy Open Graph PNG files still exist, but root metadata now uses EVENTKAN event imagery and no longer references them.
 
 ## Continuation checklist
 

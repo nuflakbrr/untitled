@@ -1,7 +1,7 @@
-# Cetak Biru Arsitektur & Panduan Dokumentasi Fitur - SITIVENT (SITIVENT Monorepo)
+# Cetak Biru Arsitektur & Panduan Dokumentasi Fitur - EVENTKAN (EVENTKAN Monorepo)
 
 > **Version**: 1.0.0  
-> Dokumen ini berfungsi sebagai peta navigasi utama dan pedoman pengembangan untuk programmer dan AI Agent dalam memahami arsitektur, tech stack, alur kerja pengembangan, serta struktur fitur di proyek **SITIVENT** versi **Turborepo Polyglot Monorepo (Go Backend + Next.js Frontend)**.
+> Dokumen ini berfungsi sebagai peta navigasi utama dan pedoman pengembangan untuk programmer dan AI Agent dalam memahami arsitektur, tech stack, alur kerja pengembangan, serta struktur fitur di proyek **EVENTKAN** versi **Turborepo Polyglot Monorepo (Go Backend + Next.js Frontend)**.
 
 ---
 
@@ -18,7 +18,7 @@ Aplikasi dibangun menggunakan arsitektur monorepo polyglot terpisah yang diorkes
   - **Authentication**: JWT HS256 (`golang-jwt/jwt/v5`) + Bcrypt password hashing
   - **Structured Logging**: Uber Zap
   - **Hot Reload**: Air
-- **Frontend Web (`apps/sitivent-frontend`)**:
+- **Frontend Web (`apps/eventkan-frontend`)**:
   - **Framework**: [Next.js 16.2.6](https://nextjs.org/) (App Router, Turbopack, React 19.2.6)
   - **UI Design System**: Material UI v9 (`@mui/material`, `@mui/lab`) + Zone/Minimal UI + Tailwind CSS v4
   - **State Management & Caching**: TanStack React Query v5
@@ -28,10 +28,10 @@ Aplikasi dibangun menggunakan arsitektur monorepo polyglot terpisah yang diorkes
 
 ---
 
-## 2. Struktur Monorepo (`apps/backend` & `apps/sitivent-frontend`)
+## 2. Struktur Monorepo (`apps/backend` & `apps/eventkan-frontend`)
 
 ```text
-sitivent/
+eventkan/
 ├── apps/
 │   ├── backend/               # Go Gin REST API Server (:8080)
 │   │   ├── cmd/api/main.go    # Entry point & dependency injection
@@ -66,7 +66,7 @@ sitivent/
 
 ## 3. Alur Kerja Pembuatan Fitur Baru (End-to-End Feature Workflow)
 
-Saat membuat atau memodifikasi fitur di SITIVENT Monorepo, ikuti tahapan berikut secara berurutan:
+Saat membuat atau memodifikasi fitur di EVENTKAN Monorepo, ikuti tahapan berikut secara berurutan:
 
 ### Langkah 1: Database Migration & Model (Backend)
 1. Buat file migrasi up/down baru di `apps/backend/internal/database/migrations/features/` (1 tabel per file).
@@ -79,12 +79,12 @@ Saat membuat atau memodifikasi fitur di SITIVENT Monorepo, ikuti tahapan berikut
 3. Buat handler di `apps/backend/internal/handlers/` dan daftarkan rutenya di `apps/backend/internal/router/router.go` dengan middleware permission guard `middleware.RequirePermission("feature.action")`.
 
 ### Langkah 3: Types & API Client (Frontend)
-1. Definisikan tipe DTO di `apps/sitivent-frontend/src/types/`.
+1. Definisikan tipe DTO di `apps/eventkan-frontend/src/types/`.
 2. Buat skema validasi form menggunakan Zod di `src/sections/[feature]/schema.ts`.
-3. Buat custom React Query hook di `apps/sitivent-frontend/src/services/[feature].ts` menggunakan client `ky`.
+3. Buat custom React Query hook di `apps/eventkan-frontend/src/services/[feature].ts` menggunakan client `ky`.
 
 ### Langkah 4: UI Implementation & Testing (Frontend)
-1. Buat komponen form dan tabel di `apps/sitivent-frontend/src/sections/[feature]/`.
-2. Pasang halaman di route group `apps/sitivent-frontend/src/app/(admin)/admin/[feature]/page.tsx` atau `(participant)/participant/[feature]/page.tsx`.
+1. Buat komponen form dan tabel di `apps/eventkan-frontend/src/sections/[feature]/`.
+2. Pasang halaman di route group `apps/eventkan-frontend/src/app/(admin)/admin/[feature]/page.tsx` atau `(participant)/participant/[feature]/page.tsx`.
 3. Pasang guard izin UI menggunakan hook `usePermission`.
 4. Jalankan `make lint` dan `make tsc` untuk verifikasi kualitas kode.

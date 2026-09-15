@@ -1,4 +1,4 @@
-# TypeScript Rules & Standards - SITIVENT (SITIVENT Monorepo)
+# TypeScript Rules & Standards - EVENTKAN (EVENTKAN Monorepo)
 
 > **Version**: 1.0.0  
 > **TypeScript**: 5.9+ with Strict Mode Enabled  
@@ -24,10 +24,10 @@
 
 ## 2. Interface First Architecture (`src/types/`)
 
-Setiap model domain, response API REST, DTO, dan properti komponen didefinisikan dalam interface atau type terdedikasi di `apps/sitivent-frontend/src/types/`:
+Setiap model domain, response API REST, DTO, dan properti komponen didefinisikan dalam interface atau type terdedikasi di `apps/eventkan-frontend/src/types/`:
 
 ```text
-apps/sitivent-frontend/src/types/
+apps/eventkan-frontend/src/types/
 ├── event.ts               # Event, EventSpeaker, EventBenefit, EventCategory
 ├── registration.ts        # Registration, RegistrationFilter
 ├── payment.ts             # Payment, PaymentVerificationInput

@@ -1,8 +1,8 @@
-# AI Agents Guidelines - SITIVENT (SITIVENT Monorepo)
+# AI Agents Guidelines - EVENTKAN (EVENTKAN Monorepo)
 
 > **Version**: 1.0.0  
 > **Author**: Naufal Akbar Nugroho  
-> **Project**: SITIVENT / SITIVENT Monorepo  
+> **Project**: EVENTKAN / EVENTKAN Monorepo  
 > **Target Domain**: Sistem Informasi & Manajemen Event Universitas (Hierarchical Multi-Tenant: Rektorat & Fakultas)  
 > **Architecture**: Turborepo Monorepo (Polyglot: Go Backend + Next.js Frontend)  
 > **Backend**: Go (Golang 1.25+ / Gin Web Framework / Redis / Zap Logger)  
@@ -11,7 +11,7 @@
 > **Authentication**: JWT & Multi-Tenant PBAC (Permission-Based Access Control) with Redis Cache  
 > **Last Updated**: 2026
 
-Selamat datang di pedoman pengembangan AI SITIVENT (SITIVENT). Dokumentasi Product Requirement Document (PRD) ini dipecah menjadi beberapa modul terstruktur untuk memudahkan pemeliharaan, referensi teknis, dan kepatuhan arsitektur monorepo polyglot:
+Selamat datang di pedoman pengembangan AI EVENTKAN (EVENTKAN). Dokumentasi Product Requirement Document (PRD) ini dipecah menjadi beberapa modul terstruktur untuk memudahkan pemeliharaan, referensi teknis, dan kepatuhan arsitektur monorepo polyglot:
 
 ---
 
@@ -32,13 +32,13 @@ Selamat datang di pedoman pengembangan AI SITIVENT (SITIVENT). Dokumentasi Produ
 
 ### 1. Tentang Project & Roadmap
 
-1. [01_PROJECT.md](./PRD/01_PROJECT.md) - Tentang SITIVENT, arsitektur multi-tenant universitas, deskripsi sistem, dan roadmap.
+1. [01_PROJECT.md](./PRD/01_PROJECT.md) - Tentang EVENTKAN, arsitektur multi-tenant universitas, deskripsi sistem, dan roadmap.
 
 ### 2. Arsitektur & Setup
 
 2. [02_STACK.md](./PRD/02_STACK.md) - Rincian lengkap teknologi stack (Turborepo, Bun, Next.js 16, React 19, MUI v9, Tailwind v4, Go 1.25+, Gin, PostgreSQL, Redis, Zap).
-3. [03_ARCHITECTURE.md](./PRD/03_ARCHITECTURE.md) - Prinsip arsitektur monorepo, tenant context isolation, REST API layer (`apps/backend`), Next.js App Router (`apps/sitivent-frontend`).
-4. [04_FOLDER_STRUCTURE.md](./PRD/04_FOLDER_STRUCTURE.md) - Struktur direktori monorepo (`apps/backend/`, `apps/sitivent-frontend/`, `packages/`).
+3. [03_ARCHITECTURE.md](./PRD/03_ARCHITECTURE.md) - Prinsip arsitektur monorepo, tenant context isolation, REST API layer (`apps/backend`), Next.js App Router (`apps/eventkan-frontend`).
+4. [04_FOLDER_STRUCTURE.md](./PRD/04_FOLDER_STRUCTURE.md) - Struktur direktori monorepo (`apps/backend/`, `apps/eventkan-frontend/`, `packages/`).
 
 ### 3. Konvensi & Standar Kode
 
@@ -49,7 +49,7 @@ Selamat datang di pedoman pengembangan AI SITIVENT (SITIVENT). Dokumentasi Produ
 
 ### 4. Modul Bisnis & Alur Kerja
 
-9. [09_FEATURES.md](./PRD/09_FEATURES.md) - Ringkasan seluruh modul dan fitur multi-tenant sistem SITIVENT.
+9. [09_FEATURES.md](./PRD/09_FEATURES.md) - Ringkasan seluruh modul dan fitur multi-tenant sistem EVENTKAN.
 10. [10_EVENT_MODULE.md](./PRD/10_EVENT_MODULE.md) - Alur kerja event per tenant fakultas/rektorat, kategori, pembicara, fasilitas, online/offline, status lifecycle, dan validasi kuota.
 11. [11_REGISTRATION_MODULE.md](./PRD/11_REGISTRATION_MODULE.md) - Alur pendaftaran peserta universal, nomor registrasi, QR token, dan validasi ketersediaan.
 12. [12_PAYMENT_MODULE.md](./PRD/12_PAYMENT_MODULE.md) - Alur pembayaran manual, verifikasi bukti transfer panitia fakultas, status pembayaran, refund, dan audit trail.

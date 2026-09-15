@@ -19,7 +19,7 @@ export function SignUpForm() {
   const [state, action, pending] = useActionState(signUpAction, { error: '' });
   return (
     <Box component="section">
-      <Typography variant="h3">Buat akun SITIVENT</Typography>
+      <Typography variant="h3">Buat akun EVENTKAN</Typography>
       <Typography color="text.secondary" sx={{ mt: 1.5 }}>
         Daftar untuk menemukan dan mengikuti event kampus.
       </Typography>

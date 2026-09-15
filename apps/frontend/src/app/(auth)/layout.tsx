@@ -52,7 +52,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
           </Typography>
         </Box>
         <Typography variant="caption" sx={{ color: 'grey.500' }}>
-          SITIVENT · Sistem informasi event universitas
+          EVENTKAN · Sistem informasi event universitas
         </Typography>
         <Box
           aria-hidden="true"

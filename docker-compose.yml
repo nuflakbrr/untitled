@@ -5,13 +5,13 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: sitivent
+      POSTGRES_DB: eventkan
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d sitivent"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d eventkan"]
       interval: 10s
       timeout: 5s
       retries: 5

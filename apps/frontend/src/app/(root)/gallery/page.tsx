@@ -7,8 +7,8 @@ import Typography from '@mui/material/Typography';
 import { getPublicGalleries } from 'src/lib/api/events';
 
 export const metadata: Metadata = {
-  title: 'Galeri | SITIVENT',
-  description: 'Dokumentasi kegiatan dan event SITIVENT.',
+  title: 'Galeri | EVENTKAN',
+  description: 'Dokumentasi kegiatan dan event EVENTKAN.',
 };
 
 export default async function GalleryPage() {

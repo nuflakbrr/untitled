@@ -31,7 +31,7 @@ export function Logo({
     <LogoRoot
       component={RouterLink}
       href={href}
-      aria-label="SITIVENT"
+      aria-label="EVENTKAN"
       underline="none"
       className={mergeClasses([logoClasses.root, className])}
       sx={[
@@ -69,7 +69,7 @@ export function Logo({
           component="span"
           sx={{ color: 'text.primary', fontWeight: 800, fontSize: 17, letterSpacing: 0.8 }}
         >
-          SITIVENT
+          EVENTKAN
         </Typography>
       )}
     </LogoRoot>

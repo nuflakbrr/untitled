@@ -55,7 +55,7 @@ export default function CertificatesPage() {
               Verifikasi resmi
             </Typography>
             <Typography variant="h1" sx={{ mt: 1, fontSize: { xs: '2.2rem', md: '3.5rem' } }}>
-              Cek sertifikat SITIVENT
+              Cek sertifikat EVENTKAN
             </Typography>
             <Typography color="text.secondary" sx={{ mt: 1, maxWidth: 560, mx: 'auto' }}>
               Pastikan sertifikat event terdaftar dan diterbitkan secara resmi oleh penyelenggara.

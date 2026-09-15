@@ -1,7 +1,7 @@
-# Core Modules & Features - SITIVENT (SITIVENT Monorepo)
+# Core Modules & Features - EVENTKAN (EVENTKAN Monorepo)
 
 > **Version**: 1.0.0  
-> SITIVENT terdiri dari kumpulan modul terpadu yang dirancang untuk mendukung operasional event dari hulu ke hilir dalam arsitektur **Hierarchical Multi-Tenant** (Rektorat Universitas & Fakultas).
+> EVENTKAN terdiri dari kumpulan modul terpadu yang dirancang untuk mendukung operasional event dari hulu ke hilir dalam arsitektur **Hierarchical Multi-Tenant** (Rektorat Universitas & Fakultas).
 
 ---
 

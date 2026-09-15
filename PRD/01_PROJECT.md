@@ -1,7 +1,7 @@
-# About Project & Product Roadmap - SITIVENT (SITIVENT Monorepo)
+# About Project & Product Roadmap - EVENTKAN (EVENTKAN Monorepo)
 
 > **Version**: 1.0.0  
-> **Product Name**: SITIVENT (SITIVENT Monorepo)  
+> **Product Name**: EVENTKAN (EVENTKAN Monorepo)  
 > **Target Domain**: Sistem Informasi & Manajemen Event Universitas (Hierarchical Multi-Tenant: Rektorat & Fakultas)  
 > **Target Event**: Seminar Ilmiah, Workshop Akademik, Webinar, Kompetisi Mahasiswa, Konferensi Internasional, Expo Kampus, Dies Natalis, dan Wisuda.
 
@@ -9,9 +9,9 @@
 
 ## 1. Deskripsi Produk
 
-**SITIVENT** adalah platform manajemen dan pendaftaran event berskala enterprise yang dirancang khusus untuk ekosistem **Perguruan Tinggi / Universitas** menggunakan arsitektur **Hierarchical Multi-Tenant** di atas **Turborepo Polyglot Monorepo** (Go Gin REST API Backend + Next.js 16 App Router Frontend + PostgreSQL + Redis).
+**EVENTKAN** adalah platform manajemen dan pendaftaran event berskala enterprise yang dirancang khusus untuk ekosistem **Perguruan Tinggi / Universitas** menggunakan arsitektur **Hierarchical Multi-Tenant** di atas **Turborepo Polyglot Monorepo** (Go Gin REST API Backend + Next.js 16 App Router Frontend + PostgreSQL + Redis).
 
-SITIVENT memfasilitasi seluruh siklus hidup penyelenggaraan acara kampus:
+EVENTKAN memfasilitasi seluruh siklus hidup penyelenggaraan acara kampus:
 - **Hierarchical Multi-Tenancy**: Tenant Utama (Rektorat / Universitas) dan Child Tenants (Fakultas / Departemen / Unit Kerja).
 - **Akun Superadmin Mandiri**: Tiap tenant (Rektorat maupun Fakultas) memiliki 1 akun Superadmin tersendiri untuk mengelola operasionalnya.
 - **Event Terisolasi per Fakultas/Rektorat**: Fakultas mengelola event, kategori, kuota, pembicara, dan sertifikat masing-masing secara independen.

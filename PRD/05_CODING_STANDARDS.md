@@ -1,4 +1,4 @@
-# Coding Standards & Conventions - SITIVENT (SITIVENT Monorepo)
+# Coding Standards & Conventions - EVENTKAN (EVENTKAN Monorepo)
 
 > **Version**: 1.0.0  
 > Pedoman standar penulisan kode untuk Go Backend dan Next.js Frontend dalam arsitektur monorepo polyglot.

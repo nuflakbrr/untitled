@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "EVENTKAN API Tests",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

@@ -9,7 +9,7 @@ import { getServerSession } from 'src/auth/server';
 
 // ----------------------------------------------------------------------
 
-const TITLE = 'SITIVENT | Temukan Event Kampusmu';
+const TITLE = 'EVENTKAN | Temukan Event Kampusmu';
 const DESCRIPTION =
   'Temukan seminar, workshop, kompetisi, dan agenda universitas dalam satu platform event kampus.';
 
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     url: '/',
     title: TITLE,
     description: DESCRIPTION,
-    images: ['/sitivent-mark.svg'],
+    images: ['/eventkan-mark.svg'],
   },
 };
 

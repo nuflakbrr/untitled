@@ -7,7 +7,7 @@ import packageJson from '../package.json';
 // var wajib hilang). Konsumsi konfigurasi lewat objek ini, bukan process.env.
 
 export const CONFIG = {
-  appName: 'SITIVENT',
+  appName: 'EVENTKAN',
   appVersion: packageJson.version,
   assetsDir: env.NEXT_PUBLIC_ASSETS_DIR,
   /** Tampilkan galeri referensi /components di build production (dev selalu tampil). */

@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     template: `%s - ${CONFIG.appName}`,
   },
   description:
-    'SITIVENT memudahkan mahasiswa menemukan, mendaftar, dan mengikuti event universitas dalam satu platform.',
+    'EVENTKAN memudahkan mahasiswa menemukan, mendaftar, dan mengikuti event universitas dalam satu platform.',
   openGraph: {
     type: 'website',
     siteName: CONFIG.appName,
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   icons: [
     {
       rel: 'icon',
-      url: `${CONFIG.assetsDir}/sitivent-mark.svg`,
+      url: `${CONFIG.assetsDir}/eventkan-mark.svg`,
     },
   ],
 };

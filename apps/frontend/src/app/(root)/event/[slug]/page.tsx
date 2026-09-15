@@ -265,7 +265,7 @@ export default async function EventDetailPage({
                 mb: 1,
               }}
             >
-              SITIVENT • EVENT
+              EVENTKAN • EVENT
             </Typography>
             <Typography
               variant="h2"

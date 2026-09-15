@@ -1,4 +1,4 @@
-# Panduan Versioning & Changelog - SITIVENT
+# Panduan Versioning & Changelog - EVENTKAN
 
 Dokumen ini menjelaskan aturan penulisan versi dan pembuatan changelog otomatis yang wajib diikuti oleh programmer dan AI Agent di repositori ini.
 

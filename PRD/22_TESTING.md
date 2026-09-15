@@ -1,4 +1,4 @@
-# Testing & Quality Assurance - SITIVENT (SITIVENT Monorepo)
+# Testing & Quality Assurance - EVENTKAN (EVENTKAN Monorepo)
 
 > **Version**: 1.0.0  
 > Strategi pengujian otomatis untuk Go Backend dan Next.js Frontend.

@@ -64,7 +64,7 @@ export function Footer({ sx, ...other }: FooterProps) {
           variant="caption"
           sx={{ pt: 3, borderTop: '1px solid', borderColor: 'grey.800' }}
         >
-          © 2026 SITIVENT. Sistem informasi event universitas.
+          © 2026 EVENTKAN. Sistem informasi event universitas.
         </Typography>
       </Container>
     </Box>

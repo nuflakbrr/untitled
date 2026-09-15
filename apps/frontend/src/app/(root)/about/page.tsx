@@ -11,8 +11,8 @@ import { paths } from 'src/routes/paths';
 import { Iconify } from 'src/components/iconify';
 
 export const metadata: Metadata = {
-  title: 'Tentang Kami | SITIVENT',
-  description: 'Mengenal SITIVENT, platform manajemen event universitas.',
+  title: 'Tentang Kami | EVENTKAN',
+  description: 'Mengenal EVENTKAN, platform manajemen event universitas.',
 };
 
 const principles = [
@@ -40,7 +40,7 @@ export default function AboutPage() {
         <Container>
           <Box sx={{ maxWidth: 820 }}>
             <Typography variant="overline" color="primary.main">
-              Tentang SITIVENT
+              Tentang EVENTKAN
             </Typography>
             <Typography
               variant="h1"
@@ -52,7 +52,7 @@ export default function AboutPage() {
               color="text.secondary"
               sx={{ mt: 3, maxWidth: 650, fontSize: { md: '1.15rem' } }}
             >
-              SITIVENT adalah ruang bersama untuk menemukan agenda kampus, mendaftar dengan cepat,
+              EVENTKAN adalah ruang bersama untuk menemukan agenda kampus, mendaftar dengan cepat,
               dan membantu setiap penyelenggara membuat event yang berdampak.
             </Typography>
             <Button href={paths.event.root} variant="contained" size="large" sx={{ mt: 4 }}>
@@ -79,7 +79,7 @@ export default function AboutPage() {
               Kami percaya event yang baik dimulai dari pengalaman yang tertata.
             </Typography>
             <Typography color="text.secondary">
-              Dari seminar kecil hingga agenda universitas, SITIVENT membantu seluruh proses berada
+              Dari seminar kecil hingga agenda universitas, EVENTKAN membantu seluruh proses berada
               dalam satu tempat. Peserta mendapatkan informasi yang jelas, sedangkan penyelenggara
               dapat fokus pada kualitas kegiatan.
             </Typography>

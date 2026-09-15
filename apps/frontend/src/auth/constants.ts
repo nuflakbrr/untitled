@@ -1,1 +1,1 @@
-export const SESSION_COOKIE = 'sitivent_session';
+export const SESSION_COOKIE = 'eventkan_session';

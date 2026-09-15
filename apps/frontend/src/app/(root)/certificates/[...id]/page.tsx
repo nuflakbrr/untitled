@@ -69,7 +69,7 @@ export default async function CertificateVerifyPage({
               Sertifikat valid
             </Typography>
             <Typography color="text.secondary" sx={{ mt: 1 }}>
-              Dokumen ini terdaftar secara resmi di platform SITIVENT.
+              Dokumen ini terdaftar secara resmi di platform EVENTKAN.
             </Typography>
           </Box>
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 3 }}>
