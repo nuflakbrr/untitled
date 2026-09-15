@@ -23,9 +23,11 @@ const EventInformation: FC<EventInformationProps> = ({ event, formattedStartDate
     </div>
 
     <div className="space-y-4">
-      <div className="relative aspect-[1.45] overflow-hidden rounded-[24px] border border-[#111927]/10 bg-[#11233f] shadow-[0_18px_50px_rgba(17,35,63,.08)]">
-        <EventCover banner={event.banner} category={event.category?.name} coverStyle={coverStyle} title={event.title} />
-      </div>
+      {event.banner && (
+        <div className="relative aspect-[1.45] overflow-hidden rounded-[24px] border border-[#111927]/10 bg-[#11233f] shadow-[0_18px_50px_rgba(17,35,63,.08)]">
+          <EventCover banner={event.banner} category={event.category?.name} coverStyle={coverStyle} title={event.title} />
+        </div>
+      )}
       <h2 className="font-display text-2xl font-extrabold tracking-[-.03em] text-[#11233f]">Detail Event</h2>
       <div
         className="prose min-h-37.5 max-w-none leading-relaxed text-[#4b5565] prose-headings:font-display prose-headings:text-[#11233f] prose-a:text-[#ff7a45] prose-strong:text-[#11233f]"
