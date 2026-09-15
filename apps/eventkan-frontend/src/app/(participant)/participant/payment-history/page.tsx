@@ -1,87 +1,15 @@
 'use client';
 
-import 'moment-timezone';
-import 'moment/locale/id';
-
-import moment from 'moment';
+import { CreditCard } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { type ColumnDef } from '@tanstack/react-table';
-import { CreditCard, ChevronsUpDown } from 'lucide-react';
 
 import type { ParticipantPayment } from '@/interfaces/features/payments';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import Heading from '@/components/Common/Heading';
-import { Separator } from '@/components/ui/separator';
-import { formatCurrency } from '@/lib/formatCurrency';
 import { DataTable } from '@/components/ui/data-table';
 import EmptyState from '@/app/(root)/_components/EmptyState';
 import { getParticipantPayments } from '@/services/admin/payments';
 
-const columns: ColumnDef<ParticipantPayment>[] = [
-  {
-    accessorKey: 'registrationNumber',
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        No. Registrasi
-        <ChevronsUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <span className="font-mono text-sm">{row.original.registration.registrationNumber}</span>
-    ),
-  },
-  {
-    accessorKey: 'event',
-    header: 'Event',
-    cell: ({ row }) => <span className="text-sm">{row.original.registration.event.title}</span>,
-  },
-  {
-    accessorKey: 'amount',
-    header: 'Nominal',
-    cell: ({ row }) => (
-      <span className="font-medium text-sm">{formatCurrency(row.original.amount)}</span>
-    ),
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => {
-      const status = row.original.status;
-      const labelMap: Record<string, string> = {
-        WAITING: 'Menunggu Pembayaran',
-        PAID: 'Lunas',
-        FAILED: 'Ditolak',
-        REFUNDED: 'Dikembalikan',
-      };
-      const classMap: Record<string, string> = {
-        WAITING: 'bg-amber-500/10 text-amber-600 border-amber-200',
-        PAID: 'bg-emerald-500/10 text-emerald-600 border-emerald-200',
-        FAILED: 'bg-rose-500/10 text-rose-600 border-rose-200',
-        REFUNDED: 'bg-blue-500/10 text-blue-600 border-blue-200',
-      };
-
-      return (
-        <Badge variant="outline" className={`font-semibold px-2 py-0.5 ${classMap[status] || ''}`}>
-          {labelMap[status] || status}
-        </Badge>
-      );
-    },
-  },
-  {
-    accessorKey: 'createdAt',
-    header: 'Tanggal Transaksi',
-    cell: ({ row }) => (
-      <span className="text-sm">
-        {moment(row.original.createdAt)
-          .tz('Asia/Jakarta')
-          .locale('id')
-          .format('DD MMM YYYY, HH:mm')}
-      </span>
-    ),
-  },
-];
+import Columns from './_components/Columns';
 
 export default function PaymentHistoryPage() {
   const { data, isLoading } = useQuery({
@@ -89,15 +17,21 @@ export default function PaymentHistoryPage() {
     queryFn: getParticipantPayments,
   });
 
-  const payments = Array.isArray(data) ? data : [];
+  const payments = (Array.isArray(data) ? data : []) as ParticipantPayment[];
 
   return (
-    <section className="space-y-4">
-      <Heading
-        title={`Riwayat Pembayaran (${payments.length})`}
-        description="Lihat semua transaksi pembayaran event Anda."
-      />
-      <Separator />
+    <section className="space-y-7 pb-10">
+      <header className="flex flex-col gap-6 border-b border-[#111927]/10 pb-8">
+        <div>
+          <h1 className="font-display mt-2 text-[clamp(38px,5vw,58px)] font-extrabold leading-none tracking-tighter text-[#111927]">
+            Riwayat Pembayaran <span className="text-[#ff7a45]">({payments.length})</span>
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6c7280]">
+            Cek semua pembayaran event kamu, dari yang masih diproses sampai yang sudah beres.
+          </p>
+        </div>
+      </header>
+
       {payments.length === 0 && !isLoading ? (
         <EmptyState
           icon={CreditCard}
@@ -106,15 +40,17 @@ export default function PaymentHistoryPage() {
           action={{ href: '/events', label: 'Jelajahi event' }}
         />
       ) : (
-        <DataTable
-          searchKey="registrationNumber"
-          columns={columns}
-          data={payments as ParticipantPayment[]}
-          enableRowSelection={false}
-          isFetching={isLoading}
-          pageCount={1}
-          placeholderSearch="Cari no. registrasi atau event..."
-        />
+        <div className="rounded-[24px] border border-[#111927]/10 bg-[#fffdf8] p-2 shadow-[0_18px_50px_rgba(17,35,63,.05)] sm:p-3">
+          <DataTable
+            searchKey={['registration.registrationNumber', 'registration.event.title']}
+            columns={Columns}
+            data={payments}
+            enableRowSelection={false}
+            isFetching={isLoading}
+            pageCount={1}
+            placeholderSearch="Cari no. registrasi atau event..."
+          />
+        </div>
       )}
     </section>
   );

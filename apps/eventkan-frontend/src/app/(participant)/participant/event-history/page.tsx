@@ -29,14 +29,11 @@ export default function EventHistoryPage() {
     <section className="space-y-7 pb-10">
       <header className="flex flex-col gap-6 border-b border-[#111927]/10 pb-8">
         <div>
-          <span className="text-xs font-extrabold uppercase tracking-[.08em] text-[#ff7a45]">
-            Aktivitas Event
-          </span>
           <h1 className="font-display mt-2 text-[clamp(38px,5vw,58px)] font-extrabold leading-none tracking-tighter text-[#111927]">
             Riwayat Event <span className="text-[#ff7a45]">({registrations.length})</span>
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6c7280]">
-            Lihat semua event yang pernah kamu daftarkan dan status kehadirannya.
+            Cek event yang pernah kamu daftar, status kehadiran, dan update sertifikatnya di sini.
           </p>
         </div>
       </header>

@@ -12,7 +12,7 @@ import type { ParticipantRegistration } from '@/interfaces/features/registration
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
-import { eventHistoryTableHeaderClass } from '../_libs/tableStyles';
+import { participantTableHeaderClass } from '../../_libs/tableStyles';
 import { getEventHistoryStatusConfig } from '../_libs/getEventHistoryStatusConfig';
 
 const Columns = (
@@ -23,7 +23,7 @@ const Columns = (
     header: ({ column }) => (
       <Button
         variant="ghost"
-        className={eventHistoryTableHeaderClass}
+        className={participantTableHeaderClass}
         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
       >
         No. Registrasi
@@ -38,7 +38,7 @@ const Columns = (
   },
   {
     accessorKey: 'event',
-    header: () => <span className={eventHistoryTableHeaderClass}>Event</span>,
+    header: () => <span className={participantTableHeaderClass}>Event</span>,
     cell: ({ row }) => (
       <div className="flex flex-col">
         <span className="font-display text-sm font-semibold tracking-[-.02em] text-[#111927]">
@@ -50,7 +50,7 @@ const Columns = (
   },
   {
     accessorKey: 'status',
-    header: () => <span className={eventHistoryTableHeaderClass}>Status</span>,
+    header: () => <span className={participantTableHeaderClass}>Status</span>,
     cell: ({ row }) => {
       const status = getEventHistoryStatusConfig(row.original.status);
 
@@ -66,7 +66,7 @@ const Columns = (
   },
   {
     accessorKey: 'createdAt',
-    header: () => <span className={eventHistoryTableHeaderClass}>Tanggal Daftar</span>,
+    header: () => <span className={participantTableHeaderClass}>Tanggal Daftar</span>,
     cell: ({ row }) => (
       <span className="text-sm font-medium text-[#4b5565]">
         {moment(row.original.createdAt)
@@ -78,7 +78,7 @@ const Columns = (
   },
   {
     accessorKey: 'certificate',
-    header: () => <span className={eventHistoryTableHeaderClass}>Sertifikat</span>,
+    header: () => <span className={participantTableHeaderClass}>Sertifikat</span>,
     cell: ({ row }) => {
       const certificate = row.original.certificates?.[0];
       const canDownload =
@@ -99,7 +99,7 @@ const Columns = (
   },
   {
     accessorKey: 'meetingLink',
-    header: () => <span className={eventHistoryTableHeaderClass}>Link Meeting</span>,
+    header: () => <span className={participantTableHeaderClass}>Link Meeting</span>,
     cell: ({ row }) =>
       row.original.event.eventType === 'ONLINE' && row.original.event.meetingLink ? (
         <Button asChild variant="outline" size="xs" className="gap-1 text-xs font-bold">
@@ -113,7 +113,7 @@ const Columns = (
   },
   {
     accessorKey: 'testimonial',
-    header: () => <span className={eventHistoryTableHeaderClass}>Testimoni</span>,
+    header: () => <span className={participantTableHeaderClass}>Testimoni</span>,
     cell: ({ row }) => {
       const registration = row.original;
       const isEligible =
