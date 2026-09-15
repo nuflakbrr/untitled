@@ -187,16 +187,13 @@ func (s *TenantService) GetPaymentGateway(ctx context.Context, tenantID string) 
 	}
 
 	return &dto.TenantPaymentGatewayResponse{
-		ID:                pg.ID,
-		TenantID:          pg.TenantID,
-		Provider:          pg.Provider,
-		IsActive:          pg.IsActive,
-		VirtualAccount:    pg.VirtualAccount,
-		Env:               pg.Env,
-		BankName:          pg.BankName,
-		BankAccountNumber: pg.BankAccountNumber,
-		BankAccountHolder: pg.BankAccountHolder,
-		HasAPIKey:         pg.APIKey != nil && *pg.APIKey != "",
+		ID:             pg.ID,
+		TenantID:       pg.TenantID,
+		Provider:       pg.Provider,
+		IsActive:       pg.IsActive,
+		VirtualAccount: pg.VirtualAccount,
+		Env:            pg.Env,
+		HasAPIKey:      pg.APIKey != nil && *pg.APIKey != "",
 	}, nil
 }
 
@@ -208,15 +205,12 @@ func (s *TenantService) UpdatePaymentGateway(ctx context.Context, tenantID strin
 	}
 
 	pg := &domain.TenantPaymentGateway{
-		TenantID:          tenantID,
-		Provider:          req.Provider,
-		IsActive:          req.IsActive,
-		APIKey:            req.APIKey,
-		VirtualAccount:    req.VirtualAccount,
-		Env:               req.Env,
-		BankName:          req.BankName,
-		BankAccountNumber: req.BankAccountNumber,
-		BankAccountHolder: req.BankAccountHolder,
+		TenantID:       tenantID,
+		Provider:       req.Provider,
+		IsActive:       req.IsActive,
+		APIKey:         req.APIKey,
+		VirtualAccount: req.VirtualAccount,
+		Env:            req.Env,
 	}
 
 	if err := s.repo.UpsertPaymentGateway(ctx, pg); err != nil {
@@ -224,16 +218,13 @@ func (s *TenantService) UpdatePaymentGateway(ctx context.Context, tenantID strin
 	}
 
 	return &dto.TenantPaymentGatewayResponse{
-		ID:                pg.ID,
-		TenantID:          pg.TenantID,
-		Provider:          pg.Provider,
-		IsActive:          pg.IsActive,
-		VirtualAccount:    pg.VirtualAccount,
-		Env:               pg.Env,
-		BankName:          pg.BankName,
-		BankAccountNumber: pg.BankAccountNumber,
-		BankAccountHolder: pg.BankAccountHolder,
-		HasAPIKey:         pg.APIKey != nil && *pg.APIKey != "",
+		ID:             pg.ID,
+		TenantID:       pg.TenantID,
+		Provider:       pg.Provider,
+		IsActive:       pg.IsActive,
+		VirtualAccount: pg.VirtualAccount,
+		Env:            pg.Env,
+		HasAPIKey:      pg.APIKey != nil && *pg.APIKey != "",
 	}, nil
 }
 

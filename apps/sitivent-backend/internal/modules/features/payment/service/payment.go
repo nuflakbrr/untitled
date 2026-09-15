@@ -88,6 +88,9 @@ func (s *PaymentService) Checkout(ctx context.Context, userID string, req dto.Ch
 	if err != nil {
 		return nil, err
 	}
+	if gateway.Provider != domain.ProviderIPaymu {
+		return nil, fmt.Errorf("unsupported payment provider: %s", gateway.Provider)
+	}
 
 	payment, checkoutToken, err := s.repository.ClaimPendingPayment(ctx, req.RegistrationID, gateway.Provider, reg.Amount)
 	if err != nil {
@@ -95,18 +98,6 @@ func (s *PaymentService) Checkout(ctx context.Context, userID string, req dto.Ch
 	}
 	if checkoutToken == "" {
 		response := toResponse(payment)
-		return &response, nil
-	}
-
-	if gateway.Provider == domain.ProviderManual {
-		if err := s.repository.ReleaseCheckout(ctx, payment.ID, checkoutToken); err != nil {
-			return nil, err
-		}
-		response := toResponse(payment)
-		response.Provider = domain.ProviderManual
-		response.BankName = gateway.BankName
-		response.BankAccountNumber = gateway.BankAccountNumber
-		response.BankAccountHolder = gateway.BankAccountHolder
 		return &response, nil
 	}
 
@@ -220,7 +211,7 @@ func toResponse(payment *domain.Payment) dto.PaymentResponse {
 		ID: payment.ID, RegistrationID: payment.RegistrationID, Amount: payment.Amount,
 		Status: string(payment.Status), Provider: payment.Provider, TransactionID: payment.TransactionID,
 		PaymentMethod: payment.PaymentMethod, PaymentChannel: payment.PaymentChannel,
-		PaymentURL: payment.PaymentURL, ProofURL: payment.ProofURL, ExpiredAt: payment.ExpiredAt,
+		PaymentURL: payment.PaymentURL, ExpiredAt: payment.ExpiredAt,
 		VerifiedAt: payment.VerifiedAt, CreatedAt: payment.CreatedAt, UpdatedAt: payment.UpdatedAt,
 	}
 }

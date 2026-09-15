@@ -248,7 +248,7 @@ func TestCheckout_AlreadyRegisteredIsRejected(t *testing.T) {
 	}
 }
 
-func TestCheckout_ManualProviderSkipsGatewayCall(t *testing.T) {
+func TestCheckout_ManualProviderIsRejected(t *testing.T) {
 	repo := newFakeRepo()
 	repo.registrations["reg-1"] = &repository.RegistrationForCheckout{UserID: "user-1", TenantID: "tenant-1", Amount: 7500, Status: "WAITING_PAYMENT"}
 	repo.payments["reg-1"] = &domain.Payment{ID: "pay-reg-1", RegistrationID: "reg-1", Amount: 7500, Status: domain.StatusWaiting, Provider: domain.ProviderManual}
@@ -259,14 +259,11 @@ func TestCheckout_ManualProviderSkipsGatewayCall(t *testing.T) {
 	svc := NewPaymentServiceWithInterfaces(repo, factory, "http://backend.local", "")
 
 	resp, err := svc.Checkout(context.Background(), "user-1", dto.CheckoutRequest{RegistrationID: "reg-1"})
-	if err != nil {
-		t.Fatalf("manual checkout: %v", err)
+	if err == nil || resp != nil {
+		t.Fatalf("expected manual provider to be rejected, response=%+v error=%v", resp, err)
 	}
 	if called {
 		t.Fatal("MANUAL provider must never call the iPaymu gateway")
-	}
-	if resp.BankAccountNumber != "12345" || resp.Provider != domain.ProviderManual || resp.Amount != 7500 {
-		t.Fatalf("unexpected manual checkout response: %+v", resp)
 	}
 }
 

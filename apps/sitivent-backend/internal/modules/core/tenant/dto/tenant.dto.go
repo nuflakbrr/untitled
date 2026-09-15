@@ -51,28 +51,22 @@ type TenantQueryFilter struct {
 	IncludeDeleted bool    `form:"include_deleted" json:"-"`
 }
 
-// UpdatePaymentGatewayRequest represents payload to configure iPaymu / Bank settings
+// UpdatePaymentGatewayRequest represents payload to configure iPaymu.
 type UpdatePaymentGatewayRequest struct {
-	Provider          string  `json:"provider" binding:"required,oneof=IPAYMU MANUAL"`
-	IsActive          bool    `json:"is_active"`
-	APIKey            *string `json:"api_key" binding:"omitempty"`
-	VirtualAccount    *string `json:"virtual_account" binding:"omitempty"`
-	Env               string  `json:"env" binding:"required,oneof=sandbox production"`
-	BankName          *string `json:"bank_name" binding:"omitempty"`
-	BankAccountNumber *string `json:"bank_account_number" binding:"omitempty"`
-	BankAccountHolder *string `json:"bank_account_holder" binding:"omitempty"`
+	Provider       string  `json:"provider" binding:"required,oneof=IPAYMU"`
+	IsActive       bool    `json:"is_active"`
+	APIKey         *string `json:"api_key" binding:"omitempty"`
+	VirtualAccount *string `json:"virtual_account" binding:"omitempty"`
+	Env            string  `json:"env" binding:"required,oneof=sandbox production"`
 }
 
 // TenantPaymentGatewayResponse represents gateway configuration response
 type TenantPaymentGatewayResponse struct {
-	ID                string  `json:"id"`
-	TenantID          string  `json:"tenant_id"`
-	Provider          string  `json:"provider"`
-	IsActive          bool    `json:"is_active"`
-	VirtualAccount    *string `json:"virtual_account,omitempty"`
-	Env               string  `json:"env"`
-	BankName          *string `json:"bank_name,omitempty"`
-	BankAccountNumber *string `json:"bank_account_number,omitempty"`
-	BankAccountHolder *string `json:"bank_account_holder,omitempty"`
-	HasAPIKey         bool    `json:"has_api_key"`
+	ID             string  `json:"id"`
+	TenantID       string  `json:"tenant_id"`
+	Provider       string  `json:"provider"`
+	IsActive       bool    `json:"is_active"`
+	VirtualAccount *string `json:"virtual_account,omitempty"`
+	Env            string  `json:"env"`
+	HasAPIKey      bool    `json:"has_api_key"`
 }
