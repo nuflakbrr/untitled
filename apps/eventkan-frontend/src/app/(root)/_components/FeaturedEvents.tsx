@@ -1,4 +1,5 @@
 import 'moment/locale/id';
+import 'moment-timezone';
 
 import type { FC } from 'react';
 
@@ -80,7 +81,7 @@ const FeaturedEvents: FC<FeaturedEventsProps> = ({ events, categories }) => {
                     <div className="mt-3 grid gap-2 text-[13px] text-[#6c7280]">
                       <span className="flex items-center gap-2">
                         <CalendarDays className="h-4 w-4 text-[#ff7a45]" />
-                        {moment(event.startDate).locale('id').format('DD MMMM YYYY')}
+                        {moment(event.startDate).tz('Asia/Jakarta').locale('id').format('DD MMMM YYYY')}
                       </span>
                       <span className="flex items-center gap-2">
                         <MapPin className="h-4 w-4 text-[#ff7a45]" />

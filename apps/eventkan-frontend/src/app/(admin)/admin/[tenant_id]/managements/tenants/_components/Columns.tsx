@@ -1,6 +1,7 @@
 'use client';
 
 import 'moment/locale/id';
+import 'moment-timezone';
 
 import type { ColumnDef } from '@tanstack/react-table';
 
@@ -52,7 +53,7 @@ const Columns = (): ColumnDef<AdminTenantRow>[] => [
     header: 'Dibuat',
     cell: ({ row }) =>
       row.original.createdAt
-        ? moment(row.original.createdAt).locale('id').format('DD MMM YYYY')
+        ? moment(row.original.createdAt).tz('Asia/Jakarta').locale('id').format('DD MMM YYYY')
         : '-',
   },
   { id: 'action', header: 'Aksi', cell: ({ row }) => <CellAction data={row.original} /> },

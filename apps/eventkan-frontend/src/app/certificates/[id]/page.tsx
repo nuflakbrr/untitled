@@ -1,13 +1,15 @@
 'use client';
 
-import type { CertificateTemplate, CertificateSignature } from '@/interfaces/features/certificates';
-
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import Loader from '@/components/Common/Loader';
 import { use, useState, useEffect } from 'react';
 import { Award, Printer, ArrowLeft } from 'lucide-react';
+
+import type { CertificateTemplate, CertificateSignature } from '@/interfaces/features/certificates';
+
+import { Button } from '@/components/ui/button';
+import Loader from '@/components/Common/Loader';
+import { formatLongDate } from '@/lib/formatLongDate';
 import {
   checkUserIsAdmin,
   getCertificateById,
@@ -78,13 +80,6 @@ export default function CertificatePage(props: PageProps) {
   const handlePrint = () => {
     window.print();
   };
-
-  const formatDate = (dateString: Date) => new Date(dateString).toLocaleDateString('id-ID', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      timeZone: 'Asia/Jakarta',
-    });
 
   const signatures = template?.signatures ?? [];
   const backgroundUrl = template?.backgroundUrl ?? null;
@@ -221,7 +216,7 @@ export default function CertificatePage(props: PageProps) {
                   {' '}
                   pada tanggal{' '}
                   <strong className="font-semibold" style={{ color: titleColor }}>
-                    {formatDate(cert.event.startDate)}
+                    {formatLongDate(cert.event.startDate)}
                   </strong>
                 </>
               )}
@@ -250,7 +245,7 @@ export default function CertificatePage(props: PageProps) {
                   <div className="text-left space-y-1">
                     <p className="text-[11px] font-semibold">TANGGAL TERBIT</p>
                     <p className="text-xs font-bold" style={{ color: titleColor }}>
-                      {formatDate(cert.createdAt)}
+                      {formatLongDate(cert.createdAt)}
                     </p>
                   </div>
                 )}
@@ -286,7 +281,7 @@ export default function CertificatePage(props: PageProps) {
                 <div className="text-left space-y-1">
                   <p className="text-[11px] font-semibold">TANGGAL TERBIT</p>
                   <p className="text-xs font-bold" style={{ color: titleColor }}>
-                    {formatDate(cert.createdAt)}
+                    {formatLongDate(cert.createdAt)}
                   </p>
                 </div>
                 <div className="flex flex-col items-center space-y-1">

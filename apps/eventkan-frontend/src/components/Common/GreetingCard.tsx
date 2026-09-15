@@ -1,5 +1,8 @@
 'use client';
 
+import 'moment-timezone';
+
+import moment from 'moment';
 import { type FC, useState, useEffect } from 'react';
 import { Sun, Moon, Sunset, Sunrise } from 'lucide-react';
 
@@ -30,20 +33,9 @@ const GreetingCard: FC = () => {
 
   useEffect(() => {
     const update = () => {
-      const now = new Date();
-      const timeStr =
-        now.toLocaleTimeString('id-ID', {
-          timeZone: 'Asia/Jakarta',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        }) + ' WIB';
-      const parts = new Intl.DateTimeFormat('en-US', {
-        hour: 'numeric',
-        hour12: false,
-        timeZone: 'Asia/Jakarta',
-      }).formatToParts(now);
-      const hour = parseInt(parts.find((p) => p.type === 'hour')?.value || '0', 10);
+      const now = moment().tz('Asia/Jakarta');
+      const timeStr = now.format('HH:mm:ss [WIB]');
+      const hour = now.hour();
 
       setCurrentTime(timeStr);
       updateTimeOfDay(hour);

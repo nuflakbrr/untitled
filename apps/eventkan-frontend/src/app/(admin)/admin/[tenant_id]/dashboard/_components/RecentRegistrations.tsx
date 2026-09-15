@@ -1,5 +1,9 @@
+import 'moment-timezone';
+import 'moment/locale/id';
+
 import type { Route } from 'next';
 
+import moment from 'moment';
 import Link from 'next/link';
 import { Users } from 'lucide-react';
 
@@ -10,12 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardTitle, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
 
 const date = (value: Date) =>
-  new Date(value).toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'Asia/Jakarta',
-  });
+  moment(value).tz('Asia/Jakarta').locale('id').format('D MMM YYYY');
 const registrationStatus: Record<string, string> = {
   CHECKED_IN: 'Hadir',
   REGISTERED: 'Terdaftar',
