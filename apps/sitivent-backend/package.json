@@ -1,6 +1,6 @@
 {
   "name": "sitivent-backend",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "export PATH=\"$HOME/go/bin:$PATH\" && (which air >/dev/null 2>&1 && air || go run cmd/api/main.go)",
