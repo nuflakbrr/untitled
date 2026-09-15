@@ -231,6 +231,10 @@ func (h *UserHandler) DeleteMe(c *gin.Context) {
 		response.Error(c, http.StatusInternalServerError, "Failed to delete account", err.Error())
 		return
 	}
+	if err := middleware.RevokeToken(c.Request.Context(), claims); err != nil {
+		response.Error(c, http.StatusInternalServerError, "Failed to revoke session", "")
+		return
+	}
 	response.Success(c, http.StatusOK, "Account deleted successfully", nil)
 }
 

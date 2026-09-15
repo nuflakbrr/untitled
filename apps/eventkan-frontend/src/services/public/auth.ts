@@ -57,11 +57,7 @@ export async function sendPasswordChangeNotificationEmail(..._legacyArgs: unknow
 
 export async function requestPasswordResetAction(email: string) {
   try {
-    await api.post(
-      '/core/v1/auth/password-reset/request',
-      { email },
-      { timeout: 15_000 }
-    );
+    await api.post('/core/v1/auth/password-reset/request', { email }, { timeout: 15_000 });
     return { success: true };
   } catch {
     return { success: false, error: 'Gagal memproses permintaan reset password.' };
@@ -81,6 +77,24 @@ export async function resetPasswordAction(token: string, newPassword: string) {
           ? 'Token reset password tidak valid atau telah kedaluwarsa.'
           : 'Gagal mereset password. Silakan coba lagi.',
     };
+  }
+}
+
+export async function requestAccountReactivationAction(email: string) {
+  try {
+    await api.post('/core/v1/auth/account-reactivation/request', { email });
+    return { success: true };
+  } catch {
+    return { success: false, error: 'Gagal memproses permintaan aktivasi akun.' };
+  }
+}
+
+export async function reactivateAccountAction(token: string) {
+  try {
+    await api.post('/core/v1/auth/account-reactivation/confirm', { token });
+    return { success: true };
+  } catch {
+    return { success: false, error: 'Tautan aktivasi tidak valid atau telah kedaluwarsa.' };
   }
 }
 

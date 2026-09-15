@@ -10,8 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 
-import { fieldInputClass } from '../_libs/formStyles';
-import { helpCategories } from '../_constants/categories';
+import { fieldInputClass } from '../_libs/formStyles.libs';
+import { helpCategories } from '../_constants/categories.constants';
 
 const HelpForm: FC<HelpFormProps> = ({
   form,

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import { EventType, EventStatus } from '@/interfaces/enums';
 
 export const speakerSchema = z.object({

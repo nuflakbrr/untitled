@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import React, { useContext, createContext } from 'react';
+
 import { getCurrentUserData } from '@/services/admin/users';
 
 type PermissionContextType = {
@@ -30,7 +31,8 @@ export const PermissionProvider: React.FC<{
 
   const hasPermission = (permission: string) => permissions.includes(permission);
 
-  const hasRole = (role: string) => roles.some((r: string) => r.toLowerCase() === role.toLowerCase());
+  const hasRole = (role: string) =>
+    roles.some((r: string) => r.toLowerCase() === role.toLowerCase());
 
   return (
     <PermissionContext.Provider value={{ permissions, roles, hasPermission, hasRole, isLoading }}>

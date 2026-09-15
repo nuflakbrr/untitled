@@ -10,7 +10,7 @@ import type { ParticipantNavbarProps } from '@/interfaces/navbar';
 import { cn } from '@/lib/utils';
 import ParticipantUserMenu from '@/components/Mixins/Participant/ParticipantUserMenu';
 
-import { participantNavLinks } from './_constants/navLinks';
+import { participantNavLinks } from './_constants/navLinks.constants';
 
 const ParticipantNavLinks: FC = () => {
   const pathname = usePathname();

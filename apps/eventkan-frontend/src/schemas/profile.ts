@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const updateNameSchema = z.object({
   name: z.string().min(2, 'Nama minimal 2 karakter'),
+  image: z.union([z.literal(''), z.string().url('URL foto profil tidak valid')]),
 });
 
 export const changePasswordSchema = z

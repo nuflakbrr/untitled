@@ -9,7 +9,7 @@ import type { CategoryLinksProps } from '@/interfaces/features/events';
 import { cn } from '@/lib/utils';
 
 import { useCategoryLinks } from '../_hooks/useCategoryLinks';
-import { getCategoryConfig } from '../_libs/getCategoryConfig';
+import { getCategoryConfig } from '../_libs/getCategoryConfig.libs';
 
 const CategoryLinks: FC<CategoryLinksProps> = ({ categories }) => {
   const {

@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 
-import { features } from '../_constants/features';
+import { features } from '../_constants/features.constants';
 
 const Features: FC = () => (
   <section id="fitur" className="rounded-t-[38px] bg-[#11233f] px-4 py-24 text-white sm:px-6">

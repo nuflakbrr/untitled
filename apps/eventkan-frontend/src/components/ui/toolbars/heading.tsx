@@ -38,7 +38,7 @@ export const HeadingToolbar = () => {
 
   return (
     <Select value={getCurrentValue()} onValueChange={onValueChange}>
-      <SelectTrigger className="h-8 w-[120px] text-xs">
+      <SelectTrigger className="h-8 w-30 text-xs">
         <SelectValue placeholder="Heading" />
       </SelectTrigger>
       <SelectContent>

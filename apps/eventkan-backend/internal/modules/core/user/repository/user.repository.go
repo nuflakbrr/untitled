@@ -226,6 +226,7 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*domain
 		LEFT JOIN tenants t ON u.tenant_id = t.id
 		LEFT JOIN accounts a ON u.id = a.user_id AND a.provider_id = 'credential'
 		WHERE LOWER(u.email) = LOWER($1)
+		  AND u.deleted_at IS NULL
 	`
 	u := &domain.User{}
 	err := r.db.QueryRow(ctx, query, email).Scan(
@@ -242,6 +243,37 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*domain
 		return nil, fmt.Errorf("failed to find user by email: %w", err)
 	}
 
+	return u, nil
+}
+
+// FindDeletedByEmail retrieves a deactivated user for the reactivation flow.
+func (r *UserRepository) FindDeletedByEmail(ctx context.Context, email string) (*domain.User, error) {
+	query := `
+		SELECT u.id, u.tenant_id, u.email, u.name, u.email_verified, u.image,
+		       u.role, u.banned, u.ban_reason, u.ban_expires, u.role_id,
+		       u.created_at, u.updated_at,
+		       t.name as tenant_name, t.slug as tenant_slug, t.code as tenant_code, t.type::text as tenant_type,
+		       COALESCE(a.password, '') as password
+		FROM users u
+		LEFT JOIN tenants t ON u.tenant_id = t.id
+		LEFT JOIN accounts a ON u.id = a.user_id AND a.provider_id = 'credential'
+		WHERE LOWER(u.email) = LOWER($1)
+		  AND u.deleted_at IS NOT NULL
+	`
+	u := &domain.User{}
+	err := r.db.QueryRow(ctx, query, email).Scan(
+		&u.ID, &u.TenantID, &u.Email, &u.Name, &u.EmailVerified, &u.Image,
+		&u.Role, &u.Banned, &u.BanReason, &u.BanExpires, &u.RoleID,
+		&u.CreatedAt, &u.UpdatedAt,
+		&u.TenantName, &u.TenantSlug, &u.TenantCode, &u.TenantType,
+		&u.PasswordHash,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrUserNotFound
+		}
+		return nil, fmt.Errorf("failed to find deleted user by email: %w", err)
+	}
 	return u, nil
 }
 
@@ -332,6 +364,17 @@ func (r *UserRepository) Delete(ctx context.Context, id string) error {
 	cmdTag, err := r.db.Exec(ctx, `UPDATE users SET deleted_at = NOW(), updated_at = NOW() WHERE id = $1 AND deleted_at IS NULL`, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete user: %w", err)
+	}
+	if cmdTag.RowsAffected() == 0 {
+		return ErrUserNotFound
+	}
+	return nil
+}
+
+func (r *UserRepository) Reactivate(ctx context.Context, id string) error {
+	cmdTag, err := r.db.Exec(ctx, `UPDATE users SET deleted_at = NULL, updated_at = NOW() WHERE id = $1 AND deleted_at IS NOT NULL`, id)
+	if err != nil {
+		return fmt.Errorf("failed to reactivate user: %w", err)
 	}
 	if cmdTag.RowsAffected() == 0 {
 		return ErrUserNotFound

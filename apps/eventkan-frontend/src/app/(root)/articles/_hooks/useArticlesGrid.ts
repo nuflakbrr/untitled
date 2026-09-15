@@ -4,7 +4,7 @@ import type { ArticleItem } from '@/interfaces/features/articles';
 
 import { useDebounce } from '@/hooks/useDebounce';
 
-import { getCoverStyles } from '../../_libs/getCoverStyles';
+import { getCoverStyles } from '../../_libs/getCoverStyles.libs';
 
 export const useArticlesGrid = (
   initialItems: ArticleItem[],

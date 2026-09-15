@@ -1,4 +1,4 @@
-import type { SideLinkGroup } from '../_constants/sideLinks';
+import type { SideLinkGroup } from '../_constants/sideLinks.constants';
 
 export function filterSidebarLinks(
   links: SideLinkGroup[],

@@ -11,7 +11,7 @@ import type { CertificateResponse } from '@/interfaces/features/certificates';
 
 import { Button } from '@/components/ui/button';
 
-import { participantTableHeaderClass } from '../../_libs/tableStyles';
+import { participantTableHeaderClass } from '../../_libs/tableStyles.libs';
 
 const Columns: ColumnDef<CertificateResponse>[] = [
   {

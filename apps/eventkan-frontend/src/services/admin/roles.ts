@@ -16,12 +16,18 @@ const list = async (
   includeDeleted = false
 ): Promise<RolePaginationResponse> => {
   try {
-    const body = (await api.get(roles, { params: { page, limit, search, include_deleted: includeDeleted } })).data;
+    const body = (
+      await api.get(roles, { params: { page, limit, search, include_deleted: includeDeleted } })
+    ).data;
     const allPermissions =
       (await api.get('/core/v1/roles/permissions', { params: { limit: 1000 } })).data.data ?? [];
     const data = await Promise.all(
       (body.data ?? []).map(
-        async (role: { id: string; permissions?: { id: string; name: string }[]; deleted_at?: string | null }) => {
+        async (role: {
+          id: string;
+          permissions?: { id: string; name: string }[];
+          deleted_at?: string | null;
+        }) => {
           role = { ...role, deleted_at: role.deleted_at ?? null };
           if (role.deleted_at) return { ...role, deletedAt: role.deleted_at, permissions: [] };
           if (role.permissions?.length) return { ...role, deletedAt: role.deleted_at };
@@ -101,10 +107,20 @@ export async function deleteRole(id: string): Promise<RoleResponse> {
   }
 }
 export async function restoreRole(id: string): Promise<RoleResponse> {
-  try { await api.put(`${roles}/${id}/restore`); revalidatePath(path); return { success: true, message: 'Jabatan dipulihkan.' }; }
-  catch { return { success: false, error: 'Gagal memulihkan jabatan.' }; }
+  try {
+    await api.put(`${roles}/${id}/restore`);
+    revalidatePath(path);
+    return { success: true, message: 'Jabatan dipulihkan.' };
+  } catch {
+    return { success: false, error: 'Gagal memulihkan jabatan.' };
+  }
 }
 export async function permanentlyDeleteRole(id: string): Promise<RoleResponse> {
-  try { await api.delete(`${roles}/${id}/permanent`); revalidatePath(path); return { success: true, message: 'Jabatan dihapus permanen.' }; }
-  catch { return { success: false, error: 'Gagal menghapus jabatan permanen.' }; }
+  try {
+    await api.delete(`${roles}/${id}/permanent`);
+    revalidatePath(path);
+    return { success: true, message: 'Jabatan dihapus permanen.' };
+  } catch {
+    return { success: false, error: 'Gagal menghapus jabatan permanen.' };
+  }
 }

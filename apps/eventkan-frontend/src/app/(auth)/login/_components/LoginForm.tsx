@@ -16,8 +16,8 @@ import { signIn } from '@/lib/authClient';
 import { loginSchema, type LoginValues } from '@/schemas/auth';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 
-import { getLoginInputClass } from '../_libs/getLoginInputClass';
-import { sanitizeCallbackUrl } from '../_libs/sanitizeCallbackUrl';
+import { getLoginInputClass } from '../_libs/getLoginInputClass.libs';
+import { sanitizeCallbackUrl } from '../_libs/sanitizeCallbackUrl.libs';
 
 const LoginForm: FC = () => {
   const router = useRouter();
@@ -126,6 +126,16 @@ const LoginForm: FC = () => {
           Lupa password?
         </Link>
       </div>
+
+      <p className="-mt-2 text-center text-xs text-[#6c7280]">
+        Akun nonaktif?{' '}
+        <Link
+          href={'/reactivate-account' as Route}
+          className="font-semibold text-[#11233f] transition hover:text-[#ff7a45]"
+        >
+          Aktifkan kembali
+        </Link>
+      </p>
 
       <button
         type="submit"

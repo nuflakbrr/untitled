@@ -21,8 +21,8 @@ import {
 } from '@/components/ui/dialog';
 
 import TestimonialRating from './TestimonialRating';
-import { validateTestimonial } from '../_libs/validateTestimonial';
-import { DEFAULT_TESTIMONIAL_RATING } from '../_constants/testimonial';
+import { validateTestimonial } from '../_libs/validateTestimonial.libs';
+import { DEFAULT_TESTIMONIAL_RATING } from '../_constants/testimonial.constants';
 
 const TestimonialModal: FC<TestimonialModalProps> = ({
   isOpen,

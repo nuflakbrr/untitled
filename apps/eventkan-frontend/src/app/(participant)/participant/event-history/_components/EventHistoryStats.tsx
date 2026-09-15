@@ -1,6 +1,6 @@
 import type { EventHistoryStatsProps } from '@/interfaces/features/event-history';
 
-import { getEventHistoryStats, eventHistoryStatStyles } from '../_libs/getEventHistoryStats';
+import { getEventHistoryStats, eventHistoryStatStyles } from '../_libs/getEventHistoryStats.libs';
 
 export default function EventHistoryStats({ registrations }: EventHistoryStatsProps) {
   const stats = getEventHistoryStats(registrations);

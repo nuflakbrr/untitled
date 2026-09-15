@@ -7,7 +7,7 @@ import type { ArticleDetailPageProps } from '@/interfaces/features/articles';
 import { genPageMetadata } from '@/app/seo';
 import { getArticleDetail } from '@/services/public/articles';
 
-import { mapArticleDetail } from './_libs/mapArticleDetail';
+import { mapArticleDetail } from './_libs/mapArticleDetail.libs';
 import ArticleDetailClient from './_components/ArticleDetail';
 
 export async function generateMetadata({ params }: ArticleDetailPageProps): Promise<Metadata> {

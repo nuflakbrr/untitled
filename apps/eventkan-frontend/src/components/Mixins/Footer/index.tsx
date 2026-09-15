@@ -4,7 +4,7 @@ import type { FC } from 'react';
 
 import Link from 'next/link';
 
-import { socials } from './_constants/footerLinks';
+import { socials } from './_constants/footerLinks.constants';
 import FooterLinkGroups from './_components/FooterLinkGroups';
 import FooterNewsletter from './_components/FooterNewsletter';
 

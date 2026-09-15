@@ -5,7 +5,10 @@ import { toast } from 'sonner';
 import { use, useState, useEffect } from 'react';
 import { Award, Printer, ArrowLeft } from 'lucide-react';
 
-import type { CertificateTemplate, CertificateSignature } from '@/interfaces/features/certificates';
+import type {
+  CertificateTemplate,
+  CertificateVerificationSignature,
+} from '@/interfaces/features/certificates';
 
 import { Button } from '@/components/ui/button';
 import Loader from '@/components/Common/Loader';
@@ -38,9 +41,6 @@ export default function CertificatePage(props: PageProps) {
         if (data) {
           setCert(data);
           await updateDownloadTime(params.id);
-          if (data.event?.certificateTemplate) {
-            setTemplate(data.event.certificateTemplate);
-          }
         }
       } catch (err) {
         console.error(err);
@@ -81,7 +81,7 @@ export default function CertificatePage(props: PageProps) {
     window.print();
   };
 
-  const signatures = template?.signatures ?? [];
+  const signatures = cert.signatures ?? [];
   const backgroundUrl = template?.backgroundUrl ?? null;
   const showIssuedDate = template?.showIssuedDate ?? true;
   const titleFont = template?.titleFont ?? 'Inter';
@@ -201,14 +201,14 @@ export default function CertificatePage(props: PageProps) {
                   borderColor: `${contentColor}33`,
                 }}
               >
-                {cert.user.name || cert.user.email}
+                {cert.participantName || cert.participantEmail || 'Peserta Event'}
               </h1>
               <p className="text-xs font-mono mt-1">No. Sertifikat: {cert.certificateNumber}</p>
             </div>
             <p className="text-sm max-w-xl mx-auto leading-relaxed">
               Atas partisipasi aktif sebagai peserta dalam{' '}
               <strong className="font-semibold" style={{ color: titleColor }}>
-                {cert.event.title}
+                {cert.eventTitle}
               </strong>{' '}
               yang diselenggarakan
               {showEventDate && (
@@ -216,7 +216,7 @@ export default function CertificatePage(props: PageProps) {
                   {' '}
                   pada tanggal{' '}
                   <strong className="font-semibold" style={{ color: titleColor }}>
-                    {formatLongDate(cert.event.startDate)}
+                    {formatLongDate(cert.eventDate)}
                   </strong>
                 </>
               )}
@@ -225,7 +225,7 @@ export default function CertificatePage(props: PageProps) {
                   {' '}
                   di{' '}
                   <strong className="font-semibold" style={{ color: titleColor }}>
-                    {cert.event.location}
+                    {cert.eventLocation}
                   </strong>
                 </>
               )}
@@ -245,13 +245,13 @@ export default function CertificatePage(props: PageProps) {
                   <div className="text-left space-y-1">
                     <p className="text-[11px] font-semibold">TANGGAL TERBIT</p>
                     <p className="text-xs font-bold" style={{ color: titleColor }}>
-                      {formatLongDate(cert.createdAt)}
+                      {formatLongDate(cert.issuedAt)}
                     </p>
                   </div>
                 )}
 
                 {/* Render each signature */}
-                {signatures.map((sig: CertificateSignature) => (
+                {signatures.map((sig: CertificateVerificationSignature) => (
                   <div key={sig.id} className="flex flex-col items-center space-y-1">
                     <div className="h-20 w-36 relative flex items-center justify-center">
                       <img
@@ -281,7 +281,7 @@ export default function CertificatePage(props: PageProps) {
                 <div className="text-left space-y-1">
                   <p className="text-[11px] font-semibold">TANGGAL TERBIT</p>
                   <p className="text-xs font-bold" style={{ color: titleColor }}>
-                    {formatLongDate(cert.createdAt)}
+                    {formatLongDate(cert.issuedAt)}
                   </p>
                 </div>
                 <div className="flex flex-col items-center space-y-1">

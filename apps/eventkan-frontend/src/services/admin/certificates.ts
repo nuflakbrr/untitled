@@ -8,6 +8,7 @@ import type {
   CertificateTemplateNumbering,
   CertificatePaginationResponse,
   CertificateTemplateAppearance,
+  CertificateVerificationResponse,
 } from '@/interfaces/features/certificates';
 
 import api from '@/lib/api';
@@ -71,11 +72,38 @@ export async function generateCertificatesForEvent(eventId: string): Promise<any
     return { success: false, error: 'Gagal membuat sertifikat.' };
   }
 }
-export async function getCertificateById(id: string): Promise<any> {
+export async function getCertificateById(
+  id: string
+): Promise<CertificateVerificationResponse | null> {
   try {
-    return { success: true, data: (await api.get(`${endpoint}/${id}`)).data.data };
+    const item = (await api.get(`${endpoint}/verify/${id}`)).data.data;
+
+    return {
+      id: String(item.id ?? ''),
+      registrationId: String(item.registration_id ?? item.registrationId ?? ''),
+      eventId: String(item.event_id ?? item.eventId ?? ''),
+      certificateNumber: String(item.certificate_number ?? item.certificateNumber ?? ''),
+      participantName: String(item.participant_name ?? item.participantName ?? ''),
+      participantEmail: String(item.participant_email ?? item.participantEmail ?? ''),
+      eventTitle: String(item.event_title ?? item.eventTitle ?? ''),
+      eventLocation: String(item.event_location ?? item.eventLocation ?? ''),
+      issuerFaculty: String(item.issuer_faculty ?? item.issuerFaculty ?? ''),
+      eventDate: new Date(String(item.event_date ?? item.eventDate)),
+      pdfUrl: String(item.pdf_url ?? item.pdfUrl ?? ''),
+      downloadUrl: String(item.download_url ?? item.downloadUrl ?? ''),
+      signatures: Array.isArray(item.signatures)
+        ? item.signatures.map((signature: Record<string, unknown>) => ({
+            id: String(signature.id ?? ''),
+            name: String(signature.name ?? ''),
+            title: (signature.title as string | null) ?? null,
+            signatureUrl: String(signature.signature_url ?? signature.signatureUrl ?? ''),
+            order: Number(signature.order ?? 0),
+          }))
+        : [],
+      issuedAt: new Date(String(item.issued_at ?? item.issuedAt)),
+    };
   } catch {
-    return { success: false, error: 'Sertifikat tidak ditemukan.' };
+    return null;
   }
 }
 export async function updateDownloadTime(id: string): Promise<any> {

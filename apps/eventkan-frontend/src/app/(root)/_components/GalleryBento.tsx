@@ -7,7 +7,7 @@ import { ArrowRight } from 'lucide-react';
 
 import { getPublicGalleries } from '@/services/public/galleries';
 
-import { getBentoSpans } from '../_libs/getBentoSpans';
+import { getBentoSpans } from '../_libs/getBentoSpans.libs';
 
 const GalleryBento: FC = async () => {
   const response = await getPublicGalleries(1, 5, true);

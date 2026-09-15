@@ -17,7 +17,7 @@ import { registerSchema } from '@/schemas/auth';
 import { registerAction } from '@/services/public/auth';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 
-import { getRegisterInputClass } from '../_libs/inputClass';
+import { getRegisterInputClass } from '../_libs/inputClass.libs';
 
 const RegisterForm: FC = () => {
   const router = useRouter();

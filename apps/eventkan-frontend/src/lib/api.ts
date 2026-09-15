@@ -13,7 +13,9 @@ api.interceptors.request.use(async (config) => {
   if (config.headers['X-Skip-Tenant'] === 'true') {
     delete config.headers['X-Skip-Tenant'];
   } else {
-    const tenantId = (await cookies()).get('eventkan_active_tenant')?.value ?? (await headers()).get('x-eventkan-tenant-id');
+    const tenantId =
+      (await cookies()).get('eventkan_active_tenant')?.value ??
+      (await headers()).get('x-eventkan-tenant-id');
     if (tenantId && !config.headers['X-Tenant-ID']) config.headers['X-Tenant-ID'] = tenantId;
   }
   return config;

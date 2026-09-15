@@ -7,8 +7,8 @@ import type { ParticipantTourGuideProps } from '@/interfaces/layout';
 
 import { useIsMobile } from '@/hooks/useMobile';
 
-import { participantTourStyles } from './_constants/tourStyles';
-import { getParticipantTourSteps } from './_constants/tourSteps';
+import { participantTourStyles } from './_constants/tourStyles.constants';
+import { getParticipantTourSteps } from './_constants/tourSteps.constants';
 import { TourController, PARTICIPANT_TOUR_STORAGE_KEY } from './_components/TourController';
 
 export const ParticipantTourGuide: FC<ParticipantTourGuideProps> = ({ children }) => {

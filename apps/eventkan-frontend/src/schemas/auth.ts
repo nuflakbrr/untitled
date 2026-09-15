@@ -20,6 +20,12 @@ export const loginSchema = z.object({
   password: z.string().min(8, 'Password minimal 8 karakter'),
 });
 
+export const accountReactivationSchema = z.object({
+  email: z.string().email('Format email tidak valid'),
+});
+
+export type AccountReactivationValues = z.infer<typeof accountReactivationSchema>;
+
 export type LoginValues = z.infer<typeof loginSchema>;
 
 export const forgotPasswordSchema = z.object({

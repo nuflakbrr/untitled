@@ -42,7 +42,7 @@ export const FontSizeToolbar = () => {
 
   return (
     <Select value={getCurrentValue()} onValueChange={onValueChange}>
-      <SelectTrigger className="h-8 w-[80px] text-xs">
+      <SelectTrigger className="h-8 w-20 text-xs">
         <SelectValue placeholder="Size" />
       </SelectTrigger>
       <SelectContent>

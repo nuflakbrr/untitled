@@ -24,15 +24,17 @@ export async function resolveLabel(
   const endpoint = endpoints[parentSegment];
   if (!endpoint) return null;
   try {
-    if (parentSegment === 'event-categories' || parentSegment === 'events' || parentSegment === 'articles') {
+    if (
+      parentSegment === 'event-categories' ||
+      parentSegment === 'events' ||
+      parentSegment === 'articles'
+    ) {
       const response = await api.get(endpoint, {
         params: { page: 1, limit: 100 },
         headers: tenantId ? { 'X-Tenant-ID': tenantId } : undefined,
       });
       const items = Array.isArray(response.data.data) ? response.data.data : [];
-      const item = items.find(
-        (category: { id?: string }) => String(category.id ?? '') === id
-      );
+      const item = items.find((category: { id?: string }) => String(category.id ?? '') === id);
       return item?.name ?? item?.title ?? item?.event_title ?? null;
     }
     const item = (await api.get(`${endpoint}/${id}`)).data.data;

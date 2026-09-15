@@ -6,7 +6,7 @@ import type { PasswordFieldProps } from '@/interfaces/features/auth';
 
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 
-import { getResetPasswordInputClass } from '../_libs/getResetPasswordInputClass';
+import { getResetPasswordInputClass } from '../_libs/getResetPasswordInputClass.libs';
 
 const PasswordField: FC<PasswordFieldProps> = ({
   error,

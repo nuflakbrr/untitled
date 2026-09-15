@@ -11,7 +11,7 @@ import { Check, ArrowRight } from 'lucide-react';
 
 import type { HeroBannerProps } from '@/interfaces/features/events';
 
-import { eventCategories } from '../_constants/eventCategories';
+import { eventCategories } from '../_constants/eventCategories.constants';
 
 const HeroBanner: FC<HeroBannerProps> = ({ events }) => {
   const event = events[0];

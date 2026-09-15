@@ -2,7 +2,7 @@ import { Star } from 'lucide-react';
 
 import type { TestimonialRatingProps } from '@/interfaces/features/testimonials';
 
-import { TESTIMONIAL_RATINGS } from '../_constants/testimonial';
+import { TESTIMONIAL_RATINGS } from '../_constants/testimonial.constants';
 
 export default function TestimonialRating({
   rating,

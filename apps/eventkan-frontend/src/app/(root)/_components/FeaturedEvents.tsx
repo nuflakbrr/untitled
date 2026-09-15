@@ -12,7 +12,7 @@ import type { FeaturedEventsProps } from '@/interfaces/features/events';
 import { formatCurrency } from '@/lib/formatCurrency';
 
 import CategoryLinks from './CategoryLinks';
-import { getCoverStyles } from '../_libs/getCoverStyles';
+import { getCoverStyles } from '../_libs/getCoverStyles.libs';
 
 const FeaturedEvents: FC<FeaturedEventsProps> = ({ events, categories }) => {
   const visibleEvents = events.slice(0, 3);

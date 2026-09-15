@@ -12,8 +12,8 @@ import type { ParticipantRegistration } from '@/interfaces/features/registration
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
-import { participantTableHeaderClass } from '../../_libs/tableStyles';
-import { getEventHistoryStatusConfig } from '../_libs/getEventHistoryStatusConfig';
+import { participantTableHeaderClass } from '../../_libs/tableStyles.libs';
+import { getEventHistoryStatusConfig } from '../_libs/getEventHistoryStatusConfig.libs';
 
 const Columns = (
   onOpenTestimonial: (registration: ParticipantRegistration) => void

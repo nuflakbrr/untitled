@@ -2,7 +2,7 @@ import { genPageMetadata } from '@/app/seo';
 
 import ArticlesGrid from './_components/ArticlesGrid';
 import ArticlesHeader from './_components/ArticlesHeader';
-import { getArticlesPageData } from './_libs/getArticlesPageData';
+import { getArticlesPageData } from './_libs/getArticlesPageData.libs';
 
 export const metadata = genPageMetadata({
   title: 'Pusat Artikel & Edukasi',

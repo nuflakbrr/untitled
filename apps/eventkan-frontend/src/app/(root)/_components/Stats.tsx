@@ -2,7 +2,7 @@ import type { FC } from 'react';
 
 import { getPublicStats } from '@/services/public/stats';
 
-import { getPublicStatsDisplay } from '../_libs/getPublicStatsDisplay';
+import { getPublicStatsDisplay } from '../_libs/getPublicStatsDisplay.libs';
 
 const Stats: FC = async () => {
   const stats = getPublicStatsDisplay(await getPublicStats());

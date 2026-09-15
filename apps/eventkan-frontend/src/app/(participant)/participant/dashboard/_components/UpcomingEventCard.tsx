@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { formatLongDate } from '@/lib/formatLongDate';
 import EmptyState from '@/components/Common/EmptyState';
 import { formatEventTimeRange } from '@/lib/formatEventTimeRange';
-import { getCoverStyles } from '@/app/(root)/_libs/getCoverStyles';
+import { getCoverStyles } from '@/app/(root)/_libs/getCoverStyles.libs';
 
 import ShowQrButton from './ShowQrButton';
 import ConfirmOnlineButton from './ConfirmOnlineButton';

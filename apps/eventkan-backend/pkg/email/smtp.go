@@ -14,16 +14,17 @@ import (
 
 // SMTPConfig holds SMTP configuration
 type SMTPConfig struct {
-	Host         string
-	Port         int
-	Username     string
-	Password     string
-	FromEmail    string
-	FromName     string
-	FrontendURL  string
-	VerifyURL    string
-	ResetURL     string
-	SupportEmail string
+	Host            string
+	Port            int
+	Username        string
+	Password        string
+	FromEmail       string
+	FromName        string
+	FrontendURL     string
+	VerifyURL       string
+	ResetURL        string
+	ReactivationURL string
+	SupportEmail    string
 }
 
 // SMTPEmailService implements EmailService using SMTP
@@ -52,16 +53,17 @@ func NewSMTPEmailService() (*SMTPEmailService, error) {
 	}
 
 	config := &SMTPConfig{
-		Host:         getEnv("SMTP_HOST", "smtp.mailtrap.io"),
-		Port:         port,
-		Username:     getEnv("SMTP_USER", ""),
-		Password:     getEnv("SMTP_PASSWORD", ""),
-		FromEmail:    getEnv("SMTP_FROM_EMAIL", "noreply@eventkan.com"),
-		FromName:     getEnv("SMTP_FROM_NAME", "EVENTKAN"),
-		FrontendURL:  getEnv("FRONTEND_URL", "http://localhost:3000"),
-		VerifyURL:    getEnv("EMAIL_VERIFICATION_URL", "http://localhost:3000/verify-email"),
-		ResetURL:     getEnv("RESET_PASSWORD_URL", "http://localhost:3000/reset-password"),
-		SupportEmail: getEnv("SUPPORT_EMAIL", "support@eventkan.com"),
+		Host:            getEnv("SMTP_HOST", "smtp.mailtrap.io"),
+		Port:            port,
+		Username:        getEnv("SMTP_USER", ""),
+		Password:        getEnv("SMTP_PASSWORD", ""),
+		FromEmail:       getEnv("SMTP_FROM_EMAIL", "noreply@eventkan.com"),
+		FromName:        getEnv("SMTP_FROM_NAME", "EVENTKAN"),
+		FrontendURL:     getEnv("FRONTEND_URL", "http://localhost:3000"),
+		VerifyURL:       getEnv("EMAIL_VERIFICATION_URL", "http://localhost:3000/verify-email"),
+		ResetURL:        getEnv("RESET_PASSWORD_URL", "http://localhost:3000/reset-password"),
+		ReactivationURL: getEnv("ACCOUNT_REACTIVATION_URL", "http://localhost:3000/reactivate-account"),
+		SupportEmail:    getEnv("SUPPORT_EMAIL", "support@eventkan.com"),
 	}
 
 	// Validate SMTP credentials
@@ -161,6 +163,28 @@ func (s *SMTPEmailService) SendPasswordResetEmail(to, name, token string) error 
 
 	subject := "Atur Ulang Kata Sandi EVENTKAN"
 	return s.sendEmail(to, subject, body)
+}
+
+// SendAccountReactivationEmail sends a one-time account reactivation email.
+func (s *SMTPEmailService) SendAccountReactivationEmail(to, name, token string) error {
+	reactivationURL := fmt.Sprintf("%s?token=%s", s.config.ReactivationURL, token)
+
+	data := s.layoutData(name)
+	data.ShowIcon = false
+	data.Category = "ACCOUNT"
+	data.Title = "Aktifkan kembali akunmu."
+	data.Message = "Kami menerima permintaan untuk mengaktifkan kembali akun EVENTKAN yang sebelumnya dinonaktifkan."
+	data.CTAURL = reactivationURL
+	data.CTALabel = "Aktifkan akun"
+	data.SecurityNote = "Tautan ini hanya dapat digunakan satu kali dan berlaku selama 30 menit. Jika kamu tidak meminta aktivasi, abaikan email ini."
+
+	body, err := renderTemplate("account_reactivation.html", data)
+	if err != nil {
+		logger.Error("Failed to render account reactivation email template", logger.Err(err))
+		return err
+	}
+
+	return s.sendEmail(to, "Aktifkan Kembali Akun EVENTKAN", body)
 }
 
 // SendPasswordResetOTP sends an OTP code for password reset

@@ -64,6 +64,31 @@ export interface CertificatePaginationResponse {
   error?: string;
 }
 
+export interface CertificateVerificationSignature {
+  id: string;
+  name: string;
+  title: string | null;
+  signatureUrl: string;
+  order: number;
+}
+
+export interface CertificateVerificationResponse {
+  id: string;
+  registrationId: string;
+  eventId: string;
+  certificateNumber: string;
+  participantName: string;
+  participantEmail: string;
+  eventTitle: string;
+  eventLocation: string;
+  issuerFaculty: string;
+  eventDate: Date;
+  pdfUrl: string;
+  downloadUrl: string;
+  signatures: CertificateVerificationSignature[];
+  issuedAt: Date;
+}
+
 export interface EventWithCertificate {
   id: string;
   title: string;

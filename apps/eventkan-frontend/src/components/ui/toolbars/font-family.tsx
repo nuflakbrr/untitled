@@ -58,7 +58,7 @@ export const FontFamilyToolbar = () => {
 
   return (
     <Select value={getCurrentValue()} onValueChange={onValueChange}>
-      <SelectTrigger className="h-8 w-[140px] text-xs">
+      <SelectTrigger className="h-8 w-35 text-xs">
         <SelectValue placeholder="Font Family" />
       </SelectTrigger>
       <SelectContent>

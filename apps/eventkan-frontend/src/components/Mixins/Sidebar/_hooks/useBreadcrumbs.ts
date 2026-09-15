@@ -9,7 +9,7 @@ import {
   isUUID,
   breadcrumbLabels,
   resolvableBreadcrumbParents,
-} from '../_constants/breadcrumbs';
+} from '../_constants/breadcrumbs.constants';
 
 export function useBreadcrumbs() {
   const pathname = usePathname();

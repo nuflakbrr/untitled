@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button';
 import { formatLongDate } from '@/lib/formatLongDate';
 import EmptyState from '@/components/Common/EmptyState';
 
-import { canDownloadCertificate } from '../_libs/canDownloadCertificate';
-import { getDashboardStatusStyle } from '../_libs/getDashboardStatusStyle';
+import { canDownloadCertificate } from '../_libs/canDownloadCertificate.libs';
+import { getDashboardStatusStyle } from '../_libs/getDashboardStatusStyle.libs';
 
 interface EventHistoryTableProps {
   history: Array<{

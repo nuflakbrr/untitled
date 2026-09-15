@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
 
-import Link from 'next/link';
-import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { ChevronLeft } from 'lucide-react';
+
+import { auth } from '@/lib/auth';
 
 import ProfileForm from './_components/ProfileForm';
 
@@ -23,47 +22,21 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 pb-10">
-      {/* Page Header */}
-      <div className="flex flex-col gap-4 pb-6 border-b" style={{ borderColor: '#E3DACC' }}>
-        <Link
-          href="/participant/dashboard"
-          className="inline-flex items-center gap-1.5 text-xs font-medium transition-colors w-fit"
-          style={{ color: '#87867F' }}
-        >
-          <ChevronLeft className="w-3.5 h-3.5" />
-          Kembali ke Dashboard
-        </Link>
-
+    <section className="space-y-7 pb-10">
+      <header className="flex flex-col gap-6 border-b border-[#111927]/10 pb-8">
         <div>
-          {/* <span
-            className="text-[11px] font-bold uppercase tracking-widest block mb-2"
-            style={{
-              fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
-              color: '#87867F',
-            }}
-          >
-            Akun Peserta
-          </span> */}
-          <h1
-            className="leading-tight"
-            style={{
-              fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
-              fontWeight: 500,
-              fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
-              color: '#141413',
-              letterSpacing: '-0.01em',
-            }}
-          >
+          <h1 className="font-display mt-2 text-[clamp(38px,5vw,58px)] font-extrabold leading-none tracking-tighter text-[#111927]">
             Profil Saya
           </h1>
-          <p className="mt-1.5 text-sm" style={{ color: '#87867F' }}>
-            Kelola informasi profil dan keamanan akun Anda.
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6c7280]">
+            Atur profil dan keamanan akunmu di sini.
           </p>
         </div>
-      </div>
+      </header>
 
-      <ProfileForm user={{ name: session.user.name, email: session.user.email }} />
-    </div>
+      <ProfileForm
+        user={{ name: session.user.name, email: session.user.email, image: session.user.image }}
+      />
+    </section>
   );
 }

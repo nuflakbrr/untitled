@@ -8,7 +8,7 @@ import {
   getArticleTocItems,
   getArticleWordCount,
   createArticleMarkdown,
-} from '../_libs/articleDetail';
+} from '../_libs/articleDetail.libs';
 
 export const useArticleDetail = (article: ArticleDetail) => {
   const [copied, setCopied] = useState(false);

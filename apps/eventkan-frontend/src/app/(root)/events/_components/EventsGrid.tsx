@@ -8,7 +8,7 @@ import moment from 'moment';
 import type { EventsResultsProps } from '@/interfaces/features/events';
 
 import EventCard from './EventCard';
-import { getCoverStyles } from '../../_libs/getCoverStyles';
+import { getCoverStyles } from '../../_libs/getCoverStyles.libs';
 
 const EventsGrid: FC<Pick<EventsResultsProps, 'events'>> = ({ events }) => {
   const coverStyles = getCoverStyles(events.map((event) => event.id));

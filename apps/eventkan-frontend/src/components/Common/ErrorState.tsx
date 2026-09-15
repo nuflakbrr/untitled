@@ -7,8 +7,8 @@ import { ArrowRight } from 'lucide-react';
 
 import type { ErrorStateProps } from '@/interfaces/error';
 
-import { getErrorActions } from './_libs/getErrorActions';
-import { getErrorContent } from './_constants/errorContent';
+import { getErrorActions } from './_libs/getErrorActions.libs';
+import { getErrorContent } from './_constants/errorContent.constants';
 
 const ErrorState: FC<ErrorStateProps> = ({ code, error }) => {
   const meta = getErrorContent(code);

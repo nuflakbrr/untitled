@@ -39,6 +39,7 @@ func Initialize(db *pgxpool.Pool, cfg *config.Config) *AuthModule {
 		emailService = smtpService
 	}
 	authService.SetPasswordResetDependencies(authRepo.NewPasswordResetRepository(db), emailService)
+	authService.SetAccountReactivationDependencies(authRepo.NewAccountReactivationRepository(db), emailService)
 	authHandler := handler.NewAuthHandler(authService)
 
 	return &AuthModule{
@@ -57,6 +58,8 @@ func (m *AuthModule) SetupRoutes(router *gin.RouterGroup) {
 		auth.POST("/refresh", m.Handler.Refresh)
 		auth.POST("/password-reset/request", middleware.IPBasedRateLimiter(passwordResetLimiter, 15*time.Minute), m.Handler.RequestPasswordReset)
 		auth.POST("/password-reset/confirm", middleware.IPBasedRateLimiter(passwordResetLimiter, 15*time.Minute), m.Handler.ConfirmPasswordReset)
+		auth.POST("/account-reactivation/request", middleware.IPBasedRateLimiter(passwordResetLimiter, 15*time.Minute), m.Handler.RequestAccountReactivation)
+		auth.POST("/account-reactivation/confirm", middleware.IPBasedRateLimiter(passwordResetLimiter, 15*time.Minute), m.Handler.ConfirmAccountReactivation)
 
 		// Protected routes
 		auth.GET("/me", middleware.JWTAuth(), m.Handler.GetMe)

@@ -116,6 +116,45 @@ func (h *AuthHandler) ConfirmPasswordReset(c *gin.Context) {
 	response.Success(c, http.StatusOK, "Password berhasil diperbarui", nil)
 }
 
+func (h *AuthHandler) RequestAccountReactivation(c *gin.Context) {
+	var req dto.RequestAccountReactivationRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, http.StatusBadRequest, "Email tidak valid", err.Error())
+		return
+	}
+
+	if err := h.service.RequestAccountReactivation(c.Request.Context(), req.Email); err != nil {
+		if !errors.Is(err, service.ErrAccountReactivationUnavailable) {
+			logger.Error("Account reactivation request failed", logger.Err(err))
+		}
+	}
+
+	response.Success(c, http.StatusOK, "Jika akun dapat diaktifkan kembali, tautan akan dikirim ke email tersebut", nil)
+}
+
+func (h *AuthHandler) ConfirmAccountReactivation(c *gin.Context) {
+	var req dto.ConfirmAccountReactivationRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, http.StatusBadRequest, "Token aktivasi tidak valid", err.Error())
+		return
+	}
+
+	if err := h.service.ReactivateAccount(c.Request.Context(), req.Token); err != nil {
+		if errors.Is(err, service.ErrAccountReactivationUnavailable) {
+			response.Error(c, http.StatusInternalServerError, "Aktivasi akun tidak tersedia", "")
+			return
+		}
+		if errors.Is(err, authRepo.ErrAccountReactivationTokenInvalid) {
+			response.Error(c, http.StatusBadRequest, "Tautan aktivasi tidak valid atau telah kedaluwarsa", "")
+			return
+		}
+		response.Error(c, http.StatusInternalServerError, "Gagal mengaktifkan akun", "")
+		return
+	}
+
+	response.Success(c, http.StatusOK, "Akun berhasil diaktifkan kembali", nil)
+}
+
 // GetMe handles GET /core/v1/auth/me
 func (h *AuthHandler) GetMe(c *gin.Context) {
 	claims, err := middleware.GetUserFromContext(c)

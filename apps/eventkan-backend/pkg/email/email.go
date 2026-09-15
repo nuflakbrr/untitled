@@ -21,6 +21,7 @@ type EmailService interface {
 	SendOTPVerificationEmail(to, name, otpCode string) error
 	SendVerificationEmailWithOTP(to, name, token, otpCode string) error
 	SendPasswordResetEmail(to, name, token string) error
+	SendAccountReactivationEmail(to, name, token string) error
 	SendPasswordResetOTP(to, name, otpCode string) error
 	SendWelcomeEmail(to, name string) error
 	SendAccountLockedEmail(to, name string) error
@@ -107,6 +108,11 @@ func (s *NoOpEmailService) SendVerificationEmailWithOTP(to, name, token, otpCode
 
 func (s *NoOpEmailService) SendPasswordResetEmail(to, name, token string) error {
 	fmt.Printf("[NoOpEmail] Password reset email to %s (token: %s)\n", to, token)
+	return nil
+}
+
+func (s *NoOpEmailService) SendAccountReactivationEmail(to, name, token string) error {
+	fmt.Printf("[NoOpEmail] Account reactivation email to %s (token: %s)\n", to, token)
 	return nil
 }
 

@@ -11,7 +11,7 @@ import type { FAQBrowserProps } from '@/interfaces/features/faq';
 import { cn } from '@/lib/utils';
 import EmptyState from '@/components/Common/EmptyState';
 
-import { faqItems, faqCategories, faqCategoryLabels } from '../_constants/faq';
+import { faqItems, faqCategories, faqCategoryLabels } from '../_constants/faq.constants';
 
 const FAQBrowser: FC<FAQBrowserProps> = ({ selectedCategory, onCategoryChange }) => {
   const filteredFAQs = useMemo(

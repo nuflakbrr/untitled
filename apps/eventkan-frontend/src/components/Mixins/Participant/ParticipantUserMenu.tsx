@@ -26,7 +26,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 
-import { participantUserMenuLinks } from './_constants/userMenuLinks';
+import { participantUserMenuLinks } from './_constants/userMenuLinks.constants';
 
 export default function ParticipantUserMenu({ user }: ParticipantNavbarProps) {
   const [logoutOpen, setLogoutOpen] = useState(false);

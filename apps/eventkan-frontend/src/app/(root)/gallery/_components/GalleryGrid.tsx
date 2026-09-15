@@ -12,7 +12,7 @@ import type { Gallery, GalleryGridProps } from '@/interfaces/features/galleries'
 
 import { Dialog, DialogTitle, DialogContent, DialogDescription } from '@/components/ui/dialog';
 
-import { getBentoSpans } from '../../_libs/getBentoSpans';
+import { getBentoSpans } from '../../_libs/getBentoSpans.libs';
 import { useGalleryPagination } from '../_hooks/useGalleryPagination';
 
 const GalleryGrid: FC<GalleryGridProps> = ({ initialItems }) => {

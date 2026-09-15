@@ -9,8 +9,12 @@ import { useState, useTransition } from 'react';
 import type { UserSettingsModalProps } from '@/interfaces/features/auth';
 
 import { authClient } from '@/lib/authClient';
+import {
+  updateUserProfile,
+  changeParticipantPassword,
+} from '@/services/participant/profile';
 
-import { translateAuthError } from '../_libs/translateAuthError';
+import { translateAuthError } from '../_libs/translateAuthError.libs';
 
 export function useUserSettings(user: UserSettingsModalProps['user'], onClose: () => void) {
   const router = useRouter();
@@ -28,9 +32,9 @@ export function useUserSettings(user: UserSettingsModalProps['user'], onClose: (
 
     startProfileTransition(async () => {
       try {
-        const { error } = await authClient.updateUser({ name: name.trim() });
-        if (error) {
-          toast.error(error.message ? translateAuthError(error.message) : 'Gagal memperbarui nama profil.');
+        const result = await updateUserProfile(name);
+        if (!result.success) {
+          toast.error(result.error ? translateAuthError(result.error) : 'Gagal memperbarui nama profil.');
           return;
         }
         toast.success('Profil Anda berhasil diperbarui!');
@@ -51,18 +55,12 @@ export function useUserSettings(user: UserSettingsModalProps['user'], onClose: (
 
     startPasswordTransition(async () => {
       try {
-        const { error } = await authClient.changePassword({
-          currentPassword,
-          newPassword,
-          revokeOtherSessions: true,
-        });
-        if (error) {
-          toast.error(error.message ? translateAuthError(error.message) : 'Gagal memperbarui kata sandi.');
+        const result = await changeParticipantPassword(currentPassword, newPassword);
+        if (!result.success) {
+          toast.error(result.error ? translateAuthError(result.error) : 'Gagal memperbarui kata sandi.');
           return;
         }
 
-        const { sendPasswordChangeNotificationEmail } = await import('@/services/public/auth');
-        void sendPasswordChangeNotificationEmail(user.email, user.name);
         toast.success('Kata sandi berhasil diperbarui! Silakan login kembali.');
         setCurrentPassword('');
         setNewPassword('');

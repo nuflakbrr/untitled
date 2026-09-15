@@ -1,8 +1,6 @@
 'use server';
 
-import type {
-  ParticipantRegistration,
-} from '@/interfaces/features/registrations';
+import type { ParticipantRegistration } from '@/interfaces/features/registrations';
 
 import api from '@/lib/api';
 
@@ -15,7 +13,7 @@ function normalizeRegistration(item: Record<string, unknown>): ParticipantRegist
     createdAt: new Date(String(item.createdAt ?? item.created_at)),
     updatedAt: new Date(String(item.updatedAt ?? item.updated_at)),
     deletedAt:
-      item.deletedAt ?? item.deleted_at
+      (item.deletedAt ?? item.deleted_at)
         ? new Date(String(item.deletedAt ?? item.deleted_at))
         : null,
     user: {
@@ -33,9 +31,7 @@ function normalizeRegistration(item: Record<string, unknown>): ParticipantRegist
       endTime: String(item.eventEndTime ?? item.event_end_time ?? ''),
       location: String(item.eventLocation ?? item.event_location ?? ''),
       status: String(item.eventStatus ?? item.event_status ?? ''),
-      certificateEnabled: Boolean(
-        item.certificateEnabled ?? item.certificate_enabled ?? false
-      ),
+      certificateEnabled: Boolean(item.certificateEnabled ?? item.certificate_enabled ?? false),
       eventType: String(item.eventType ?? item.event_type ?? ''),
       meetingLink: (item.eventMeetingLink ?? item.event_meeting_link ?? null) as string | null,
     },

@@ -13,8 +13,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/formatCurrency';
 
-import { participantTableHeaderClass } from '../../_libs/tableStyles';
-import { getPaymentStatusConfig } from '../_libs/getPaymentStatusConfig';
+import { participantTableHeaderClass } from '../../_libs/tableStyles.libs';
+import { getPaymentStatusConfig } from '../_libs/getPaymentStatusConfig.libs';
 
 const Columns: ColumnDef<ParticipantPayment>[] = [
   {

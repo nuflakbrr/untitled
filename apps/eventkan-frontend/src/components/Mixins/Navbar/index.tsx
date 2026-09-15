@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 
 import UserMenu from './_components/UserMenu';
 import { useNavbar } from './_hooks/useNavbar';
-import { navlinks } from './_constants/navLinks';
+import { navlinks } from './_constants/navLinks.constants';
 import NavbarMobileMenu from './_components/NavbarMobileMenu';
 
 const Navbar: FC = () => {

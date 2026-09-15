@@ -22,11 +22,12 @@ import (
 )
 
 var (
-	ErrInvalidCredentials       = errors.New("invalid email or password")
-	ErrUserBanned               = errors.New("user account has been banned")
-	ErrTenantNotFound           = errors.New("tenant not found")
-	ErrUnauthorizedSwitch       = errors.New("you do not have permission to switch to this tenant")
-	ErrPasswordResetUnavailable = errors.New("password reset service is unavailable")
+	ErrInvalidCredentials             = errors.New("invalid email or password")
+	ErrUserBanned                     = errors.New("user account has been banned")
+	ErrTenantNotFound                 = errors.New("tenant not found")
+	ErrUnauthorizedSwitch             = errors.New("you do not have permission to switch to this tenant")
+	ErrPasswordResetUnavailable       = errors.New("password reset service is unavailable")
+	ErrAccountReactivationUnavailable = errors.New("account reactivation service is unavailable")
 )
 
 const (
@@ -41,8 +42,10 @@ type PermissionReader interface {
 // UserRepository is satisfied by *userRepo.UserRepository (and mocks in tests).
 type UserRepository interface {
 	FindByEmail(ctx context.Context, email string) (*userDomain.User, error)
+	FindDeletedByEmail(ctx context.Context, email string) (*userDomain.User, error)
 	FindByID(ctx context.Context, id string) (*userDomain.User, error)
 	Create(ctx context.Context, user *userDomain.User, password string) error
+	Reactivate(ctx context.Context, id string) error
 }
 
 type PasswordUpdater interface {
@@ -53,6 +56,11 @@ type PasswordResetStore interface {
 	Create(ctx context.Context, userID, tokenHash string, expiresAt time.Time) error
 	Consume(ctx context.Context, tokenHash string) (string, error)
 	Delete(ctx context.Context, tokenHash string) error
+}
+
+type AccountReactivationStore interface {
+	Create(ctx context.Context, userID, tokenHash string, expiresAt time.Time) error
+	Consume(ctx context.Context, tokenHash string) (string, error)
 }
 
 type TenantAccessReader interface {
@@ -68,17 +76,65 @@ type TenantRepository interface {
 }
 
 type AuthService struct {
-	userRepo           UserRepository
-	tenantRepo         TenantRepository
-	cfg                *config.Config
-	permissionReader   PermissionReader
-	passwordResetStore PasswordResetStore
-	passwordResetEmail emailpkg.EmailService
+	userRepo                 UserRepository
+	tenantRepo               TenantRepository
+	cfg                      *config.Config
+	permissionReader         PermissionReader
+	passwordResetStore       PasswordResetStore
+	passwordResetEmail       emailpkg.EmailService
+	accountReactivationStore AccountReactivationStore
+	accountReactivationEmail emailpkg.EmailService
 }
 
 func (s *AuthService) SetPasswordResetDependencies(store PasswordResetStore, emailService emailpkg.EmailService) {
 	s.passwordResetStore = store
 	s.passwordResetEmail = emailService
+}
+
+func (s *AuthService) SetAccountReactivationDependencies(store AccountReactivationStore, emailService emailpkg.EmailService) {
+	s.accountReactivationStore = store
+	s.accountReactivationEmail = emailService
+}
+
+func (s *AuthService) RequestAccountReactivation(ctx context.Context, email string) error {
+	if s.accountReactivationStore == nil || s.accountReactivationEmail == nil {
+		return ErrAccountReactivationUnavailable
+	}
+
+	user, err := s.userRepo.FindDeletedByEmail(ctx, strings.ToLower(strings.TrimSpace(email)))
+	if errors.Is(err, userRepo.ErrUserNotFound) {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("failed to look up deactivated account: %w", err)
+	}
+
+	reactivationToken, err := token.GeneratePasswordResetToken()
+	if err != nil {
+		return fmt.Errorf("failed to generate account reactivation token: %w", err)
+	}
+	if err := s.accountReactivationStore.Create(ctx, user.ID, token.HashPasswordResetToken(reactivationToken), time.Now().UTC().Add(30*time.Minute)); err != nil {
+		return err
+	}
+	if err := s.accountReactivationEmail.SendAccountReactivationEmail(user.Email, user.Name, reactivationToken); err != nil {
+		return fmt.Errorf("failed to send account reactivation email: %w", err)
+	}
+	return nil
+}
+
+func (s *AuthService) ReactivateAccount(ctx context.Context, rawToken string) error {
+	if s.accountReactivationStore == nil {
+		return ErrAccountReactivationUnavailable
+	}
+
+	userID, err := s.accountReactivationStore.Consume(ctx, token.HashPasswordResetToken(rawToken))
+	if err != nil {
+		return err
+	}
+	if err := s.userRepo.Reactivate(ctx, userID); err != nil {
+		return fmt.Errorf("failed to reactivate account: %w", err)
+	}
+	return nil
 }
 
 func (s *AuthService) RequestPasswordReset(ctx context.Context, email string) error {

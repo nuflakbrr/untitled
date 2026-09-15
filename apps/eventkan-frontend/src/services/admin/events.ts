@@ -35,7 +35,8 @@ function normalizeEvent(item: Record<string, unknown>): Event {
           id: String(creator.id),
           name: String(creator.name ?? ''),
           email: String(creator.email ?? ''),
-          image: (creator.image ?? creator.avatarUrl ?? creator.avatar_url ?? null) as string | null,
+          image: (creator.image ?? creator.avatarUrl ?? creator.avatar_url ?? null) as
+            string | null,
         }
       : null,
     createdAt: new Date(String(item.createdAt ?? item.created_at)),

@@ -1,12 +1,17 @@
 'use server';
 
-import type { Article, ArticleCategory, ArticleDetailApiRecord } from '@/interfaces/features/articles';
+import type {
+  Article,
+  ArticleCategory,
+  ArticleDetailApiRecord,
+} from '@/interfaces/features/articles';
 
 import api from '@/lib/api';
 
 export async function getPublicArticles(): Promise<Article[]> {
   try {
-    const items = (await api.get('/features/v1/articles', { params: { limit: 100 } })).data.data ?? [];
+    const items =
+      (await api.get('/features/v1/articles', { params: { limit: 100 } })).data.data ?? [];
 
     return items.map((item: Article & { category_ids?: string[] }) => ({
       ...item,
@@ -25,9 +30,7 @@ export async function getPublicArticleCategories(): Promise<ArticleCategory[]> {
   }
 }
 
-export async function getArticleDetail(
-  identifier: string
-): Promise<ArticleDetailApiRecord | null> {
+export async function getArticleDetail(identifier: string): Promise<ArticleDetailApiRecord | null> {
   try {
     return (await api.get(`/features/v1/articles/by-slug/${identifier}`)).data.data;
   } catch {

@@ -2,7 +2,7 @@ import type { ArticlesPageData } from '@/interfaces/features/articles';
 
 import { getPublicArticles, getPublicArticleCategories } from '@/services/public/articles';
 
-import { mapArticleItems } from './mapArticleItems';
+import { mapArticleItems } from './mapArticleItems.libs';
 
 export const getArticlesPageData = async (): Promise<ArticlesPageData> => {
   const [articles, articleCategories] = await Promise.all([

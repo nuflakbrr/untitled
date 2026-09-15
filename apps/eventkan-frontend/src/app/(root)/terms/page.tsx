@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 
 import { genPageMetadata } from '@/app/seo';
 
-import { termsSections } from './_constants/sections';
 import LegalPageLayout from '../_components/LegalPageLayout';
+import { termsSections } from './_constants/sections.constants';
 
 export const metadata: Metadata = genPageMetadata({
   title: 'Syarat & Ketentuan',

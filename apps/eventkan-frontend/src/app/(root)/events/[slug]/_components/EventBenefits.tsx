@@ -2,7 +2,7 @@ import type { FC } from 'react';
 
 import type { EventBenefitsProps } from '@/interfaces/features/events';
 
-import { getBenefitIcon } from '../_libs/eventDetail';
+import { getBenefitIcon } from '../_libs/eventDetail.libs';
 
 const EventBenefits: FC<EventBenefitsProps> = ({ benefits }) => {
   if (benefits.length === 0) return null;

@@ -13,7 +13,7 @@ import { usePermission } from '@/providers/PermissionProvider';
 import RegistrationDialog from './RegistrationDialog';
 import { useRegisterEvent } from '../_hooks/useRegisterEvent';
 import RegistrationStatusButton from './RegistrationStatusButton';
-import { actionButtonClass } from '../_libs/registerButtonStyles';
+import { actionButtonClass } from '../_libs/registerButtonStyles.libs';
 
 const RegisterButton: FC<RegisterButtonProps> = ({
   eventId,

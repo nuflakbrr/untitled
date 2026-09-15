@@ -3,10 +3,7 @@
 import axios from 'axios';
 
 import type { TenantValues, TenantPaymentGatewayValues } from '@/schemas/tenants';
-import type {
-  TenantPaymentGateway,
-  TenantPaginationResponse,
-} from '@/interfaces/features/tenants';
+import type { TenantPaymentGateway, TenantPaginationResponse } from '@/interfaces/features/tenants';
 
 import api from '@/lib/api';
 

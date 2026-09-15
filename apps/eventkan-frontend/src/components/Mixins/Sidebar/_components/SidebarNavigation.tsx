@@ -5,7 +5,7 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 
-import type { SideLinkGroup } from '../_constants/sideLinks';
+import type { SideLinkGroup } from '../_constants/sideLinks.constants';
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {

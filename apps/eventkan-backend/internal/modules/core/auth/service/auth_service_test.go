@@ -30,6 +30,13 @@ func (m *mockUserRepo) FindByEmail(ctx context.Context, email string) (*userDoma
 	return nil, errors.New("not found")
 }
 
+func (m *mockUserRepo) FindDeletedByEmail(ctx context.Context, email string) (*userDomain.User, error) {
+	if m.findByEmailFn != nil {
+		return m.findByEmailFn(ctx, email)
+	}
+	return nil, errors.New("not found")
+}
+
 func (m *mockUserRepo) FindByID(ctx context.Context, id string) (*userDomain.User, error) {
 	if m.findByIDFn != nil {
 		return m.findByIDFn(ctx, id)
@@ -43,6 +50,8 @@ func (m *mockUserRepo) Create(ctx context.Context, user *userDomain.User, passwo
 	}
 	return nil
 }
+
+func (m *mockUserRepo) Reactivate(context.Context, string) error { return nil }
 
 type mockTenantRepo struct {
 	findByIDFn   func(ctx context.Context, id string) (*tenantDomain.Tenant, error)

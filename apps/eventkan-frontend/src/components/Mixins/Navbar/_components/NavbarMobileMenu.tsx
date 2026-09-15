@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 import type { NavbarMobileMenuProps } from '@/interfaces/navbar';
 
-import { navlinks } from '../_constants/navLinks';
+import { navlinks } from '../_constants/navLinks.constants';
 
 const NavbarMobileMenu = ({
   isAuthenticated,

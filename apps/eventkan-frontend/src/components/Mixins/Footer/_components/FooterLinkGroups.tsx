@@ -2,7 +2,7 @@ import type { Route } from 'next';
 
 import Link from 'next/link';
 
-import { footerLinks } from '../_constants/footerLinks';
+import { footerLinks } from '../_constants/footerLinks.constants';
 
 const FooterLinkGroups = () => (
   <div className="grid gap-8 py-10 sm:grid-cols-2 md:grid-cols-4 lg:py-12">

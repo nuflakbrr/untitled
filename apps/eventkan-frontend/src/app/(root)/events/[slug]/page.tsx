@@ -9,8 +9,8 @@ import { getPublicEventBySlug } from '@/services/public/events';
 
 import EventSidebar from './_components/EventSidebar';
 import EventBenefits from './_components/EventBenefits';
-import { getEventPageData } from './_libs/getEventPageData';
-import { getCoverStyles } from '../../_libs/getCoverStyles';
+import { getEventPageData } from './_libs/getEventPageData.libs';
+import { getCoverStyles } from '../../_libs/getCoverStyles.libs';
 import EventInformation from './_components/EventInformation';
 import EventTestimonials from './_components/EventTestimonials';
 

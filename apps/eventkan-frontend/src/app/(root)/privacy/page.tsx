@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 
 import { genPageMetadata } from '@/app/seo';
 
-import { privacySections } from './_constants/sections';
 import LegalPageLayout from '../_components/LegalPageLayout';
+import { privacySections } from './_constants/sections.constants';
 
 export const metadata: Metadata = genPageMetadata({
   title: 'Kebijakan Privasi',

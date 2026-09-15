@@ -1,10 +1,10 @@
 import { genPageMetadata } from '@/app/seo';
 
-import { aboutValues } from './_constants/values';
 import { AboutCta } from './_components/AboutCta';
 import { AboutHeader } from './_components/AboutHeader';
 import { AboutValues } from './_components/AboutValues';
 import { AboutJourney } from './_components/AboutJourney';
+import { aboutValues } from './_constants/values.constants';
 import { AboutIntroduction } from './_components/AboutIntroduction';
 
 export const metadata = genPageMetadata({

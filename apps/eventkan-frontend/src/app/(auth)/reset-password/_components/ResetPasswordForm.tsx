@@ -18,7 +18,7 @@ import { resetPasswordSchema, type ResetPasswordValues } from '@/schemas/auth';
 import PasswordField from './PasswordField';
 import ResetPasswordInvalid from './ResetPasswordInvalid';
 import ResetPasswordSuccess from './ResetPasswordSuccess';
-import { getPasswordRules } from '../_libs/getPasswordRules';
+import { getPasswordRules } from '../_libs/getPasswordRules.libs';
 
 const ResetPasswordForm: FC = () => {
   const router = useRouter();

@@ -1,5 +1,6 @@
 'use client';
 
+import { changeUserPassword } from '@/services/participant/profile';
 import { signInAction, signUpAction, signOutAction } from '@/services/public/session';
 import {
   resetPasswordAction,
@@ -36,7 +37,12 @@ export const signOut = async () => {
 export const authClient = {
   signOut,
   updateUser: async (_values: unknown) => ({ error: null as { message: string; code?: string } | null }),
-  changePassword: async (_values: unknown) => ({ error: null as { message: string; code?: string } | null }),
+  changePassword: async ({ currentPassword, newPassword }: { currentPassword: string; newPassword: string; revokeOtherSessions?: boolean }) => {
+    const result = await changeUserPassword(currentPassword, newPassword);
+    return result.success
+      ? { error: null }
+      : { error: { message: result.error ?? 'Gagal mengganti password.' } };
+  },
   requestPasswordReset: async ({ email }: { email: string; redirectTo?: string }) => {
     const result = await requestPasswordResetAction(email);
     return result.success

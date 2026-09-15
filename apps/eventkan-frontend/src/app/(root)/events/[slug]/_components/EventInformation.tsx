@@ -5,7 +5,7 @@ import { Clock, Globe, MapPin, Calendar, Landmark } from 'lucide-react';
 import type { EventInformationProps } from '@/interfaces/features/events';
 
 import EventCover from './EventCover';
-import { sanitizeEventDescription } from '../_libs/eventDetail';
+import { sanitizeEventDescription } from '../_libs/eventDetail.libs';
 
 const EventInformation: FC<EventInformationProps> = ({ event, formattedStartDate, coverStyle }) => (
   <div className="space-y-10 lg:col-span-2">

@@ -34,7 +34,13 @@ export async function getUsers(
   try {
     const body = (
       await api.get(endpoint, {
-        params: { page, limit, search, include_deleted: includeDeleted, ...(role ? { role } : { exclude_role: 'peserta' }) },
+        params: {
+          page,
+          limit,
+          search,
+          include_deleted: includeDeleted,
+          ...(role ? { role } : { exclude_role: 'peserta' }),
+        },
       })
     ).data;
     const total = body.pagination?.total ?? body.data?.length ?? 0;
@@ -90,9 +96,10 @@ export async function permanentlyDeleteUser(id: string): Promise<UserResponse> {
     revalidatePath('/admin/managements/users');
     return { success: true, message: result.data?.message ?? 'User dihapus permanen.' };
   } catch (error) {
-    const message = error && typeof error === 'object' && 'response' in error
-      ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
-      : undefined;
+    const message =
+      error && typeof error === 'object' && 'response' in error
+        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
+        : undefined;
     if (message) return { success: false, error: message };
     return { success: false, error: 'Gagal menghapus user permanen.' };
   }

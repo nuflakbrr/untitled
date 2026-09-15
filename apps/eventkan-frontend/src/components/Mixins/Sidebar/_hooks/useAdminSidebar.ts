@@ -9,8 +9,8 @@ import type { AdminSessionContext } from '@/interfaces/features/auth';
 import { useMounted } from '@/hooks/useMounted';
 import { getMyTenantsAction } from '@/services/public/auth';
 
-import { sideLinks } from '../_constants/sideLinks';
-import { filterSidebarLinks } from '../_libs/filterSidebarLinks';
+import { sideLinks } from '../_constants/sideLinks.constants';
+import { filterSidebarLinks } from '../_libs/filterSidebarLinks.libs';
 
 const BASE_ADMIN_PATH = '/admin';
 

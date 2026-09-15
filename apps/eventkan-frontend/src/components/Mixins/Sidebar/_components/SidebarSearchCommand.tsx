@@ -12,7 +12,7 @@ import {
   CommandDialog,
 } from '@/components/ui/command';
 
-import { sideLinks } from '../_constants/sideLinks';
+import { sideLinks } from '../_constants/sideLinks.constants';
 
 export function SidebarSearchCommand({
   open,

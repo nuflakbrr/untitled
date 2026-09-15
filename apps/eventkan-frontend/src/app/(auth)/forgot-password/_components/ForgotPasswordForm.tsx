@@ -15,7 +15,7 @@ import { forgotPasswordSchema, type ForgotPasswordValues } from '@/schemas/auth'
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 
 import ForgotPasswordSuccess from './ForgotPasswordSuccess';
-import { getForgotPasswordInputClass } from '../_libs/getForgotPasswordInputClass';
+import { getForgotPasswordInputClass } from '../_libs/getForgotPasswordInputClass.libs';
 
 const ForgotPasswordForm: FC = () => {
   const [emailSent, setEmailSent] = useState(false);

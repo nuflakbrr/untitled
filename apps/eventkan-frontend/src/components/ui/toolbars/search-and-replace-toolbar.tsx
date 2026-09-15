@@ -83,7 +83,7 @@ export function SearchAndReplaceToolbar() {
         onEscapeKeyDown={() => {
           setOpen(false);
         }}
-        className="relative flex w-[400px] px-3 py-2.5"
+        className="relative flex w-100 px-3 py-2.5"
       >
         {!replacing ? (
           <div className={cn('relative flex gap-1.5 items-center')}>
