@@ -9,6 +9,8 @@ type RegistrationResponse struct {
 	EventSlug          string     `json:"event_slug"`
 	EventBanner        *string    `json:"event_banner,omitempty"`
 	EventStartDate     time.Time  `json:"event_start_date"`
+	EventStartTime     string     `json:"event_start_time"`
+	EventEndTime       string     `json:"event_end_time"`
 	EventLocation      string     `json:"event_location"`
 	EventType          string     `json:"event_type"`
 	EventStatus        string     `json:"event_status"`

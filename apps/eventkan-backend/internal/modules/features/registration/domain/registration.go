@@ -18,6 +18,8 @@ type Registration struct {
 	EventSlug          string
 	EventBanner        *string
 	EventStartDate     time.Time
+	EventStartTime     string
+	EventEndTime       string
 	EventLocation      string
 	EventType          string
 	EventStatus        string
