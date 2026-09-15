@@ -12,6 +12,7 @@ import { LogOut, ChevronDown, LayoutDashboard } from 'lucide-react';
 import type { NavbarUser } from '@/interfaces/navbar';
 
 import { signOut } from '@/lib/authClient';
+import { getInitials } from '@/lib/getInitials';
 import AlertModal from '@/components/Common/Modals/AlertModal';
 import {
   DropdownMenu,
@@ -21,8 +22,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-
-import { getInitials } from '../_libs/utils';
 
 interface UserMenuProps {
   user: NavbarUser;
@@ -62,9 +61,9 @@ const UserMenu: FC<UserMenuProps> = ({ user, isAdmin, tenantId }) => {
               {getInitials(user.name)}
             </span>
             <span className="hidden max-w-28 sm:grid">
-              <span className="text-[10px] font-bold uppercase tracking-[.12em] text-[#ff7a45]">
+              {/* <span className="text-[10px] font-bold uppercase tracking-[.12em] text-[#ff7a45]">
                 Akun saya
-              </span>
+              </span> */}
               <span className="truncate text-sm font-bold text-[#11233f]">{user.name}</span>
             </span>
             <ChevronDown className="h-4 w-4 text-[#6c7280] transition-transform group-data-[state=open]:rotate-180" />

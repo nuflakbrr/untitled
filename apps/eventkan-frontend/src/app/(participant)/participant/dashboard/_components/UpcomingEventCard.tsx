@@ -3,8 +3,11 @@
 import type { Route } from 'next';
 
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Clock, Video, MapPin, Calendar, AlertCircle } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { formatLongDate } from '@/lib/formatLongDate';
+import { getCoverStyles } from '@/app/(root)/_libs/getCoverStyles';
 import {
   Empty,
   EmptyMedia,
@@ -15,7 +18,6 @@ import {
 } from '@/components/ui/empty';
 
 import ShowQrButton from './ShowQrButton';
-import { formatEventDate } from './dashboard-helpers';
 import ConfirmOnlineButton from './ConfirmOnlineButton';
 
 interface UpcomingEventCardProps {
@@ -38,98 +40,66 @@ interface UpcomingEventCardProps {
 }
 
 export default function UpcomingEventCard({ upcomingEvent }: UpcomingEventCardProps) {
+  const coverStyle = upcomingEvent ? getCoverStyles([upcomingEvent.id])[0] : '';
+
   return (
-    <div className="lg:col-span-1">
-      <div
-        className="rounded-xl overflow-hidden flex flex-col h-full transition-all duration-200"
-        style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #D1CFC5',
-          boxShadow: '0 2px 8px rgba(20,20,19,0.05)',
-        }}
-      >
-        <div
-          className="px-6 py-4 border-b flex items-center gap-2"
-          style={{ background: '#FAF9F5', borderColor: '#E3DACC' }}
-        >
-          <Calendar className="w-4.5 h-4.5" style={{ color: '#D97757' }} />
-          <h2
-            className="text-sm font-semibold"
-            style={{
-              fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
-              color: '#141413',
-            }}
-          >
-            Event Terdekat
-          </h2>
-          <p className="ml-auto text-xs" style={{ color: '#87867F' }}>
+    <div>
+      <div className="flex h-full flex-col overflow-hidden rounded-[24px] border border-[#111927]/10 bg-[#fffdf8] shadow-[0_18px_50px_rgba(17,35,63,.05)]">
+        <div className="flex items-center gap-2 border-b border-[#111927]/10 px-5 py-4">
+          <Calendar className="h-4 w-4 text-[#ff7a45]" />
+          <h2 className="font-display text-base font-extrabold text-[#111927]">Event Terdekat</h2>
+          <p className="ml-auto text-xs text-[#6c7280]">
             Yang akan Anda ikuti
           </p>
         </div>
 
-        <div className="p-6 flex flex-col flex-1">
+        <div className="flex flex-1 flex-col p-5">
           {upcomingEvent ? (
             <div className="space-y-5 flex-1">
-              <div
-                className="aspect-video w-full rounded-lg overflow-hidden"
-                style={{ background: '#E3DACC', border: '1.5px solid #D1CFC5' }}
-              >
+              <div className="relative aspect-[1.5] w-full overflow-hidden rounded-[18px] border border-[#111927]/10 bg-[#11233f]">
                 {upcomingEvent.banner ? (
                   <img
                     src={upcomingEvent.banner}
                     alt={upcomingEvent.title}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div
-                    className="w-full h-full flex items-center justify-center"
-                    style={{ background: 'linear-gradient(135deg, #E3DACC, #D1CFC5)' }}
-                  >
-                    <span
-                      className="text-2xl font-medium"
-                      style={{
-                        fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
-                        color: '#3D3D3A',
-                      }}
-                    >
-                      {upcomingEvent.title.charAt(0)}
+                  <div className={`relative flex h-full flex-col justify-end p-5 ${coverStyle}`}>
+                    <span className="relative z-10 text-[11px] font-extrabold uppercase tracking-[.08em] text-[#11233f]">
+                      Event terdekat
                     </span>
+                    <h3 className="font-display relative z-10 mt-2 max-w-[90%] text-2xl font-extrabold leading-[.98] tracking-[-.04em] text-[#11233f]">
+                      {upcomingEvent.title}
+                    </h3>
                   </div>
                 )}
               </div>
 
               <div className="space-y-3">
-                <h3
-                  className="font-semibold text-base leading-snug line-clamp-2"
-                  style={{
-                    fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
-                    color: '#141413',
-                  }}
-                >
+                <h3 className="font-display line-clamp-2 text-lg font-extrabold leading-snug tracking-[-.02em] text-[#111927]">
                   {upcomingEvent.title}
                 </h3>
 
-                <div className="space-y-2 text-xs" style={{ color: '#87867F' }}>
+                <div className="space-y-2 text-xs text-[#6c7280]">
                   <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 shrink-0" style={{ color: '#D1CFC5' }} />
-                    <span>{formatEventDate(upcomingEvent.startDate)}</span>
+                    <Calendar className="h-4 w-4 shrink-0 text-[#ff7a45]" />
+                    <span>{formatLongDate(upcomingEvent.startDate)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 shrink-0" style={{ color: '#D1CFC5' }} />
+                    <Clock className="h-4 w-4 shrink-0 text-[#ff7a45]" />
                     <span>
                       {upcomingEvent.startTime} - {upcomingEvent.endTime} WIB
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 shrink-0" style={{ color: '#D1CFC5' }} />
+                    <MapPin className="h-4 w-4 shrink-0 text-[#ff7a45]" />
                     <span className="line-clamp-1">{upcomingEvent.location}</span>
                   </div>
 
                   {upcomingEvent.meetingLink && (
                     <Button
                       asChild
-                      className="w-full mt-1"
-                      style={{ background: '#D97757', color: '#FAF9F5', borderColor: '#D97757' }}
+                      className="mt-1 w-full rounded-full bg-[#11233f] text-white hover:bg-[#1b3458]"
                     >
                       <a href={upcomingEvent.meetingLink} target="_blank" rel="noopener noreferrer">
                         <Video className="w-4 h-4 shrink-0" />
@@ -159,7 +129,7 @@ export default function UpcomingEventCard({ upcomingEvent }: UpcomingEventCardPr
         </div>
 
         {upcomingEvent && upcomingEvent.qrToken && upcomingEvent.eventType !== 'ONLINE' && (
-          <div className="px-6 pb-6 pt-0" style={{ borderTop: '1.5px solid #F0EEE6' }}>
+          <div className="border-t border-[#111927]/10 px-5 pb-5 pt-0">
             <div className="pt-4">
               <ShowQrButton
                 qrToken={upcomingEvent.qrToken}
@@ -174,7 +144,7 @@ export default function UpcomingEventCard({ upcomingEvent }: UpcomingEventCardPr
         {upcomingEvent &&
           upcomingEvent.eventType === 'ONLINE' &&
           upcomingEvent.onlineAttendance && (
-            <div className="px-6 pb-6 pt-0" style={{ borderTop: '1.5px solid #F0EEE6' }}>
+            <div className="border-t border-[#111927]/10 px-5 pb-5 pt-0">
               <div className="pt-4">
                 <ConfirmOnlineButton
                   registrationId={upcomingEvent.id}

@@ -1,24 +1,8 @@
 import type { FC } from 'react';
 
 export const ParticipantFooter: FC = () => (
-    <footer
-      className="w-full border-t py-5"
-      style={{ background: '#FAF9F5', borderColor: '#E3DACC' }}
-    >
-      <div className="container mx-auto max-w-7xl flex flex-col items-center justify-between gap-2 md:flex-row px-4">
-        <p className="text-xs leading-loose text-center md:text-left" style={{ color: '#87867F' }}>
-          &copy;{' '}
-          <span
-            style={{ fontFamily: 'ui-monospace, monospace', color: '#D97757', fontWeight: 600 }}
-          >
-            {new Date().getFullYear()}
-          </span>{' '}
-          <span style={{ fontFamily: 'ui-serif, Georgia, serif' }}>EVENTKAN</span>. Hak Cipta
-          Dilindungi.
-        </p>
-        <p className="text-xs" style={{ color: '#D1CFC5', fontFamily: 'ui-monospace, monospace' }}>
-          by Naufal Akbar Nugroho
-        </p>
-      </div>
-    </footer>
-  );
+  <footer className="mx-auto flex w-full max-w-295 flex-col items-center justify-between gap-2 border-t border-[#111927]/10 px-4 py-5 text-xs text-[#6c7280] sm:flex-row sm:px-6">
+    <p>© {new Date().getFullYear()} EVENTKAN.</p>
+    <p>Dashboard Peserta · Event · Pembayaran · Sertifikat</p>
+  </footer>
+);

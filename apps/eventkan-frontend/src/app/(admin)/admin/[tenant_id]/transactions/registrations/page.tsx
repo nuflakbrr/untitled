@@ -2,8 +2,11 @@
 
 import type { FC } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { Loader2, Download } from 'lucide-react';
+
+import type { EventFilterOption } from '@/interfaces/features/events';
+
+import { Button } from '@/components/ui/button';
 import Heading from '@/components/Common/Heading';
 import { Separator } from '@/components/ui/separator';
 import { DataTable } from '@/components/ui/data-table';
@@ -17,11 +20,6 @@ import {
 
 import Columns from './_components/Columns';
 import { useRegistrationsList } from './_components/useRegistrationsList';
-
-interface EventFilterOption {
-  id: string;
-  title: string;
-}
 
 const RegistrationsCMS: FC = () => {
   const {

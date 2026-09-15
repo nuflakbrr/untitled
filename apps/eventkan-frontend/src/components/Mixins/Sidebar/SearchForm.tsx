@@ -2,60 +2,25 @@
 
 import type { Route } from 'next';
 
-import { useState, useEffect } from 'react';
+import { Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
 import { Label } from '@/components/ui/label';
-import { useMounted } from '@/hooks/useMounted';
 import { SidebarInput } from '@/components/ui/sidebar';
-import { useRouter , usePathname } from 'next/navigation';
-import { Home, Search, CornerDownLeft } from 'lucide-react';
-import {
-  Command,
-  CommandItem,
-  CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandDialog,
-} from '@/components/ui/command';
 
-import { sideLinks } from './constant/sideLinks';
-
-const BASE_ADMIN_PATH = '/admin';
+import { useSidebarSearch } from './_hooks/useSidebarSearch';
+import { SidebarSearchCommand } from './_components/SidebarSearchCommand';
 
 export function SearchForm() {
-  const isMounted = useMounted();
-  const [open, setOpen] = useState(false);
   const router = useRouter();
-  const pathname = usePathname();
-  const tenantId = pathname.split('/')[2];
-  const adminPath = tenantId ? `${BASE_ADMIN_PATH}/${tenantId}` : BASE_ADMIN_PATH;
+  const { adminPath, isMac, isMounted, open, setOpen } = useSidebarSearch();
 
-  const [isMac, setIsMac] = useState(false);
-
-  useEffect(() => {
-    if (!isMounted) return;
-    setIsMac(navigator.userAgent.toLowerCase().includes('mac'));
-
-    const down = (e: KeyboardEvent) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen((open) => !open);
-      }
-    };
-    document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
-  }, [isMounted]);
-
-  if (!isMounted) {
-    return <div className="h-8 w-40 animate-pulse rounded-md bg-sidebar-accent" />;
-  }
+  if (!isMounted) return <div className="h-8 w-40 animate-pulse rounded-md bg-sidebar-accent" />;
 
   return (
     <>
       <div className="relative">
-        <Label htmlFor="search" className="sr-only">
-          Search
-        </Label>
+        <Label htmlFor="search" className="sr-only">Search</Label>
         <SidebarInput
           id="search"
           onClick={() => setOpen(true)}
@@ -68,94 +33,14 @@ export function SearchForm() {
           <span className="text-xs">{isMac ? '⌘' : 'Ctrl'}</span>+ K
         </kbd>
       </div>
-
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <Command>
-          <CommandInput placeholder="Cari Menu..." />
-          <CommandList>
-            <CommandEmpty>Oops! Tidak ada hasil.</CommandEmpty>
-            {sideLinks.navMain.map((group) => (
-              <CommandGroup key={group.title} heading={group.title}>
-                {group.hasChildren ? (
-                  group.items?.map((item) => (
-                    <CommandItem
-                      key={item.title}
-                      onSelect={() => {
-                        router.push(`${adminPath}/${item.url}` as Route);
-                        setOpen(false);
-                      }}
-                    >
-                      {item.title}
-                    </CommandItem>
-                  ))
-                ) : (
-                  <CommandItem
-                    key={group.title}
-                    onSelect={() => {
-                      router.push(`${adminPath}/${group.url}` as Route);
-                      setOpen(false);
-                    }}
-                  >
-                    {group.title}
-                  </CommandItem>
-                )}
-              </CommandGroup>
-            ))}
-          </CommandList>
-        </Command>
-      </CommandDialog>
-
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <Command className="rounded-lg border shadow-md">
-          <CommandInput placeholder="Cari Menu..." className="border-none focus:ring-0" />
-          <CommandList className="max-h-[300px]">
-            <CommandEmpty>Oops! Tidak ada hasil.</CommandEmpty>
-
-            {sideLinks.navMain.map((group) => (
-              <CommandGroup key={group.title} heading={group.title} className="px-2">
-                {group.hasChildren ? (
-                  group.items?.map((item) => (
-                    <CommandItem
-                      key={item.title}
-                      onSelect={() => {
-                        router.push(`${adminPath}/${item.url}` as Route);
-                        setOpen(false);
-                      }}
-                      className="group flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm outline-none hover:bg-accent aria-selected:bg-accent"
-                    >
-                      <div className="flex items-center gap-3">
-                        <item.icon className="size-4 text-muted-foreground group-hover:text-foreground" />
-                        <span>{item.title}</span>
-                      </div>
-                    </CommandItem>
-                  ))
-                ) : (
-                  <CommandItem
-                    key={group.title}
-                    onSelect={() => {
-                        router.push(`${adminPath}/${group.url}` as Route);
-                      setOpen(false);
-                    }}
-                    className="group flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm outline-none hover:bg-accent aria-selected:bg-accent"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Home className="size-4 text-muted-foreground group-hover:text-foreground" />
-                      <span>{group.title}</span>
-                    </div>
-                  </CommandItem>
-                )}
-              </CommandGroup>
-            ))}
-          </CommandList>
-
-          <div className="flex items-center gap-2 border-t bg-muted/50 px-4 py-3 text-[10px] text-muted-foreground">
-            <div className="flex items-center gap-1.5 rounded border bg-background px-1.5 py-0.5 font-mono font-medium">
-              <CornerDownLeft className="size-3" />
-            </div>
-            <span className="font-medium uppercase tracking-wider">Menuju ke Halaman</span>
-          </div>
-        </Command>
-      </CommandDialog>
+      <SidebarSearchCommand
+        open={open}
+        onOpenChange={setOpen}
+        onNavigate={(url) => {
+          router.push(`${adminPath}/${url}` as Route);
+          setOpen(false);
+        }}
+      />
     </>
   );
 }

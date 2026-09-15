@@ -16,22 +16,24 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-type SideLinks = {
-  versions: string[];
-  navMain: {
+export type SideLinkGroup = {
+  title: string;
+  url: string;
+  hasChildren: boolean;
+  icon: LucideIcon;
+  permission?: string;
+  items?: {
     title: string;
     url: string;
-    hasChildren: boolean;
     icon: LucideIcon;
     permission?: string;
-    items?: {
-      title: string;
-      url: string;
-      icon: LucideIcon;
-      permission?: string;
-      isActive?: boolean;
-    }[];
+    isActive?: boolean;
   }[];
+};
+
+type SideLinks = {
+  versions: string[];
+  navMain: SideLinkGroup[];
 };
 
 export const sideLinks: SideLinks = {

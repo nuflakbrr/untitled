@@ -8,6 +8,8 @@ import { useQuery } from '@tanstack/react-query';
 import { type ColumnDef } from '@tanstack/react-table';
 import { CreditCard, ChevronsUpDown } from 'lucide-react';
 
+import type { ParticipantPayment } from '@/interfaces/features/payments';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Heading from '@/components/Common/Heading';
@@ -22,25 +24,6 @@ import {
   EmptyHeader,
   EmptyDescription,
 } from '@/components/ui/empty';
-
-interface ParticipantPayment {
-  id: string;
-  registrationId: string;
-  amount: number;
-  status: string;
-  createdAt: Date;
-  deletedAt?: Date | null;
-  registration: {
-    id: string;
-    registrationNumber: string;
-    status: string;
-    event: {
-      id: string;
-      title: string;
-      slug: string;
-    };
-  };
-}
 
 const columns: ColumnDef<ParticipantPayment>[] = [
   {

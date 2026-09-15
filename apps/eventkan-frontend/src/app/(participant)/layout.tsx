@@ -1,7 +1,8 @@
 import type { FC, ReactNode } from 'react';
 
-import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+
+import { auth } from '@/lib/auth';
 import { hasAdminRole } from '@/lib/roles';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { ParticipantRouteGuard } from '@/components/Auth/ParticipantRouteGuard';
@@ -29,9 +30,9 @@ const ParticipantLayout: FC<Props> = async ({ children }) => {
     <TooltipProvider>
       <ParticipantTourGuide>
         <ParticipantRouteGuard>
-          <div className="min-h-screen bg-background flex flex-col">
+          <div className="flex min-h-screen flex-col bg-[#f6f3eb]">
             <ParticipantNavbar user={session.user} />
-            <main className="flex-1 container py-6 px-4 md:py-8 max-w-7xl mx-auto w-full">
+            <main className="mx-auto w-full max-w-295 flex-1 px-4 py-8 sm:px-0 sm:py-10 lg:py-12">
               {children}
             </main>
             <ParticipantFooter />

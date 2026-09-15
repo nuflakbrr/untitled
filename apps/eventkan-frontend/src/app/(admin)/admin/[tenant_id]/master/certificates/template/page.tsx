@@ -1,34 +1,21 @@
 'use client';
 
-import type { EventStatus } from '@/interfaces/enums';
-
 import Link from 'next/link';
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Search, Settings, ArrowLeft, AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react';
+
+import type { EventWithCertificate } from '@/interfaces/features/certificates';
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useQuery } from '@tanstack/react-query';
 import Heading from '@/components/Common/Heading';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Separator } from '@/components/ui/separator';
 import { getEventsWithCertificateEnabled } from '@/services/admin/certificates';
 import { Card, CardTitle, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
-import { Search, Settings, ArrowLeft, AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react';
 
 import CertificateTemplateForm from './_components/CertificateTemplateForm';
-
-interface EventWithCertData {
-  id: string;
-  title: string;
-  slug: string;
-  startDate: Date;
-  location: string;
-  status: EventStatus;
-  certificateTemplate?: {
-    id: string;
-    backgroundUrl: string | null;
-    numberTemplate: string;
-  } | null;
-}
 
 export default function TemplateConfigPage() {
   const [selectedEventId, setSelectedEventId] = useState<string>('');
@@ -40,11 +27,11 @@ export default function TemplateConfigPage() {
     queryFn: () => getEventsWithCertificateEnabled(),
   });
 
-  const events: EventWithCertData[] = data?.data ?? [];
-  const filteredEvents = events.filter((event: EventWithCertData) =>
+  const events: EventWithCertificate[] = data?.data ?? [];
+  const filteredEvents = events.filter((event: EventWithCertificate) =>
     event.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
   );
-  const selectedEvent = filteredEvents.find((e: EventWithCertData) => e.id === selectedEventId);
+  const selectedEvent = filteredEvents.find((event) => event.id === selectedEventId);
 
   return (
     <section>
@@ -101,7 +88,7 @@ export default function TemplateConfigPage() {
                 </div>
               ) : (
                 <div className="divide-y divide-foreground/5 max-h-[calc(100vh-300px)] overflow-y-auto">
-                  {filteredEvents.map((event: EventWithCertData) => {
+                  {filteredEvents.map((event: EventWithCertificate) => {
                     const isSelected = selectedEventId === event.id;
                     const isConfigured = !!event.certificateTemplate;
                     return (

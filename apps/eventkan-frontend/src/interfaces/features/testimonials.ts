@@ -19,6 +19,12 @@ export interface Testimonial {
   };
 }
 
+export interface ExistingTestimonial {
+  id?: string;
+  rating?: number;
+  comment?: string;
+}
+
 export interface TestimonialsCarouselProps {
   testimonials: Testimonial[];
 }

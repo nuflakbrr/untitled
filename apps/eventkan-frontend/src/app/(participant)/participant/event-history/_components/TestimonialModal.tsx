@@ -1,13 +1,16 @@
 'use client';
 
 import { toast } from 'sonner';
+import { type FC, useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { Star, Edit3, Loader2, MessageSquarePlus } from 'lucide-react';
+
+import type { ExistingTestimonial } from '@/interfaces/features/testimonials';
+
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { type FC, useState, useEffect } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { submitTestimonial } from '@/services/public/testimonials';
-import { Star, Edit3, Loader2, MessageSquarePlus } from 'lucide-react';
 import {
   Dialog,
   DialogTitle,
@@ -16,12 +19,6 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog';
-
-interface ExistingTestimonial {
-  id?: string;
-  rating?: number;
-  comment?: string;
-}
 
 interface Props {
   isOpen: boolean;

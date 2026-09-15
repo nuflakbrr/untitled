@@ -32,5 +32,20 @@ export interface Payment {
   } | null;
 }
 
+export interface ParticipantPayment {
+  id: string;
+  registrationId: string;
+  amount: number;
+  status: string;
+  createdAt: Date;
+  deletedAt?: Date | null;
+  registration: {
+    id: string;
+    registrationNumber: string;
+    status: string;
+    event: { id: string; title: string; slug: string };
+  };
+}
+
 export type PaymentResponse = ApiResponse<Payment>;
 export type PaymentPaginationResponse = PaginatedResponse<Payment>;

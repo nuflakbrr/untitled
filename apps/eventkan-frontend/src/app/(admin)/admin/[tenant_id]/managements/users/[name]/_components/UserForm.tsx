@@ -1,14 +1,16 @@
 'use client';
 
 import type { FC } from 'react';
-import type { User } from '@/interfaces/features/users';
 
 import Link from 'next/link';
 import { Trash } from 'lucide-react';
 import { Controller } from 'react-hook-form';
+import { useQuery } from '@tanstack/react-query';
+
+import type { User, ExtendedUser } from '@/interfaces/features/users';
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useQuery } from '@tanstack/react-query';
 import Heading from '@/components/Common/Heading';
 import { getMeAction } from '@/services/public/auth';
 import { Separator } from '@/components/ui/separator';
@@ -22,13 +24,6 @@ import { useUserForm } from './useUserForm';
 type Props = {
   initialData: User | null;
 };
-
-interface ExtendedUser {
-  id: string;
-  roleId?: string | null;
-  role?: string | null;
-  roles?: { id: string; name: string }[];
-}
 
 const UserForm: FC<Props> = ({ initialData }) => {
   const { hasPermission, hasRole } = usePermission();

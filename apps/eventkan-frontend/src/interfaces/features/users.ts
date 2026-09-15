@@ -16,5 +16,12 @@ export interface User {
   banReason?: string | null;
 }
 
+export interface ExtendedUser {
+  id: string;
+  roleId?: string | null;
+  role?: string | null;
+  roles?: { id: string; name: string }[];
+}
+
 export type UserResponse = ApiResponse<User>;
 export type UserPaginationResponse = PaginatedResponse<User>;

@@ -1,18 +1,19 @@
 'use client';
 
-import type { User } from '@/interfaces/features/users';
-
 import { toast } from 'sonner';
 import { type FC, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Ban, Copy, Edit, Trash, UserCheck, MoreHorizontal } from 'lucide-react';
+
+import type { User, ExtendedUser } from '@/interfaces/features/users';
+
 import { Button } from '@/components/ui/button';
 import { copyToClipboard } from '@/lib/clipboard';
 import { getMeAction } from '@/services/public/auth';
-import { useRouter, usePathname } from 'next/navigation';
 import { usePermission } from '@/providers/PermissionProvider';
 import AlertModal from '@/components/Common/Modals/AlertModal';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import UserSettingsModal from '@/components/Mixins/Sidebar/UserSettingsModal';
-import { Ban, Copy, Edit, Trash, UserCheck, MoreHorizontal } from 'lucide-react';
 import { banUser, unbanUser, deleteUser, permanentlyDeleteUser } from '@/services/admin/users';
 import {
   DropdownMenu,
@@ -24,13 +25,6 @@ import {
 
 interface CellActionProps {
   data: User;
-}
-
-interface ExtendedUser {
-  id: string;
-  roleId?: string | null;
-  role?: string | null;
-  roles?: { id: string; name: string }[];
 }
 
 const CellAction: FC<CellActionProps> = ({ data }) => {

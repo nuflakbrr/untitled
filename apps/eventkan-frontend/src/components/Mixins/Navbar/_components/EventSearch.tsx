@@ -11,6 +11,7 @@ import type { EventSearchResult } from '@/interfaces/features/events';
 import { cn } from '@/lib/utils';
 import { EventType } from '@/interfaces/enums';
 import { useDebounce } from '@/hooks/useDebounce';
+import { formatLongDate } from '@/lib/formatLongDate';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import {
   searchEventsAction,
@@ -119,14 +120,6 @@ export const EventSearch: React.FC<Props> = ({ scrolled }) => {
       closeSearch();
     }
   };
-
-  const formatDate = (iso: string) =>
-    new Date(iso).toLocaleDateString('id-ID', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      timeZone: 'Asia/Jakarta',
-    });
 
   return (
     <>
@@ -285,7 +278,7 @@ export const EventSearch: React.FC<Props> = ({ scrolled }) => {
                         </div>
                         <div className="flex items-center gap-2 mt-2 text-xs text-[#87867F]">
                           <CalendarDays className="w-3.5 h-3.5" />
-                          <span>{formatDate(event.startDate)}</span>
+                          <span>{formatLongDate(event.startDate)}</span>
                         </div>
                       </div>
                     </button>

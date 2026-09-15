@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle2 } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { confirmOnlineAttendance } from '@/services/admin/attendance';
 
@@ -42,8 +43,8 @@ export default function ConfirmOnlineButton({
       disabled={disabled || isLoading}
       className="w-full cursor-pointer disabled:cursor-not-allowed"
       style={{
-        background: disabled ? '#E3DACC' : '#788C5D',
-        color: disabled ? '#87867F' : '#ffffff',
+        background: disabled ? '#f6f3eb' : '#36784b',
+        color: disabled ? '#6c7280' : '#ffffff',
         borderColor: 'transparent',
         cursor: disabled || isLoading ? 'not-allowed' : 'pointer',
       }}

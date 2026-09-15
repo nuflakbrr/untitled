@@ -3,84 +3,46 @@
 import type { FC } from 'react';
 
 import Link from 'next/link';
-import Image from 'next/image';
-import ParticipantNavbarClient from '@/components/Mixins/Participant/ParticipantNavbarClient';
 
-interface Props {
-  user: {
-    name: string;
-    email: string;
-    image?: string | null;
-  };
-}
+import type { ParticipantNavbarProps } from '@/interfaces/navbar';
 
-export const ParticipantNavbar: FC<Props> = ({ user }) => (
-    <header
-      className="sticky top-0 z-50 w-full border-b"
-      style={{
-        background: 'rgba(255,255,255,0.97)',
-        backdropFilter: 'blur(12px)',
-        borderColor: '#E3DACC',
-      }}
-    >
-      <div className="container mx-auto max-w-7xl flex h-16 items-center justify-between px-4">
-        {/* Left: logo + nav */}
-        <div className="flex items-center gap-6">
-          <Link href="/participant/dashboard" className="inline-flex items-center gap-2">
-            <Image
-              className="w-auto h-25"
-              src="/assets/img/EVENTKAN-PRIMARY.png"
-              alt="Logo"
-              width={120}
-              height={40}
-              loading="lazy"
-            />
-            {/* <span
-              className="flex items-center justify-center w-7 h-7 rounded-md font-black text-xs shadow-sm"
-              style={{ background: '#D97757', color: '#FFFFFF' }}
-            >
-              S
-            </span>
-            <span
-              className="text-lg font-extrabold tracking-tight"
-              style={{ fontFamily: 'ui-serif, Georgia, serif', color: '#141413' }}
-            >
-              EVENTKAN
-            </span> */}
-          </Link>
+import ParticipantUserMenu from '@/components/Mixins/Participant/ParticipantUserMenu';
 
-          <nav className="hidden md:flex items-center gap-1 ml-2">
+import { participantNavLinks } from './_constants/navLinks';
+
+export const ParticipantNavbar: FC<ParticipantNavbarProps> = ({ user }) => (
+  <header className="sticky top-0 z-50 px-4 pt-5 sm:px-6">
+    <div className="relative mx-auto max-w-295 rounded-[18px] border border-white/70 bg-[#fffdf8]/65 p-[14px_18px] shadow-[0_10px_28px_rgba(17,35,63,.08),inset_0_1px_0_rgba(255,255,255,.85)] backdrop-blur-2xl backdrop-saturate-150">
+      <div className="flex items-center justify-between gap-6">
+        <Link
+          href="/participant/dashboard"
+          aria-label="EVENTKAN"
+          className="flex shrink-0 items-center gap-2 text-xl font-extrabold tracking-[-.03em] text-[#111927]"
+          style={{ fontFamily: 'var(--font-display)' }}
+        >
+          <span className="grid h-9.5 w-9.5 -rotate-3 place-items-center rounded-xl bg-[#11233f] text-[15px] text-white">
+            S
+          </span>
+          <span>EVENTKAN</span>
+        </Link>
+
+        <nav className="hidden items-center gap-7.5 text-sm font-semibold text-[#4b5565] lg:flex">
+          {participantNavLinks.map((link) => (
             <Link
-              href="/participant/dashboard"
-              data-tour-desktop="step-dashboard"
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#3D3D3A] hover:text-[#141413] hover:bg-[#FAF9F5] transition-colors"
+              key={link.href}
+              href={link.href}
+              {...(link.tourTarget && { 'data-tour-desktop': `step-${link.tourTarget}` })}
+              className="transition hover:text-[#111927]"
             >
-              Dashboard
+              {link.label}
             </Link>
-            <Link
-              href="/participant/event-history"
-              data-tour-desktop="step-history"
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#3D3D3A] hover:text-[#141413] hover:bg-[#FAF9F5] transition-colors"
-            >
-              Riwayat Event
-            </Link>
-            <Link
-              href="/participant/payment-history"
-              data-tour-desktop="step-payments"
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#3D3D3A] hover:text-[#141413] hover:bg-[#FAF9F5] transition-colors"
-            >
-              Riwayat Pembayaran
-            </Link>
-            <Link href="/participant/certificates" className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#3D3D3A] hover:text-[#141413] hover:bg-[#FAF9F5] transition-colors">
-              Sertifikat
-            </Link>
-          </nav>
-        </div>
+          ))}
+        </nav>
 
-        {/* Right: user dropdown */}
-        <div className="flex items-center gap-3" data-tour-desktop="step-profile">
-          <ParticipantNavbarClient user={user} />
+        <div className="flex items-center gap-2" data-tour-desktop="step-profile">
+          <ParticipantUserMenu user={user} />
         </div>
       </div>
-    </header>
-  );
+    </div>
+  </header>
+);

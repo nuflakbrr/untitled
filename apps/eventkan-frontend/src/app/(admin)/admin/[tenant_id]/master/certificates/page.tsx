@@ -1,12 +1,13 @@
 'use client';
 
-import type { EventStatus } from '@/interfaces/enums';
-
 import Link from 'next/link';
 import { type FC, useState } from 'react';
+import { Settings, RefreshCw } from 'lucide-react';
+
+import type { EventWithCertificate } from '@/interfaces/features/certificates';
+
 import { Button } from '@/components/ui/button';
 import Heading from '@/components/Common/Heading';
-import { Settings, RefreshCw } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { DataTable } from '@/components/ui/data-table';
 import { usePermission } from '@/providers/PermissionProvider';
@@ -21,20 +22,6 @@ import {
 
 import Columns from './_components/Columns';
 import { useCertificatesList } from './_components/useCertificatesList';
-
-interface EventWithCertTyped {
-  id: string;
-  title: string;
-  slug: string;
-  startDate: Date;
-  location: string;
-  status: EventStatus;
-  certificateTemplate?: {
-    id: string;
-    backgroundUrl: string | null;
-    numberTemplate: string;
-  } | null;
-}
 
 const CertificatesCMS: FC = () => {
   const { hasPermission } = usePermission();
@@ -119,7 +106,7 @@ const CertificatesCMS: FC = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="">Semua Event</SelectItem>
-              {eventsWithCert.map((event: EventWithCertTyped) => (
+              {eventsWithCert.map((event: EventWithCertificate) => (
                 <SelectItem key={event.id} value={event.id}>
                   {event.title}
                 </SelectItem>

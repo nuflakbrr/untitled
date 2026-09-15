@@ -4,39 +4,17 @@ import type { FC } from 'react';
 import type { Route } from 'next';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
 import { X, Menu, ArrowRight } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { getMeAction } from '@/services/public/auth';
 
 import UserMenu from './_components/UserMenu';
+import { useNavbar } from './_hooks/useNavbar';
 import { navlinks } from './_constants/navLinks';
+import NavbarMobileMenu from './_components/NavbarMobileMenu';
 
 const Navbar: FC = () => {
-  const [open, setOpen] = useState(false);
-  const pathname = usePathname();
-  const { data } = useQuery({
-    queryKey: ['auth-me-server-action'],
-    queryFn: () => getMeAction(),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
-  const session = data?.session;
-  const isAdmin = data?.isAdmin ?? false;
-  const tenantId = session?.tenantId;
-  const dashboardHref = isAdmin
-    ? tenantId
-      ? `/admin/${tenantId}/dashboard`
-      : '/admin'
-    : '/participant/dashboard';
-  const active = (path: string) => (path === '/' ? pathname === '/' : pathname.startsWith(path));
+  const { open, setOpen, session, isAdmin, tenantId, dashboardHref, isActive } = useNavbar();
 
   return (
     <header className="sticky top-0 z-50 px-4 pt-5 sm:px-6">
@@ -60,7 +38,7 @@ const Navbar: FC = () => {
                 href={link.path as Route}
                 className={cn(
                   'transition hover:text-[#111927]',
-                  active(link.path) && 'text-[#111927]'
+                  isActive(link.path) && 'text-[#111927]'
                 )}
               >
                 {link.title === 'Tentang Kami' ? 'Tentang' : link.title}
@@ -98,46 +76,10 @@ const Navbar: FC = () => {
           </button>
         </div>
         {open && (
-          <div className="absolute inset-x-0 top-full z-10 mt-3 rounded-[18px] border border-white/70 bg-[#fffdf8]/95 p-3 shadow-[0_18px_40px_rgba(17,35,63,.12),inset_0_1px_0_rgba(255,255,255,.85)] backdrop-blur-2xl backdrop-saturate-150 lg:hidden">
-            <nav className="grid gap-1">
-              {navlinks
-                .filter((link) => link.path !== '/')
-                .map((link) => (
-                  <Link
-                    key={link.path}
-                    href={link.path as Route}
-                    className="rounded-xl px-3 py-2.5 text-sm font-semibold text-[#4b5565] hover:bg-[#f6f3eb]"
-                  >
-                    {link.title}
-                  </Link>
-                ))}
-            </nav>
-            <div className="mt-3 grid gap-2 border-t border-[#111927]/10 pt-3">
-              {session?.user ? (
-                <Link
-                  href={dashboardHref as Route}
-                  className="rounded-full bg-[#11233f] px-4 py-3 text-center text-sm font-bold text-white"
-                >
-                  Dashboard
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    href={'/login' as Route}
-                    className="rounded-full bg-[#f6f3eb] px-4 py-3 text-center text-sm font-bold text-[#11233f]"
-                  >
-                    Masuk
-                  </Link>
-                  <Link
-                    href={'/events' as Route}
-                    className="rounded-full bg-[#11233f] px-4 py-3 text-center text-sm font-bold text-white"
-                  >
-                    Cari Event
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
+          <NavbarMobileMenu
+            isAuthenticated={Boolean(session?.user)}
+            dashboardHref={dashboardHref}
+          />
         )}
       </div>
     </header>

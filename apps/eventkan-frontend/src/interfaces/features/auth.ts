@@ -69,3 +69,24 @@ export interface ForgotPasswordSuccessProps {
   email: string;
   onRetry: () => void;
 }
+
+export interface AdminSessionUser {
+  name: string;
+  email: string;
+  image?: string | null;
+}
+
+export interface AdminSessionContext {
+  user: AdminSessionUser;
+  roles?: string[];
+}
+
+export interface UserSettingsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  user: {
+    name: string;
+    email: string;
+    avatar: string;
+  };
+}

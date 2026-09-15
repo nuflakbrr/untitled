@@ -54,6 +54,13 @@ export interface PublicStats {
   certificates: number;
 }
 
+export interface DashboardStatusStyle {
+  label: string;
+  bg: string;
+  color: string;
+  border: string;
+}
+
 export interface ParticipantDashboardStats {
   upcomingEvent: {
     id: string;

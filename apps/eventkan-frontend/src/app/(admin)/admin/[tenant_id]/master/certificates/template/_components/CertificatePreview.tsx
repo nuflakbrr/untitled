@@ -1,9 +1,15 @@
 'use client';
 
+import 'moment-timezone';
+
+import moment from 'moment';
+import { Award } from 'lucide-react';
+
 import type { CertNumberMode } from '@/interfaces/enums';
 import type { CertificateSignature } from '@/interfaces/features/certificates';
 
-import { Award } from 'lucide-react';
+import { slugify } from '@/lib/slugify';
+import { formatLongDate } from '@/lib/formatLongDate';
 
 type Signature = Pick<CertificateSignature, 'id' | 'name' | 'title' | 'signatureUrl'>;
 
@@ -30,16 +36,6 @@ type Props = {
   eventStartDate?: Date | string;
   eventLocation?: string;
 };
-
-function slugify(text: string) {
-  return text
-    .toString()
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/-+/g, '-')
-    .replace(/(^-|-$)/g, '');
-}
 
 function renderNumber(template: string, eventTitle: string) {
   const slug = slugify(eventTitle).toUpperCase();
@@ -89,17 +85,7 @@ export default function CertificatePreview({
 }: Props) {
   const certNumber = renderNumber(numberTemplate || 'CERT/{SLUG}/{REG_NO}', eventTitle);
 
-  const formatDate = (date: Date | string | null | undefined) => {
-    if (!date) return '';
-    return new Date(date).toLocaleDateString('id-ID', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      timeZone: 'Asia/Jakarta',
-    });
-  };
-
-  const formattedDate = eventStartDate ? formatDate(eventStartDate) : '10 Juli 2026';
+  const formattedDate = eventStartDate ? formatLongDate(eventStartDate) : '10 Juli 2026';
   const locationText = eventLocation || 'MCC';
 
   return (
@@ -218,7 +204,7 @@ export default function CertificatePreview({
                   <div className="text-left space-y-1">
                     <p className="text-[10px] font-semibold">TANGGAL TERBIT</p>
                     <p className="text-xs font-bold" style={{ color: titleColor }}>
-                      {new Date().toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' })}
+                      {moment().tz('Asia/Jakarta').format('DD/MM/YYYY')}
                     </p>
                   </div>
                 )}
@@ -253,7 +239,7 @@ export default function CertificatePreview({
                 <div className="text-left space-y-1">
                   <p className="text-[10px] font-semibold">TANGGAL TERBIT</p>
                   <p className="text-xs font-bold" style={{ color: titleColor }}>
-                    {new Date().toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' })}
+                    {moment().tz('Asia/Jakarta').format('DD/MM/YYYY')}
                   </p>
                 </div>
                 <div className="flex flex-col items-center space-y-1">

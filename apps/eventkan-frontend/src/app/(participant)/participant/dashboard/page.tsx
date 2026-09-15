@@ -1,6 +1,7 @@
-import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+
+import { auth } from '@/lib/auth';
 import { getParticipantDashboardData } from '@/services/admin/dashboard';
 
 import SummaryCards from './_components/SummaryCards';
@@ -22,8 +23,8 @@ export default async function ParticipantDashboard() {
 
   if (!data) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
-        <p style={{ color: '#87867F' }}>Gagal memuat data dashboard peserta.</p>
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
+        <p className="text-sm text-[#6c7280]">Gagal memuat data dashboard peserta.</p>
       </div>
     );
   }
@@ -31,18 +32,16 @@ export default async function ParticipantDashboard() {
   const { upcomingEvent, history, summary } = data;
 
   return (
-    <div className="space-y-8 pb-10">
+    <div className="space-y-6 pb-10">
       <DashboardHeader userName={session.user.name} emailVerified={session.user.emailVerified} />
 
       <TestimonialNoticeBanner count={summary.pendingTestimonials} />
 
       <SummaryCards summary={summary} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[.9fr_1.4fr]">
         <UpcomingEventCard upcomingEvent={upcomingEvent} />
-        <div className="lg:col-span-2">
-          <EventHistoryTable history={history} />
-        </div>
+        <EventHistoryTable history={history} />
       </div>
     </div>
   );

@@ -116,6 +116,11 @@ export interface EventCategory {
   };
 }
 
+export interface EventFilterOption {
+  id: string;
+  title: string;
+}
+
 export interface CategoryLinksProps {
   categories: EventCategory[];
 }

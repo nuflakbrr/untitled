@@ -17,3 +17,7 @@ export interface EmptyStateProps {
   icon: LucideIcon;
   action?: EmptyStateAction;
 }
+
+export interface ParticipantTourGuideProps {
+  children: ReactNode;
+}

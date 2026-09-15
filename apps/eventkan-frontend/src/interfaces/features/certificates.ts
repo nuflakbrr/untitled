@@ -1,4 +1,4 @@
-import type { CertNumberMode } from '@/interfaces/enums';
+import type { EventStatus, CertNumberMode } from '@/interfaces/enums';
 
 export interface CertificateSignature {
   id: string;
@@ -44,4 +44,18 @@ export interface CertificateTemplate
   createdAt: Date;
   updatedAt: Date;
   signatures: CertificateSignature[];
+}
+
+export interface EventWithCertificate {
+  id: string;
+  title: string;
+  slug: string;
+  startDate: Date;
+  location: string;
+  status: EventStatus;
+  certificateTemplate?: {
+    id: string;
+    backgroundUrl: string | null;
+    numberTemplate: string;
+  } | null;
 }

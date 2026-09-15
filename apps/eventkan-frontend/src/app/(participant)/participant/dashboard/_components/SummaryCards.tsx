@@ -13,31 +13,31 @@ const cards = [
     key: 'totalRegistered',
     label: 'Total Terdaftar',
     icon: Calendar,
-    iconColor: '#D97757',
-    bg: 'rgba(217,119,87,0.1)',
-    border: 'rgba(217,119,87,0.2)',
+    iconColor: '#ff7a45',
+    bg: '#ffe5d8',
+    border: 'rgba(255,122,69,.25)',
   },
   {
     key: 'totalCheckedIn',
     label: 'Hadir (Check-In)',
     icon: CheckCircle2,
-    iconColor: '#788C5D',
-    bg: 'rgba(120,140,93,0.1)',
-    border: 'rgba(120,140,93,0.2)',
+    iconColor: '#36784b',
+    bg: '#e5f2e8',
+    border: 'rgba(54,120,75,.25)',
   },
   {
     key: 'totalPendingPayment',
     label: 'Menunggu Pembayaran',
     icon: Clock,
-    iconColor: '#B04A3F',
-    bg: 'rgba(176,74,63,0.08)',
-    border: 'rgba(176,74,63,0.18)',
+    iconColor: '#b84a2a',
+    bg: '#ffe5d8',
+    border: 'rgba(184,74,42,.25)',
   },
 ] as const;
 
 export default function SummaryCards({ summary }: SummaryCardsProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       {cards.map((card) => {
         const Icon = card.icon;
         const value = summary[card.key as keyof SummaryCardsProps['summary']];
@@ -45,41 +45,25 @@ export default function SummaryCards({ summary }: SummaryCardsProps) {
         return (
           <div
             key={card.key}
-            className="p-6 rounded-xl flex items-center justify-between transition-all duration-200"
-            style={{
-              background: '#FFFFFF',
-              border: '1.5px solid #D1CFC5',
-              boxShadow: '0 2px 8px rgba(20,20,19,0.05)',
-            }}
+            className="flex items-center justify-between rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] p-5 shadow-[0_18px_50px_rgba(17,35,63,.05)] transition-transform duration-200 hover:-translate-y-0.5"
           >
             <div className="space-y-1">
               <p
-                className="text-[10px] font-bold uppercase tracking-widest"
-                style={{
-                  color: '#87867F',
-                  fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
-                }}
+                className="text-[11px] font-extrabold uppercase tracking-[.08em] text-[#6c7280]"
               >
                 {card.label}
               </p>
               <h3
-                className="text-4xl font-medium mt-1"
-                style={{
-                  fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
-                  color: '#141413',
-                }}
+                className="font-display mt-1 text-4xl font-extrabold tracking-[-.04em] text-[#111927]"
               >
                 {value}
               </h3>
             </div>
             <div
-              className="p-3.5 rounded-xl"
-              style={{
-                background: card.bg,
-                border: `1.5px solid ${card.border}`,
-              }}
+              className="rounded-[15px] p-3.5"
+              style={{ background: card.bg, border: `1px solid ${card.border}` }}
             >
-              <Icon className="w-6 h-6" style={{ color: card.iconColor }} />
+              <Icon className="h-6 w-6" style={{ color: card.iconColor }} />
             </div>
           </div>
         );

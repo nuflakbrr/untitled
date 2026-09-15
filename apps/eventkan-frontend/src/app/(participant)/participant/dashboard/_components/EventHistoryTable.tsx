@@ -1,14 +1,11 @@
-import { Button } from '@/components/ui/button';
 import { Award, Video, FileDown } from 'lucide-react';
-import {
-  Empty,
-  EmptyMedia,
-  EmptyTitle,
-  EmptyHeader,
-  EmptyDescription,
-} from '@/components/ui/empty';
 
-import { getStatusStyle, formatEventDate, canDownloadCertificate } from './dashboard-helpers';
+import { Button } from '@/components/ui/button';
+import { formatLongDate } from '@/lib/formatLongDate';
+import { Empty, EmptyMedia, EmptyTitle, EmptyHeader, EmptyDescription } from '@/components/ui/empty';
+
+import { canDownloadCertificate } from '../_libs/canDownloadCertificate';
+import { getDashboardStatusStyle } from '../_libs/getDashboardStatusStyle';
 
 interface EventHistoryTableProps {
   history: Array<{
@@ -26,42 +23,26 @@ interface EventHistoryTableProps {
   }>;
 }
 
+const PanelHeader = () => (
+  <div className="flex items-center gap-2 border-b border-[#111927]/10 px-5 py-4">
+    <Award className="h-4 w-4 text-[#ff7a45]" />
+    <h2 className="font-display text-base font-extrabold text-[#111927]">Riwayat Event</h2>
+    <p className="ml-auto text-xs text-[#6c7280]">Seluruh event yang pernah Anda daftarkan</p>
+  </div>
+);
+
 export default function EventHistoryTable({ history }: EventHistoryTableProps) {
+  const panelClass =
+    'h-full overflow-hidden rounded-[24px] border border-[#111927]/10 bg-[#fffdf8] shadow-[0_18px_50px_rgba(17,35,63,.05)]';
+
   if (history.length === 0) {
     return (
-      <div
-        className="rounded-xl overflow-hidden h-full"
-        style={{
-          background: '#FFFFFF',
-          border: '1.5px solid #D1CFC5',
-          boxShadow: '0 2px 8px rgba(20,20,19,0.05)',
-        }}
-      >
-        <div
-          className="px-6 py-4 border-b flex items-center gap-2"
-          style={{ background: '#FAF9F5', borderColor: '#E3DACC' }}
-        >
-          <Award className="w-4.5 h-4.5" style={{ color: '#D97757' }} />
-          <h2
-            className="text-sm font-semibold"
-            style={{
-              fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
-              color: '#141413',
-            }}
-          >
-            Riwayat Event
-          </h2>
-          <p className="ml-auto text-xs" style={{ color: '#87867F' }}>
-            Seluruh event yang pernah Anda daftarkan
-          </p>
-        </div>
-
-        <div className="p-6">
+      <div className={panelClass}>
+        <PanelHeader />
+        <div className="p-5">
           <Empty className="border-0 p-0">
             <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <Award className="w-6 h-6" />
-              </EmptyMedia>
+              <EmptyMedia variant="icon"><Award className="h-6 w-6" /></EmptyMedia>
               <EmptyTitle>Belum ada riwayat event</EmptyTitle>
               <EmptyDescription>Anda belum pernah mendaftar ke event apapun.</EmptyDescription>
             </EmptyHeader>
@@ -72,140 +53,69 @@ export default function EventHistoryTable({ history }: EventHistoryTableProps) {
   }
 
   return (
-    <div
-      className="rounded-xl overflow-hidden h-full"
-      style={{
-        background: '#FFFFFF',
-        border: '1.5px solid #D1CFC5',
-        boxShadow: '0 2px 8px rgba(20,20,19,0.05)',
-      }}
-    >
-      <div
-        className="px-6 py-4 border-b flex items-center gap-2"
-        style={{ background: '#FAF9F5', borderColor: '#E3DACC' }}
-      >
-        <Award className="w-4.5 h-4.5" style={{ color: '#D97757' }} />
-        <h2
-          className="text-sm font-semibold"
-          style={{
-            fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
-            color: '#141413',
-          }}
-        >
-          Riwayat Event
-        </h2>
-        <p className="ml-auto text-xs" style={{ color: '#87867F' }}>
-          Seluruh event yang pernah Anda daftarkan
-        </p>
-      </div>
-
-      <div className="p-6">
+    <div className={panelClass}>
+      <PanelHeader />
+      <div className="p-5">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left border-collapse">
+          <table className="w-full min-w-180 border-collapse text-left text-sm">
             <thead>
-              <tr
-                className="text-[10px] font-bold uppercase"
-                style={{
-                  color: '#87867F',
-                  fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
-                  letterSpacing: '0.08em',
-                  borderBottom: '1.5px solid #E3DACC',
-                }}
-              >
+              <tr className="border-b border-[#111927]/10 text-[10px] font-extrabold uppercase tracking-[.08em] text-[#6c7280]">
                 <th className="pb-3 pr-4">Event</th>
-                <th className="pb-3 px-4">Tanggal</th>
-                <th className="pb-3 px-4">Status</th>
-                <th className="pb-3 px-4">Link Meeting</th>
+                <th className="px-4 pb-3">Tanggal</th>
+                <th className="px-4 pb-3">Status</th>
+                <th className="px-4 pb-3">Link Meeting</th>
                 <th className="pb-3 pl-4 text-right">Sertifikat</th>
               </tr>
             </thead>
             <tbody>
               {history.map((item) => {
-                const canDownloadCert = canDownloadCertificate(
+                const canDownload = canDownloadCertificate(
                   item.status,
                   item.event?.certificateEnabled ?? false,
                   item.certificates
                 );
-                const statusStyle = getStatusStyle(item.status);
+                const statusStyle = getDashboardStatusStyle(item.status);
 
                 return (
-                  <tr
-                    key={item.id}
-                    className="group transition-colors duration-150"
-                    style={{ borderBottom: '1px solid #F0EEE6' }}
-                  >
+                  <tr key={item.id} className="border-b border-[#111927]/6 last:border-0">
                     <td className="py-4 pr-4">
-                      <p
-                        className="font-semibold text-sm line-clamp-1"
-                        style={{
-                          color: '#141413',
-                          fontFamily: "ui-serif, Georgia, 'Times New Roman', serif",
-                        }}
-                      >
+                      <p className="line-clamp-1 font-display text-sm font-extrabold text-[#111927]">
                         {item.event?.title ?? 'Event tidak tersedia'}
                       </p>
-                      <p
-                        className="text-xs mt-0.5"
-                        style={{
-                          color: '#87867F',
-                          fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
-                        }}
-                      >
-                        {item.registrationNumber}
-                      </p>
+                      <p className="mt-0.5 text-xs text-[#6c7280]">{item.registrationNumber}</p>
                     </td>
-                    <td
-                      className="py-4 px-4 whitespace-nowrap text-xs"
-                      style={{ color: '#87867F' }}
-                    >
-                      {item.event ? formatEventDate(item.event.startDate) : '-'}
+                    <td className="whitespace-nowrap px-4 py-4 text-xs text-[#6c7280]">
+                      {item.event ? formatLongDate(item.event.startDate) : '-'}
                     </td>
-                    <td className="py-4 px-4 whitespace-nowrap">
+                    <td className="whitespace-nowrap px-4 py-4">
                       <span
-                        className="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider"
+                        className="rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[.06em]"
                         style={{
                           background: statusStyle.bg,
                           color: statusStyle.color,
                           border: `1px solid ${statusStyle.border}`,
-                          fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
                         }}
                       >
                         {statusStyle.label}
                       </span>
                     </td>
-                    <td className="py-4 px-4 whitespace-nowrap">
+                    <td className="whitespace-nowrap px-4 py-4">
                       {item.event?.eventType === 'ONLINE' && item.event.meetingLink ? (
-                        <Button asChild variant="outline" size="xs" className="h-8 gap-1.5">
-                          <a
-                            href={item.event.meetingLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Video className="w-3.5 h-3.5" /> Gabung
+                        <Button asChild variant="outline" size="xs" className="h-8 gap-1.5 rounded-full border-[#111927]/12">
+                          <a href={item.event.meetingLink} target="_blank" rel="noopener noreferrer">
+                            <Video className="h-3.5 w-3.5" /> Gabung
                           </a>
                         </Button>
-                      ) : (
-                        <span className="text-xs" style={{ color: '#D1CFC5' }}>
-                          —
-                        </span>
-                      )}
+                      ) : <span className="text-xs text-[#c4c6c8]">-</span>}
                     </td>
-                    <td className="py-4 pl-4 text-right whitespace-nowrap">
-                      {canDownloadCert ? (
-                        <Button asChild variant="outline" size="xs" className="h-8 gap-1.5">
-                          <a
-                            href={item.certificates[0].downloadUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <FileDown className="w-3.5 h-3.5" /> Unduh
+                    <td className="whitespace-nowrap py-4 pl-4 text-right">
+                      {canDownload ? (
+                        <Button asChild variant="outline" size="xs" className="h-8 gap-1.5 rounded-full border-[#111927]/12">
+                          <a href={item.certificates[0].downloadUrl} target="_blank" rel="noopener noreferrer">
+                            <FileDown className="h-3.5 w-3.5" /> Unduh
                           </a>
                         </Button>
-                      ) : (
-                        <span className="text-xs" style={{ color: '#D1CFC5' }}>
-                          —
-                        </span>
-                      )}
+                      ) : <span className="text-xs text-[#c4c6c8]">-</span>}
                     </td>
                   </tr>
                 );

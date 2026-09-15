@@ -1,9 +1,10 @@
 'use client';
 
 import QRCode from 'qrcode';
-import { Button } from '@/components/ui/button';
 import { type FC, useState, useEffect } from 'react';
 import { QrCode, Smartphone, CheckCircle2 } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogTitle,
@@ -40,8 +41,8 @@ const ShowQrButton: FC<Props> = ({ qrToken, eventTitle, registrationNumber, disa
           disabled={disabled}
           className="w-full cursor-pointer disabled:cursor-not-allowed"
           style={{
-            background: disabled ? '#E3DACC' : '#788C5D',
-            color: disabled ? '#87867F' : '#ffffff',
+            background: disabled ? '#f6f3eb' : '#36784b',
+            color: disabled ? '#6c7280' : '#ffffff',
             borderColor: 'transparent',
             cursor: disabled ? 'not-allowed' : 'pointer',
           }}
