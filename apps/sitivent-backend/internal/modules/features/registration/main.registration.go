@@ -1,10 +1,10 @@
 package registration
 
 import (
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/features/registration/handler"
-	"venturo-skeleton-go/internal/modules/features/registration/repository"
-	"venturo-skeleton-go/internal/modules/features/registration/service"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/features/registration/handler"
+	"sitivent-backend/internal/modules/features/registration/repository"
+	"sitivent-backend/internal/modules/features/registration/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"

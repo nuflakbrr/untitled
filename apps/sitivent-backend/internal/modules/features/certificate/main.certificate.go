@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"strings"
 
-	"venturo-skeleton-go/internal/config"
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/features/certificate/handler"
-	"venturo-skeleton-go/internal/modules/features/certificate/repository"
-	"venturo-skeleton-go/internal/modules/features/certificate/service"
-	pkgstorage "venturo-skeleton-go/pkg/storage"
+	"sitivent-backend/internal/config"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/features/certificate/handler"
+	"sitivent-backend/internal/modules/features/certificate/repository"
+	"sitivent-backend/internal/modules/features/certificate/service"
+	pkgstorage "sitivent-backend/pkg/storage"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"

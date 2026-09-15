@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 
-	"venturo-skeleton-go/internal/modules/core/role/domain"
-	"venturo-skeleton-go/internal/modules/core/role/dto"
-	"venturo-skeleton-go/internal/modules/core/role/repository"
+	"sitivent-backend/internal/modules/core/role/domain"
+	"sitivent-backend/internal/modules/core/role/dto"
+	"sitivent-backend/internal/modules/core/role/repository"
 )
 
 type PermissionCacheInvalidator interface {

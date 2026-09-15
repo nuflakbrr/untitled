@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 
-	"venturo-skeleton-go/internal/modules/features/support/domain"
-	"venturo-skeleton-go/internal/modules/features/support/dto"
-	"venturo-skeleton-go/internal/modules/features/support/repository"
+	"sitivent-backend/internal/modules/features/support/domain"
+	"sitivent-backend/internal/modules/features/support/dto"
+	"sitivent-backend/internal/modules/features/support/repository"
 )
 
 type Repository interface {

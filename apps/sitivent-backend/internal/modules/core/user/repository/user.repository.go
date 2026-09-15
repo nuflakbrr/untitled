@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"venturo-skeleton-go/internal/modules/core/user/domain"
-	"venturo-skeleton-go/internal/modules/core/user/dto"
+	"sitivent-backend/internal/modules/core/user/domain"
+	"sitivent-backend/internal/modules/core/user/dto"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"

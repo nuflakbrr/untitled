@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"venturo-skeleton-go/internal/modules/features/event/domain"
-	"venturo-skeleton-go/internal/modules/features/event/dto"
+	"sitivent-backend/internal/modules/features/event/domain"
+	"sitivent-backend/internal/modules/features/event/dto"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"

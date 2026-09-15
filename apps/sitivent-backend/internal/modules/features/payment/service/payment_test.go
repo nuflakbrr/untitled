@@ -6,10 +6,10 @@ import (
 	"sync"
 	"testing"
 
-	"venturo-skeleton-go/internal/modules/features/payment/domain"
-	"venturo-skeleton-go/internal/modules/features/payment/dto"
-	"venturo-skeleton-go/internal/modules/features/payment/repository"
-	"venturo-skeleton-go/pkg/ipaymu"
+	"sitivent-backend/internal/modules/features/payment/domain"
+	"sitivent-backend/internal/modules/features/payment/dto"
+	"sitivent-backend/internal/modules/features/payment/repository"
+	"sitivent-backend/pkg/ipaymu"
 )
 
 type fakeRepo struct {

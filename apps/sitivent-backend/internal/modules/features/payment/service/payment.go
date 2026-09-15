@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
-	"venturo-skeleton-go/internal/modules/features/payment/domain"
-	"venturo-skeleton-go/internal/modules/features/payment/dto"
-	"venturo-skeleton-go/internal/modules/features/payment/repository"
-	"venturo-skeleton-go/pkg/ipaymu"
+	"sitivent-backend/internal/modules/features/payment/domain"
+	"sitivent-backend/internal/modules/features/payment/dto"
+	"sitivent-backend/internal/modules/features/payment/repository"
+	"sitivent-backend/pkg/ipaymu"
 )
 
 var ErrForbidden = errors.New("not allowed to act on this payment")

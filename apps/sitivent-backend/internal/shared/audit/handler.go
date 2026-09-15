@@ -3,8 +3,8 @@ package audit
 import (
 	"net/http"
 
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/shared/response"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/shared/response"
 
 	"github.com/gin-gonic/gin"
 )

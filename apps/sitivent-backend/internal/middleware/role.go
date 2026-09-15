@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strings"
 
-	"venturo-skeleton-go/internal/shared/authz"
-	"venturo-skeleton-go/internal/shared/response"
-	"venturo-skeleton-go/pkg/logger"
+	"sitivent-backend/internal/shared/authz"
+	"sitivent-backend/internal/shared/response"
+	"sitivent-backend/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 )

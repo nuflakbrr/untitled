@@ -1,10 +1,10 @@
 package support
 
 import (
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/features/support/handler"
-	"venturo-skeleton-go/internal/modules/features/support/repository"
-	"venturo-skeleton-go/internal/modules/features/support/service"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/features/support/handler"
+	"sitivent-backend/internal/modules/features/support/repository"
+	"sitivent-backend/internal/modules/features/support/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"

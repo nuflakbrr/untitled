@@ -3,7 +3,7 @@ package middleware
 import (
 	"errors"
 
-	jwtpkg "venturo-skeleton-go/pkg/jwt"
+	jwtpkg "sitivent-backend/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )

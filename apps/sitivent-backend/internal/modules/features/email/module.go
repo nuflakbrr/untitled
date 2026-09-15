@@ -1,9 +1,9 @@
 package email
 
 import (
-	"venturo-skeleton-go/internal/config"
-	"venturo-skeleton-go/internal/middleware"
-	emailpkg "venturo-skeleton-go/pkg/email"
+	"sitivent-backend/internal/config"
+	"sitivent-backend/internal/middleware"
+	emailpkg "sitivent-backend/pkg/email"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"

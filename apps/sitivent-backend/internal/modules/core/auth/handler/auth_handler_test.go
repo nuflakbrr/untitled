@@ -8,8 +8,8 @@ import (
 	"os"
 	"testing"
 
-	"venturo-skeleton-go/internal/modules/core/auth/dto"
-	"venturo-skeleton-go/internal/shared/response"
+	"sitivent-backend/internal/modules/core/auth/dto"
+	"sitivent-backend/internal/shared/response"
 
 	"github.com/gin-gonic/gin"
 )

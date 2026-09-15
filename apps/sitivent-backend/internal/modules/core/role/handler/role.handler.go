@@ -4,11 +4,11 @@ import (
 	"errors"
 	"net/http"
 
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/core/role/dto"
-	"venturo-skeleton-go/internal/modules/core/role/repository"
-	"venturo-skeleton-go/internal/modules/core/role/service"
-	"venturo-skeleton-go/internal/shared/response"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/core/role/dto"
+	"sitivent-backend/internal/modules/core/role/repository"
+	"sitivent-backend/internal/modules/core/role/service"
+	"sitivent-backend/internal/shared/response"
 
 	"github.com/gin-gonic/gin"
 )

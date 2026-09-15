@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"venturo-skeleton-go/internal/shared/response"
+	"sitivent-backend/internal/shared/response"
 
 	"github.com/gin-gonic/gin"
 )

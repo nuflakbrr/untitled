@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/features/certificate/dto"
-	"venturo-skeleton-go/internal/modules/features/certificate/repository"
-	jwtpkg "venturo-skeleton-go/pkg/jwt"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/features/certificate/dto"
+	"sitivent-backend/internal/modules/features/certificate/repository"
+	jwtpkg "sitivent-backend/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )

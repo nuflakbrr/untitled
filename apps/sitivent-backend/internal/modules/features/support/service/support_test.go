@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"venturo-skeleton-go/internal/modules/features/support/domain"
-	"venturo-skeleton-go/internal/modules/features/support/dto"
+	"sitivent-backend/internal/modules/features/support/domain"
+	"sitivent-backend/internal/modules/features/support/dto"
 )
 
 type fakeRepo struct {

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"venturo-skeleton-go/internal/modules/features/certificate/domain"
+	"sitivent-backend/internal/modules/features/certificate/domain"
 
 	"github.com/signintech/gopdf"
 	qrcode "github.com/skip2/go-qrcode"

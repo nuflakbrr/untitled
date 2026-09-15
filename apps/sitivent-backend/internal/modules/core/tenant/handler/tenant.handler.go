@@ -4,12 +4,12 @@ import (
 	"errors"
 	"net/http"
 
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/core/tenant/domain"
-	"venturo-skeleton-go/internal/modules/core/tenant/dto"
-	"venturo-skeleton-go/internal/modules/core/tenant/repository"
-	"venturo-skeleton-go/internal/modules/core/tenant/service"
-	"venturo-skeleton-go/internal/shared/response"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/core/tenant/domain"
+	"sitivent-backend/internal/modules/core/tenant/dto"
+	"sitivent-backend/internal/modules/core/tenant/repository"
+	"sitivent-backend/internal/modules/core/tenant/service"
+	"sitivent-backend/internal/shared/response"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgconn"

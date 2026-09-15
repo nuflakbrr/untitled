@@ -4,10 +4,10 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/features/testimonial/dto"
-	"venturo-skeleton-go/internal/modules/features/testimonial/repository"
-	"venturo-skeleton-go/internal/shared/response"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/features/testimonial/dto"
+	"sitivent-backend/internal/modules/features/testimonial/repository"
+	"sitivent-backend/internal/shared/response"
 )
 
 type Handler struct{ repo *repository.Repository }

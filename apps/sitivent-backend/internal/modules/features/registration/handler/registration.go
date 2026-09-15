@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/features/registration/dto"
-	"venturo-skeleton-go/internal/modules/features/registration/repository"
-	"venturo-skeleton-go/internal/shared/response"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/features/registration/dto"
+	"sitivent-backend/internal/modules/features/registration/repository"
+	"sitivent-backend/internal/shared/response"
 
 	"github.com/gin-gonic/gin"
 )

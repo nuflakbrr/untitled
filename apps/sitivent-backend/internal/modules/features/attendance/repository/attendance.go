@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"venturo-skeleton-go/internal/modules/features/attendance/domain"
+	"sitivent-backend/internal/modules/features/attendance/domain"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"

@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"venturo-skeleton-go/internal/shared/response"
-	jwtpkg "venturo-skeleton-go/pkg/jwt"
-	"venturo-skeleton-go/pkg/logger"
+	"sitivent-backend/internal/shared/response"
+	jwtpkg "sitivent-backend/pkg/jwt"
+	"sitivent-backend/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 	goredis "github.com/redis/go-redis/v9"

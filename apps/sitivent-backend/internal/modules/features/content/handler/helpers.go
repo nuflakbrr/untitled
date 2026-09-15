@@ -3,9 +3,9 @@ package handler
 import (
 	"net/http"
 
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/shared/response"
-	jwtpkg "venturo-skeleton-go/pkg/jwt"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/shared/response"
+	jwtpkg "sitivent-backend/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )

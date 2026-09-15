@@ -1,4 +1,4 @@
-module venturo-skeleton-go
+module sitivent-backend
 
 go 1.26.1
 

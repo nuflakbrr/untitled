@@ -4,10 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/core/tenant/handler"
-	"venturo-skeleton-go/internal/modules/core/tenant/repository"
-	"venturo-skeleton-go/internal/modules/core/tenant/service"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/core/tenant/handler"
+	"sitivent-backend/internal/modules/core/tenant/repository"
+	"sitivent-backend/internal/modules/core/tenant/service"
 )
 
 type TenantModule struct {

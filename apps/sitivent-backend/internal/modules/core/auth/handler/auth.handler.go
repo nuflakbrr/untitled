@@ -4,14 +4,14 @@ import (
 	"errors"
 	"net/http"
 
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/core/auth/dto"
-	authRepo "venturo-skeleton-go/internal/modules/core/auth/repository"
-	"venturo-skeleton-go/internal/modules/core/auth/service"
-	userRepo "venturo-skeleton-go/internal/modules/core/user/repository"
-	"venturo-skeleton-go/internal/shared/response"
-	"venturo-skeleton-go/pkg/jwt"
-	"venturo-skeleton-go/pkg/logger"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/core/auth/dto"
+	authRepo "sitivent-backend/internal/modules/core/auth/repository"
+	"sitivent-backend/internal/modules/core/auth/service"
+	userRepo "sitivent-backend/internal/modules/core/user/repository"
+	"sitivent-backend/internal/shared/response"
+	"sitivent-backend/pkg/jwt"
+	"sitivent-backend/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 )

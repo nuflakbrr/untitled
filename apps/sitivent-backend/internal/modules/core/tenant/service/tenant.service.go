@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"venturo-skeleton-go/internal/modules/core/tenant/domain"
-	"venturo-skeleton-go/internal/modules/core/tenant/dto"
-	"venturo-skeleton-go/internal/modules/core/tenant/repository"
+	"sitivent-backend/internal/modules/core/tenant/domain"
+	"sitivent-backend/internal/modules/core/tenant/dto"
+	"sitivent-backend/internal/modules/core/tenant/repository"
 )
 
 var (

@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"strings"
 
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/features/certificate/dto"
-	"venturo-skeleton-go/internal/modules/features/certificate/repository"
-	"venturo-skeleton-go/internal/modules/features/certificate/service"
-	"venturo-skeleton-go/internal/shared/response"
-	jwtpkg "venturo-skeleton-go/pkg/jwt"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/features/certificate/dto"
+	"sitivent-backend/internal/modules/features/certificate/repository"
+	"sitivent-backend/internal/modules/features/certificate/service"
+	"sitivent-backend/internal/shared/response"
+	jwtpkg "sitivent-backend/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )

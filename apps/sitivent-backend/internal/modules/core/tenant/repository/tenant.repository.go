@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"venturo-skeleton-go/internal/modules/core/tenant/domain"
-	"venturo-skeleton-go/internal/modules/core/tenant/dto"
+	"sitivent-backend/internal/modules/core/tenant/domain"
+	"sitivent-backend/internal/modules/core/tenant/dto"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"

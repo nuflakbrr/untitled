@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"venturo-skeleton-go/internal/modules/features/event/dto"
-	"venturo-skeleton-go/internal/shared/response"
+	"sitivent-backend/internal/modules/features/event/dto"
+	"sitivent-backend/internal/shared/response"
 
 	"github.com/gin-gonic/gin"
 )

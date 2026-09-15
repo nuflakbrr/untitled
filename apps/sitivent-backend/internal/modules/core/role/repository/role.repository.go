@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"venturo-skeleton-go/internal/modules/core/role/domain"
-	"venturo-skeleton-go/internal/modules/core/role/dto"
-	"venturo-skeleton-go/pkg/logger"
+	"sitivent-backend/internal/modules/core/role/domain"
+	"sitivent-backend/internal/modules/core/role/dto"
+	"sitivent-backend/pkg/logger"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"

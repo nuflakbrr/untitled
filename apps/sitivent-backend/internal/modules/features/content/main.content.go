@@ -1,10 +1,10 @@
 package content
 
 import (
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/features/content/handler"
-	"venturo-skeleton-go/internal/modules/features/content/repository"
-	"venturo-skeleton-go/internal/modules/features/content/service"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/features/content/handler"
+	"sitivent-backend/internal/modules/features/content/repository"
+	"sitivent-backend/internal/modules/features/content/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"

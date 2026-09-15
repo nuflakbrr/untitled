@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"venturo-skeleton-go/pkg/logger"
+	"sitivent-backend/pkg/logger"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

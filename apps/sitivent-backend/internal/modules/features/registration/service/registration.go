@@ -7,9 +7,9 @@ import (
 	"errors"
 	"fmt"
 
-	"venturo-skeleton-go/internal/modules/features/registration/domain"
-	"venturo-skeleton-go/internal/modules/features/registration/dto"
-	"venturo-skeleton-go/internal/modules/features/registration/repository"
+	"sitivent-backend/internal/modules/features/registration/domain"
+	"sitivent-backend/internal/modules/features/registration/dto"
+	"sitivent-backend/internal/modules/features/registration/repository"
 
 	"github.com/xuri/excelize/v2"
 )

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"venturo-skeleton-go/internal/modules/features/event/domain"
+	"sitivent-backend/internal/modules/features/event/domain"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"

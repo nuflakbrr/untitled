@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"venturo-skeleton-go/internal/shared/response"
+	"sitivent-backend/internal/shared/response"
 
 	"github.com/gin-gonic/gin"
 )

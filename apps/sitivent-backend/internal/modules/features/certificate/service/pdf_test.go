@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"venturo-skeleton-go/internal/modules/features/certificate/domain"
+	"sitivent-backend/internal/modules/features/certificate/domain"
 )
 
 type roundTripFunc func(*http.Request) (*http.Response, error)

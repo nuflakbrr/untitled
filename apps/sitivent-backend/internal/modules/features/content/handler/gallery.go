@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net/http"
 
-	"venturo-skeleton-go/internal/modules/features/content/dto"
-	"venturo-skeleton-go/internal/modules/features/content/repository"
-	"venturo-skeleton-go/internal/shared/response"
+	"sitivent-backend/internal/modules/features/content/dto"
+	"sitivent-backend/internal/modules/features/content/repository"
+	"sitivent-backend/internal/shared/response"
 
 	"github.com/gin-gonic/gin"
 )

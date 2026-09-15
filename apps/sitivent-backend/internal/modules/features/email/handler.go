@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strings"
 
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/shared/response"
-	emailpkg "venturo-skeleton-go/pkg/email"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/shared/response"
+	emailpkg "sitivent-backend/pkg/email"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"

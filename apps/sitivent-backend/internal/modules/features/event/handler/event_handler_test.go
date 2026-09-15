@@ -8,12 +8,12 @@ import (
 	"strings"
 	"testing"
 
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/features/event/domain"
-	"venturo-skeleton-go/internal/modules/features/event/dto"
-	"venturo-skeleton-go/internal/modules/features/event/repository"
-	"venturo-skeleton-go/internal/modules/features/event/service"
-	jwtpkg "venturo-skeleton-go/pkg/jwt"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/features/event/domain"
+	"sitivent-backend/internal/modules/features/event/dto"
+	"sitivent-backend/internal/modules/features/event/repository"
+	"sitivent-backend/internal/modules/features/event/service"
+	jwtpkg "sitivent-backend/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )

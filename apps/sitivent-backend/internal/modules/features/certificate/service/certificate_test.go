@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"venturo-skeleton-go/internal/modules/features/certificate/domain"
-	"venturo-skeleton-go/internal/modules/features/certificate/dto"
-	"venturo-skeleton-go/pkg/storage"
+	"sitivent-backend/internal/modules/features/certificate/domain"
+	"sitivent-backend/internal/modules/features/certificate/dto"
+	"sitivent-backend/pkg/storage"
 )
 
 type repositoryStub struct {

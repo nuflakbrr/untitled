@@ -4,10 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/core/user/handler"
-	"venturo-skeleton-go/internal/modules/core/user/repository"
-	"venturo-skeleton-go/internal/modules/core/user/service"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/core/user/handler"
+	"sitivent-backend/internal/modules/core/user/repository"
+	"sitivent-backend/internal/modules/core/user/service"
 )
 
 type UserModule struct {

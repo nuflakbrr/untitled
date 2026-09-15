@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	authDto "venturo-skeleton-go/internal/modules/core/auth/dto"
-	tenantDomain "venturo-skeleton-go/internal/modules/core/tenant/domain"
-	tenantDto "venturo-skeleton-go/internal/modules/core/tenant/dto"
-	userDomain "venturo-skeleton-go/internal/modules/core/user/domain"
+	authDto "sitivent-backend/internal/modules/core/auth/dto"
+	tenantDomain "sitivent-backend/internal/modules/core/tenant/domain"
+	tenantDto "sitivent-backend/internal/modules/core/tenant/dto"
+	userDomain "sitivent-backend/internal/modules/core/user/domain"
 
 	"golang.org/x/crypto/bcrypt"
 )

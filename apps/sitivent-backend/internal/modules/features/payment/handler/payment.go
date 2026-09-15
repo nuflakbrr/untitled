@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"net/url"
 
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/features/payment/dto"
-	"venturo-skeleton-go/internal/modules/features/payment/repository"
-	"venturo-skeleton-go/internal/shared/response"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/features/payment/dto"
+	"sitivent-backend/internal/modules/features/payment/repository"
+	"sitivent-backend/internal/shared/response"
 
 	"github.com/gin-gonic/gin"
 )

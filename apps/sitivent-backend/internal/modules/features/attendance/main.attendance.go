@@ -1,10 +1,10 @@
 package attendance
 
 import (
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/features/attendance/handler"
-	"venturo-skeleton-go/internal/modules/features/attendance/repository"
-	"venturo-skeleton-go/internal/modules/features/attendance/service"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/features/attendance/handler"
+	"sitivent-backend/internal/modules/features/attendance/repository"
+	"sitivent-backend/internal/modules/features/attendance/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"

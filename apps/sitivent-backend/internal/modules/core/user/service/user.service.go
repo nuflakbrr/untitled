@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"strings"
 
-	"venturo-skeleton-go/internal/modules/core/user/domain"
-	"venturo-skeleton-go/internal/modules/core/user/dto"
-	"venturo-skeleton-go/internal/modules/core/user/repository"
+	"sitivent-backend/internal/modules/core/user/domain"
+	"sitivent-backend/internal/modules/core/user/dto"
+	"sitivent-backend/internal/modules/core/user/repository"
 
 	"golang.org/x/crypto/bcrypt"
 )

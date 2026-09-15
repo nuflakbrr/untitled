@@ -9,7 +9,7 @@ import (
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/option"
 
-	"venturo-skeleton-go/pkg/logger"
+	"sitivent-backend/pkg/logger"
 )
 
 // GCSClient implements Client using Google Cloud Storage.

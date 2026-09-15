@@ -1,10 +1,10 @@
 package event
 
 import (
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/features/event/handler"
-	"venturo-skeleton-go/internal/modules/features/event/repository"
-	"venturo-skeleton-go/internal/modules/features/event/service"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/features/event/handler"
+	"sitivent-backend/internal/modules/features/event/repository"
+	"sitivent-backend/internal/modules/features/event/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"

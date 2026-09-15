@@ -8,8 +8,8 @@ import (
 	"time"
 	"unicode"
 
-	"venturo-skeleton-go/internal/modules/features/registration/domain"
-	"venturo-skeleton-go/internal/modules/features/registration/dto"
+	"sitivent-backend/internal/modules/features/registration/domain"
+	"sitivent-backend/internal/modules/features/registration/dto"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"

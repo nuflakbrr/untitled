@@ -5,9 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	"venturo-skeleton-go/internal/modules/features/content/domain"
-	"venturo-skeleton-go/internal/modules/features/content/dto"
-	"venturo-skeleton-go/internal/modules/features/content/repository"
+	"sitivent-backend/internal/modules/features/content/domain"
+	"sitivent-backend/internal/modules/features/content/dto"
+	"sitivent-backend/internal/modules/features/content/repository"
 )
 
 var errCoverage = errors.New("coverage error")

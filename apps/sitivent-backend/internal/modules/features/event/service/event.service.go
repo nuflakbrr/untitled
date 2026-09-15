@@ -8,9 +8,9 @@ import (
 	"time"
 	"unicode"
 
-	"venturo-skeleton-go/internal/modules/features/event/domain"
-	"venturo-skeleton-go/internal/modules/features/event/dto"
-	"venturo-skeleton-go/internal/modules/features/event/repository"
+	"sitivent-backend/internal/modules/features/event/domain"
+	"sitivent-backend/internal/modules/features/event/dto"
+	"sitivent-backend/internal/modules/features/event/repository"
 
 	"github.com/jackc/pgx/v5/pgconn"
 )

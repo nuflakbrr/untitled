@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"venturo-skeleton-go/internal/modules/features/testimonial/dto"
+	"sitivent-backend/internal/modules/features/testimonial/dto"
 )
 
 var ErrNotEligible = errors.New("registration is not eligible for a review")

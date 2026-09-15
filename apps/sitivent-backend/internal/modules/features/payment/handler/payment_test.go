@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/features/payment/dto"
-	"venturo-skeleton-go/internal/modules/features/payment/repository"
-	jwtpkg "venturo-skeleton-go/pkg/jwt"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/features/payment/dto"
+	"sitivent-backend/internal/modules/features/payment/repository"
+	jwtpkg "sitivent-backend/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )

@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"venturo-skeleton-go/internal/modules/features/registration/dto"
+	"sitivent-backend/internal/modules/features/registration/dto"
 )
 
 func TestRegistrationNumberFormatAndLength(t *testing.T) {

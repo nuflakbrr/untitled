@@ -3,9 +3,9 @@ package testimonial
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/features/testimonial/handler"
-	"venturo-skeleton-go/internal/modules/features/testimonial/repository"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/features/testimonial/handler"
+	"sitivent-backend/internal/modules/features/testimonial/repository"
 )
 
 func SetupRoutes(router *gin.RouterGroup, db *pgxpool.Pool) {

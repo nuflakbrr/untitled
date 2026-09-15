@@ -6,14 +6,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"venturo-skeleton-go/internal/config"
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/core/auth/handler"
-	authRepo "venturo-skeleton-go/internal/modules/core/auth/repository"
-	"venturo-skeleton-go/internal/modules/core/auth/service"
-	tenantRepo "venturo-skeleton-go/internal/modules/core/tenant/repository"
-	userRepo "venturo-skeleton-go/internal/modules/core/user/repository"
-	emailpkg "venturo-skeleton-go/pkg/email"
+	"sitivent-backend/internal/config"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/core/auth/handler"
+	authRepo "sitivent-backend/internal/modules/core/auth/repository"
+	"sitivent-backend/internal/modules/core/auth/service"
+	tenantRepo "sitivent-backend/internal/modules/core/tenant/repository"
+	userRepo "sitivent-backend/internal/modules/core/user/repository"
+	emailpkg "sitivent-backend/pkg/email"
 )
 
 type AuthModule struct {

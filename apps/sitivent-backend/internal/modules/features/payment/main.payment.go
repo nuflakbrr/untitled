@@ -1,11 +1,11 @@
 package payment
 
 import (
-	"venturo-skeleton-go/internal/config"
-	"venturo-skeleton-go/internal/middleware"
-	"venturo-skeleton-go/internal/modules/features/payment/handler"
-	"venturo-skeleton-go/internal/modules/features/payment/repository"
-	"venturo-skeleton-go/internal/modules/features/payment/service"
+	"sitivent-backend/internal/config"
+	"sitivent-backend/internal/middleware"
+	"sitivent-backend/internal/modules/features/payment/handler"
+	"sitivent-backend/internal/modules/features/payment/repository"
+	"sitivent-backend/internal/modules/features/payment/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"

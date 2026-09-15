@@ -8,8 +8,8 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"venturo-skeleton-go/internal/modules/core/auth/domain"
-	"venturo-skeleton-go/pkg/logger"
+	"sitivent-backend/internal/modules/core/auth/domain"
+	"sitivent-backend/pkg/logger"
 )
 
 type RefreshTokenRepository struct {

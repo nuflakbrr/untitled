@@ -9,11 +9,11 @@ import (
 	"strings"
 	"time"
 
-	"venturo-skeleton-go/internal/modules/features/certificate/domain"
-	"venturo-skeleton-go/internal/modules/features/certificate/dto"
-	"venturo-skeleton-go/internal/modules/features/certificate/repository"
-	"venturo-skeleton-go/pkg/logger"
-	"venturo-skeleton-go/pkg/storage"
+	"sitivent-backend/internal/modules/features/certificate/domain"
+	"sitivent-backend/internal/modules/features/certificate/dto"
+	"sitivent-backend/internal/modules/features/certificate/repository"
+	"sitivent-backend/pkg/logger"
+	"sitivent-backend/pkg/storage"
 
 	"github.com/google/uuid"
 )
