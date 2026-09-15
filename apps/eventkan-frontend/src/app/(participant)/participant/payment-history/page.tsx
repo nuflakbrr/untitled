@@ -16,14 +16,8 @@ import Heading from '@/components/Common/Heading';
 import { Separator } from '@/components/ui/separator';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { DataTable } from '@/components/ui/data-table';
+import EmptyState from '@/app/(root)/_components/EmptyState';
 import { getParticipantPayments } from '@/services/admin/payments';
-import {
-  Empty,
-  EmptyMedia,
-  EmptyTitle,
-  EmptyHeader,
-  EmptyDescription,
-} from '@/components/ui/empty';
 
 const columns: ColumnDef<ParticipantPayment>[] = [
   {
@@ -105,17 +99,12 @@ export default function PaymentHistoryPage() {
       />
       <Separator />
       {payments.length === 0 && !isLoading ? (
-        <div className="rounded-xl border p-6">
-          <Empty className="border-0 p-0">
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <CreditCard className="h-6 w-6" />
-              </EmptyMedia>
-              <EmptyTitle>Belum ada pembayaran</EmptyTitle>
-              <EmptyDescription>Belum ada transaksi pembayaran event.</EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        </div>
+        <EmptyState
+          icon={CreditCard}
+          title="Belum ada pembayaran"
+          description="Belum ada transaksi pembayaran event yang tercatat di akunmu."
+          action={{ href: '/events', label: 'Jelajahi event' }}
+        />
       ) : (
         <DataTable
           searchKey="registrationNumber"

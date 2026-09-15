@@ -2,13 +2,7 @@ import { Award, Video, FileDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { formatLongDate } from '@/lib/formatLongDate';
-import {
-  Empty,
-  EmptyMedia,
-  EmptyTitle,
-  EmptyHeader,
-  EmptyDescription,
-} from '@/components/ui/empty';
+import EmptyState from '@/app/(root)/_components/EmptyState';
 
 import { canDownloadCertificate } from '../_libs/canDownloadCertificate';
 import { getDashboardStatusStyle } from '../_libs/getDashboardStatusStyle';
@@ -42,20 +36,12 @@ export default function EventHistoryTable({ history }: EventHistoryTableProps) {
 
   if (history.length === 0) {
     return (
-      <div className={panelClass}>
-        <PanelHeader />
-        <div className="p-5">
-          <Empty className="border-0 p-0">
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <Award className="h-6 w-6" />
-              </EmptyMedia>
-              <EmptyTitle>Belum ada riwayat event</EmptyTitle>
-              <EmptyDescription>Anda belum pernah mendaftar ke event apapun.</EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        </div>
-      </div>
+      <EmptyState
+        icon={Award}
+        title="Belum ada riwayat event"
+        description="Anda belum pernah mendaftar ke event apapun."
+        action={{ href: '/events', label: 'Jelajahi event' }}
+      />
     );
   }
 

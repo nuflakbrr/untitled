@@ -3,9 +3,9 @@
 import { toast } from 'sonner';
 import { type FC, useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { Star, Edit3, Loader2, MessageSquarePlus } from 'lucide-react';
+import { Edit3, Loader2, MessageSquarePlus } from 'lucide-react';
 
-import type { ExistingTestimonial } from '@/interfaces/features/testimonials';
+import type { TestimonialModalProps } from '@/interfaces/features/testimonials';
 
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -20,15 +20,11 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 
-interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-  registrationId: string;
-  eventTitle: string;
-  existingTestimonial?: ExistingTestimonial | null;
-}
+import TestimonialRating from './TestimonialRating';
+import { validateTestimonial } from '../_libs/validateTestimonial';
+import { DEFAULT_TESTIMONIAL_RATING } from '../_constants/testimonial';
 
-const TestimonialModal: FC<Props> = ({
+const TestimonialModal: FC<TestimonialModalProps> = ({
   isOpen,
   onClose,
   registrationId,
@@ -36,29 +32,27 @@ const TestimonialModal: FC<Props> = ({
   existingTestimonial,
 }) => {
   const queryClient = useQueryClient();
-  const [rating, setRating] = useState<number>(existingTestimonial?.rating || 5);
+  const [rating, setRating] = useState<number>(
+    existingTestimonial?.rating || DEFAULT_TESTIMONIAL_RATING
+  );
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [comment, setComment] = useState<string>(existingTestimonial?.comment || '');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
     if (existingTestimonial) {
-      setRating(existingTestimonial.rating || 5);
+      setRating(existingTestimonial.rating || DEFAULT_TESTIMONIAL_RATING);
       setComment(existingTestimonial.comment || '');
     } else {
-      setRating(5);
+      setRating(DEFAULT_TESTIMONIAL_RATING);
       setComment('');
     }
   }, [existingTestimonial, isOpen]);
 
   const handleSubmit = async () => {
-    if (rating < 1 || rating > 5) {
-      toast.error('Silakan berikan rating 1 hingga 5 bintang.');
-      return;
-    }
-
-    if (!comment.trim()) {
-      toast.error('Ulasan tidak boleh kosong.');
+    const validationError = validateTestimonial(rating, comment);
+    if (validationError) {
+      toast.error(validationError);
       return;
     }
 
@@ -112,33 +106,12 @@ const TestimonialModal: FC<Props> = ({
           {/* Rating Bintang */}
           <div className="space-y-2">
             <Label>Rating Event</Label>
-            <div className="flex items-center gap-1.5">
-              {[1, 2, 3, 4, 5].map((star) => {
-                const activeStar = hoverRating ? star <= hoverRating : star <= rating;
-                return (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setRating(star)}
-                    onMouseEnter={() => setHoverRating(star)}
-                    onMouseLeave={() => setHoverRating(0)}
-                    className="p-1 rounded-md transition-transform hover:scale-110 focus:outline-none"
-                    aria-label={`Rating ${star} bintang`}
-                  >
-                    <Star
-                      className={`h-7 w-7 transition-colors ${
-                        activeStar
-                          ? 'fill-amber-400 text-amber-400'
-                          : 'fill-muted text-muted-foreground/40'
-                      }`}
-                    />
-                  </button>
-                );
-              })}
-              <span className="ml-2 text-sm font-semibold text-muted-foreground">
-                {hoverRating || rating} / 5
-              </span>
-            </div>
+            <TestimonialRating
+              rating={rating}
+              hoverRating={hoverRating}
+              onRatingChange={setRating}
+              onHoverChange={setHoverRating}
+            />
           </div>
 
           {/* Textarea Ulasan */}

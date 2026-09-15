@@ -1,22 +1,12 @@
 'use client';
 
-import type { Route } from 'next';
-
-import Link from 'next/link';
-import { Clock, Video, MapPin, Calendar, AlertCircle } from 'lucide-react';
+import { Clock, Video, MapPin, Calendar, ArrowRight, AlertCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { formatLongDate } from '@/lib/formatLongDate';
+import EmptyState from '@/app/(root)/_components/EmptyState';
 import { formatEventTimeRange } from '@/lib/formatEventTimeRange';
 import { getCoverStyles } from '@/app/(root)/_libs/getCoverStyles';
-import {
-  Empty,
-  EmptyMedia,
-  EmptyTitle,
-  EmptyHeader,
-  EmptyContent,
-  EmptyDescription,
-} from '@/components/ui/empty';
 
 import ShowQrButton from './ShowQrButton';
 import ConfirmOnlineButton from './ConfirmOnlineButton';
@@ -113,20 +103,12 @@ export default function UpcomingEventCard({ upcomingEvent }: UpcomingEventCardPr
               </div>
             </div>
           ) : (
-            <Empty className="flex-1 border-0 p-0">
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <AlertCircle className="w-6 h-6" />
-                </EmptyMedia>
-                <EmptyTitle>Belum ada event terdekat</EmptyTitle>
-                <EmptyDescription>Belum ada event terdekat yang didaftar.</EmptyDescription>
-              </EmptyHeader>
-              <EmptyContent>
-                <Button asChild className="w-full">
-                  <Link href={'/events' as Route}>Jelajahi Event</Link>
-                </Button>
-              </EmptyContent>
-            </Empty>
+            <EmptyState
+              icon={AlertCircle}
+              title="Belum ada event terdekat"
+              description="Belum ada event terdekat yang kamu daftarkan."
+              action={{ href: '/events', label: 'Jelajahi event', icon: ArrowRight }}
+            />
           )}
         </div>
 

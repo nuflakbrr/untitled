@@ -7,11 +7,12 @@ import type { ColumnDef } from '@tanstack/react-table';
 
 import moment from 'moment';
 import { useQuery } from '@tanstack/react-query';
-import { Download, ChevronsUpDown } from 'lucide-react';
+import { Award, Download, ChevronsUpDown } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import Heading from '@/components/Common/Heading';
 import { DataTable } from '@/components/ui/data-table';
+import EmptyState from '@/app/(root)/_components/EmptyState';
 import { getParticipantCertificates } from '@/services/admin/certificates';
 
 type Certificate = Awaited<ReturnType<typeof getParticipantCertificates>>[number];
@@ -28,7 +29,16 @@ export default function ParticipantCertificatesPage() {
   return (
     <section className="space-y-4">
       <Heading title={`Sertifikat (${data.length})`} description="Lihat dan unduh sertifikat event Anda." />
-      <DataTable searchKey={['event.title', 'certificateNumber']} columns={columns} data={data} enableRowSelection={false} isFetching={isLoading} pageCount={1} placeholderSearch="Cari event atau nomor sertifikat..." />
+      {!isLoading && data.length === 0 ? (
+        <EmptyState
+          icon={Award}
+          title="Belum ada sertifikat"
+          description="Sertifikat event akan muncul setelah kamu mengikuti event dan status penerbitannya tersedia."
+          action={{ href: '/events', label: 'Jelajahi event' }}
+        />
+      ) : (
+        <DataTable searchKey={['event.title', 'certificateNumber']} columns={columns} data={data} enableRowSelection={false} isFetching={isLoading} pageCount={1} placeholderSearch="Cari event atau nomor sertifikat..." />
+      )}
     </section>
   );
 }

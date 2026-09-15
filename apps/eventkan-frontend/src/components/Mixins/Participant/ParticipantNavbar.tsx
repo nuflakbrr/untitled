@@ -3,12 +3,37 @@
 import type { FC } from 'react';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import type { ParticipantNavbarProps } from '@/interfaces/navbar';
 
+import { cn } from '@/lib/utils';
 import ParticipantUserMenu from '@/components/Mixins/Participant/ParticipantUserMenu';
 
 import { participantNavLinks } from './_constants/navLinks';
+
+const ParticipantNavLinks: FC = () => {
+  const pathname = usePathname();
+
+  return (
+    <nav className="hidden items-center gap-7.5 text-sm font-semibold text-[#4b5565] lg:flex">
+      {participantNavLinks.map((link) => {
+        const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`);
+
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            {...(link.tourTarget && { 'data-tour-desktop': `step-${link.tourTarget}` })}
+            className={cn('transition hover:text-[#111927]', isActive && 'text-[#111927]')}
+          >
+            {link.label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+};
 
 export const ParticipantNavbar: FC<ParticipantNavbarProps> = ({ user }) => (
   <header className="sticky top-0 z-50 px-4 pt-5 sm:px-6">
@@ -26,18 +51,7 @@ export const ParticipantNavbar: FC<ParticipantNavbarProps> = ({ user }) => (
           <span>EVENTKAN</span>
         </Link>
 
-        <nav className="hidden items-center gap-7.5 text-sm font-semibold text-[#4b5565] lg:flex">
-          {participantNavLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              {...(link.tourTarget && { 'data-tour-desktop': `step-${link.tourTarget}` })}
-              className="transition hover:text-[#111927]"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        <ParticipantNavLinks />
 
         <div className="flex items-center gap-2" data-tour-desktop="step-profile">
           <ParticipantUserMenu user={user} />

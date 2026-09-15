@@ -38,6 +38,21 @@ export interface EventTestimonialCardProps {
   testimonial: Testimonial;
 }
 
+export interface TestimonialModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  registrationId: string;
+  eventTitle: string;
+  existingTestimonial?: ExistingTestimonial | null;
+}
+
+export interface TestimonialRatingProps {
+  rating: number;
+  hoverRating: number;
+  onRatingChange: (rating: number) => void;
+  onHoverChange: (rating: number) => void;
+}
+
 export interface CreateTestimonialInput {
   registrationId: string;
   rating: number;
