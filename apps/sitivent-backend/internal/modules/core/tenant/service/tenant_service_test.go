@@ -59,6 +59,7 @@ func (m *mockTenantRepo) Delete(ctx context.Context, id string) error {
 	}
 	return nil
 }
+func (m *mockTenantRepo) PermanentDelete(context.Context, string) error { return nil }
 func (m *mockTenantRepo) GetPaymentGateway(ctx context.Context, tenantID string) (*domain.TenantPaymentGateway, error) {
 	if m.getPaymentGatewayFn != nil {
 		return m.getPaymentGatewayFn(ctx, tenantID)
