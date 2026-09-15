@@ -1,0 +1,45 @@
+{{define "status-icon"}}
+<table role="presentation" width="100%"><tr><td width="68" valign="top" style="padding-right:18px"><table role="presentation"><tr><td style="width:52px;height:52px;border-radius:16px;background:{{.IconBackground}};text-align:center;vertical-align:middle;color:{{.IconColor}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="{{.IconColor}}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle">{{if eq .Icon "check"}}<path d="M20 6 9 17l-5-5"/>{{else if eq .Icon "alert"}}<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>{{else}}<line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/>{{end}}</svg></td></tr></table></td><td valign="top"><h1 class="headline" style="margin:0;font-size:40px;line-height:44px;letter-spacing:-1.4px;color:#111927">{{.Title}}</h1></td></tr></table>
+{{end}}
+
+{{define "email-layout"}}
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{.Title}} — SITIVENT</title>
+  <style>
+    body{margin:0;padding:0;background:#f6f3eb;font-family:Arial,Helvetica,sans-serif;color:#111927}
+    table{border-collapse:collapse;border-spacing:0}a{text-decoration:none}
+    @media(max-width:640px){.wrap{padding:14px 8px!important}.box{border-radius:18px!important}.pad{padding-left:22px!important;padding-right:22px!important}.headline{font-size:32px!important;line-height:36px!important}.cta{display:block!important;width:100%!important;box-sizing:border-box!important;text-align:center!important}}
+  </style>
+</head>
+<body>
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">{{.Preheader}}</div>
+  <table role="presentation" width="100%" class="wrap" style="background:#f6f3eb;padding:32px 12px"><tr><td align="center">
+    <table role="presentation" width="640" class="box" style="width:100%;max-width:640px;background:#fffdf8;border:1px solid #e4e0d8;border-radius:24px;overflow:hidden">
+      <tr><td class="pad" style="padding:28px 42px 24px"><table role="presentation" width="100%"><tr>
+        <td><table role="presentation"><tr><td style="width:42px;height:42px;background:#11233f;border-radius:12px;text-align:center;vertical-align:middle;color:#fff;font-size:16px;font-weight:700">S</td><td style="padding-left:12px;font-size:20px;font-weight:700;color:#111927">SITIVENT</td></tr></table></td>
+      </tr></table></td></tr>
+      <tr><td style="padding:0 42px"><div style="height:1px;background:#e7e2da"></div></td></tr>
+      <tr><td class="pad" style="padding:38px 42px 12px">
+        {{/* Status icon sementara dinonaktifkan. Aktifkan kembali dengan: {{template "status-icon" .}} */}}
+        <h1 class="headline" style="margin:0;font-size:40px;line-height:44px;letter-spacing:-1.4px;color:#111927">{{.Title}}</h1>
+        {{if .RecipientName}}<p style="margin:26px 0 0;font-size:16px;line-height:26px;color:#111927">Halo <strong>{{.RecipientName}}</strong>,</p>{{end}}
+        <div style="margin-top:12px;font-size:16px;line-height:26px;color:#6c7280">{{.Message}}</div>
+      </td></tr>
+      {{if .Highlight}}<tr><td class="pad" style="padding:18px 42px 0;border:0!important;outline:0!important"><table role="presentation" width="100%" style="background:#f6f3eb;border:0!important;border-collapse:separate;outline:0!important;box-shadow:none;border-radius:16px"><tr><td style="padding:18px 20px;font-size:14px;line-height:22px;color:#111927;border:0!important;outline:0!important">{{.Highlight}}</td></tr></table></td></tr>{{end}}
+      {{if .ShowDetails}}<tr><td class="pad" style="padding:24px 42px 0"><table role="presentation" width="100%" style="border-top:1px solid #e7e2da;border-bottom:1px solid #e7e2da">{{range .Details}}<tr><td width="38%" style="padding:14px 12px 14px 0;font-size:12px;font-weight:700;color:#6c7280;text-transform:uppercase;letter-spacing:.04em">{{.Label}}</td><td width="62%" style="padding:14px 0;font-size:14px;font-weight:600;color:#111927">{{.Value}}</td></tr>{{end}}</table></td></tr>{{end}}
+      {{if .Code}}<tr><td class="pad" style="padding:24px 42px 0"><table role="presentation" width="100%" style="background:#11233f;border-radius:18px"><tr><td align="center" style="padding:24px 20px"><div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#ffffff99">{{.CodeLabel}}</div><div style="margin-top:8px;font-family:'Courier New',monospace;font-size:34px;line-height:40px;font-weight:700;letter-spacing:7px;color:#fff">{{.Code}}</div>{{if .CodeExpiry}}<div style="margin-top:8px;font-size:12px;color:#ffffff99">Berlaku selama {{.CodeExpiry}}</div>{{end}}</td></tr></table></td></tr>{{end}}
+      {{if .CTAURL}}<tr><td class="pad" style="padding:28px 42px 0"><table role="presentation"><tr><td bgcolor="#11233f" style="border-radius:999px"><a href="{{.CTAURL}}" class="cta" target="_blank" style="display:inline-block;padding:14px 22px;border-radius:999px;background:#11233f;color:#fff;font-size:14px;font-weight:700">{{.CTALabel}} <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;margin-left:6px"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg></a></td></tr></table></td></tr>{{end}}
+      {{if .SecondaryMessage}}<tr><td class="pad" style="padding:20px 42px 0;font-size:13px;line-height:21px;color:#6c7280">{{.SecondaryMessage}}</td></tr>{{end}}
+      {{if .SecurityNote}}<tr><td class="pad" style="padding:26px 42px 0"><table role="presentation" width="100%" style="background:#ffe5d8;border-radius:14px"><tr><td style="padding:14px 16px;font-size:12px;line-height:19px;color:#8d492e"><strong style="color:#713820">Catatan keamanan:</strong> {{.SecurityNote}}</td></tr></table></td></tr>{{end}}
+      <tr><td class="pad" style="padding:34px 42px"><div style="height:1px;background:#e7e2da"></div><p style="margin:22px 0 0;font-size:13px;line-height:21px;color:#6c7280">Butuh bantuan? <a href="{{.SupportURL}}" style="color:#11233f;font-weight:700">Kunjungi Pusat Bantuan</a>.</p></td></tr>
+      <tr><td style="background:#11233f;padding:26px 42px"><table role="presentation" width="100%"><tr><td><div style="font-size:14px;font-weight:700;color:#fff">SITIVENT</div><div style="margin-top:5px;font-size:11px;color:#ffffff88">Event kampus, tanpa ribet administratif.</div></td><td align="right" style="font-size:11px;color:#ffffff77">© {{.Year}} SITIVENT</td></tr></table></td></tr>
+    </table>
+    <table role="presentation" width="640" style="width:100%;max-width:640px"><tr><td align="center" style="padding:18px 20px 0;font-size:10px;line-height:16px;color:#8a8f99">Email ini dikirim otomatis oleh SITIVENT.{{if .UnsubscribeURL}}<br>Tidak ingin menerima email seperti ini? <a href="{{.UnsubscribeURL}}" style="color:#6c7280">Berhenti berlangganan</a>.{{end}}</td></tr></table>
+  </td></tr></table>
+</body>
+</html>
+{{end}}

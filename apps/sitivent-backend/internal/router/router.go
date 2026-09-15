@@ -15,8 +15,8 @@ import (
 	"venturo-skeleton-go/internal/modules/features/attendance"
 	"venturo-skeleton-go/internal/modules/features/certificate"
 	"venturo-skeleton-go/internal/modules/features/content"
-	"venturo-skeleton-go/internal/modules/features/event"
 	emailModule "venturo-skeleton-go/internal/modules/features/email"
+	"venturo-skeleton-go/internal/modules/features/event"
 	"venturo-skeleton-go/internal/modules/features/payment"
 	"venturo-skeleton-go/internal/modules/features/registration"
 	"venturo-skeleton-go/internal/modules/features/support"
@@ -80,7 +80,6 @@ func Setup(router *gin.Engine, db *pgxpool.Pool, cfg *config.Config) {
 			"message": "SITIVENT API is running",
 		})
 	})
-
 	// OpenAPI 3.0 specification static files for Apidog / Postman / Swagger tools
 	router.StaticFile("/openapi.yaml", "./docs/openapi.yaml")
 	router.StaticFile("/openapi.json", "./docs/openapi.json")

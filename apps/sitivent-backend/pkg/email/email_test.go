@@ -58,10 +58,14 @@ func TestSMTPEmailService_TemplateFiles(t *testing.T) {
 	// Test that template files exist
 	templates := []string{
 		"verification.html",
+		"otp_verification.html",
+		"verification_with_otp.html",
 		"welcome.html",
 		"reset_password.html",
+		"forgot_password_otp.html",
 		"account_locked.html",
 		"password_changed.html",
+		"newsletter_confirmation.html",
 		"account_verified.html",
 		"event_registration_success.html",
 		"event_registration_pending_payment.html",
@@ -75,6 +79,56 @@ func TestSMTPEmailService_TemplateFiles(t *testing.T) {
 			templatePath := "templates/" + tmpl
 			if _, err := os.Stat(templatePath); os.IsNotExist(err) {
 				t.Errorf("Template file does not exist: %s", templatePath)
+			}
+		})
+	}
+}
+
+func TestRenderTemplateLayout(t *testing.T) {
+	templates := []string{
+		"verification.html",
+		"otp_verification.html",
+		"verification_with_otp.html",
+		"welcome.html",
+		"reset_password.html",
+		"forgot_password_otp.html",
+		"account_locked.html",
+		"password_changed.html",
+		"newsletter_confirmation.html",
+		"account_verified.html",
+		"event_registration_success.html",
+		"event_registration_pending_payment.html",
+		"event_payment_verified.html",
+		"event_payment_failed.html",
+		"event_attendance_verified.html",
+	}
+
+	data := EmailData{
+		Title:          "Tes template email",
+		Category:       "ACCOUNT",
+		IconBackground: "#bfe4c7",
+		IconColor:      "#36784b",
+		Icon:           "check",
+		Eyebrow:        "STATUS AKUN",
+		RecipientName:  "Test User",
+		Message:        "Isi email untuk pengujian.",
+		Code:           "123456",
+		CodeLabel:      "KODE VERIFIKASI",
+		CodeExpiry:     "10 menit",
+		CTAURL:         "https://example.com/action",
+		CTALabel:       "Lanjutkan",
+		SupportURL:     "https://example.com/help",
+		Year:           2026,
+	}
+
+	for _, templateName := range templates {
+		t.Run(templateName, func(t *testing.T) {
+			body, err := renderTemplate(templateName, data)
+			if err != nil {
+				t.Fatalf("renderTemplate() error = %v", err)
+			}
+			if body == "" {
+				t.Fatal("renderTemplate() returned an empty body")
 			}
 		})
 	}
@@ -133,9 +187,9 @@ func TestSMTPEmailService_VerifyConfiguration(t *testing.T) {
 		{
 			name: "custom support email",
 			envVars: map[string]string{
-				"SMTP_USER":      "user",
-				"SMTP_PASSWORD":  "pass",
-				"SUPPORT_EMAIL":  "help@custom.com",
+				"SMTP_USER":     "user",
+				"SMTP_PASSWORD": "pass",
+				"SUPPORT_EMAIL": "help@custom.com",
 			},
 			checkKey: "SupportEmail",
 			expected: "help@custom.com",

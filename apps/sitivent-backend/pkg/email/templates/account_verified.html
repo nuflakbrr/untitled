@@ -1,11 +1,1 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Email Terverifikasi - {{.AppName}}</title>
-  <style>
-    body{margin:0;padding:24px 12px;background:#f6f3eb;color:#111927;font-family:Arial,Helvetica,sans-serif;line-height:1.6}.container{max-width:620px;margin:auto;overflow:hidden;border:1px solid #1119271f;border-radius:24px;background:#fffdf8;box-shadow:0 18px 50px #11233f14}.header{padding:28px 32px;background:#11233f;color:#fff}.brand{font-size:20px;font-weight:800}.mark{display:inline-grid;width:36px;height:36px;margin-right:10px;place-items:center;transform:rotate(-3deg);border-radius:11px;background:#fff;color:#11233f}.header h1{margin:28px 0 0;font-size:34px;line-height:1.05}.content{padding:34px 32px}.content h2{margin:0;color:#11233f;font-size:24px}.content p{color:#4b5565;font-size:15px}.success{margin:24px 0;padding:18px;border:1px solid #36784b40;border-radius:14px;background:#e5f2e8;color:#36784b}.button{display:inline-block;padding:13px 22px;border-radius:999px;background:#11233f;color:#fff!important;font-weight:700;text-decoration:none}.center{text-align:center}.footer{padding:20px 32px;border-top:1px solid #1119271a;background:#f6f3eb;color:#6c7280;font-size:12px;text-align:center}.footer p{margin:4px 0}
-  </style>
-</head>
-<body><div class="container"><div class="header"><div class="brand"><span class="mark">S</span>{{.AppName}}</div><h1>Email kamu sudah terverifikasi.</h1></div><div class="content"><h2>Hai {{.Name}},</h2><p>Email akunmu berhasil diverifikasi. Sekarang kamu bisa mendaftar event dan mengelola tiket dari satu akun SITIVENT.</p><div class="success"><strong>✓ Akun aktif dan siap digunakan</strong><br>Perjalanan event-mu bisa dimulai sekarang.</div><div class="center"><a class="button" href="{{.AppURL}}/events">Jelajahi event ↗</a></div><p>Butuh bantuan? Hubungi <a href="mailto:{{.SupportEmail}}">{{.SupportEmail}}</a>.</p></div><div class="footer"><p>© {{.Year}} {{.AppName}}. Semua hak dilindungi.</p></div></div></body>
-</html>
+{{template "email-layout" .}}

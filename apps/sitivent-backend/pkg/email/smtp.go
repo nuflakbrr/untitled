@@ -31,6 +31,19 @@ type SMTPEmailService struct {
 	config *SMTPConfig
 }
 
+func (s *SMTPEmailService) layoutData(name string) EmailData {
+	return EmailData{
+		Name:          name,
+		RecipientName: name,
+		ShowIcon:      true,
+		AppName:       "SITIVENT",
+		AppURL:        s.config.FrontendURL,
+		SupportEmail:  s.config.SupportEmail,
+		SupportURL:    s.config.FrontendURL + "/help",
+		Year:          time.Now().Year(),
+	}
+}
+
 // NewSMTPEmailService creates a new SMTP email service
 func NewSMTPEmailService() (*SMTPEmailService, error) {
 	port, err := strconv.Atoi(getEnv("SMTP_PORT", "587"))
@@ -70,14 +83,12 @@ func NewSMTPEmailService() (*SMTPEmailService, error) {
 func (s *SMTPEmailService) SendVerificationEmail(to, name, token string) error {
 	verificationURL := fmt.Sprintf("%s?token=%s", s.config.VerifyURL, token)
 
-	data := EmailData{
-		Name:            name,
-		AppName:         "SITIVENT",
-		AppURL:          s.config.FrontendURL,
-		VerificationURL: verificationURL,
-		SupportEmail:    s.config.SupportEmail,
-		Year:            time.Now().Year(),
-	}
+	data := s.layoutData(name)
+	data.ShowIcon = false
+	data.VerificationURL = verificationURL
+	data.Category, data.IconBackground, data.IconColor, data.Icon = "ACCOUNT", "#bfe4c7", "#36784b", "check"
+	data.Eyebrow, data.Title = "STATUS AKUN", "Verifikasi email kamu."
+	data.Message, data.CTAURL, data.CTALabel = "Selesaikan verifikasi email untuk mengaktifkan akun dan mulai menggunakan SITIVENT.", verificationURL, "Verifikasi email"
 
 	body, err := renderTemplate("verification.html", data)
 	if err != nil {
@@ -91,14 +102,12 @@ func (s *SMTPEmailService) SendVerificationEmail(to, name, token string) error {
 
 // SendOTPVerificationEmail sends an OTP code for email verification
 func (s *SMTPEmailService) SendOTPVerificationEmail(to, name, otpCode string) error {
-	data := EmailData{
-		Name:         name,
-		AppName:      "SITIVENT",
-		AppURL:       s.config.FrontendURL,
-		OTPCode:      otpCode,
-		SupportEmail: s.config.SupportEmail,
-		Year:         time.Now().Year(),
-	}
+	data := s.layoutData(name)
+	data.ShowIcon = false
+	data.OTPCode = otpCode
+	data.Category, data.IconBackground, data.IconColor, data.Icon = "ACCOUNT", "#ffe5d8", "#ff7a45", "hash"
+	data.Eyebrow, data.Title = "STATUS AKUN", "Masukkan kode verifikasi."
+	data.Message, data.Code, data.CodeLabel, data.CodeExpiry = "Gunakan kode berikut untuk menyelesaikan verifikasi email akun SITIVENT.", otpCode, "KODE VERIFIKASI", "10 menit"
 
 	body, err := renderTemplate("otp_verification.html", data)
 	if err != nil {
@@ -115,15 +124,13 @@ func (s *SMTPEmailService) SendVerificationEmailWithOTP(to, name, token, otpCode
 	// Build verification URL
 	verificationURL := fmt.Sprintf("%s?token=%s", s.config.VerifyURL, token)
 
-	data := EmailData{
-		Name:            name,
-		AppName:         "SITIVENT",
-		AppURL:          s.config.FrontendURL,
-		VerificationURL: verificationURL,
-		OTPCode:         otpCode,
-		SupportEmail:    s.config.SupportEmail,
-		Year:            time.Now().Year(),
-	}
+	data := s.layoutData(name)
+	data.ShowIcon = false
+	data.VerificationURL, data.OTPCode = verificationURL, otpCode
+	data.Category, data.IconBackground, data.IconColor, data.Icon = "ACCOUNT", "#bfe4c7", "#36784b", "check"
+	data.Eyebrow, data.Title = "STATUS AKUN", "Verifikasi email dengan link atau kode."
+	data.Message, data.Code, data.CodeLabel, data.CodeExpiry = "Pilih cara yang paling mudah untuk menyelesaikan verifikasi akun SITIVENT.", otpCode, "KODE VERIFIKASI", "10 menit"
+	data.CTAURL, data.CTALabel = verificationURL, "Verifikasi email"
 
 	body, err := renderTemplate("verification_with_otp.html", data)
 	if err != nil {
@@ -139,14 +146,12 @@ func (s *SMTPEmailService) SendVerificationEmailWithOTP(to, name, token, otpCode
 func (s *SMTPEmailService) SendPasswordResetEmail(to, name, token string) error {
 	resetURL := fmt.Sprintf("%s?token=%s", s.config.ResetURL, token)
 
-	data := EmailData{
-		Name:             name,
-		AppName:          "SITIVENT",
-		AppURL:           s.config.FrontendURL,
-		ResetPasswordURL: resetURL,
-		SupportEmail:     s.config.SupportEmail,
-		Year:             time.Now().Year(),
-	}
+	data := s.layoutData(name)
+	data.ResetPasswordURL = resetURL
+	data.Category, data.IconBackground, data.IconColor, data.Icon = "SECURITY", "#ffe5d8", "#b84a2a", "alert"
+	data.Eyebrow, data.Title = "", "Atur ulang kata sandimu."
+	data.Message, data.CTAURL, data.CTALabel = "Kami menerima permintaan untuk mengatur ulang kata sandi akun SITIVENT.", resetURL, "Buat kata sandi baru"
+	data.SecurityNote = "Tautan ini hanya dapat digunakan satu kali. Jika kamu tidak meminta reset password, abaikan email ini."
 
 	body, err := renderTemplate("reset_password.html", data)
 	if err != nil {
@@ -160,14 +165,12 @@ func (s *SMTPEmailService) SendPasswordResetEmail(to, name, token string) error 
 
 // SendPasswordResetOTP sends an OTP code for password reset
 func (s *SMTPEmailService) SendPasswordResetOTP(to, name, otpCode string) error {
-	data := EmailData{
-		Name:         name,
-		AppName:      "SITIVENT",
-		AppURL:       s.config.FrontendURL,
-		OTPCode:      otpCode,
-		SupportEmail: s.config.SupportEmail,
-		Year:         time.Now().Year(),
-	}
+	data := s.layoutData(name)
+	data.OTPCode = otpCode
+	data.Category, data.IconBackground, data.IconColor, data.Icon = "SECURITY", "#ffe5d8", "#b84a2a", "hash"
+	data.Eyebrow, data.Title = "", "Kode reset password kamu."
+	data.Message, data.Code, data.CodeLabel, data.CodeExpiry = "Gunakan kode berikut untuk membuat kata sandi baru.", otpCode, "KODE RESET PASSWORD", "10 menit"
+	data.SecurityNote = "Jangan bagikan kode ini kepada siapa pun. Jika kamu tidak meminta reset password, abaikan email ini."
 
 	body, err := renderTemplate("forgot_password_otp.html", data)
 	if err != nil {
@@ -181,13 +184,10 @@ func (s *SMTPEmailService) SendPasswordResetOTP(to, name, otpCode string) error 
 
 // SendWelcomeEmail sends a welcome email to new users
 func (s *SMTPEmailService) SendWelcomeEmail(to, name string) error {
-	data := EmailData{
-		Name:         name,
-		AppName:      "SITIVENT",
-		AppURL:       s.config.FrontendURL,
-		SupportEmail: s.config.SupportEmail,
-		Year:         time.Now().Year(),
-	}
+	data := s.layoutData(name)
+	data.Category, data.IconBackground, data.IconColor, data.Icon = "ACCOUNT", "#bfe4c7", "#36784b", "check"
+	data.Eyebrow, data.Title = "AKUN SITIVENT", "Selamat datang di SITIVENT."
+	data.Message, data.CTAURL, data.CTALabel = "Akunmu berhasil dibuat. Temukan event, simpan tiket digital, dan ikuti perjalanan event-mu dari satu tempat.", s.config.FrontendURL+"/events", "Jelajahi event"
 
 	body, err := renderTemplate("welcome.html", data)
 	if err != nil {
@@ -201,13 +201,10 @@ func (s *SMTPEmailService) SendWelcomeEmail(to, name string) error {
 
 // SendAccountLockedEmail sends an email when account is locked
 func (s *SMTPEmailService) SendAccountLockedEmail(to, name string) error {
-	data := EmailData{
-		Name:         name,
-		AppName:      "SITIVENT",
-		AppURL:       s.config.FrontendURL,
-		SupportEmail: s.config.SupportEmail,
-		Year:         time.Now().Year(),
-	}
+	data := s.layoutData(name)
+	data.Category, data.IconBackground, data.IconColor, data.Icon = "SECURITY", "#ffe5d8", "#b84a2a", "alert"
+	data.Eyebrow, data.Title = "", "Akunmu dikunci sementara."
+	data.Message, data.SecurityNote = "Kami mendeteksi beberapa percobaan login yang tidak berhasil. Untuk melindungi akunmu, aksesnya dikunci sementara.", "Jika ini bukan aktivitasmu, segera hubungi tim bantuan SITIVENT."
 
 	body, err := renderTemplate("account_locked.html", data)
 	if err != nil {
@@ -221,13 +218,10 @@ func (s *SMTPEmailService) SendAccountLockedEmail(to, name string) error {
 
 // SendPasswordChangedEmail sends an email when password is changed
 func (s *SMTPEmailService) SendPasswordChangedEmail(to, name string) error {
-	data := EmailData{
-		Name:         name,
-		AppName:      "SITIVENT",
-		AppURL:       s.config.FrontendURL,
-		SupportEmail: s.config.SupportEmail,
-		Year:         time.Now().Year(),
-	}
+	data := s.layoutData(name)
+	data.Category, data.IconBackground, data.IconColor, data.Icon = "SECURITY", "#bfe4c7", "#36784b", "check"
+	data.Eyebrow, data.Title = "", "Kata sandimu berhasil diubah."
+	data.Message, data.SecurityNote = "Kata sandi akun SITIVENT berhasil diperbarui. Kamu bisa melanjutkan aktivitas seperti biasa.", "Jika kamu tidak melakukan perubahan ini, segera hubungi tim bantuan SITIVENT."
 
 	body, err := renderTemplate("password_changed.html", data)
 	if err != nil {
@@ -240,13 +234,11 @@ func (s *SMTPEmailService) SendPasswordChangedEmail(to, name string) error {
 }
 
 func (s *SMTPEmailService) SendNewsletterConfirmation(to string) error {
-	data := EmailData{
-		AppName:      "SITIVENT",
-		AppURL:       s.config.FrontendURL,
-		SupportEmail: s.config.SupportEmail,
-		Email:        to,
-		Year:         time.Now().Year(),
-	}
+	data := s.layoutData("")
+	data.Email = to
+	data.Category, data.IconBackground, data.IconColor, data.Icon = "NEWSLETTER", "#bfe4c7", "#36784b", "check"
+	data.Eyebrow, data.Title = "NEWSLETTER SITIVENT", "Kamu sudah berlangganan."
+	data.Message = "Terima kasih sudah bergabung. Kami akan mengirimkan kabar event dan informasi terbaru SITIVENT ke email ini."
 	body, err := renderTemplate("newsletter_confirmation.html", data)
 	if err != nil {
 		return err

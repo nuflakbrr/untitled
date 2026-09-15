@@ -7,8 +7,13 @@ import (
 	"html/template"
 )
 
-//go:embed templates/*.html
+//go:embed templates/*
 var templateFS embed.FS
+
+type EmailDetail struct {
+	Label string
+	Value string
+}
 
 // EmailService defines the interface for sending emails
 type EmailService interface {
@@ -43,17 +48,39 @@ type EmailData struct {
 	TicketQRURL        string
 	FailureReason      string
 	AttendanceURL      string
+	Title              string
+	Preheader          string
+	Category           string
+	IconBackground     string
+	IconColor          string
+	Icon               string
+	ShowIcon           bool
+	Eyebrow            string
+	RecipientName      string
+	Message            string
+	Highlight          string
+	ShowDetails        bool
+	Details            []EmailDetail
+	Code               string
+	CodeLabel          string
+	CodeExpiry         string
+	CTAURL             string
+	CTALabel           string
+	SecondaryMessage   string
+	SecurityNote       string
+	SupportURL         string
+	UnsubscribeURL     string
 }
 
 // renderTemplate renders an email template with the given data from embedded filesystem
 func renderTemplate(templateName string, data interface{}) (string, error) {
-	tmpl, err := template.ParseFS(templateFS, "templates/"+templateName)
+	tmpl, err := template.ParseFS(templateFS, "templates/*")
 	if err != nil {
 		return "", fmt.Errorf("failed to parse template %s: %w", templateName, err)
 	}
 
 	var buf bytes.Buffer
-	if err := tmpl.Execute(&buf, data); err != nil {
+	if err := tmpl.ExecuteTemplate(&buf, templateName, data); err != nil {
 		return "", fmt.Errorf("failed to execute template %s: %w", templateName, err)
 	}
 
