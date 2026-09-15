@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@/lib/utils';
 import { Quote } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
 import { getModKey } from '@/lib/os';
 import { Button, type ButtonProps } from '@/components/ui/button';
 import { useToolbar } from '@/components/ui/toolbars/toolbar-provider';

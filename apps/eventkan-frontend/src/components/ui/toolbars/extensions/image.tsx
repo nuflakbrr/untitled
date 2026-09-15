@@ -1,16 +1,8 @@
 'use client';
 
 import Image from '@tiptap/extension-image';
-import { Button } from '@/components/ui/button';
-import { cn, duplicateContent } from '@/lib/utils';
-import { Separator } from '@/components/ui/separator';
-import { deleteImage } from '@/services/public/uploads';
 import { useRef, useState, useEffect, useCallback } from 'react';
-import {
-  NodeViewWrapper,
-  type NodeViewProps,
-  ReactNodeViewRenderer,
-} from '@tiptap/react';
+import { NodeViewWrapper, type NodeViewProps, ReactNodeViewRenderer } from '@tiptap/react';
 import {
   Copy,
   Trash,
@@ -20,6 +12,11 @@ import {
   AlignCenter,
   MoreVertical,
 } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { cn, duplicateContent } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
+import { deleteImage } from '@/services/public/uploads';
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -175,7 +172,8 @@ function TiptapImage(props: NodeViewProps) {
   }, [resize, endResize, handleTouchMove, handleTouchEnd]);
 
   // Handle deletion of image from server when node is removed
-  useEffect(() => () => {
+  useEffect(
+    () => () => {
       const src = node.attrs.src;
       if (!src || !src.includes('/uploads/')) return;
 
@@ -190,7 +188,9 @@ function TiptapImage(props: NodeViewProps) {
           }
         }
       }, 100);
-    }, [node.attrs.src, editor]);
+    },
+    [node.attrs.src, editor]
+  );
 
   return (
     <NodeViewWrapper

@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
+import { Subscript as SubscriptIcon, Superscript as SuperscriptIcon } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 import { getModKey } from '@/lib/os';
 import { Button, type ButtonProps } from '@/components/ui/button';
 import { useToolbar } from '@/components/ui/toolbars/toolbar-provider';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Subscript as SubscriptIcon, Superscript as SuperscriptIcon } from 'lucide-react';
 
 const SubscriptToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, onClick, children, ...props }, ref) => {

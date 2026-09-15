@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@/lib/utils';
 import { Redo } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
 import { getModKey } from '@/lib/os';
 import { Button, type ButtonProps } from '@/components/ui/button';
 import { useToolbar } from '@/components/ui/toolbars/toolbar-provider';
@@ -15,7 +16,7 @@ const RedoToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     React.useEffect(() => {
       if (!editor) return;
-      const onTransaction = () => setUpdate(s => s + 1);
+      const onTransaction = () => setUpdate((s) => s + 1);
       editor.on('transaction', onTransaction);
       return () => {
         editor.off('transaction', onTransaction);

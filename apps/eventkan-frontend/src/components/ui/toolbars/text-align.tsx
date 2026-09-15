@@ -1,11 +1,12 @@
 'use client';
 
 import React from 'react';
+import { AlignLeft, AlignRight, AlignCenter, AlignJustify } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 import { getModKey } from '@/lib/os';
 import { Button, type ButtonProps } from '@/components/ui/button';
 import { useToolbar } from '@/components/ui/toolbars/toolbar-provider';
-import { AlignLeft, AlignRight, AlignCenter, AlignJustify } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const TextAlignLeftToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -17,7 +18,11 @@ const TextAlignLeftToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
           <Button
             variant="ghost"
             size="icon"
-            className={cn('h-8 w-8', editor?.isActive({ textAlign: 'left' }) && 'bg-accent', className)}
+            className={cn(
+              'h-8 w-8',
+              editor?.isActive({ textAlign: 'left' }) && 'bg-accent',
+              className
+            )}
             onClick={(e) => {
               editor?.chain().focus().setTextAlign('left').run();
               onClick?.(e);
@@ -46,7 +51,11 @@ const TextAlignCenterToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
           <Button
             variant="ghost"
             size="icon"
-            className={cn('h-8 w-8', editor?.isActive({ textAlign: 'center' }) && 'bg-accent', className)}
+            className={cn(
+              'h-8 w-8',
+              editor?.isActive({ textAlign: 'center' }) && 'bg-accent',
+              className
+            )}
             onClick={(e) => {
               editor?.chain().focus().setTextAlign('center').run();
               onClick?.(e);
@@ -75,7 +84,11 @@ const TextAlignRightToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
           <Button
             variant="ghost"
             size="icon"
-            className={cn('h-8 w-8', editor?.isActive({ textAlign: 'right' }) && 'bg-accent', className)}
+            className={cn(
+              'h-8 w-8',
+              editor?.isActive({ textAlign: 'right' }) && 'bg-accent',
+              className
+            )}
             onClick={(e) => {
               editor?.chain().focus().setTextAlign('right').run();
               onClick?.(e);
@@ -104,7 +117,11 @@ const TextAlignJustifyToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>
           <Button
             variant="ghost"
             size="icon"
-            className={cn('h-8 w-8', editor?.isActive({ textAlign: 'justify' }) && 'bg-accent', className)}
+            className={cn(
+              'h-8 w-8',
+              editor?.isActive({ textAlign: 'justify' }) && 'bg-accent',
+              className
+            )}
             onClick={(e) => {
               editor?.chain().focus().setTextAlign('justify').run();
               onClick?.(e);

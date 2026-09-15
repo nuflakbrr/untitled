@@ -1,18 +1,15 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
+import { Unlink, Link as LinkIcon } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 import { getModKey } from '@/lib/os';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import React, { useState, useEffect } from 'react';
-import { Unlink, Link as LinkIcon } from 'lucide-react';
 import { useToolbar } from '@/components/ui/toolbars/toolbar-provider';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 export const LinkToolbar = () => {
   const { editor } = useToolbar();
@@ -52,7 +49,10 @@ export const LinkToolbar = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className={cn('h-8 w-8', editor?.isActive('link') && 'bg-accent text-accent-foreground')}
+                className={cn(
+                  'h-8 w-8',
+                  editor?.isActive('link') && 'bg-accent text-accent-foreground'
+                )}
                 disabled={!editor}
               >
                 <LinkIcon className="h-4 w-4" />

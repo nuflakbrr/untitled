@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+
 import { useToolbar } from '@/components/ui/toolbars/toolbar-provider';
 import {
   Select,
@@ -27,7 +28,11 @@ export const HeadingToolbar = () => {
     if (value === 'p') {
       editor?.chain().focus().setParagraph().run();
     } else {
-      editor?.chain().focus().toggleHeading({ level: parseInt(value) as Level }).run();
+      editor
+        ?.chain()
+        .focus()
+        .toggleHeading({ level: parseInt(value) as Level })
+        .run();
     }
   };
 

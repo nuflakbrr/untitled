@@ -1,23 +1,7 @@
 'use client';
 
-import { cn } from "@/lib/utils";
-import { Trash, CheckCircle2 } from "lucide-react";
-import { useMemo, useState, useEffect } from "react";
-import {
-  Select,
-  SelectItem,
-  SelectValue,
-  SelectContent,
-  SelectTrigger,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableRow,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-} from "@/components/ui/table";
+import { Trash, CheckCircle2 } from 'lucide-react';
+import { useMemo, useState, useEffect } from 'react';
 import {
   flexRender,
   useReactTable,
@@ -30,11 +14,28 @@ import {
   getPaginationRowModel,
   type RowSelectionState,
   type ColumnFiltersState,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 
-import { Input } from "./input";
-import { Button } from "./button";
-import { Checkbox } from "./checkbox";
+import { cn } from '@/lib/utils';
+import {
+  Select,
+  SelectItem,
+  SelectValue,
+  SelectContent,
+  SelectTrigger,
+} from '@/components/ui/select';
+import {
+  Table,
+  TableRow,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+} from '@/components/ui/table';
+
+import { Input } from './input';
+import { Button } from './button';
+import { Checkbox } from './checkbox';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -81,12 +82,11 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [internalRowSelection, setInternalRowSelection] = useState({});
   const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(5);
-  const [internalSearchValue, setInternalSearchValue] = useState("");
+  const [pageSize, setPageSize] = useState(10);
+  const [internalSearchValue, setInternalSearchValue] = useState('');
 
   const rowSelection = externalRowSelection ?? internalRowSelection;
   const onRowSelectionChangeHandler = onRowSelectionChange ?? setInternalRowSelection;
-
 
   const searchValue = externalSearchValue ?? internalSearchValue;
 
@@ -131,24 +131,27 @@ export function DataTable<TData, TValue>({
 
     return [
       {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Pilih semua baris"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          disabled={isRowSelectable ? !isRowSelectable(row.original) : false}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label={`Pilih baris ${row.index + 1}`}
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
+        id: 'select',
+        header: ({ table }) => (
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && 'indeterminate')
+            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Pilih semua baris"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            disabled={isRowSelectable ? !isRowSelectable(row.original) : false}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label={`Pilih baris ${row.index + 1}`}
+          />
+        ),
+        enableSorting: false,
+        enableHiding: false,
       },
       ...columns,
     ];
@@ -166,7 +169,9 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onRowSelectionChange: onRowSelectionChangeHandler,
-    enableRowSelection: isRowSelectable ? (row) => isRowSelectable(row.original) : enableRowSelection,
+    enableRowSelection: isRowSelectable
+      ? (row) => isRowSelectable(row.original)
+      : enableRowSelection,
     state: {
       sorting,
       columnFilters,
@@ -177,7 +182,6 @@ export function DataTable<TData, TValue>({
       },
     },
   });
-
 
   useEffect(() => {
     if (pageIndex < (pageCount ?? Infinity)) {
@@ -233,7 +237,7 @@ export function DataTable<TData, TValue>({
           )}
         </div>
         <Input
-          placeholder={placeholderSearch ? placeholderSearch : "Cari..."}
+          placeholder={placeholderSearch ? placeholderSearch : 'Cari...'}
           value={searchValue}
           onChange={(event) => {
             const value = event.target.value;
@@ -258,10 +262,7 @@ export function DataTable<TData, TValue>({
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -270,10 +271,7 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {isFetching ? (
               <TableRow>
-                <TableCell
-                  colSpan={tableColumns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={tableColumns.length} className="h-24 text-center">
                   Memuat Data...
                 </TableCell>
               </TableRow>
@@ -282,20 +280,14 @@ export function DataTable<TData, TValue>({
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={tableColumns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={tableColumns.length} className="h-24 text-center">
                   Oops! Tidak ada data.
                 </TableCell>
               </TableRow>
@@ -322,7 +314,7 @@ export function DataTable<TData, TValue>({
                 <SelectValue placeholder={pageSize} />
               </SelectTrigger>
               <SelectContent side="top">
-                {[5, 10, 15, 20, 25, 30].map((pageSize) => (
+                {[10, 15, 20, 25, 30].map((pageSize) => (
                   <SelectItem key={pageSize} value={`${pageSize}`}>
                     {pageSize}
                   </SelectItem>
@@ -340,8 +332,7 @@ export function DataTable<TData, TValue>({
         <div className="flex items-center justify-end space-x-6 py-4">
           <div className="flex items-center space-x-2">
             <span className="text-sm text-muted-foreground">
-              Halaman {table.getState().pagination.pageIndex + 1} dari{" "}
-              {pageCount || 1}
+              Halaman {table.getState().pagination.pageIndex + 1} dari {pageCount || 1}
             </span>
 
             <div className="space-x-2">
@@ -352,9 +343,7 @@ export function DataTable<TData, TValue>({
                 onClick={() => setPageIndex((old) => Math.max(old - 1, 0))}
                 disabled={pageIndex === 0 || isFetching}
                 className={cn(
-                  pageIndex === 0 || isFetching
-                    ? "cursor-not-allowed opacity-50"
-                    : "cursor-pointer"
+                  pageIndex === 0 || isFetching ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
                 )}
               >
                 Sebelumnya
@@ -367,8 +356,8 @@ export function DataTable<TData, TValue>({
                 disabled={pageIndex + 1 >= (pageCount || 0) || isFetching}
                 className={cn(
                   pageIndex + 1 >= (pageCount || 0) || isFetching
-                    ? "cursor-not-allowed opacity-50"
-                    : "cursor-pointer"
+                    ? 'cursor-not-allowed opacity-50'
+                    : 'cursor-pointer'
                 )}
               >
                 Selanjutnya

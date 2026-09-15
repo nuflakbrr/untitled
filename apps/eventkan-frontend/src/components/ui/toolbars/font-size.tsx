@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+
 import { useToolbar } from '@/components/ui/toolbars/toolbar-provider';
 import {
   Select,
@@ -45,7 +46,7 @@ export const FontSizeToolbar = () => {
         <SelectValue placeholder="Size" />
       </SelectTrigger>
       <SelectContent>
-        {sizes.map(size => (
+        {sizes.map((size) => (
           <SelectItem key={size.label} value={size.value}>
             {size.label}
           </SelectItem>

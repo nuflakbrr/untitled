@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
+import { Underline as UnderlineIcon } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 import { getModKey } from '@/lib/os';
-import { Underline as UnderlineIcon } from 'lucide-react';
 import { Button, type ButtonProps } from '@/components/ui/button';
 import { useToolbar } from '@/components/ui/toolbars/toolbar-provider';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';

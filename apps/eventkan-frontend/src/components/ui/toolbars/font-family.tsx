@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+
 import { useToolbar } from '@/components/ui/toolbars/toolbar-provider';
 import {
   Select,
@@ -43,7 +44,7 @@ export const FontFamilyToolbar = () => {
   const { editor } = useToolbar();
 
   const getCurrentValue = () => {
-    const currentFont = fonts.find(f => editor?.isActive('textStyle', { fontFamily: f.value }));
+    const currentFont = fonts.find((f) => editor?.isActive('textStyle', { fontFamily: f.value }));
     return currentFont?.value || 'default';
   };
 
@@ -61,9 +62,9 @@ export const FontFamilyToolbar = () => {
         <SelectValue placeholder="Font Family" />
       </SelectTrigger>
       <SelectContent>
-        {fonts.map(font => (
-          <SelectItem 
-            key={font.label} 
+        {fonts.map((font) => (
+          <SelectItem
+            key={font.label}
             value={font.value}
             style={{ fontFamily: font.value !== 'default' ? font.value : undefined }}
           >

@@ -1,16 +1,17 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import { X, Repeat, Search, ArrowLeft, ArrowRight } from 'lucide-react';
+
 import type { SearchAndReplaceStorage } from '@/components/ui/toolbars/extensions/search-and-replace';
 
 import { cn } from '@/lib/utils';
-import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { useToolbar } from '@/components/ui/toolbars/toolbar-provider';
-import { X, Repeat, Search, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 

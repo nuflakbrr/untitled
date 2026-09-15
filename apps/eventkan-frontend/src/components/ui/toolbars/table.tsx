@@ -1,17 +1,6 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { useToolbar } from '@/components/ui/toolbars/toolbar-provider';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
 import {
   Split,
   Trash2,
@@ -24,6 +13,18 @@ import {
   MinusSquare,
   Table as TableIcon,
 } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { useToolbar } from '@/components/ui/toolbars/toolbar-provider';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 
 export const TableToolbar = () => {
   const { editor } = useToolbar();
@@ -52,7 +53,9 @@ export const TableToolbar = () => {
       </Tooltip>
       <DropdownMenuContent align="start" className="w-56">
         <DropdownMenuItem
-          onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+          onClick={() =>
+            editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
+          }
         >
           <PlusSquare className="mr-2 h-4 w-4" />
           <span>Insert Table (3x3)</span>

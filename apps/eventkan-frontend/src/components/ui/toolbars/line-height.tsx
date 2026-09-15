@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@/lib/utils';
 import { Baseline } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useToolbar } from '@/components/ui/toolbars/toolbar-provider';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -52,7 +53,7 @@ export const LineHeightToolbar = () => {
         </TooltipContent>
       </Tooltip>
       <PopoverContent className="w-32 p-1 flex flex-col gap-0.5" align="start">
-        {heights.map(height => (
+        {heights.map((height) => (
           <Button
             key={height.value}
             variant="ghost"

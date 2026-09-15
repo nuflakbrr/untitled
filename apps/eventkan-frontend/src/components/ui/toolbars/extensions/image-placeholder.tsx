@@ -1,12 +1,7 @@
 'use client';
 
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { useId, useState, type FormEvent } from 'react';
 import { Link, Upload, Loader2, Image as ImageIcon } from 'lucide-react';
-import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { cn, isValidUrl, NODE_HANDLES_SELECTED_STYLE_CLASSNAME } from '@/lib/utils';
 import {
   Node,
   type Editor,
@@ -16,6 +11,12 @@ import {
   type NodeViewProps,
   ReactNodeViewRenderer,
 } from '@tiptap/react';
+
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn, isValidUrl, NODE_HANDLES_SELECTED_STYLE_CLASSNAME } from '@/lib/utils';
 
 export interface ImagePlaceholderOptions {
   HTMLAttributes: Record<string, any>;
@@ -68,7 +69,8 @@ export const ImagePlaceholder = Node.create<ImagePlaceholderOptions>({
 
   addCommands() {
     return {
-      insertImagePlaceholder: () => (props: CommandProps) => props.commands.insertContent({
+      insertImagePlaceholder: () => (props: CommandProps) =>
+        props.commands.insertContent({
           type: 'image-placeholder',
         }),
     };
@@ -134,7 +136,11 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
               isUploading && 'cursor-wait opacity-70'
             )}
           >
-            {isUploading ? <Loader2 className="h-6 w-6 animate-spin" /> : <ImageIcon className="h-6 w-6" />}
+            {isUploading ? (
+              <Loader2 className="h-6 w-6 animate-spin" />
+            ) : (
+              <ImageIcon className="h-6 w-6" />
+            )}
             {isUploading ? 'Uploading image...' : 'Add an image'}
           </div>
         </PopoverTrigger>
@@ -179,8 +185,8 @@ function ImagePlaceholderComponent(props: NodeViewProps) {
                 <label
                   htmlFor={inputId}
                   className={cn(
-                    "flex h-28 w-full flex-col items-center justify-center text-center",
-                    isUploading ? "cursor-wait" : "cursor-pointer"
+                    'flex h-28 w-full flex-col items-center justify-center text-center',
+                    isUploading ? 'cursor-wait' : 'cursor-pointer'
                   )}
                 >
                   {isUploading ? (

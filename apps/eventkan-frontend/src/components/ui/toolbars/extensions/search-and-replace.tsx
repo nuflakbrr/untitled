@@ -4,7 +4,6 @@ import { Decoration, DecorationSet, type EditorView } from '@tiptap/pm/view';
 import { Extension, type Range, type Editor as CoreEditor } from '@tiptap/core';
 import { Plugin, PluginKey, type EditorState, type Transaction } from '@tiptap/pm/state';
 
-
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     search: {
@@ -106,7 +105,11 @@ function processSearches(
   };
 }
 
-const replace = (replaceTerm: string, results: Range[], { state, dispatch }: { state: EditorState; dispatch: ((tr: Transaction) => void) | undefined }) => {
+const replace = (
+  replaceTerm: string,
+  results: Range[],
+  { state, dispatch }: { state: EditorState; dispatch: ((tr: Transaction) => void) | undefined }
+) => {
   const firstResult = results[0];
 
   if (!firstResult) {
