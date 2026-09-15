@@ -54,7 +54,7 @@ export default function CertificatePage(props: PageProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center w-full h-full min-h-screen">
+      <div className="grid min-h-dvh place-items-center bg-[#f6f3eb]">
         <Loader />
       </div>
     );
@@ -62,18 +62,28 @@ export default function CertificatePage(props: PageProps) {
 
   if (!cert) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50">
-        <Award className="h-16 w-16 text-red-500 stroke-1" />
-        <h1 className="text-xl font-bold mt-4">Sertifikat Tidak Ditemukan</h1>
-        <p className="text-muted-foreground text-sm mt-2">
-          Sertifikat tidak valid atau telah dihapus.
-        </p>
-        <Button className="mt-6" asChild>
-          <Link href="/participant/dashboard">
-            <ArrowLeft className="h-4 w-4 mr-2" /> Kembali ke Dashboard
-          </Link>
-        </Button>
-      </div>
+      <main className="grid min-h-dvh place-items-center bg-[#f6f3eb] p-5 text-[#11233f]">
+        <section className="w-full max-w-lg rounded-[28px] border border-[#111927]/10 bg-[#fffdf8] p-8 text-center shadow-[0_18px_50px_rgba(17,35,63,.08)]">
+          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#ffe5d8] text-[#b84a2a]">
+            <Award className="h-7 w-7" />
+          </span>
+          <h1 className="font-display mt-5 text-2xl font-extrabold tracking-[-.03em]">
+            Sertifikat tidak ditemukan
+          </h1>
+          <p className="mt-2 text-sm leading-relaxed text-[#6c7280]">
+            Sertifikat tidak valid atau telah dihapus.
+          </p>
+          <Button
+            className="group mt-6 group rounded-full bg-[#11233f] px-5 text-white hover:bg-[#1b3458]"
+            asChild
+          >
+            <Link href="/participant/dashboard">
+              <ArrowLeft className="mr-2 h-4 w-4 transition-transform duration-200 group-hover:-translate-x-1" />
+              Kembali ke Dashboard
+            </Link>
+          </Button>
+        </section>
+      </main>
     );
   }
 
@@ -85,24 +95,29 @@ export default function CertificatePage(props: PageProps) {
   const backgroundUrl = template?.backgroundUrl ?? null;
   const showIssuedDate = template?.showIssuedDate ?? true;
   const titleFont = template?.titleFont ?? 'Inter';
-  const titleColor = template?.titleColor ?? '#000000';
+  const titleColor = template?.titleColor ?? '#11233f';
   const contentFont = template?.contentFont ?? 'Inter';
-  const contentColor = template?.contentColor ?? '#333333';
-  const primaryColor = template?.primaryColor ?? '#3b82f6';
+  const contentColor = template?.contentColor ?? '#4b5565';
+  const primaryColor = template?.primaryColor ?? '#ff7a45';
   const showEventDate = template?.showEventDate ?? true;
   const showEventLocation = template?.showEventLocation ?? false;
   const headerText = template?.headerText ?? 'EVENTKAN';
   const headerSubtitle = template?.headerSubtitle ?? 'Sertifikat Partisipasi Resmi';
-  const headerFont = template?.headerFont ?? 'Times New Roman';
-  const headerColor = template?.headerColor ?? '#000000';
+  const headerFont = template?.headerFont ?? 'Inter';
+  const headerColor = template?.headerColor ?? '#11233f';
   const showHeader = template?.showHeader ?? true;
   const footerMarginBottom = template?.footerMarginBottom ?? 0;
 
   return (
-    <div className="min-h-screen bg-zinc-100 dark:bg-zinc-950 p-4 sm:p-8 flex flex-col items-center justify-center print:p-0 print:bg-white">
+    <main className="min-h-dvh bg-[#f6f3eb] px-4 py-6 sm:px-7 sm:py-10 print:bg-white print:p-0">
       {/* Action Bar (Hidden on Print) */}
-      <div className="w-full max-w-4xl flex items-center justify-between mb-6 no-print print:hidden">
-        <Button variant="ghost" size="sm" asChild>
+      <div className="no-print mx-auto mb-5 flex w-full max-w-5xl items-center justify-between gap-3 print:hidden">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="rounded-full px-4 text-[#11233f] hover:bg-[#fffdf8]"
+          asChild
+        >
           <Link
             href={isAdmin ? '/admin/master/certificates' : '/participant/dashboard'}
             className="flex items-center gap-2"
@@ -111,7 +126,11 @@ export default function CertificatePage(props: PageProps) {
           </Link>
         </Button>
         <div className="flex items-center gap-2">
-          <Button onClick={handlePrint} size="sm" className="flex items-center gap-2">
+          <Button
+            onClick={handlePrint}
+            size="sm"
+            className="flex items-center gap-2 rounded-full bg-[#11233f] px-4 text-white hover:bg-[#1b3458]"
+          >
             <Printer className="h-4 w-4" /> Cetak / Simpan PDF
           </Button>
         </div>
@@ -120,18 +139,16 @@ export default function CertificatePage(props: PageProps) {
       {/* Certificate Container */}
       <div
         id="certificate-container"
-        className="w-full max-w-4xl aspect-[1.414/1] bg-white text-zinc-900 relative shadow-2xl overflow-hidden flex flex-col justify-between items-center print:shadow-none print:m-0 print:w-full print:h-full print:aspect-auto"
+        className="relative mx-auto flex aspect-[1.414/1] w-full max-w-5xl flex-col items-center justify-between overflow-hidden rounded-[28px] border border-[#111927]/10 bg-[#fffdf8] text-[#11233f] shadow-[0_24px_70px_rgba(17,35,63,.1)] print:m-0 print:h-full print:w-full print:aspect-auto print:rounded-none print:shadow-none"
         style={
           !backgroundUrl
             ? {
-                padding: '2rem 4rem',
-                border: '12px double #d4d4d8',
-                borderRadius: '1.5rem',
+                padding: 'clamp(1.5rem, 5vw, 4rem)',
                 color: contentColor,
                 fontFamily: contentFont,
               }
             : {
-                padding: '2rem 4rem',
+                padding: 'clamp(1.5rem, 5vw, 4rem)',
                 color: contentColor,
                 fontFamily: contentFont,
               }
@@ -151,8 +168,8 @@ export default function CertificatePage(props: PageProps) {
         {/* ── Decorative (only if no background) ── */}
         {!backgroundUrl && (
           <>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,var(--color-primary-50),transparent_50%)] opacity-30 pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-64 h-64 bg-zinc-100 rounded-full -mr-20 -mb-20 opacity-20 pointer-events-none" />
+            <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-[#ff7a45]/12" />
+            <div className="pointer-events-none absolute -bottom-20 -left-16 h-52 w-52 rounded-full bg-[#f7df86]/35" />
           </>
         )}
 
@@ -160,41 +177,46 @@ export default function CertificatePage(props: PageProps) {
         <div className="relative z-10 w-full flex flex-col justify-between items-center h-full">
           {/* Top Header */}
           <div
-            className="w-full flex flex-col items-center text-center space-y-2"
+            className="flex w-full flex-col items-center space-y-2 text-center"
             style={{ visibility: showHeader ? 'visible' : 'hidden' }}
           >
             <div className="flex items-center gap-2">
-              <Award className="h-10 w-10 animate-pulse" style={{ color: primaryColor }} />
+              <span className="grid h-11 w-11 place-items-center rounded-[14px] bg-[#11233f] text-white">
+                <Award className="h-5 w-5" style={{ color: primaryColor }} />
+              </span>
               <span
-                className="font-bold text-2xl tracking-wider uppercase"
+                className="font-display text-2xl font-extrabold tracking-[-.04em] uppercase"
                 style={{ color: headerColor, fontFamily: headerFont }}
               >
                 {headerText}
               </span>
             </div>
             <span
-              className="text-[10px] font-bold tracking-widest uppercase font-mono"
+              className="text-[10px] font-bold uppercase tracking-[.16em] text-[#6c7280]"
               style={{ color: headerColor }}
             >
               {headerSubtitle}
             </span>
-            <div className="w-24 h-0.5 mx-auto mt-2" style={{ backgroundColor: primaryColor }} />
+            <div
+              className="mx-auto mt-2 h-1 w-16 rounded-full"
+              style={{ backgroundColor: primaryColor }}
+            />
           </div>
 
           {/* Main Content */}
-          <div className="w-full flex flex-col items-center text-center my-6 space-y-6">
+          <div className="my-6 flex w-full flex-col items-center space-y-5 text-center">
             <h2
-              className="text-3xl sm:text-5xl font-semibold tracking-wide uppercase"
+              className="font-display text-3xl font-extrabold uppercase tracking-[-.04em] sm:text-5xl"
               style={{ fontFamily: titleFont, color: titleColor }}
             >
               SERTIFIKAT
             </h2>
-            <span className="text-sm font-medium italic font-serif">
+            <span className="text-sm font-medium text-[#6c7280]">
               Dengan bangga diberikan kepada:
             </span>
             <div className="space-y-1">
               <h1
-                className="text-2xl sm:text-4xl font-bold border-b-2 px-6 pb-2 inline-block capitalize"
+                className="font-display inline-block border-b-2 px-6 pb-2 text-2xl font-extrabold tracking-[-.04em] capitalize sm:text-4xl"
                 style={{
                   fontFamily: titleFont,
                   color: titleColor,
@@ -203,7 +225,9 @@ export default function CertificatePage(props: PageProps) {
               >
                 {cert.participantName || cert.participantEmail || 'Peserta Event'}
               </h1>
-              <p className="text-xs font-mono mt-1">No. Sertifikat: {cert.certificateNumber}</p>
+              <p className="mt-1 text-xs tracking-[.04em] text-[#6c7280]">
+                No. Sertifikat: {cert.certificateNumber}
+              </p>
             </div>
             <p className="text-sm max-w-xl mx-auto leading-relaxed">
               Atas partisipasi aktif sebagai peserta dalam{' '}
@@ -352,6 +376,6 @@ export default function CertificatePage(props: PageProps) {
           }
         }
       `}</style>
-    </div>
+    </main>
   );
 }
