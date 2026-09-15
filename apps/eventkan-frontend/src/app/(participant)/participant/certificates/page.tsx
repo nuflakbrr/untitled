@@ -1,43 +1,56 @@
 'use client';
 
-import 'moment-timezone';
-import 'moment/locale/id';
-
-import type { ColumnDef } from '@tanstack/react-table';
-
-import moment from 'moment';
+import { Award } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { Award, Download, ChevronsUpDown } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import Heading from '@/components/Common/Heading';
+import type { CertificateResponse } from '@/interfaces/features/certificates';
+
 import { DataTable } from '@/components/ui/data-table';
-import EmptyState from '@/app/(root)/_components/EmptyState';
+import EmptyState from '@/components/Common/EmptyState';
 import { getParticipantCertificates } from '@/services/admin/certificates';
 
-type Certificate = Awaited<ReturnType<typeof getParticipantCertificates>>[number];
-const columns: ColumnDef<Certificate>[] = [
-  { accessorKey: 'event.title', header: 'Event', cell: ({ row }) => <span className="text-sm font-medium">{row.original.event.title}</span> },
-  { accessorKey: 'certificateNumber', header: ({ column }) => <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>No. Sertifikat <ChevronsUpDown className="ml-2 h-4 w-4" /></Button> },
-  { accessorKey: 'createdAt', header: 'Tanggal Terbit', cell: ({ row }) => <span className="text-sm">{moment(row.original.createdAt).tz('Asia/Jakarta').locale('id').format('DD MMMM YYYY')}</span> },
-  { accessorKey: 'downloadUrl', header: 'Aksi', cell: ({ row }) => <Button asChild variant="outline" size="xs"><a href={row.original.downloadUrl} target="_blank" rel="noopener noreferrer"><Download className="mr-1 h-3.5 w-3.5" /> Unduh</a></Button> },
-];
+import Columns from './_components/Columns';
 
 export default function ParticipantCertificatesPage() {
-  const { data = [], isLoading } = useQuery({ queryKey: ['participant-certificates'], queryFn: getParticipantCertificates });
+  const { data, isLoading } = useQuery({
+    queryKey: ['participant-certificates'],
+    queryFn: getParticipantCertificates,
+  });
+
+  const certificates = (Array.isArray(data) ? data : []) as CertificateResponse[];
 
   return (
-    <section className="space-y-4">
-      <Heading title={`Sertifikat (${data.length})`} description="Lihat dan unduh sertifikat event Anda." />
-      {!isLoading && data.length === 0 ? (
+    <section className="space-y-7 pb-10">
+      <header className="flex flex-col gap-6 border-b border-[#111927]/10 pb-8">
+        <div>
+          <h1 className="font-display mt-2 text-[clamp(38px,5vw,58px)] font-extrabold leading-none tracking-tighter text-[#111927]">
+            Sertifikat <span className="text-[#ff7a45]">({certificates.length})</span>
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6c7280]">
+            Cek dan download sertifikat dari event yang sudah kamu ikuti.
+          </p>
+        </div>
+      </header>
+
+      {certificates.length === 0 && !isLoading ? (
         <EmptyState
           icon={Award}
-          title="Belum ada sertifikat"
-          description="Sertifikat event akan muncul setelah kamu mengikuti event dan status penerbitannya tersedia."
-          action={{ href: '/events', label: 'Jelajahi event' }}
+          title="Belum ada sertifikat."
+          description="Sertifikat akan muncul di sini setelah event selesai dan kehadiranmu diverifikasi."
+          action={{ href: '/participant/event-history', label: 'Lihat Riwayat Event' }}
         />
       ) : (
-        <DataTable searchKey={['event.title', 'certificateNumber']} columns={columns} data={data} enableRowSelection={false} isFetching={isLoading} pageCount={1} placeholderSearch="Cari event atau nomor sertifikat..." />
+        <div className="rounded-[24px] border border-[#111927]/10 bg-[#fffdf8] p-2 shadow-[0_18px_50px_rgba(17,35,63,.05)] sm:p-3">
+          <DataTable
+            searchKey={['event.title', 'certificateNumber']}
+            columns={Columns}
+            data={certificates}
+            enableRowSelection={false}
+            isFetching={isLoading}
+            pageCount={1}
+            placeholderSearch="Cari event atau nomor sertifikat..."
+          />
+        </div>
       )}
     </section>
   );

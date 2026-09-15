@@ -1,32 +1,19 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
+
 import type {
+  CertificateResponse,
   CertificateTemplateHeader,
   CertificateTemplateNumbering,
+  CertificatePaginationResponse,
   CertificateTemplateAppearance,
 } from '@/interfaces/features/certificates';
 
 import api from '@/lib/api';
-import { revalidatePath } from 'next/cache';
 
 const endpoint = '/features/v1/certificates';
 const path = '/admin/master/certificates';
-export type CertificateResponse = {
-  id: string;
-  certificateNumber: string;
-  downloadUrl: string;
-  createdAt: Date;
-  downloadTime: Date | null;
-  registration: { registrationNumber: string };
-  event: { title: string; slug: string };
-  user: { name: string | null; email: string };
-};
-export type CertificatePaginationResponse = {
-  success: boolean;
-  data?: CertificateResponse[];
-  meta?: { total: number; page: number; lastPage: number };
-  error?: string;
-};
 export type CertTemplateUpsertInput = Partial<
   CertificateTemplateAppearance & CertificateTemplateHeader & CertificateTemplateNumbering
 >;

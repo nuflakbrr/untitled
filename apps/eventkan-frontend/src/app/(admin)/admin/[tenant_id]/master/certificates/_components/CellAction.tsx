@@ -1,13 +1,15 @@
 'use client';
 
 import type { FC } from 'react';
-import type { CertificateResponse } from '@/services/admin/certificates';
+
+import { Copy, Trash, ExternalLink, MoreHorizontal } from 'lucide-react';
+
+import type { CertificateResponse } from '@/interfaces/features/certificates';
 
 import { Button } from '@/components/ui/button';
 import { copyToClipboard } from '@/lib/clipboard';
 import { usePermission } from '@/providers/PermissionProvider';
 import AlertModal from '@/components/Common/Modals/AlertModal';
-import { Copy, Trash, ExternalLink, MoreHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuItem,

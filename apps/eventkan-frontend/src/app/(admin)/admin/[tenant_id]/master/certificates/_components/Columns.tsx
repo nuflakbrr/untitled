@@ -4,10 +4,12 @@ import 'moment-timezone';
 import 'moment/locale/id';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import type { CertificateResponse } from '@/services/admin/certificates';
 
 import moment from 'moment';
 import { ChevronsUpDown } from 'lucide-react';
+
+import type { CertificateResponse } from '@/interfaces/features/certificates';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 

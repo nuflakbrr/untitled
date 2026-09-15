@@ -46,6 +46,24 @@ export interface CertificateTemplate
   signatures: CertificateSignature[];
 }
 
+export interface CertificateResponse {
+  id: string;
+  certificateNumber: string;
+  downloadUrl: string;
+  createdAt: Date;
+  downloadTime: Date | null;
+  registration: { registrationNumber: string };
+  event: { title: string; slug: string };
+  user: { name: string | null; email: string };
+}
+
+export interface CertificatePaginationResponse {
+  success: boolean;
+  data?: CertificateResponse[];
+  meta?: { total: number; page: number; lastPage: number };
+  error?: string;
+}
+
 export interface EventWithCertificate {
   id: string;
   title: string;
