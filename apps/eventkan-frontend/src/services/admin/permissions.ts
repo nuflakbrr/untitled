@@ -1,16 +1,15 @@
 'use server';
 
-import type { z } from 'zod';
-import type { permissionSchema } from '@/schemas/permissions';
+import { revalidatePath } from 'next/cache';
+
+import type { PermissionValues } from '@/schemas/permissions';
 import type {
   PermissionResponse,
   PermissionPaginationResponse,
 } from '@/interfaces/features/permissions';
 
 import api from '@/lib/api';
-import { revalidatePath } from 'next/cache';
 
-export type PermissionValues = z.infer<typeof permissionSchema>;
 const endpoint = '/core/v1/permissions';
 const path = '/admin/managements/permissions';
 export async function getPermissions(

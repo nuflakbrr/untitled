@@ -12,10 +12,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react';
 
-import type { LoginValues } from '@/services/public/auth';
-
 import { signIn } from '@/lib/authClient';
-import { loginSchema } from '@/schemas/auth';
+import { loginSchema, type LoginValues } from '@/schemas/auth';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 
 import { getLoginInputClass } from '../_libs/getLoginInputClass';
 import { sanitizeCallbackUrl } from '../_libs/sanitizeCallbackUrl';
@@ -74,10 +73,11 @@ const LoginForm: FC = () => {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5" noValidate>
-      <div>
-        <label htmlFor="login-email" className="mb-2 block text-[13px] font-bold text-[#11233f]">
+      <FieldGroup className="gap-5">
+      <Field className="gap-2" data-invalid={!!form.formState.errors.email}>
+        <FieldLabel htmlFor="login-email" className="text-[13px] font-bold text-[#11233f]">
           Email
-        </label>
+        </FieldLabel>
         <input
           id="login-email"
           type="email"
@@ -87,17 +87,13 @@ const LoginForm: FC = () => {
           {...form.register('email')}
           className={getLoginInputClass(Boolean(form.formState.errors.email))}
         />
-        {form.formState.errors.email && (
-          <p className="mt-1.5 text-xs font-medium text-[#b84a2a]">
-            {form.formState.errors.email.message}
-          </p>
-        )}
-      </div>
+        {form.formState.errors.email && <FieldError className="text-xs font-medium text-[#b84a2a]" errors={[form.formState.errors.email]} />}
+      </Field>
 
-      <div>
-        <label htmlFor="login-password" className="mb-2 block text-[13px] font-bold text-[#11233f]">
+      <Field className="gap-2" data-invalid={!!form.formState.errors.password}>
+        <FieldLabel htmlFor="login-password" className="text-[13px] font-bold text-[#11233f]">
           Password
-        </label>
+        </FieldLabel>
         <div className="relative">
           <input
             id="login-password"
@@ -118,12 +114,9 @@ const LoginForm: FC = () => {
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
-        {form.formState.errors.password && (
-          <p className="mt-1.5 text-xs font-medium text-[#b84a2a]">
-            {form.formState.errors.password.message}
-          </p>
-        )}
-      </div>
+        {form.formState.errors.password && <FieldError className="text-xs font-medium text-[#b84a2a]" errors={[form.formState.errors.password]} />}
+      </Field>
+      </FieldGroup>
 
       <div className="-mt-2 flex justify-end">
         <Link

@@ -1,16 +1,12 @@
 'use server';
 
-import type { z } from 'zod';
-
 import type { AuthResponse } from '@/interfaces/features/auth';
+import type { AdminTenant } from '@/interfaces/features/tenants';
 
 import api from '@/lib/api';
 import { auth } from '@/lib/auth';
 import { hasAdminRole } from '@/lib/roles';
-import { loginSchema, registerSchema } from '@/schemas/auth';
-
-export type LoginValues = z.infer<typeof loginSchema>;
-export type RegisterValues = z.infer<typeof registerSchema>;
+import { loginSchema, registerSchema, type LoginValues, type RegisterValues } from '@/schemas/auth';
 
 export async function loginAction(values: LoginValues): Promise<AuthResponse> {
   const parsed = loginSchema.safeParse(values);
@@ -92,14 +88,6 @@ export async function getMeAction() {
   const session = await auth.api.getSession();
   const isAdmin = hasAdminRole(session?.roles, session?.user?.role);
   return { isAdmin, session };
-}
-
-export interface AdminTenant {
-  id: string;
-  code?: string;
-  name: string;
-  slug?: string;
-  type?: string;
 }
 
 export async function getMyTenantsAction(): Promise<AdminTenant[]> {

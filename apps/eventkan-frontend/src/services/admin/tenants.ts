@@ -2,37 +2,13 @@
 
 import axios from 'axios';
 
+import type { TenantValues, TenantPaymentGatewayValues } from '@/schemas/tenants';
+import type {
+  TenantPaymentGateway,
+  TenantPaginationResponse,
+} from '@/interfaces/features/tenants';
+
 import api from '@/lib/api';
-
-export interface AdminTenantRow {
-  id: string;
-  name: string;
-  slug: string;
-  code: string;
-  type: string;
-  parentId?: string;
-  depth?: number;
-  hasChildren?: boolean;
-  isExpanded?: boolean;
-  onToggle?: () => void;
-  parentName: string;
-  createdAt: string;
-}
-
-export interface TenantPaginationResponse {
-  success: boolean;
-  data: AdminTenantRow[];
-  meta: { total: number; page: number; lastPage: number };
-}
-
-export interface TenantPaymentGateway {
-	provider: 'IPAYMU';
-	is_active: boolean;
-	api_key?: string;
-	virtual_account?: string;
-	env: 'sandbox' | 'production';
-	has_api_key?: boolean;
-}
 
 export async function getTenants(
   page = 1,
@@ -89,7 +65,7 @@ export async function getTenants(
   }
 }
 
-export async function createTenant(values: Record<string, unknown>) {
+export async function createTenant(values: TenantValues) {
   try {
     const result = await api.post('/core/v1/tenants', values);
     return { success: true, data: result.data.data };
@@ -105,7 +81,7 @@ export async function getTenant(id: string) {
     return { success: false, error: 'Gagal mengambil data tenant.' };
   }
 }
-export async function updateTenant(id: string, values: Record<string, unknown>) {
+export async function updateTenant(id: string, values: TenantValues) {
   try {
     const result = await api.put(`/core/v1/tenants/${id}`, values);
     return { success: true, data: result.data.data };
@@ -141,7 +117,7 @@ export async function getTenantPaymentGateway(id: string) {
     return { success: false, error: 'Gagal mengambil pengaturan payment gateway.' };
   }
 }
-export async function updateTenantPaymentGateway(id: string, values: TenantPaymentGateway) {
+export async function updateTenantPaymentGateway(id: string, values: TenantPaymentGatewayValues) {
   try {
     const result = await api.put(`/core/v1/tenants/${id}/payment-gateway`, values);
     return { success: true, data: result.data.data as TenantPaymentGateway };

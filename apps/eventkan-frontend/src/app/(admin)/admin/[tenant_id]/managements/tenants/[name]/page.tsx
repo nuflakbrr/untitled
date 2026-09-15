@@ -1,29 +1,44 @@
 'use client';
 
+import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useRouter } from 'next/navigation';
 
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import Heading from '@/components/Common/Heading';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import {
   getTenant,
   updateTenant,
   getTenantPaymentGateway,
-  type TenantPaymentGateway,
   updateTenantPaymentGateway,
 } from '@/services/admin/tenants';
+import {
+  tenantSchema,
+  type TenantValues,
+  tenantPaymentGatewaySchema,
+  type TenantPaymentGatewayValues,
+} from '@/schemas/tenants';
 
 export default function TenantDetailPage() {
   const params = useParams<{ name: string }>();
   const router = useRouter();
-  const [form, setForm] = useState({ name: '', slug: '', code: '', type: 'FACULTY' });
   const [error, setError] = useState('');
-  const [gateway, setGateway] = useState<TenantPaymentGateway>({
+  const tenantForm = useForm<TenantValues>({
+    resolver: zodResolver(tenantSchema),
+    defaultValues: { name: '', slug: '', code: '', type: 'FACULTY' },
+  });
+  const gatewayForm = useForm<TenantPaymentGatewayValues>({
+    resolver: zodResolver(tenantPaymentGatewaySchema),
+    defaultValues: {
     provider: 'IPAYMU',
     is_active: false,
     env: 'sandbox',
+    api_key: '',
+    virtual_account: '',
+    },
   });
 
   useEffect(() => {
@@ -32,22 +47,21 @@ export default function TenantDetailPage() {
         setError(result.error ?? 'Tenant tidak ditemukan.');
         return undefined;
       }
-      setForm({
+      tenantForm.reset({
         name: result.data.name ?? '',
         slug: result.data.slug ?? '',
         code: result.data.code ?? '',
-        type: result.data.type ?? 'FACULTY',
+        type: (result.data.type as TenantValues['type']) ?? 'FACULTY',
       });
       const gatewayResult = await getTenantPaymentGateway(params.name);
       if (gatewayResult.success && gatewayResult.data)
-        setGateway((current) => ({ ...current, ...gatewayResult.data }));
+        gatewayForm.reset({ ...gatewayForm.getValues(), ...gatewayResult.data });
       return undefined;
     });
   }, [params.name]);
 
-  async function submit(event: React.FormEvent) {
-    event.preventDefault();
-    const result = await updateTenant(params.name, form);
+  async function submit(values: TenantValues) {
+    const result = await updateTenant(params.name, values);
     if (!result.success) {
       setError(result.error ?? 'Gagal memperbarui tenant.');
       return undefined;
@@ -57,9 +71,8 @@ export default function TenantDetailPage() {
     return undefined;
   }
 
-  async function submitGateway(event: React.FormEvent) {
-    event.preventDefault();
-    const result = await updateTenantPaymentGateway(params.name, gateway);
+  async function submitGateway(values: TenantPaymentGatewayValues) {
+    const result = await updateTenantPaymentGateway(params.name, values);
     if (!result.success) setError(result.error ?? 'Gagal menyimpan payment gateway.');
   }
 
@@ -67,103 +80,103 @@ export default function TenantDetailPage() {
     <section className="space-y-5">
       <Heading title="Ubah Tenant" description="Perbarui informasi organisasi atau unit kerja." />
       <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
-        <form onSubmit={submit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Nama Tenant</Label>
+        <form onSubmit={tenantForm.handleSubmit(submit)}>
+          <FieldGroup className="gap-4">
+          <Field className="gap-2" data-invalid={!!tenantForm.formState.errors.name}>
+            <FieldLabel htmlFor="name">Nama Tenant</FieldLabel>
             <Input
               id="name"
               placeholder="Masukkan nama tenant"
               required
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              {...tenantForm.register('name')}
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="slug">Slug</Label>
+            {tenantForm.formState.errors.name && <FieldError errors={[tenantForm.formState.errors.name]} />}
+          </Field>
+          <Field className="gap-2" data-invalid={!!tenantForm.formState.errors.slug}>
+            <FieldLabel htmlFor="slug">Slug</FieldLabel>
             <Input
               id="slug"
               placeholder="Masukkan slug tenant"
               required
-              value={form.slug}
-              onChange={(e) => setForm({ ...form, slug: e.target.value })}
+              {...tenantForm.register('slug')}
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="code">Kode Tenant</Label>
+            {tenantForm.formState.errors.slug && <FieldError errors={[tenantForm.formState.errors.slug]} />}
+          </Field>
+          <Field className="gap-2" data-invalid={!!tenantForm.formState.errors.code}>
+            <FieldLabel htmlFor="code">Kode Tenant</FieldLabel>
             <Input
               id="code"
               placeholder="Masukkan kode tenant"
               required
-              value={form.code}
-              onChange={(e) => setForm({ ...form, code: e.target.value })}
+              {...tenantForm.register('code')}
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="type">Tipe Tenant</Label>
+            {tenantForm.formState.errors.code && <FieldError errors={[tenantForm.formState.errors.code]} />}
+          </Field>
+          <Field className="gap-2" data-invalid={!!tenantForm.formState.errors.type}>
+            <FieldLabel htmlFor="type">Tipe Tenant</FieldLabel>
             <select
               id="type"
               className="h-10 w-full rounded-md border bg-background px-3 text-sm"
-              value={form.type}
-              onChange={(e) => setForm({ ...form, type: e.target.value })}
+              {...tenantForm.register('type')}
             >
               <option value="ROOT">ROOT</option>
               <option value="FACULTY">FACULTY</option>
               <option value="DEPARTMENT">DEPARTMENT</option>
               <option value="UNIT">UNIT</option>
             </select>
-          </div>
+            {tenantForm.formState.errors.type && <FieldError errors={[tenantForm.formState.errors.type]} />}
+          </Field>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <Button type="submit">Simpan Perubahan</Button>
+          </FieldGroup>
         </form>
-        <form onSubmit={submitGateway} className="space-y-4 rounded-lg border p-5">
+        <form onSubmit={gatewayForm.handleSubmit(submitGateway)} className="rounded-lg border p-5">
+          <FieldGroup className="gap-4">
           <div>
             <h2 className="text-lg font-semibold">Payment Gateway</h2>
             <p className="text-sm text-muted-foreground">
               Atur metode pembayaran untuk tenant ini.
             </p>
           </div>
-          <label className="flex items-center gap-2 text-sm">
+          <Field orientation="horizontal" className="gap-2" data-invalid={!!gatewayForm.formState.errors.is_active}>
             <input
+              id="gateway-active"
               type="checkbox"
-              checked={gateway.is_active}
-              onChange={(e) => setGateway({ ...gateway, is_active: e.target.checked })}
-            />{' '}
-            Aktifkan payment gateway
-          </label>
-          <div className="space-y-2">
-            <Label htmlFor="env">Environment</Label>
+              {...gatewayForm.register('is_active')}
+            />
+            <FieldLabel htmlFor="gateway-active">Aktifkan payment gateway</FieldLabel>
+          </Field>
+          <Field className="gap-2" data-invalid={!!gatewayForm.formState.errors.env}>
+            <FieldLabel htmlFor="env">Environment</FieldLabel>
             <select
               id="env"
               className="h-10 w-full rounded-md border bg-background px-3 text-sm"
-              value={gateway.env}
-              onChange={(e) =>
-                setGateway({ ...gateway, env: e.target.value as TenantPaymentGateway['env'] })
-              }
+              {...gatewayForm.register('env')}
             >
               <option value="sandbox">Sandbox</option>
               <option value="production">Production</option>
             </select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="virtualAccount">Virtual Account</Label>
+            {gatewayForm.formState.errors.env && <FieldError errors={[gatewayForm.formState.errors.env]} />}
+          </Field>
+          <Field className="gap-2">
+            <FieldLabel htmlFor="virtualAccount">Virtual Account</FieldLabel>
             <Input
               id="virtualAccount"
-              value={gateway.virtual_account ?? ''}
-              onChange={(e) => setGateway({ ...gateway, virtual_account: e.target.value })}
+              {...gatewayForm.register('virtual_account')}
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="apiKey">
-              API Key {gateway.has_api_key && '(tersimpan, kosongkan jika tidak diubah)'}
-            </Label>
+          </Field>
+          <Field className="gap-2">
+            <FieldLabel htmlFor="apiKey">
+              API Key {gatewayForm.getValues('has_api_key') && '(tersimpan, kosongkan jika tidak diubah)'}
+            </FieldLabel>
             <Input
               id="apiKey"
               type="password"
-              value={gateway.api_key ?? ''}
-              onChange={(e) => setGateway({ ...gateway, api_key: e.target.value })}
+              {...gatewayForm.register('api_key')}
             />
-          </div>
+          </Field>
           <Button type="submit">Simpan Payment Gateway</Button>
+          </FieldGroup>
         </form>
       </div>
     </section>

@@ -1,7 +1,8 @@
 'use server';
 
-import type { z } from 'zod';
-import type { gallerySchema } from '@/schemas/galleries';
+import { revalidatePath } from 'next/cache';
+
+import type { GalleryValues } from '@/schemas/galleries';
 import type {
   Gallery,
   GalleryResponse,
@@ -9,10 +10,8 @@ import type {
 } from '@/interfaces/features/galleries';
 
 import api from '@/lib/api';
-import { revalidatePath } from 'next/cache';
 
 const BASE_PATH = '/admin/master/galleries';
-export type GalleryValues = z.infer<typeof gallerySchema>;
 
 function toGalleryPayload(values: GalleryValues) {
   return {

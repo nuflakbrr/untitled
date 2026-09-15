@@ -40,3 +40,5 @@ export const permissionSchema = z
       }
     }
   });
+
+export type PermissionValues = z.infer<typeof permissionSchema>;

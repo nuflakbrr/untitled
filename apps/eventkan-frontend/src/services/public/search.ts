@@ -1,14 +1,9 @@
 'use server';
 
+import type { CategoryItem } from '@/interfaces/features/search';
 import type { EventSearchResult } from '@/interfaces/features/events';
 
 import api from '@/lib/api';
-
-export interface CategoryItem {
-  id: string;
-  name: string;
-  slug: string;
-}
 
 export async function getPublicCategoriesAction(): Promise<CategoryItem[]> {
   try {

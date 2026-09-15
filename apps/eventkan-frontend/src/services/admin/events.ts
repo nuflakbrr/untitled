@@ -1,16 +1,13 @@
 'use server';
 
-import type { z } from 'zod';
-
 import { revalidatePath } from 'next/cache';
 
 import type { Event, EventResponse, EventPaginationResponse } from '@/interfaces/features/events';
 
 import api from '@/lib/api';
-import { eventSchema } from '@/schemas/events';
+import { eventSchema, type EventValues } from '@/schemas/events';
 
 const BASE_PATH = '/admin/master/events';
-export type EventValues = z.infer<typeof eventSchema>;
 
 function body<T>(result: {
   data: { data?: T; pagination?: { total?: number; page?: number; limit?: number } };

@@ -1,21 +1,20 @@
 'use client';
 
-import type { z } from 'zod';
-import type { Permission } from '@/interfaces/features/permissions';
-
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { permissionSchema } from '@/schemas/permissions';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import type { Permission } from '@/interfaces/features/permissions';
+
+import { permissionSchema, type PermissionValues } from '@/schemas/permissions';
 import {
   createPermission,
   deletePermission,
   updatePermission,
   createBulkPermissions,
-  type PermissionValues,
 } from '@/services/admin/permissions';
 
 export const usePermissionForm = (initialData: Permission | null) => {
@@ -23,7 +22,7 @@ export const usePermissionForm = (initialData: Permission | null) => {
   const queryClient = useQueryClient();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
-  const form = useForm<z.infer<typeof permissionSchema>>({
+  const form = useForm<PermissionValues>({
     resolver: zodResolver(permissionSchema),
     defaultValues: {
       name: initialData?.name || '',

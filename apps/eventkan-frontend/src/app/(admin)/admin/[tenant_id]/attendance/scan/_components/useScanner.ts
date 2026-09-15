@@ -4,11 +4,11 @@ import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
+
 import { scanQrCode } from '@/services/admin/attendance';
 
 export const useScanner = () => {
   const router = useRouter();
-  const [token, setToken] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const [isSecure, setIsSecure] = useState(true);
   const [isFlashOn, setIsFlashOn] = useState(false);
@@ -49,8 +49,7 @@ export const useScanner = () => {
     }
   };
 
-  const handleManualSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleManualSubmit = (token: string) => {
     if (!token.trim()) return;
     // Only submit if scanner is not actively scanning to avoid conflicts
     if (!isScanning && !isPending) {
@@ -172,8 +171,6 @@ export const useScanner = () => {
   }, [isScanning]);
 
   return {
-    token,
-    setToken,
     isScanning,
     setIsScanning,
     isSecure,

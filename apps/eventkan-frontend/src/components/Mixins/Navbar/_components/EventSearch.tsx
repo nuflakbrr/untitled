@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { X, Search, ArrowRight, CalendarDays } from 'lucide-react';
 
+import type { CategoryItem } from '@/interfaces/features/search';
 import type { EventSearchResult } from '@/interfaces/features/events';
 
 import { cn } from '@/lib/utils';
@@ -12,7 +13,6 @@ import { EventType } from '@/interfaces/enums';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import {
-  type CategoryItem,
   searchEventsAction,
   getPublicCategoriesAction,
 } from '@/services/public/search';

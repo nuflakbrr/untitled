@@ -1,14 +1,13 @@
 'use server';
 
-import type { z } from 'zod';
-import type { userSchema } from '@/schemas/users';
+import { revalidatePath } from 'next/cache';
+
+import type { UserValues } from '@/schemas/users';
 import type { User, UserResponse, UserPaginationResponse } from '@/interfaces/features/users';
 
 import api from '@/lib/api';
 import { auth } from '@/lib/auth';
-import { revalidatePath } from 'next/cache';
 
-export type UserValues = z.infer<typeof userSchema>;
 const endpoint = '/core/v1/users';
 const normalizeUser = (user: Record<string, unknown>): User => {
   const role = typeof user.role === 'string' ? user.role : '';

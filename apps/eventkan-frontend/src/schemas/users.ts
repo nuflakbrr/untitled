@@ -26,3 +26,5 @@ export const userSchema = z.object({
   }),
   image: z.string().optional().nullable(),
 });
+
+export type UserValues = z.infer<typeof userSchema>;

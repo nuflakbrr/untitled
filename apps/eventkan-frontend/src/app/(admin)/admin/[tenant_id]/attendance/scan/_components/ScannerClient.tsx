@@ -3,19 +3,22 @@
 import type { Html5Qrcode } from 'html5-qrcode';
 
 import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
 import { type FC, useEffect } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Camera, CameraOff, Smartphone, Flashlight } from 'lucide-react';
+
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Camera, CameraOff, Smartphone, Flashlight } from 'lucide-react';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { qrTokenSchema, type QrTokenValues } from '@/schemas/attendance';
 import { Card, CardTitle, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
 
 import { useScanner } from './useScanner';
 
 const ScannerClient: FC = () => {
   const {
-    token,
-    setToken,
     isScanning,
     setIsScanning,
     isSecure,
@@ -27,6 +30,11 @@ const ScannerClient: FC = () => {
     handleStartScanning,
     toggleTorch,
   } = useScanner();
+  const manualForm = useForm<QrTokenValues>({
+    resolver: zodResolver(qrTokenSchema),
+    defaultValues: { token: '' },
+  });
+  const token = manualForm.watch('token');
 
   // Meminta izin kamera secara reaktif saat button Aktifkan Kamera ditekan.
   // html5-qrcode tidak akan bisa jalan di iOS/Android webview / browser modern jika izin getUserMedia belum di-prompt oleh action user.
@@ -245,16 +253,30 @@ const ScannerClient: FC = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="pb-6">
-          <form onSubmit={handleManualSubmit} className="flex gap-2">
-            <Input
-              id="qr-token-input"
-              type="text"
-              placeholder="Masukkan token QR Code..."
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              disabled={isPending}
-              className="flex-1 rounded-xl h-11 text-xs"
-            />
+          <form
+            onSubmit={manualForm.handleSubmit(({ token: value }) => handleManualSubmit(value))}
+            className="flex gap-2"
+          >
+            <Field
+              className="min-w-0 flex-1 gap-0"
+              data-invalid={!!manualForm.formState.errors.token}
+            >
+              <FieldLabel htmlFor="qr-token-input" className="sr-only">
+                Token QR Code
+              </FieldLabel>
+              <Input
+                id="qr-token-input"
+                type="text"
+                placeholder="Masukkan token QR Code..."
+                value={token}
+                {...manualForm.register('token')}
+                disabled={isPending}
+                className="h-11 rounded-xl text-xs"
+              />
+              {manualForm.formState.errors.token && (
+                <FieldError errors={[manualForm.formState.errors.token]} />
+              )}
+            </Field>
             <Button
               id="btn-submit-token"
               type="submit"

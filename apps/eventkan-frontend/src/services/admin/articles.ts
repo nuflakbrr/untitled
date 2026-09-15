@@ -1,10 +1,8 @@
 'use server';
 
-import type { z } from 'zod';
-
 import { revalidatePath } from 'next/cache';
 
-import type { articleSchema } from '@/schemas/articles';
+import type { ArticleValues } from '@/schemas/articles';
 import type {
   ArticleResponse,
   ArticleCategoryResponse,
@@ -14,7 +12,6 @@ import type {
 
 import api from '@/lib/api';
 
-export type ArticleValues = z.infer<typeof articleSchema>;
 const endpoint = '/features/v1/articles';
 const categoryEndpoint = '/features/v1/article-categories';
 const path = '/admin/publications/articles';

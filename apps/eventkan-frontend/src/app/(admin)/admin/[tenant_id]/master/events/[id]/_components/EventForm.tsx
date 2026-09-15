@@ -1,37 +1,10 @@
 'use client';
 
-import type { EventValues } from '@/services/admin/events';
-import type { Event, EventSpeaker, EventBenefit } from '@/interfaces/features/events';
-
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
-import { slugify } from '@/lib/slugify';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { useQuery } from '@tanstack/react-query';
-import Heading from '@/components/Common/Heading';
-import { Calendar } from '@/components/ui/calendar';
 import { type FC, useState, useEffect } from 'react';
-import { Separator } from '@/components/ui/separator';
-import { formatLocalTime } from '@/lib/formatLocalTime';
-import { uploadImage } from '@/services/public/uploads';
 import { Controller, useFieldArray } from 'react-hook-form';
-import { EventType, EventStatus } from '@/interfaces/enums';
-import { usePermission } from '@/providers/PermissionProvider';
-import AlertModal from '@/components/Common/Modals/AlertModal';
-import RichTextEditor from '@/components/Common/RichTextEditor';
-import { getAllEventCategories } from '@/services/admin/event-categories';
-import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import {
-  Select,
-  SelectItem,
-  SelectValue,
-  SelectContent,
-  SelectTrigger,
-} from '@/components/ui/select';
 import {
   X,
   Plus,
@@ -48,6 +21,34 @@ import {
   Briefcase,
   Calendar as CalendarIcon,
 } from 'lucide-react';
+
+import type { EventValues } from '@/schemas/events';
+import type { Event, EventSpeaker, EventBenefit } from '@/interfaces/features/events';
+
+import { cn } from '@/lib/utils';
+import { slugify } from '@/lib/slugify';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import Heading from '@/components/Common/Heading';
+import { Calendar } from '@/components/ui/calendar';
+import { Separator } from '@/components/ui/separator';
+import { formatLocalTime } from '@/lib/formatLocalTime';
+import { uploadImage } from '@/services/public/uploads';
+import { EventType, EventStatus } from '@/interfaces/enums';
+import { usePermission } from '@/providers/PermissionProvider';
+import AlertModal from '@/components/Common/Modals/AlertModal';
+import RichTextEditor from '@/components/Common/RichTextEditor';
+import { getAllEventCategories } from '@/services/admin/event-categories';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Select,
+  SelectItem,
+  SelectValue,
+  SelectContent,
+  SelectTrigger,
+} from '@/components/ui/select';
 
 import ImageUpload from './ImageUpload';
 import DragOverlay from './DragOverlay';

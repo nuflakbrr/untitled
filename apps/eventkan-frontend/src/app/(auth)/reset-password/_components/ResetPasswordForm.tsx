@@ -12,6 +12,7 @@ import { Check, Loader2, ArrowRight } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { authClient } from '@/lib/authClient';
+import { FieldGroup } from '@/components/ui/field';
 import { resetPasswordSchema, type ResetPasswordValues } from '@/schemas/auth';
 
 import PasswordField from './PasswordField';
@@ -66,43 +67,45 @@ const ResetPasswordForm: FC = () => {
       className="space-y-5"
       noValidate
     >
-      <PasswordField
-        id="reset-password"
-        label="Password baru"
-        error={form.formState.errors.password?.message}
-        register={form.register}
-        valueName="password"
-        showPassword={showPassword}
-        onToggle={() => setShowPassword((value) => !value)}
-      />
+      <FieldGroup className="gap-5">
+        <PasswordField
+          id="reset-password"
+          label="Password baru"
+          error={form.formState.errors.password?.message}
+          register={form.register}
+          valueName="password"
+          showPassword={showPassword}
+          onToggle={() => setShowPassword((value) => !value)}
+        />
 
-      <div className="grid gap-2 rounded-[16px] border border-[#111927]/10 bg-white/45 p-4">
-        {rules.map((rule) => (
-          <div
-            key={rule.label}
-            className={`flex items-center gap-2 text-xs ${rule.valid ? 'text-[#36784b]' : 'text-[#6c7280]'}`}
-          >
-            <span
-              className={`grid h-4.5 w-4.5 place-items-center rounded-full border ${rule.valid ? 'border-[#b8dac1] bg-[#e6f3e9]' : 'border-[#111927]/10'}`}
+        <div className="grid gap-2 rounded-[16px] border border-[#111927]/10 bg-white/45 p-4">
+          {rules.map((rule) => (
+            <div
+              key={rule.label}
+              className={`flex items-center gap-2 text-xs ${rule.valid ? 'text-[#36784b]' : 'text-[#6c7280]'}`}
             >
-              {rule.valid && <Check className="h-3 w-3" />}
-            </span>
-            {rule.label}
-          </div>
-        ))}
-      </div>
+              <span
+                className={`grid h-4.5 w-4.5 place-items-center rounded-full border ${rule.valid ? 'border-[#b8dac1] bg-[#e6f3e9]' : 'border-[#111927]/10'}`}
+              >
+                {rule.valid && <Check className="h-3 w-3" />}
+              </span>
+              {rule.label}
+            </div>
+          ))}
+        </div>
 
-      <PasswordField
-        id="reset-confirm"
-        label="Konfirmasi password baru"
-        error={form.formState.errors.confirmPassword?.message}
-        register={form.register}
-        valueName="confirmPassword"
-        showPassword={showConfirm}
-        onToggle={() => setShowConfirm((value) => !value)}
-      />
+        <PasswordField
+          id="reset-confirm"
+          label="Konfirmasi password baru"
+          error={form.formState.errors.confirmPassword?.message}
+          register={form.register}
+          valueName="confirmPassword"
+          showPassword={showConfirm}
+          onToggle={() => setShowConfirm((value) => !value)}
+        />
+      </FieldGroup>
 
-      {confirmPassword && !form.formState.errors.confirmPassword && (
+      {password && confirmPassword && password === confirmPassword && (
         <p className="-mt-3 text-xs font-medium text-[#36784b]">Password cocok.</p>
       )}
 

@@ -2,12 +2,17 @@
 
 import { toast } from 'sonner';
 import { type FC, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { X, Tag, Plus, Edit, Trash, Check, Loader2, RotateCcw } from 'lucide-react';
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { usePermission } from '@/providers/PermissionProvider';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { X, Tag, Plus, Edit, Trash, Check, Loader2, RotateCcw } from 'lucide-react';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { articleCategorySchema, type ArticleCategoryValues } from '@/schemas/article-categories';
 import {
   Dialog,
   DialogTitle,
@@ -32,10 +37,13 @@ interface CategoryModalProps {
 const CategoryModal: FC<CategoryModalProps> = ({ isOpen, onClose }) => {
   const { hasPermission } = usePermission();
   const queryClient = useQueryClient();
-  const [newCategory, setNewCategory] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
   const [showDeleted, setShowDeleted] = useState(false);
+  const categoryForm = useForm<ArticleCategoryValues>({
+    resolver: zodResolver(articleCategorySchema),
+    defaultValues: { name: '' },
+  });
 
   const { data: categoriesData, isLoading } = useQuery({
     queryKey: ['article-categories', showDeleted],
@@ -66,7 +74,7 @@ const CategoryModal: FC<CategoryModalProps> = ({ isOpen, onClose }) => {
     onSuccess: (result) => {
       if (result.success) {
         toast.success(result.message);
-        setNewCategory('');
+        categoryForm.reset();
         queryClient.invalidateQueries({ queryKey: ['article-categories'] });
       } else {
         toast.error(result.error);
@@ -100,10 +108,8 @@ const CategoryModal: FC<CategoryModalProps> = ({ isOpen, onClose }) => {
     },
   });
 
-  const handleAdd = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newCategory.trim()) return;
-    createMutation.mutate(newCategory.trim());
+  const handleAdd = ({ name }: ArticleCategoryValues) => {
+    createMutation.mutate(name.trim());
   };
 
   const handleStartEdit = (id: string, name: string) => {
@@ -135,14 +141,20 @@ const CategoryModal: FC<CategoryModalProps> = ({ isOpen, onClose }) => {
 
         <div className="space-y-6 pt-4">
           {hasPermission('article.category.create') && (
-            <form onSubmit={handleAdd} className="flex items-center gap-2">
-              <Input
-                placeholder="Nama kategori baru..."
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
-                disabled={createMutation.isPending}
-              />
-              <Button type="submit" disabled={createMutation.isPending || !newCategory.trim()}>
+            <form onSubmit={categoryForm.handleSubmit(handleAdd)} className="flex items-center gap-2">
+              <Field className="min-w-0 flex-1 gap-0" data-invalid={!!categoryForm.formState.errors.name}>
+                <FieldLabel htmlFor="new-article-category" className="sr-only">
+                  Nama kategori baru
+                </FieldLabel>
+                <Input
+                  id="new-article-category"
+                  placeholder="Nama kategori baru..."
+                  {...categoryForm.register('name')}
+                  disabled={createMutation.isPending}
+                />
+                {categoryForm.formState.errors.name && <FieldError errors={[categoryForm.formState.errors.name]} />}
+              </Field>
+              <Button type="submit" disabled={createMutation.isPending || !categoryForm.watch('name').trim()}>
                 {createMutation.isPending ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (

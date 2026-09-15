@@ -20,6 +20,8 @@ export const loginSchema = z.object({
   password: z.string().min(8, 'Password minimal 8 karakter'),
 });
 
+export type LoginValues = z.infer<typeof loginSchema>;
+
 export const forgotPasswordSchema = z.object({
   email: z.email('Format email tidak valid'),
 });
@@ -58,3 +60,5 @@ export const registerSchema = z.object({
     ),
   password: z.string().min(8, 'Password minimal 8 karakter'),
 });
+
+export type RegisterValues = z.infer<typeof registerSchema>;

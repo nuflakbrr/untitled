@@ -12,3 +12,5 @@ export const roleSchema = z.object({
     .or(z.literal('')),
   permissions: z.array(z.string()),
 });
+
+export type RoleValues = z.infer<typeof roleSchema>;

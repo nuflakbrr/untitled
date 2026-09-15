@@ -108,3 +108,5 @@ export const refinedEventSchema = eventSchema
       path: ['meetingLink'],
     }
   );
+
+export type EventValues = z.infer<typeof eventSchema>;

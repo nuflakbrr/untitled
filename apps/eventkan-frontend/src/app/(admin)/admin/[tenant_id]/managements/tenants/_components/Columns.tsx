@@ -3,12 +3,14 @@
 import 'moment/locale/id';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import type { AdminTenantRow } from '@/services/admin/tenants';
 
 import moment from 'moment';
+import { ChevronDown, ChevronRight, ChevronsUpDown } from 'lucide-react';
+
+import type { AdminTenantRow } from '@/interfaces/features/tenants';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronRight, ChevronsUpDown } from 'lucide-react';
 
 import CellAction from './CellAction';
 

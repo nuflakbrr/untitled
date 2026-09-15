@@ -1,13 +1,12 @@
 'use server';
 
-import type { z } from 'zod';
-import type { roleSchema } from '@/schemas/roles';
+import { revalidatePath } from 'next/cache';
+
+import type { RoleValues } from '@/schemas/roles';
 import type { RoleResponse, RolePaginationResponse } from '@/interfaces/features/roles';
 
 import api from '@/lib/api';
-import { revalidatePath } from 'next/cache';
 
-export type RoleValues = z.infer<typeof roleSchema>;
 const path = '/admin/managements/roles';
 const roles = '/core/v1/roles';
 const list = async (

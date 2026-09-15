@@ -12,6 +12,7 @@ import { Mail, Info, Loader2, ArrowRight } from 'lucide-react';
 
 import { authClient } from '@/lib/authClient';
 import { forgotPasswordSchema, type ForgotPasswordValues } from '@/schemas/auth';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 
 import ForgotPasswordSuccess from './ForgotPasswordSuccess';
 import { getForgotPasswordInputClass } from '../_libs/getForgotPasswordInputClass';
@@ -55,10 +56,11 @@ const ForgotPasswordForm: FC = () => {
       className="space-y-5"
       noValidate
     >
-      <div>
-        <label htmlFor="forgot-email" className="mb-2 block text-[13px] font-bold text-[#11233f]">
+      <FieldGroup className="gap-5">
+      <Field className="gap-2" data-invalid={!!form.formState.errors.email}>
+        <FieldLabel htmlFor="forgot-email" className="text-[13px] font-bold text-[#11233f]">
           Email
-        </label>
+        </FieldLabel>
         <div className="relative">
           <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6c7280]" />
           <input
@@ -71,12 +73,9 @@ const ForgotPasswordForm: FC = () => {
             className={getForgotPasswordInputClass(Boolean(form.formState.errors.email))}
           />
         </div>
-        {form.formState.errors.email && (
-          <p className="mt-1.5 text-xs font-medium text-[#b84a2a]">
-            {form.formState.errors.email.message}
-          </p>
-        )}
-      </div>
+        {form.formState.errors.email && <FieldError className="text-xs font-medium text-[#b84a2a]" errors={[form.formState.errors.email]} />}
+      </Field>
+      </FieldGroup>
 
       <div className="flex gap-3 rounded-[16px] bg-[#ffe5d8] px-4 py-3 text-xs leading-relaxed text-[#8d492e]">
         <Info className="mt-0.5 h-4 w-4 shrink-0" />

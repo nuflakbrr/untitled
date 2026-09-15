@@ -1,17 +1,18 @@
 'use client';
 
-import type { AdminTenantRow } from '@/services/admin/tenants';
-
 import { toast } from 'sonner';
 import { type FC, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { Copy, Edit, Trash, MoreHorizontal } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import type { AdminTenantRow } from '@/interfaces/features/tenants';
+
 import { Button } from '@/components/ui/button';
 import { copyToClipboard } from '@/lib/clipboard';
 import { deleteTenant } from '@/services/admin/tenants';
-import { useRouter, usePathname } from 'next/navigation';
 import { usePermission } from '@/providers/PermissionProvider';
 import AlertModal from '@/components/Common/Modals/AlertModal';
-import { Copy, Edit, Trash, MoreHorizontal } from 'lucide-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   DropdownMenu,
   DropdownMenuItem,
