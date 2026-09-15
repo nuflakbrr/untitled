@@ -1,10 +1,4 @@
-import {
-  Award,
-  CreditCard,
-  UserCircle,
-  LayoutDashboard,
-  type LucideIcon,
-} from 'lucide-react';
+import { Award, CreditCard, UserCircle, LayoutDashboard, type LucideIcon } from 'lucide-react';
 
 export type ParticipantUserMenuLink = {
   label: string;
@@ -23,13 +17,6 @@ export const participantUserMenuLinks: ParticipantUserMenuLink[] = [
     tourTarget: 'dashboard',
   },
   {
-    label: 'Sertifikat',
-    href: '/participant/certificates',
-    icon: Award,
-    mobileOnly: true,
-    tourTarget: 'certificates',
-  },
-  {
     label: 'Riwayat Event',
     href: '/participant/event-history',
     icon: Award,
@@ -42,6 +29,13 @@ export const participantUserMenuLinks: ParticipantUserMenuLink[] = [
     icon: CreditCard,
     mobileOnly: true,
     tourTarget: 'payments',
+  },
+  {
+    label: 'Sertifikat',
+    href: '/participant/certificates',
+    icon: Award,
+    mobileOnly: true,
+    tourTarget: 'certificates',
   },
   {
     label: 'Profil Saya',

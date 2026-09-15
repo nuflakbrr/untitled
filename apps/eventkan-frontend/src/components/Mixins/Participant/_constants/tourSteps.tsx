@@ -1,11 +1,41 @@
 import { Award, CreditCard, UserCircle, CalendarDays, LayoutDashboard } from 'lucide-react';
 
 const steps = [
-  { key: 'dashboard', icon: LayoutDashboard, title: 'Dashboard Peserta', description: 'Ini adalah pusat kontrol utama Anda di EVENTKAN. Di sini Anda dapat melihat statistik ringkasan, info e-tiket event terdekat, serta pengumuman penting.' },
-  { key: 'history', icon: CalendarDays, title: 'Riwayat Event & E-Tiket', description: 'Lihat semua event yang pernah Anda daftari, periksa status hadir (CHECKED_IN), akses e-tiket QR code, unduh sertifikat, dan berikan ulasan testimoni.' },
-  { key: 'payments', icon: CreditCard, title: 'Riwayat Transaksi & Pembayaran', description: 'Kelola dan pantau seluruh transaksi event berbayar Anda, lalu dapatkan konfirmasi pembayaran otomatis dari payment gateway.' },
-  { key: 'certificates', icon: Award, title: 'Sertifikat Event', description: 'Akses dan unduh sertifikat event yang sudah Anda ikuti setelah status kehadiran dan penerbitannya tersedia.' },
-  { key: 'profile', icon: UserCircle, title: 'Profil & Pengaturan Akun', description: 'Perbarui data pribadi dan informasi penting akun peserta Anda kapan saja melalui menu profil.' },
+  {
+    key: 'dashboard',
+    icon: LayoutDashboard,
+    title: 'Dashboard Peserta',
+    description:
+      'Ini adalah pusat kontrol utama Anda di EVENTKAN. Di sini Anda dapat melihat statistik ringkasan, info e-tiket event terdekat, serta pengumuman penting.',
+  },
+  {
+    key: 'history',
+    icon: CalendarDays,
+    title: 'Riwayat Event & E-Tiket',
+    description:
+      'Lihat semua event yang pernah Anda daftari, periksa status hadir (CHECKED_IN), akses e-tiket QR code, unduh sertifikat, dan berikan ulasan testimoni.',
+  },
+  {
+    key: 'payments',
+    icon: CreditCard,
+    title: 'Riwayat Transaksi & Pembayaran',
+    description:
+      'Kelola dan pantau seluruh transaksi event berbayar Anda, lalu dapatkan konfirmasi pembayaran otomatis dari payment gateway.',
+  },
+  {
+    key: 'certificates',
+    icon: Award,
+    title: 'Sertifikat Event',
+    description:
+      'Akses dan unduh sertifikat event yang sudah Anda ikuti setelah status kehadiran dan penerbitannya tersedia.',
+  },
+  {
+    key: 'profile',
+    icon: UserCircle,
+    title: 'Profil & Pengaturan Akun',
+    description:
+      'Perbarui data pribadi dan informasi penting akun peserta Anda kapan saja melalui menu profil.',
+  },
 ] as const;
 
 function StepContent({ step }: { step: (typeof steps)[number] }) {
