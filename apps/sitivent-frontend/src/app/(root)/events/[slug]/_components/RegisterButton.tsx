@@ -71,7 +71,7 @@ const RegisterButton: FC<RegisterButtonProps> = ({
             className={`${actionButtonClass} bg-[#11233f] text-white hover:bg-[#1b3458]`}
             asChild
           >
-            <Link href="/participant/dashboard">Unggah Bukti di Dashboard</Link>
+            <Link href="/participant/dashboard">Lanjutkan Pembayaran</Link>
           </Button>
         </div>
       );

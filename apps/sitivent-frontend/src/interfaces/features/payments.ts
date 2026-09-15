@@ -6,7 +6,6 @@ export interface Payment {
   registrationId: string;
   amount: number;
   status: PaymentStatus;
-  proofUrl?: string | null;
   verifiedAt?: Date | null;
   verifiedById?: string | null;
   createdAt: Date;

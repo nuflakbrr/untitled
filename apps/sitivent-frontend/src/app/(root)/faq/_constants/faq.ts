@@ -77,6 +77,6 @@ export const faqItems: FAQItem[] = [
     category: 'umum',
     question: 'Bagaimana jika saya mengalami kendala teknis?',
     answer:
-      'Tim bantuan pelanggan kami siap membantu Anda. Silakan hubungi kami melalui email indevappfti@gmail.com atau melalui form di halaman Kontak. Kami akan merespons pertanyaan Anda secepat mungkin.',
+      'Tim bantuan pelanggan kami siap membantu Anda. Silakan hubungi kami melalui email naufalakbar378@gmail.com atau melalui form di halaman Kontak. Kami akan merespons pertanyaan Anda secepat mungkin.',
   },
 ];

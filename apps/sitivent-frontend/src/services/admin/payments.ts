@@ -1,7 +1,6 @@
 'use server';
 
 import api from '@/lib/api';
-import { revalidatePath } from 'next/cache';
 
 const endpoint = '/features/v1/payments';
 export async function getPaymentsFromRegistrations(
@@ -92,29 +91,5 @@ export async function getPayments(page = 1, limit = 10, search = '') {
     };
   } catch {
     return { success: false, data: [], meta: { total: 0, page, lastPage: 1 } };
-  }
-}
-export async function verifyPayment(
-  id: string,
-  status: 'PAID' | 'FAILED',
-  notes?: string
-): Promise<any> {
-  try {
-    const result = await api.post(`${endpoint}/${id}/verify`, { status, notes });
-    revalidatePath('/admin/transactions/payments');
-    return { success: true, data: result.data.data };
-  } catch {
-    return { success: false, error: 'Gagal memverifikasi pembayaran.' };
-  }
-}
-export async function uploadPaymentProof(registrationId: string, formData: FormData): Promise<any> {
-  try {
-    const result = await api.post(`${endpoint}/proof`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    revalidatePath('/participant/dashboard');
-    return { success: true, data: result.data.data };
-  } catch {
-    return { success: false, error: 'Gagal mengunggah bukti pembayaran.' };
   }
 }

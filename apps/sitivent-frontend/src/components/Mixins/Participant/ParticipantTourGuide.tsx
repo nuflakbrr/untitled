@@ -1,9 +1,10 @@
 'use client';
 
-import { useIsMobile } from '@/hooks/useMobile';
 import { useTour, TourProvider } from '@reactour/tour';
 import { type FC, useState, useEffect, type ReactNode } from 'react';
 import { Compass, CreditCard, UserCircle, CalendarDays, LayoutDashboard } from 'lucide-react';
+
+import { useIsMobile } from '@/hooks/useMobile';
 
 const STORAGE_KEY = 'sitivent_participant_tour_completed';
 
@@ -47,8 +48,8 @@ const desktopSteps = [
           <h4 className="font-bold text-[#141413] text-base">Riwayat Transaksi & Pembayaran</h4>
         </div>
         <p className="text-xs text-[#87867F] leading-relaxed">
-          Kelola dan pantau seluruh transaksi event berbayar Anda, cek bukti pembayaran, dan
-          dapatkan konfirmasi otomatis.
+          Kelola dan pantau seluruh transaksi event berbayar Anda, lalu dapatkan konfirmasi
+          pembayaran otomatis dari payment gateway.
         </p>
       </div>
     ),
@@ -116,8 +117,8 @@ const mobileSteps = [
           <h4 className="font-bold text-[#141413] text-base">Riwayat Transaksi & Pembayaran</h4>
         </div>
         <p className="text-xs text-[#87867F] leading-relaxed">
-          Kelola dan pantau seluruh transaksi event berbayar Anda, cek bukti pembayaran, dan
-          dapatkan konfirmasi otomatis.
+          Kelola dan pantau seluruh transaksi event berbayar Anda, lalu dapatkan konfirmasi
+          pembayaran otomatis dari payment gateway.
         </p>
       </div>
     ),

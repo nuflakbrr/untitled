@@ -4,15 +4,16 @@ import 'moment-timezone';
 import 'moment/locale/id';
 
 import moment from 'moment';
+import { useQuery } from '@tanstack/react-query';
+import { type ColumnDef } from '@tanstack/react-table';
+import { CreditCard, ChevronsUpDown } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useQuery } from '@tanstack/react-query';
 import Heading from '@/components/Common/Heading';
 import { Separator } from '@/components/ui/separator';
 import { formatCurrency } from '@/lib/formatCurrency';
-import { type ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/ui/data-table';
-import { CreditCard, ChevronsUpDown } from 'lucide-react';
 import { getParticipantPayments } from '@/services/admin/payments';
 import {
   Empty,
@@ -27,7 +28,6 @@ interface ParticipantPayment {
   registrationId: string;
   amount: number;
   status: string;
-  proofUrl?: string | null;
   createdAt: Date;
   deletedAt?: Date | null;
   registration: {
@@ -73,7 +73,7 @@ const columns: ColumnDef<ParticipantPayment>[] = [
     cell: ({ row }) => {
       const status = row.original.status;
       const labelMap: Record<string, string> = {
-        WAITING: 'Menunggu Verifikasi',
+        WAITING: 'Menunggu Pembayaran',
         PAID: 'Lunas',
         FAILED: 'Ditolak',
         REFUNDED: 'Dikembalikan',
@@ -89,25 +89,6 @@ const columns: ColumnDef<ParticipantPayment>[] = [
         <Badge variant="outline" className={`font-semibold px-2 py-0.5 ${classMap[status] || ''}`}>
           {labelMap[status] || status}
         </Badge>
-      );
-    },
-  },
-  {
-    accessorKey: 'proofUrl',
-    header: 'Bukti Transfer',
-    cell: ({ row }) => {
-      const proofUrl = row.original.proofUrl;
-      return proofUrl ? (
-        <a
-          href={proofUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-primary underline text-sm"
-        >
-          Lihat Bukti
-        </a>
-      ) : (
-        <span className="text-xs text-muted-foreground">—</span>
       );
     },
   },

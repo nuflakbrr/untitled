@@ -1,6 +1,7 @@
 'use server';
 
 import axios from 'axios';
+
 import api from '@/lib/api';
 
 export interface AdminTenantRow {
@@ -25,15 +26,12 @@ export interface TenantPaginationResponse {
 }
 
 export interface TenantPaymentGateway {
-  provider: 'IPAYMU' | 'MANUAL';
-  is_active: boolean;
-  api_key?: string;
-  virtual_account?: string;
-  env: 'sandbox' | 'production';
-  bank_name?: string;
-  bank_account_number?: string;
-  bank_account_holder?: string;
-  has_api_key?: boolean;
+	provider: 'IPAYMU';
+	is_active: boolean;
+	api_key?: string;
+	virtual_account?: string;
+	env: 'sandbox' | 'production';
+	has_api_key?: boolean;
 }
 
 export async function getTenants(

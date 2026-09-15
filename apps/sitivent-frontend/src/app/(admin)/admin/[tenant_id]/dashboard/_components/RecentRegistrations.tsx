@@ -1,8 +1,10 @@
 import type { Route } from 'next';
-import type { AdminDashboardStats } from '@/interfaces/features/dashboard';
 
 import Link from 'next/link';
 import { Users } from 'lucide-react';
+
+import type { AdminDashboardStats } from '@/interfaces/features/dashboard';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardTitle, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
@@ -21,7 +23,7 @@ const registrationStatus: Record<string, string> = {
   CANCELLED: 'Dibatalkan',
 };
 const paymentStatus: Record<string, string> = {
-  WAITING: 'Menunggu Verifikasi',
+  WAITING: 'Menunggu Pembayaran',
   PAID: 'Lunas',
   FAILED: 'Ditolak',
   REFUNDED: 'Dikembalikan',

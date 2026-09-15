@@ -18,7 +18,7 @@ const PaymentsCMS: FC = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 md:mb-4">
         <Heading
           title={`Transaksi Pembayaran (${meta.total})`}
-          description="Verifikasi bukti transfer manual pembayaran pendaftaran event dari peserta."
+          description="Pantau status transaksi pembayaran pendaftaran event melalui payment gateway SITIVENT."
         />
       </div>
       <Separator />

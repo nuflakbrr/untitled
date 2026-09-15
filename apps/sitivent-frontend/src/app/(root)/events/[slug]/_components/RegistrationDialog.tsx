@@ -37,7 +37,7 @@ const RegistrationDialog: FC<RegisterDialogProps> = ({
                   minimumFractionDigits: 0,
                 }).format(price)}
               </strong>
-              . Setelah mendaftar, unggah bukti pembayaran dari dashboard.
+              . Setelah mendaftar, lanjutkan pembayaran melalui payment gateway SITIVENT.
             </span>
           ) : (
             <span className="mt-3 block rounded-[14px] bg-[#e5f2e8] px-3 py-2 text-xs text-[#36784b]">

@@ -4,17 +4,16 @@ import 'moment-timezone';
 import 'moment/locale/id';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import type { Payment } from '@/interfaces/features/payments';
 
 import moment from 'moment';
-import Image from 'next/image';
-import { useState } from 'react';
+import { ChevronsUpDown } from 'lucide-react';
+
+import type { Payment } from '@/interfaces/features/payments';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PaymentStatus } from '@/interfaces/enums';
 import { formatCurrency } from '@/lib/formatCurrency';
-import { Search, CreditCard, ChevronsUpDown } from 'lucide-react';
-import ImagePreviewModal from '@/components/Common/Modals/ImagePreviewModal';
 
 import CellAction from './CellAction';
 
@@ -78,7 +77,7 @@ const Columns: ColumnDef<Payment>[] = [
       const getStatusLabel = (val: typeof status) => {
         switch (val) {
           case PaymentStatus.WAITING:
-            return 'Menunggu Verifikasi';
+            return 'Menunggu Pembayaran';
           case PaymentStatus.PAID:
             return 'Lunas';
           case PaymentStatus.FAILED:
@@ -97,11 +96,6 @@ const Columns: ColumnDef<Payment>[] = [
     },
   },
   {
-    accessorKey: 'proofUrl',
-    header: 'Bukti Transfer',
-    cell: ({ row }) => <ProofCell row={row} />,
-  },
-  {
     accessorKey: 'createdAt',
     header: 'Tanggal Transaksi',
     cell: ({ row }) => {
@@ -118,45 +112,5 @@ const Columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => <CellAction data={row.original} />,
   },
 ];
-
-const ProofCell = ({ row }: { row: { original: Payment } }) => {
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const payment = row.original;
-
-  return (
-    <>
-      {payment.proofUrl && (
-        <ImagePreviewModal
-          isOpen={isPreviewOpen}
-          onClose={() => setIsPreviewOpen(false)}
-          imageSrc={payment.proofUrl}
-          title={`Bukti Transfer - ${payment.registration.registrationNumber}`}
-          aspectRatio="3/2"
-        />
-      )}
-      <div
-        className="relative h-10 w-16 min-w-16 rounded-md overflow-hidden border bg-muted flex items-center justify-center cursor-zoom-in hover:ring-2 hover:ring-primary/20 transition-all group"
-        onClick={() => payment.proofUrl && setIsPreviewOpen(true)}
-      >
-        {payment.proofUrl ? (
-          <>
-            <Image
-              src={payment.proofUrl}
-              alt="Bukti Transfer"
-              loading="lazy"
-              className="object-cover group-hover:scale-110 transition-transform duration-300"
-              fill
-            />
-            <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <Search className="h-4 w-4 text-white" />
-            </div>
-          </>
-        ) : (
-          <CreditCard className="h-5 w-5 text-muted-foreground" />
-        )}
-      </div>
-    </>
-  );
-};
 
 export default Columns;
