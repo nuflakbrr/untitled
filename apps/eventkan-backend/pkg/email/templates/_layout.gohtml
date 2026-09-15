@@ -18,7 +18,7 @@
 <body>
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">{{.Preheader}}</div>
   <table role="presentation" width="100%" class="wrap" style="background:#f6f3eb;padding:32px 12px"><tr><td align="center">
-    <table role="presentation" width="640" class="box" style="width:100%;max-width:640px;background:#fffdf8;border:1px solid #e4e0d8;border-radius:24px;overflow:hidden">
+    <table role="presentation" width="640" class="box" style="width:100%;max-width:640px;background:#fffdf8;border:0;border-radius:24px;overflow:hidden">
       <tr><td class="pad" style="padding:28px 42px 24px"><table role="presentation" width="100%"><tr>
         <td><table role="presentation"><tr><td style="width:42px;height:42px;background:#11233f;border-radius:12px;text-align:center;vertical-align:middle;color:#fff;font-size:16px;font-weight:700">S</td><td style="padding-left:12px;font-size:20px;font-weight:700;color:#111927">EVENTKAN</td></tr></table></td>
       </tr></table></td></tr>
@@ -36,9 +36,9 @@
       {{if .SecondaryMessage}}<tr><td class="pad" style="padding:20px 42px 0;font-size:13px;line-height:21px;color:#6c7280">{{.SecondaryMessage}}</td></tr>{{end}}
       {{if .SecurityNote}}<tr><td class="pad" style="padding:26px 42px 0"><table role="presentation" width="100%" style="background:#ffe5d8;border-radius:14px"><tr><td style="padding:14px 16px;font-size:12px;line-height:19px;color:#8d492e"><strong style="color:#713820">Catatan keamanan:</strong> {{.SecurityNote}}</td></tr></table></td></tr>{{end}}
       <tr><td class="pad" style="padding:34px 42px"><div style="height:1px;background:#e7e2da"></div><p style="margin:22px 0 0;font-size:13px;line-height:21px;color:#6c7280">Butuh bantuan? <a href="{{.SupportURL}}" style="color:#11233f;font-weight:700">Kunjungi Pusat Bantuan</a>.</p></td></tr>
-      <tr><td style="background:#11233f;padding:26px 42px"><table role="presentation" width="100%"><tr><td><div style="font-size:14px;font-weight:700;color:#fff">EVENTKAN</div><div style="margin-top:5px;font-size:11px;color:#ffffff88">Event kampus, tanpa ribet administratif.</div></td><td align="right" style="font-size:11px;color:#ffffff77">© {{.Year}} EVENTKAN</td></tr></table></td></tr>
+      <tr><td style="background:#11233f;padding:26px 42px"><table role="presentation" width="100%"><tr><td><div style="font-size:14px;font-weight:700;color:#fff">EVENTKAN</div></td><td align="right" style="font-size:11px;color:#ffffff77">© {{.Year}} EVENTKAN. Seluruh hak cipta dilindungi undang-undang.</td></tr></table></td></tr>
     </table>
-    <table role="presentation" width="640" style="width:100%;max-width:640px"><tr><td align="center" style="padding:18px 20px 0;font-size:10px;line-height:16px;color:#8a8f99">Email ini dikirim otomatis oleh EVENTKAN.{{if .UnsubscribeURL}}<br>Tidak ingin menerima email seperti ini? <a href="{{.UnsubscribeURL}}" style="color:#6c7280">Berhenti berlangganan</a>.{{end}}</td></tr></table>
+    <table role="presentation" width="640" style="width:100%;max-width:640px"><tr><td align="center" style="padding:18px 20px;font-size:10px;line-height:16px;color:#8a8f99">Email ini dikirim otomatis oleh EVENTKAN.{{if .UnsubscribeURL}}<br>Tidak ingin menerima email seperti ini? <a href="{{.UnsubscribeURL}}" style="color:#6c7280">Berhenti berlangganan</a>.{{end}}</td></tr></table>
   </td></tr></table>
 </body>
 </html>
