@@ -1,4 +1,4 @@
 export const getLoginInputClass = (hasError: boolean): string =>
-  `w-full rounded-[14px] border bg-[#fffdf8] px-4 py-3 text-sm text-[#11233f] outline-none transition placeholder:text-[#6c7280]/70 focus:border-[#11233f] focus:ring-3 focus:ring-[#11233f]/15 disabled:cursor-not-allowed disabled:opacity-60 ${
-    hasError ? 'border-[#b84a2a]' : 'border-[#111927]/15'
+  `w-full rounded-[14px] border bg-eventkan-surface px-4 py-3 text-sm text-eventkan-navy outline-none transition placeholder:text-eventkan-muted/70 focus:border-eventkan-navy focus:ring-3 focus:ring-eventkan-navy/15 disabled:cursor-not-allowed disabled:opacity-60 ${
+    hasError ? 'border-eventkan-peach-ink' : 'border-eventkan-ink/15'
   }`;

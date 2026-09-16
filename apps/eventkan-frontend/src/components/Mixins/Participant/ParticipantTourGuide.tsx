@@ -35,7 +35,7 @@ export const ParticipantTourGuide: FC<ParticipantTourGuideProps> = ({ children }
               localStorage.setItem(PARTICIPANT_TOUR_STORAGE_KEY, 'true');
               setIsOpen(false);
             }}
-            className="shrink-0 cursor-pointer rounded-lg bg-[#ff7a45] px-3.5 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#e96635]"
+            className="shrink-0 cursor-pointer rounded-lg bg-eventkan-accent px-3.5 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#e96635]"
           >
             Ya, Saya mengerti!
           </button>
@@ -43,7 +43,7 @@ export const ParticipantTourGuide: FC<ParticipantTourGuideProps> = ({ children }
           <button
             type="button"
             onClick={() => setCurrentStep((step) => step + 1)}
-            className="shrink-0 cursor-pointer rounded-lg bg-[#ff7a45] px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#e96635]"
+            className="shrink-0 cursor-pointer rounded-lg bg-eventkan-accent px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#e96635]"
           >
             Lanjut
           </button>
@@ -56,7 +56,7 @@ export const ParticipantTourGuide: FC<ParticipantTourGuideProps> = ({ children }
           <button
             type="button"
             onClick={() => setCurrentStep((step) => step - 1)}
-            className="w-14 shrink-0 cursor-pointer px-2.5 py-1.5 text-left text-xs font-medium text-[#6c7280] transition-colors hover:text-[#11233f]"
+            className="w-14 shrink-0 cursor-pointer px-2.5 py-1.5 text-left text-xs font-medium text-eventkan-muted transition-colors hover:text-eventkan-navy"
           >
             Kembali
           </button>

@@ -30,7 +30,7 @@ const ParticipantLayout: FC<Props> = async ({ children }) => {
     <TooltipProvider>
       <ParticipantTourGuide>
         <ParticipantRouteGuard>
-          <div className="flex min-h-screen flex-col bg-[#f6f3eb]">
+          <div className="flex min-h-screen flex-col bg-eventkan-canvas">
             <ParticipantNavbar user={session.user} />
             <main className="mx-auto w-full max-w-295 flex-1 px-4 py-8 sm:px-0 sm:py-10 lg:py-12">
               {children}

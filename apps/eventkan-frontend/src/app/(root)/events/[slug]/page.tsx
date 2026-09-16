@@ -37,7 +37,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
   const coverStyle = getCoverStyles([event.id])[0];
 
   return (
-    <article className="min-h-screen bg-[#f6f3eb] pb-20 pt-24 text-[#11233f] antialiased sm:pt-28">
+    <article className="min-h-screen bg-eventkan-canvas pb-20 pt-24 text-eventkan-navy antialiased sm:pt-28">
       <div className="mx-auto max-w-295 px-4 md:px-0">
         <div className={`relative mb-8 aspect-video w-full overflow-hidden rounded-[28px] shadow-[0_18px_50px_rgba(17,35,63,.08)] md:aspect-3/1 ${coverStyle}`}>
           <div className="relative flex h-full w-full flex-col justify-between p-6 sm:p-8 lg:p-10">
@@ -50,7 +50,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
           <div className="space-y-10 lg:col-span-2">
             <EventInformation event={event} formattedStartDate={detail.formattedStartDate} coverStyle={coverStyle} />
             <EventBenefits benefits={event.benefits} />
-            <div className="border-t border-[#111927]/10 pt-10">
+            <div className="border-t border-eventkan-ink/10 pt-10">
               <EventTestimonials eventId={event.id} />
             </div>
           </div>

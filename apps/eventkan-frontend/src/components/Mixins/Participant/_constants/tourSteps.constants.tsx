@@ -13,14 +13,14 @@ const steps = [
     icon: CalendarDays,
     title: 'Riwayat Event & E-Tiket',
     description:
-      'Lihat semua event yang pernah Anda daftari, periksa status hadir (CHECKED_IN), akses e-tiket QR code, unduh sertifikat, dan berikan ulasan testimoni.',
+      'Lihat semua event yang pernah Anda daftari, periksa status HADIR, akses e-tiket QR code, unduh sertifikat, dan berikan ulasan testimoni.',
   },
   {
     key: 'payments',
     icon: CreditCard,
     title: 'Riwayat Transaksi & Pembayaran',
     description:
-      'Kelola dan pantau seluruh transaksi event berbayar Anda, lalu dapatkan konfirmasi pembayaran otomatis dari payment gateway.',
+      'Pantau seluruh transaksi event berbayar Anda, lalu dapatkan konfirmasi pembayaran otomatis.',
   },
   {
     key: 'certificates',
@@ -43,10 +43,10 @@ function StepContent({ step }: { step: (typeof steps)[number] }) {
   return (
     <div className="space-y-2 p-1">
       <div className="flex items-center gap-2">
-        <Icon className="h-5 w-5 text-[#ff7a45]" />
-        <h4 className="text-base font-bold text-[#11233f]">{step.title}</h4>
+        <Icon className="h-5 w-5 text-eventkan-accent" />
+        <h4 className="text-base font-bold text-eventkan-navy">{step.title}</h4>
       </div>
-      <p className="text-xs leading-relaxed text-[#6c7280]">{step.description}</p>
+      <p className="text-xs leading-relaxed text-eventkan-muted">{step.description}</p>
     </div>
   );
 }

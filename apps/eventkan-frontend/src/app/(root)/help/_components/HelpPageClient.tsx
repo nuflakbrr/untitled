@@ -13,7 +13,7 @@ const HelpPageClient: FC = () => {
     useHelpForm();
 
   return (
-    <div className="min-h-screen bg-[#f6f3eb] text-[#111927] antialiased">
+    <div className="min-h-screen bg-eventkan-canvas text-eventkan-ink antialiased">
       <HelpHero />
 
       <section className="px-4 pb-24 sm:px-6">
@@ -24,18 +24,18 @@ const HelpPageClient: FC = () => {
             {isSuccess ? (
               <HelpSuccessState onReset={() => window.location.reload()} />
             ) : (
-              <div className="rounded-[28px] border border-[#111927]/10 bg-[#fffdf8] p-6 shadow-[0_18px_50px_rgba(17,35,63,.06)] sm:p-8 lg:p-10">
+              <div className="rounded-[28px] border border-eventkan-ink/10 bg-eventkan-surface p-6 shadow-[0_18px_50px_rgba(17,35,63,.06)] sm:p-8 lg:p-10">
                 <div className="mb-7">
-                  <h2 className="font-display text-2xl font-extrabold tracking-[-.04em] text-[#11233f] sm:text-[28px]">
+                  <h2 className="font-display text-2xl font-extrabold tracking-[-.04em] text-eventkan-navy sm:text-[28px]">
                     Kirim laporan kendala
                   </h2>
                   {isAuthenticated ? (
-                    <p className="mt-2 text-sm text-[#6c7280]">
+                    <p className="mt-2 text-sm text-eventkan-muted">
                       Formulir sudah terhubung dengan akun{' '}
-                      <span className="font-bold text-[#11233f]">{session?.user.name}</span>.
+                      <span className="font-bold text-eventkan-navy">{session?.user.name}</span>.
                     </p>
                   ) : (
-                    <p className="mt-2 text-sm text-[#6c7280]">
+                    <p className="mt-2 text-sm text-eventkan-muted">
                       Belum masuk? Isi data kontak secara manual agar kami dapat menghubungimu.
                     </p>
                   )}

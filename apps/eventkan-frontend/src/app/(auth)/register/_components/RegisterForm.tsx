@@ -49,7 +49,7 @@ const RegisterForm: FC = () => {
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5" noValidate>
       <FieldGroup className="grid gap-5 sm:grid-cols-2">
         <Field className="gap-2 sm:col-span-2" data-invalid={!!form.formState.errors.name}>
-          <FieldLabel htmlFor="reg-name" className="text-[13px] font-bold text-[#11233f]">
+          <FieldLabel htmlFor="reg-name" className="text-[13px] font-bold text-eventkan-navy">
             Nama lengkap
           </FieldLabel>
           <input
@@ -61,11 +61,11 @@ const RegisterForm: FC = () => {
             {...form.register('name')}
             className={getRegisterInputClass(Boolean(form.formState.errors.name))}
           />
-          {form.formState.errors.name && <FieldError className="text-xs font-medium text-[#b84a2a]" errors={[form.formState.errors.name]} />}
+          {form.formState.errors.name && <FieldError className="text-xs font-medium text-eventkan-peach-ink" errors={[form.formState.errors.name]} />}
         </Field>
 
         <Field className="gap-2 sm:col-span-2" data-invalid={!!form.formState.errors.email}>
-          <FieldLabel htmlFor="reg-email" className="text-[13px] font-bold text-[#11233f]">
+          <FieldLabel htmlFor="reg-email" className="text-[13px] font-bold text-eventkan-navy">
             Email
           </FieldLabel>
           <input
@@ -77,11 +77,11 @@ const RegisterForm: FC = () => {
             {...form.register('email')}
             className={getRegisterInputClass(Boolean(form.formState.errors.email))}
           />
-          {form.formState.errors.email && <FieldError className="text-xs font-medium text-[#b84a2a]" errors={[form.formState.errors.email]} />}
+          {form.formState.errors.email && <FieldError className="text-xs font-medium text-eventkan-peach-ink" errors={[form.formState.errors.email]} />}
         </Field>
 
         <Field className="gap-2 sm:col-span-2" data-invalid={!!form.formState.errors.password}>
-          <FieldLabel htmlFor="reg-password" className="text-[13px] font-bold text-[#11233f]">
+          <FieldLabel htmlFor="reg-password" className="text-[13px] font-bold text-eventkan-navy">
             Password
           </FieldLabel>
           <div className="relative">
@@ -97,14 +97,14 @@ const RegisterForm: FC = () => {
             <button
               type="button"
               onClick={() => setShowPassword((visible) => !visible)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-[#6c7280] transition hover:bg-[#f6f3eb] hover:text-[#11233f]"
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-eventkan-muted transition hover:bg-eventkan-canvas hover:text-eventkan-navy"
               aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
             >
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
-          {form.formState.errors.password && <FieldError className="text-xs font-medium text-[#b84a2a]" errors={[form.formState.errors.password]} />}
-          <p className="mt-2 text-xs text-[#6c7280]">
+          {form.formState.errors.password && <FieldError className="text-xs font-medium text-eventkan-peach-ink" errors={[form.formState.errors.password]} />}
+          <p className="mt-2 text-xs text-eventkan-muted">
             Gunakan minimal 8 karakter dengan kombinasi huruf dan angka.
           </p>
         </Field>
@@ -114,7 +114,7 @@ const RegisterForm: FC = () => {
         type="submit"
         id="btn-register-submit"
         disabled={isPending}
-        className="inline-flex w-full items-center group justify-center gap-2 rounded-full bg-[#ff7a45] px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-[#f2693a] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex w-full items-center group justify-center gap-2 rounded-full bg-eventkan-accent px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-eventkan-accent-hover active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? 'Membuat akun...' : 'Buat akun'}
         {isPending ? (
@@ -124,9 +124,9 @@ const RegisterForm: FC = () => {
         )}
       </button>
 
-      <p className="text-center text-sm text-[#6c7280]">
+      <p className="text-center text-sm text-eventkan-muted">
         Sudah punya akun?{' '}
-        <Link href="/login" className="font-bold text-[#11233f] transition hover:text-[#ff7a45]">
+        <Link href="/login" className="font-bold text-eventkan-navy transition hover:text-eventkan-accent">
           Masuk
         </Link>
       </p>

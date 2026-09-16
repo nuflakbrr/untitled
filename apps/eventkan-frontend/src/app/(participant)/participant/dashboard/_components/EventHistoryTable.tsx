@@ -24,15 +24,15 @@ interface EventHistoryTableProps {
 }
 
 const PanelHeader = () => (
-  <div className="flex items-center gap-2 border-b border-[#111927]/10 px-5 py-4">
-    <Award className="h-4 w-4 text-[#ff7a45]" />
-    <h2 className="font-display text-base font-extrabold text-[#111927]">Riwayat Event</h2>
+  <div className="flex items-center gap-2 border-b border-eventkan-ink/10 px-5 py-4">
+    <Award className="h-4 w-4 text-eventkan-accent" />
+    <h2 className="font-display text-base font-extrabold text-eventkan-ink">Riwayat Event</h2>
   </div>
 );
 
 export default function EventHistoryTable({ history }: EventHistoryTableProps) {
   const panelClass =
-    'h-full overflow-hidden rounded-[24px] border border-[#111927]/10 bg-[#fffdf8] shadow-[0_18px_50px_rgba(17,35,63,.05)]';
+    'h-full overflow-hidden rounded-[24px] border border-eventkan-ink/10 bg-eventkan-surface shadow-[0_18px_50px_rgba(17,35,63,.05)]';
 
   if (history.length === 0) {
     return (
@@ -52,7 +52,7 @@ export default function EventHistoryTable({ history }: EventHistoryTableProps) {
         <div className="overflow-x-auto">
           <table className="w-full min-w-180 border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-[#111927]/10 text-[10px] font-extrabold uppercase tracking-[.08em] text-[#6c7280]">
+              <tr className="border-b border-eventkan-ink/10 text-[10px] font-extrabold uppercase tracking-[.08em] text-eventkan-muted">
                 <th className="pb-3 pr-4">Event</th>
                 <th className="px-4 pb-3">Tanggal</th>
                 <th className="px-4 pb-3">Status</th>
@@ -70,14 +70,14 @@ export default function EventHistoryTable({ history }: EventHistoryTableProps) {
                 const statusStyle = getDashboardStatusStyle(item.status);
 
                 return (
-                  <tr key={item.id} className="border-b border-[#111927]/6 last:border-0">
+                  <tr key={item.id} className="border-b border-eventkan-ink/6 last:border-0">
                     <td className="py-4 pr-4">
-                      <p className="line-clamp-1 font-display text-sm font-extrabold text-[#111927]">
+                      <p className="line-clamp-1 font-display text-sm font-extrabold text-eventkan-ink">
                         {item.event?.title ?? 'Event tidak tersedia'}
                       </p>
-                      <p className="mt-0.5 text-xs text-[#6c7280]">{item.registrationNumber}</p>
+                      <p className="mt-0.5 text-xs text-eventkan-muted">{item.registrationNumber}</p>
                     </td>
-                    <td className="whitespace-nowrap px-4 py-4 text-xs text-[#6c7280]">
+                    <td className="whitespace-nowrap px-4 py-4 text-xs text-eventkan-muted">
                       {item.event ? formatLongDate(item.event.startDate) : '-'}
                     </td>
                     <td className="whitespace-nowrap px-4 py-4">
@@ -98,7 +98,7 @@ export default function EventHistoryTable({ history }: EventHistoryTableProps) {
                           asChild
                           variant="outline"
                           size="xs"
-                          className="h-8 gap-1.5 rounded-full border-[#111927]/12"
+                          className="h-8 gap-1.5 rounded-full border-eventkan-ink/12"
                         >
                           <a
                             href={item.event.meetingLink}
@@ -118,7 +118,7 @@ export default function EventHistoryTable({ history }: EventHistoryTableProps) {
                           asChild
                           variant="outline"
                           size="xs"
-                          className="h-8 gap-1.5 rounded-full border-[#111927]/12"
+                          className="h-8 gap-1.5 rounded-full border-eventkan-ink/12"
                         >
                           <a
                             href={item.certificates[0].downloadUrl}

@@ -43,7 +43,7 @@ const LandingPageLayout = async ({ children }: PublicLayoutProps) => {
   return (
     <div
       className={cn(
-        'min-h-screen bg-[#f6f3eb] font-sans',
+        'min-h-screen bg-eventkan-canvas font-sans',
         inter.variable,
         jakartaSans.variable,
         geistSans.variable,

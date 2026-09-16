@@ -27,12 +27,12 @@ export default function EventHistoryPage() {
 
   return (
     <section className="space-y-7 pb-10">
-      <header className="flex flex-col gap-6 border-b border-[#111927]/10 pb-8">
+      <header className="flex flex-col gap-6 border-b border-eventkan-ink/10 pb-8">
         <div>
-          <h1 className="font-display mt-2 text-[clamp(38px,5vw,58px)] font-extrabold leading-none tracking-tighter text-[#111927]">
-            Riwayat Event <span className="text-[#ff7a45]">({registrations.length})</span>
+          <h1 className="font-display mt-2 text-[clamp(38px,5vw,58px)] font-extrabold leading-none tracking-tighter text-eventkan-ink">
+            Riwayat Event <span className="text-eventkan-accent">({registrations.length})</span>
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6c7280]">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-eventkan-muted">
             Cek event yang pernah kamu daftar, status kehadiran, dan update sertifikatnya di sini.
           </p>
         </div>
@@ -48,7 +48,7 @@ export default function EventHistoryPage() {
           action={{ href: '/events', label: 'Jelajahi event' }}
         />
       ) : (
-        <div className="rounded-[24px] border border-[#111927]/10 bg-[#fffdf8] p-2 shadow-[0_18px_50px_rgba(17,35,63,.05)] sm:p-3">
+        <div className="rounded-[24px] border border-eventkan-ink/10 bg-eventkan-surface p-2 shadow-[0_18px_50px_rgba(17,35,63,.05)] sm:p-3">
           <DataTable
             searchKey={['registrationNumber', 'event.title']}
             columns={Columns(setSelectedRegistration)}

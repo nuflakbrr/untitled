@@ -37,9 +37,9 @@ const FooterNewsletter = () => {
   };
 
   return (
-    <div className="rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] p-6 shadow-[0_8px_24px_rgba(17,35,63,.04)] sm:p-7">
-      <h2 className="font-display text-xl font-bold text-[#11233f]">Info event terbaru</h2>
-      <p className="mt-1 text-sm leading-relaxed text-[#6c7280]">
+    <div className="rounded-[22px] border border-eventkan-ink/10 bg-eventkan-surface p-6 shadow-[0_8px_24px_rgba(17,35,63,.04)] sm:p-7">
+      <h2 className="font-display text-xl font-bold text-eventkan-navy">Info event terbaru</h2>
+      <p className="mt-1 text-sm leading-relaxed text-eventkan-muted">
         Dapatkan notifikasi event baru dan kabar menarik langsung ke email kamu.
       </p>
       <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-2.5 sm:flex-row">
@@ -54,12 +54,12 @@ const FooterNewsletter = () => {
           placeholder="nama@email.com"
           required
           disabled={isSubmitting}
-          className="min-w-0 flex-1 rounded-full border border-[#111927]/15 bg-[#f6f3eb] px-4 py-3 text-sm text-[#11233f] outline-none transition placeholder:text-[#6c7280]/70 focus:border-[#11233f] focus:ring-3 focus:ring-[#11233f]/15 disabled:opacity-60"
+          className="min-w-0 flex-1 rounded-full border border-eventkan-ink/15 bg-eventkan-canvas px-4 py-3 text-sm text-eventkan-navy outline-none transition placeholder:text-eventkan-muted/70 focus:border-eventkan-navy focus:ring-3 focus:ring-eventkan-navy/15 disabled:opacity-60"
         />
         <button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-[#ff7a45] px-5 py-3 font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#f2693a] disabled:opacity-60"
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-eventkan-accent px-5 py-3 font-bold text-white transition hover:-translate-y-0.5 hover:bg-eventkan-accent-hover disabled:opacity-60"
         >
           {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           {isSubmitting ? 'Memproses...' : 'Langganan'}

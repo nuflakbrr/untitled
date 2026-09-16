@@ -6,24 +6,24 @@ interface PaymentStatusConfig {
 const statusConfig: Record<string, PaymentStatusConfig> = {
   WAITING: {
     label: 'Menunggu Pembayaran',
-    className: 'border-[#ff7a45]/20 bg-[#ffe5d8] text-[#b84a2a]',
+    className: 'border-eventkan-accent/20 bg-eventkan-peach text-eventkan-peach-ink',
   },
   PAID: {
     label: 'Lunas',
-    className: 'border-[#36784b]/20 bg-[#e5f2e8] text-[#36784b]',
+    className: 'border-eventkan-green-ink/20 bg-eventkan-green-soft text-eventkan-green-ink',
   },
   FAILED: {
     label: 'Ditolak',
-    className: 'border-[#b84a2a]/20 bg-[#ffe5d8] text-[#b84a2a]',
+    className: 'border-eventkan-peach-ink/20 bg-eventkan-peach text-eventkan-peach-ink',
   },
   REFUNDED: {
     label: 'Dikembalikan',
-    className: 'border-[#11233f]/15 bg-[#e8edf5] text-[#11233f]',
+    className: 'border-eventkan-navy/15 bg-[#e8edf5] text-eventkan-navy',
   },
 };
 
 export const getPaymentStatusConfig = (status: string): PaymentStatusConfig =>
   statusConfig[status] ?? {
     label: status,
-    className: 'border-[#111927]/10 bg-[#f6f3eb] text-[#6c7280]',
+    className: 'border-eventkan-ink/10 bg-eventkan-canvas text-eventkan-muted',
   };

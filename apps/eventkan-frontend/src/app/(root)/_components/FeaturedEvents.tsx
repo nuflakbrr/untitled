@@ -28,13 +28,13 @@ const FeaturedEvents: FC<FeaturedEventsProps> = ({ events, categories }) => {
             Temukan pengalaman yang layak kamu datangi.
           </h2>
           <div className="mt-6 flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
-            <p className="max-w-2xl text-[17px] text-[#6c7280]">
+            <p className="max-w-2xl text-[17px] text-eventkan-muted">
               Seminar, workshop, kompetisi, sampai festival kampus. Semua event tersaji dalam satu
               tempat dengan proses registrasi yang lebih ringkas.
             </p>
             <Link
               href="/events"
-              className="inline-flex group shrink-0 items-center gap-2 rounded-full border border-[#11233f] px-4.5 py-3 font-bold text-[#11233f] transition hover:-translate-y-0.5 hover:bg-[#11233f] hover:text-white"
+              className="inline-flex group shrink-0 items-center gap-2 rounded-full border border-eventkan-navy px-4.5 py-3 font-bold text-eventkan-navy transition hover:-translate-y-0.5 hover:bg-eventkan-navy hover:text-white"
             >
               Lihat semua event{' '}
               <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:-rotate-45" />
@@ -53,7 +53,7 @@ const FeaturedEvents: FC<FeaturedEventsProps> = ({ events, categories }) => {
                 <Link
                   key={event.id}
                   href={`/events/${event.slug}`}
-                  className="group overflow-hidden rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(17,35,63,.08)]"
+                  className="group overflow-hidden rounded-[22px] border border-eventkan-ink/10 bg-eventkan-surface transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(17,35,63,.08)]"
                 >
                   <div
                     className={`relative flex aspect-[1.35] flex-col justify-between overflow-hidden p-5.5 ${coverStylesByEvent[index]}`}
@@ -67,7 +67,7 @@ const FeaturedEvents: FC<FeaturedEventsProps> = ({ events, categories }) => {
                     {(isFull || isLimited) && (
                       <span
                         className={`absolute right-4 top-4 rounded-full px-3 py-1 text-xs font-bold ${
-                          isFull ? 'bg-[#11233f]/80 text-white' : 'bg-[#ffe5d8] text-[#a94e29]'
+                          isFull ? 'bg-eventkan-navy/80 text-white' : 'bg-eventkan-peach text-[#a94e29]'
                         }`}
                       >
                         {isFull ? 'Kuota penuh' : `${slotsLeft} kursi tersisa`}
@@ -78,21 +78,21 @@ const FeaturedEvents: FC<FeaturedEventsProps> = ({ events, categories }) => {
                     <h3 className="font-display text-[19px] font-bold tracking-[-.02em]">
                       {event.title}
                     </h3>
-                    <div className="mt-3 grid gap-2 text-[13px] text-[#6c7280]">
+                    <div className="mt-3 grid gap-2 text-[13px] text-eventkan-muted">
                       <span className="flex items-center gap-2">
-                        <CalendarDays className="h-4 w-4 text-[#ff7a45]" />
+                        <CalendarDays className="h-4 w-4 text-eventkan-accent" />
                         {moment(event.startDate).tz('Asia/Jakarta').locale('id').format('DD MMMM YYYY')}
                       </span>
                       <span className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-[#ff7a45]" />
+                        <MapPin className="h-4 w-4 text-eventkan-accent" />
                         {event.location}
                       </span>
                     </div>
-                    <div className="mt-4.5 flex items-center justify-between border-t border-[#111927]/10 pt-4">
-                      <strong className="text-[#11233f]">
+                    <div className="mt-4.5 flex items-center justify-between border-t border-eventkan-ink/10 pt-4">
+                      <strong className="text-eventkan-navy">
                         {event.price ? formatCurrency(event.price) : 'Gratis'}
                       </strong>
-                      <span className="grid h-9.5 w-9.5 place-items-center rounded-full bg-[#11233f] text-white transition group-hover:-rotate-45">
+                      <span className="grid h-9.5 w-9.5 place-items-center rounded-full bg-eventkan-navy text-white transition group-hover:-rotate-45">
                         <ArrowRight className="h-4 w-4" />
                       </span>
                     </div>

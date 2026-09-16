@@ -54,7 +54,7 @@ export default function CertificatePage(props: PageProps) {
 
   if (loading) {
     return (
-      <div className="grid min-h-dvh place-items-center bg-[#f6f3eb]">
+      <div className="grid min-h-dvh place-items-center bg-eventkan-canvas">
         <Loader />
       </div>
     );
@@ -62,19 +62,19 @@ export default function CertificatePage(props: PageProps) {
 
   if (!cert) {
     return (
-      <main className="grid min-h-dvh place-items-center bg-[#f6f3eb] p-5 text-[#11233f]">
-        <section className="w-full max-w-lg rounded-[28px] border border-[#111927]/10 bg-[#fffdf8] p-8 text-center shadow-[0_18px_50px_rgba(17,35,63,.08)]">
-          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#ffe5d8] text-[#b84a2a]">
+      <main className="grid min-h-dvh place-items-center bg-eventkan-canvas p-5 text-eventkan-navy">
+        <section className="w-full max-w-lg rounded-[28px] border border-eventkan-ink/10 bg-eventkan-surface p-8 text-center shadow-[0_18px_50px_rgba(17,35,63,.08)]">
+          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-eventkan-peach text-eventkan-peach-ink">
             <Award className="h-7 w-7" />
           </span>
           <h1 className="font-display mt-5 text-2xl font-extrabold tracking-[-.03em]">
             Sertifikat tidak ditemukan
           </h1>
-          <p className="mt-2 text-sm leading-relaxed text-[#6c7280]">
+          <p className="mt-2 text-sm leading-relaxed text-eventkan-muted">
             Sertifikat tidak valid atau telah dihapus.
           </p>
           <Button
-            className="group mt-6 group rounded-full bg-[#11233f] px-5 text-white hover:bg-[#1b3458]"
+            className="group mt-6 group rounded-full bg-eventkan-navy px-5 text-white hover:bg-eventkan-navy-hover"
             asChild
           >
             <Link href="/participant/dashboard">
@@ -95,27 +95,27 @@ export default function CertificatePage(props: PageProps) {
   const backgroundUrl = template?.backgroundUrl ?? null;
   const showIssuedDate = template?.showIssuedDate ?? true;
   const titleFont = template?.titleFont ?? 'Inter';
-  const titleColor = template?.titleColor ?? '#11233f';
+  const titleColor = template?.titleColor ?? 'var(--eventkan-navy)';
   const contentFont = template?.contentFont ?? 'Inter';
   const contentColor = template?.contentColor ?? '#4b5565';
-  const primaryColor = template?.primaryColor ?? '#ff7a45';
+  const primaryColor = template?.primaryColor ?? 'var(--eventkan-accent)';
   const showEventDate = template?.showEventDate ?? true;
   const showEventLocation = template?.showEventLocation ?? false;
   const headerText = template?.headerText ?? 'EVENTKAN';
   const headerSubtitle = template?.headerSubtitle ?? 'Sertifikat Partisipasi Resmi';
   const headerFont = template?.headerFont ?? 'Inter';
-  const headerColor = template?.headerColor ?? '#11233f';
+  const headerColor = template?.headerColor ?? 'var(--eventkan-navy)';
   const showHeader = template?.showHeader ?? true;
   const footerMarginBottom = template?.footerMarginBottom ?? 0;
 
   return (
-    <main className="min-h-dvh bg-[#f6f3eb] px-4 py-6 sm:px-7 sm:py-10 print:bg-white print:p-0">
+    <main className="min-h-dvh bg-eventkan-canvas px-4 py-6 sm:px-7 sm:py-10 print:bg-white print:p-0">
       {/* Action Bar (Hidden on Print) */}
       <div className="no-print mx-auto mb-5 flex w-full max-w-5xl items-center justify-between gap-3 print:hidden">
         <Button
           variant="ghost"
           size="sm"
-          className="rounded-full px-4 text-[#11233f] hover:bg-[#fffdf8]"
+          className="rounded-full px-4 text-eventkan-navy hover:bg-eventkan-surface"
           asChild
         >
           <Link
@@ -129,7 +129,7 @@ export default function CertificatePage(props: PageProps) {
           <Button
             onClick={handlePrint}
             size="sm"
-            className="flex items-center gap-2 rounded-full bg-[#11233f] px-4 text-white hover:bg-[#1b3458]"
+            className="flex items-center gap-2 rounded-full bg-eventkan-navy px-4 text-white hover:bg-eventkan-navy-hover"
           >
             <Printer className="h-4 w-4" /> Cetak / Simpan PDF
           </Button>
@@ -139,7 +139,7 @@ export default function CertificatePage(props: PageProps) {
       {/* Certificate Container */}
       <div
         id="certificate-container"
-        className="relative mx-auto flex aspect-[1.414/1] w-full max-w-5xl flex-col items-center justify-between overflow-hidden rounded-[28px] border border-[#111927]/10 bg-[#fffdf8] text-[#11233f] shadow-[0_24px_70px_rgba(17,35,63,.1)] print:m-0 print:h-full print:w-full print:aspect-auto print:rounded-none print:shadow-none"
+        className="relative mx-auto flex aspect-[1.414/1] w-full max-w-5xl flex-col items-center justify-between overflow-hidden rounded-[28px] border border-eventkan-ink/10 bg-eventkan-surface text-eventkan-navy shadow-[0_24px_70px_rgba(17,35,63,.1)] print:m-0 print:h-full print:w-full print:aspect-auto print:rounded-none print:shadow-none"
         style={
           !backgroundUrl
             ? {
@@ -168,8 +168,8 @@ export default function CertificatePage(props: PageProps) {
         {/* ── Decorative (only if no background) ── */}
         {!backgroundUrl && (
           <>
-            <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-[#ff7a45]/12" />
-            <div className="pointer-events-none absolute -bottom-20 -left-16 h-52 w-52 rounded-full bg-[#f7df86]/35" />
+            <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-eventkan-accent/12" />
+            <div className="pointer-events-none absolute -bottom-20 -left-16 h-52 w-52 rounded-full bg-eventkan-yellow/35" />
           </>
         )}
 
@@ -181,7 +181,7 @@ export default function CertificatePage(props: PageProps) {
             style={{ visibility: showHeader ? 'visible' : 'hidden' }}
           >
             <div className="flex items-center gap-2">
-              <span className="grid h-11 w-11 place-items-center rounded-[14px] bg-[#11233f] text-white">
+              <span className="grid h-11 w-11 place-items-center rounded-[14px] bg-eventkan-navy text-white">
                 <Award className="h-5 w-5" style={{ color: primaryColor }} />
               </span>
               <span
@@ -192,7 +192,7 @@ export default function CertificatePage(props: PageProps) {
               </span>
             </div>
             <span
-              className="text-[10px] font-bold uppercase tracking-[.16em] text-[#6c7280]"
+              className="text-[10px] font-bold uppercase tracking-[.16em] text-eventkan-muted"
               style={{ color: headerColor }}
             >
               {headerSubtitle}
@@ -211,7 +211,7 @@ export default function CertificatePage(props: PageProps) {
             >
               SERTIFIKAT
             </h2>
-            <span className="text-sm font-medium text-[#6c7280]">
+            <span className="text-sm font-medium text-eventkan-muted">
               Dengan bangga diberikan kepada:
             </span>
             <div className="space-y-1">
@@ -225,7 +225,7 @@ export default function CertificatePage(props: PageProps) {
               >
                 {cert.participantName || cert.participantEmail || 'Peserta Event'}
               </h1>
-              <p className="mt-1 text-xs tracking-[.04em] text-[#6c7280]">
+              <p className="mt-1 text-xs tracking-[.04em] text-eventkan-muted">
                 No. Sertifikat: {cert.certificateNumber}
               </p>
             </div>

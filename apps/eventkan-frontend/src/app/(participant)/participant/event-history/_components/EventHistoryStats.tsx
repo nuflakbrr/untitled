@@ -10,13 +10,13 @@ export default function EventHistoryStats({ registrations }: EventHistoryStatsPr
       {stats.map(({ label, value, icon: Icon, tone }) => (
         <div
           key={label}
-          className="flex items-center justify-between gap-4 rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] p-5 shadow-[0_18px_50px_rgba(17,35,63,.05)]"
+          className="flex items-center justify-between gap-4 rounded-[22px] border border-eventkan-ink/10 bg-eventkan-surface p-5 shadow-[0_18px_50px_rgba(17,35,63,.05)]"
         >
           <div>
-            <span className="text-[11px] font-extrabold uppercase tracking-[.08em] text-[#6c7280]">
+            <span className="text-[11px] font-extrabold uppercase tracking-[.08em] text-eventkan-muted">
               {label}
             </span>
-            <strong className="font-display mt-2 block text-3xl font-extrabold leading-none text-[#111927]">
+            <strong className="font-display mt-2 block text-3xl font-extrabold leading-none text-eventkan-ink">
               {value}
             </strong>
           </div>

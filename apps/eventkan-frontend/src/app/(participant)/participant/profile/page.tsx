@@ -23,12 +23,12 @@ export default async function ProfilePage() {
 
   return (
     <section className="space-y-7 pb-10">
-      <header className="flex flex-col gap-6 border-b border-[#111927]/10 pb-8">
+      <header className="flex flex-col gap-6 border-b border-eventkan-ink/10 pb-8">
         <div>
-          <h1 className="font-display mt-2 text-[clamp(38px,5vw,58px)] font-extrabold leading-none tracking-tighter text-[#111927]">
+          <h1 className="font-display mt-2 text-[clamp(38px,5vw,58px)] font-extrabold leading-none tracking-tighter text-eventkan-ink">
             Profil Saya
           </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#6c7280]">
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-eventkan-muted">
             Atur profil dan keamanan akunmu di sini.
           </p>
         </div>

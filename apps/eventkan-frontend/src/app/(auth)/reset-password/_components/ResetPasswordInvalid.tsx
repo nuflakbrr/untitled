@@ -11,7 +11,7 @@ const ResetPasswordInvalid: FC = () => (
     </p>
     <Link
       href={'/forgot-password' as Route}
-      className="inline-flex group items-center gap-2 text-sm font-bold text-[#11233f] transition hover:text-[#ff7a45]"
+      className="inline-flex group items-center gap-2 text-sm font-bold text-eventkan-navy transition hover:text-eventkan-accent"
     >
       Minta ulang tautan reset
       <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:-rotate-45" />

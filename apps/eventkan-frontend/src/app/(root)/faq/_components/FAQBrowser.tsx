@@ -49,9 +49,9 @@ const FAQBrowser: FC<FAQBrowserProps> = ({ selectedCategory, onCategoryChange })
 
   return (
     <>
-      <div className="mb-10 border-y border-[#111927]/10 py-4">
+      <div className="mb-10 border-y border-eventkan-ink/10 py-4">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-10">
-          <p className="shrink-0 text-sm font-bold text-[#11233f]">
+          <p className="shrink-0 text-sm font-bold text-eventkan-navy">
             Cari jawaban berdasarkan topik
           </p>
           <div className="relative min-w-0 flex-1 sm:ml-auto sm:w-0 sm:flex-1">
@@ -68,8 +68,8 @@ const FAQBrowser: FC<FAQBrowserProps> = ({ selectedCategory, onCategoryChange })
                   className={cn(
                     'shrink-0 cursor-pointer rounded-full border px-3.5 py-2 text-[13px] font-bold transition',
                     selectedCategory === category.id
-                      ? 'border-[#11233f] bg-[#11233f] text-white'
-                      : 'border-[#111927]/10 bg-transparent text-[#6c7280] hover:border-[#11233f] hover:bg-[#f6f3eb] hover:text-[#11233f]'
+                      ? 'border-eventkan-navy bg-eventkan-navy text-white'
+                      : 'border-eventkan-ink/10 bg-transparent text-eventkan-muted hover:border-eventkan-navy hover:bg-eventkan-canvas hover:text-eventkan-navy'
                   )}
                 >
                   {category.label}
@@ -77,20 +77,20 @@ const FAQBrowser: FC<FAQBrowserProps> = ({ selectedCategory, onCategoryChange })
               ))}
             </div>
             {showLeftFade && (
-              <span className="pointer-events-none absolute inset-y-0 left-0 w-3 bg-linear-to-r from-[#f6f3eb] to-transparent" />
+              <span className="pointer-events-none absolute inset-y-0 left-0 w-3 bg-linear-to-r from-eventkan-canvas to-transparent" />
             )}
             {showRightFade && (
-              <span className="pointer-events-none absolute inset-y-0 right-0 w-3 bg-linear-to-l from-[#f6f3eb] to-transparent" />
+              <span className="pointer-events-none absolute inset-y-0 right-0 w-3 bg-linear-to-l from-eventkan-canvas to-transparent" />
             )}
           </div>
         </div>
       </div>
 
       <div className="mt-7 flex items-center justify-between gap-4">
-        <h2 className="font-display text-2xl font-extrabold tracking-[-.04em] text-[#11233f] sm:text-[28px]">
+        <h2 className="font-display text-2xl font-extrabold tracking-[-.04em] text-eventkan-navy sm:text-[28px]">
           Pertanyaan umum
         </h2>
-        <span className="shrink-0 text-xs font-semibold text-[#6c7280]">
+        <span className="shrink-0 text-xs font-semibold text-eventkan-muted">
           {filteredFAQs.length} pertanyaan
         </span>
       </div>
@@ -102,7 +102,7 @@ const FAQBrowser: FC<FAQBrowserProps> = ({ selectedCategory, onCategoryChange })
               <details
                 key={faq.id}
                 open={openFaqId === faq.id}
-                className="group overflow-hidden rounded-[20px] border border-[#111927]/10 bg-[#fffdf8] shadow-[0_8px_24px_rgba(17,35,63,.03)]"
+                className="group overflow-hidden rounded-[20px] border border-eventkan-ink/10 bg-eventkan-surface shadow-[0_8px_24px_rgba(17,35,63,.03)]"
               >
                 <summary
                   onClick={(event) => {
@@ -112,20 +112,20 @@ const FAQBrowser: FC<FAQBrowserProps> = ({ selectedCategory, onCategoryChange })
                   className="flex cursor-pointer list-none items-center justify-between gap-5 p-5 text-left marker:hidden sm:p-5.5 [&::-webkit-details-marker]:hidden"
                 >
                   <span className="min-w-0">
-                    <strong className="font-display block text-base font-extrabold leading-tight text-[#11233f] sm:text-lg">
+                    <strong className="font-display block text-base font-extrabold leading-tight text-eventkan-navy sm:text-lg">
                       {faq.question}
                     </strong>
-                    <small className="mt-1.5 block text-xs font-semibold text-[#6c7280]">
+                    <small className="mt-1.5 block text-xs font-semibold text-eventkan-muted">
                       {faqCategoryLabels[faq.category]}
                     </small>
                   </span>
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[#111927]/10 text-[#11233f] transition group-open:bg-[#11233f] group-open:text-white">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-eventkan-ink/10 text-eventkan-navy transition group-open:bg-eventkan-navy group-open:text-white">
                     <Plus className="h-4 w-4 group-open:hidden" />
                     <X className="hidden h-4 w-4 group-open:block" />
                   </span>
                 </summary>
                 <div className="px-5 pb-5.5 sm:px-5.5">
-                  <p className="border-l-2 border-[#ff7a45] pl-4 text-sm leading-relaxed text-[#6c7280]">
+                  <p className="border-l-2 border-eventkan-accent pl-4 text-sm leading-relaxed text-eventkan-muted">
                     {faq.answer}
                   </p>
                 </div>
@@ -140,17 +140,17 @@ const FAQBrowser: FC<FAQBrowserProps> = ({ selectedCategory, onCategoryChange })
           )}
         </div>
 
-        <aside className="rounded-[22px] bg-[#f7df86] p-6 lg:sticky lg:top-28">
-          <h3 className="font-display text-[26px] font-extrabold leading-[1.05] tracking-[-.04em] text-[#11233f]">
+        <aside className="rounded-[22px] bg-eventkan-yellow p-6 lg:sticky lg:top-28">
+          <h3 className="font-display text-[26px] font-extrabold leading-[1.05] tracking-[-.04em] text-eventkan-navy">
             Masih belum menemukan jawaban?
           </h3>
-          <p className="mt-3 text-sm leading-relaxed text-[#11233f]/65">
+          <p className="mt-3 text-sm leading-relaxed text-eventkan-navy/65">
             Kirim pertanyaan melalui Pusat Bantuan supaya masalahmu bisa ditangani lebih
             terstruktur.
           </p>
           <Link
             href="/help"
-            className="group mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#11233f] px-4.5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#1b3458]"
+            className="group mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-eventkan-navy px-4.5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-eventkan-navy-hover"
           >
             Hubungi Kami{' '}
             <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:-rotate-45" />

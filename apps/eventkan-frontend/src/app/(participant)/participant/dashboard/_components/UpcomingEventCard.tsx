@@ -35,16 +35,16 @@ export default function UpcomingEventCard({ upcomingEvent }: UpcomingEventCardPr
 
   return (
     <div>
-      <div className="flex h-full flex-col overflow-hidden rounded-[24px] border border-[#111927]/10 bg-[#fffdf8] shadow-[0_18px_50px_rgba(17,35,63,.05)]">
-        <div className="flex items-center gap-2 border-b border-[#111927]/10 px-5 py-4">
-          <Calendar className="h-4 w-4 text-[#ff7a45]" />
-          <h2 className="font-display text-base font-extrabold text-[#111927]">Event Terdekat</h2>
+      <div className="flex h-full flex-col overflow-hidden rounded-[24px] border border-eventkan-ink/10 bg-eventkan-surface shadow-[0_18px_50px_rgba(17,35,63,.05)]">
+        <div className="flex items-center gap-2 border-b border-eventkan-ink/10 px-5 py-4">
+          <Calendar className="h-4 w-4 text-eventkan-accent" />
+          <h2 className="font-display text-base font-extrabold text-eventkan-ink">Event Terdekat</h2>
         </div>
 
         <div className="flex flex-1 flex-col p-5">
           {upcomingEvent ? (
             <div className="space-y-5 flex-1">
-              <div className="relative aspect-[1.5] w-full overflow-hidden rounded-[18px] bg-[#11233f]">
+              <div className="relative aspect-[1.5] w-full overflow-hidden rounded-[18px] bg-eventkan-navy">
                 {upcomingEvent.banner ? (
                   <img
                     src={upcomingEvent.banner}
@@ -64,17 +64,17 @@ export default function UpcomingEventCard({ upcomingEvent }: UpcomingEventCardPr
               </div>
 
               <div className="space-y-3">
-                <h3 className="font-display line-clamp-2 text-lg font-extrabold leading-snug tracking-[-.02em] text-[#111927]">
+                <h3 className="font-display line-clamp-2 text-lg font-extrabold leading-snug tracking-[-.02em] text-eventkan-ink">
                   {upcomingEvent.title}
                 </h3>
 
-                <div className="space-y-2 text-xs text-[#6c7280]">
+                <div className="space-y-2 text-xs text-eventkan-muted">
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 shrink-0 text-[#ff7a45]" />
+                    <Calendar className="h-4 w-4 shrink-0 text-eventkan-accent" />
                     <span>{formatLongDate(upcomingEvent.startDate)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 shrink-0 text-[#ff7a45]" />
+                    <Clock className="h-4 w-4 shrink-0 text-eventkan-accent" />
                     <span>
                       {formatEventTimeRange(
                         upcomingEvent.startDate,
@@ -84,14 +84,14 @@ export default function UpcomingEventCard({ upcomingEvent }: UpcomingEventCardPr
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 shrink-0 text-[#ff7a45]" />
+                    <MapPin className="h-4 w-4 shrink-0 text-eventkan-accent" />
                     <span className="line-clamp-1">{upcomingEvent.location}</span>
                   </div>
 
                   {upcomingEvent.meetingLink && (
                     <Button
                       asChild
-                      className="mt-1 w-full rounded-full bg-[#11233f] text-white hover:bg-[#1b3458]"
+                      className="mt-1 w-full rounded-full bg-eventkan-navy text-white hover:bg-eventkan-navy-hover"
                     >
                       <a href={upcomingEvent.meetingLink} target="_blank" rel="noopener noreferrer">
                         <Video className="w-4 h-4 shrink-0" />
@@ -113,7 +113,7 @@ export default function UpcomingEventCard({ upcomingEvent }: UpcomingEventCardPr
         </div>
 
         {upcomingEvent && upcomingEvent.qrToken && upcomingEvent.eventType !== 'ONLINE' && (
-          <div className="border-t border-[#111927]/10 px-5 pb-5 pt-0">
+          <div className="border-t border-eventkan-ink/10 px-5 pb-5 pt-0">
             <div className="pt-4">
               <ShowQrButton
                 qrToken={upcomingEvent.qrToken}
@@ -128,7 +128,7 @@ export default function UpcomingEventCard({ upcomingEvent }: UpcomingEventCardPr
         {upcomingEvent &&
           upcomingEvent.eventType === 'ONLINE' &&
           upcomingEvent.onlineAttendance && (
-            <div className="border-t border-[#111927]/10 px-5 pb-5 pt-0">
+            <div className="border-t border-eventkan-ink/10 px-5 pb-5 pt-0">
               <div className="pt-4">
                 <ConfirmOnlineButton
                   registrationId={upcomingEvent.id}

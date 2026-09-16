@@ -18,7 +18,7 @@ const Columns: ColumnDef<CertificateResponse>[] = [
     accessorKey: 'event',
     header: () => <span className={participantTableHeaderClass}>Event</span>,
     cell: ({ row }) => (
-      <span className="font-display text-sm font-extrabold tracking-[-.02em] text-[#111927]">
+      <span className="font-display text-sm font-extrabold tracking-[-.02em] text-eventkan-ink">
         {row.original.event.title}
       </span>
     ),

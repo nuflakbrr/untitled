@@ -11,15 +11,15 @@ export const AboutHeader: FC<AboutHeaderProps> = ({ title, subtitle }) => (
         <h1 className="font-display mt-5 max-w-190 text-[clamp(48px,7vw,82px)] font-extrabold leading-[.97] tracking-[-.06em]">
           {title}
         </h1>
-        <p className="mt-5 max-w-155 text-lg leading-relaxed text-[#6c7280]">{subtitle}</p>
+        <p className="mt-5 max-w-155 text-lg leading-relaxed text-eventkan-muted">{subtitle}</p>
       </div>
 
       <div className="relative min-h-125 lg:min-h-135">
-        <div className="absolute inset-3 z-0 flex rotate-2 flex-col justify-between overflow-hidden rounded-[32px] border border-[#111927]/12 bg-[#fffdf8] p-4 pb-24 shadow-[0_22px_60px_rgba(17,35,63,.08)] lg:inset-8 lg:p-7 lg:pb-24">
-          <span className="pointer-events-none absolute -right-8 -top-8 h-36 w-36 rounded-full bg-[#ff7a45] opacity-95" />
-          <span className="pointer-events-none absolute right-16 top-14 h-19 w-19 rounded-full bg-[#f7df86]" />
+        <div className="absolute inset-3 z-0 flex rotate-2 flex-col justify-between overflow-hidden rounded-[32px] border border-eventkan-ink/12 bg-eventkan-surface p-4 pb-24 shadow-[0_22px_60px_rgba(17,35,63,.08)] lg:inset-8 lg:p-7 lg:pb-24">
+          <span className="pointer-events-none absolute -right-8 -top-8 h-36 w-36 rounded-full bg-eventkan-accent opacity-95" />
+          <span className="pointer-events-none absolute right-16 top-14 h-19 w-19 rounded-full bg-eventkan-yellow" />
           <div className="relative z-10">
-            <h2 className="font-display mt-5 max-w-[85%] text-3xl font-extrabold leading-[1.02] tracking-tighter text-[#111927] lg:max-w-90 lg:text-4xl">
+            <h2 className="font-display mt-5 max-w-[85%] text-3xl font-extrabold leading-[1.02] tracking-tighter text-eventkan-ink lg:max-w-90 lg:text-4xl">
               Dari daftar sampai sertifikat.
             </h2>
           </div>
@@ -32,31 +32,31 @@ export const AboutHeader: FC<AboutHeaderProps> = ({ title, subtitle }) => (
             ].map(([step, label, description]) => (
               <div
                 key={step}
-                className="flex items-center gap-2.5 rounded-[14px] border border-[#111927]/12 bg-[#f6f3eb] p-2.5 lg:gap-3 lg:p-3"
+                className="flex items-center gap-2.5 rounded-[14px] border border-eventkan-ink/12 bg-eventkan-canvas p-2.5 lg:gap-3 lg:p-3"
               >
-                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#11233f] text-[11px] font-extrabold text-white">
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-eventkan-navy text-[11px] font-extrabold text-white">
                   {step}
                 </span>
                 <span>
-                  <strong className="block text-sm text-[#111927]">{label}</strong>
-                  <small className="text-xs text-[#6c7280]">{description}</small>
+                  <strong className="block text-sm text-eventkan-ink">{label}</strong>
+                  <small className="text-xs text-eventkan-muted">{description}</small>
                 </span>
               </div>
             ))}
           </div>
         </div>
-        <aside className="absolute right-0 -bottom-24 z-20 w-44 -rotate-3 rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] p-3.5 text-[#111927] shadow-[0_12px_30px_rgba(17,35,63,.1)] sm:-right-5 sm:-bottom-16 sm:w-57.5 sm:-rotate-7 sm:p-4.5 sm:shadow-[0_18px_50px_rgba(17,35,63,.08)]">
+        <aside className="absolute right-0 -bottom-24 z-20 w-44 -rotate-3 rounded-[22px] border border-eventkan-ink/10 bg-eventkan-surface p-3.5 text-eventkan-ink shadow-[0_12px_30px_rgba(17,35,63,.1)] sm:-right-5 sm:-bottom-16 sm:w-57.5 sm:-rotate-7 sm:p-4.5 sm:shadow-[0_18px_50px_rgba(17,35,63,.08)]">
           <div className="flex items-center justify-between gap-3">
             <strong className="font-display text-[15px]">E-Ticket</strong>
             <span>●</span>
           </div>
-          <div className="mt-4 h-18.5 rounded-xl bg-[repeating-linear-gradient(90deg,#11233f_0_3px,transparent_3px_7px,#11233f_7px_9px,transparent_9px_12px)]" />
-          <div className="mt-3 flex justify-between text-[11px] text-[#6c7280]">
+          <div className="mt-4 h-18.5 rounded-xl bg-[repeating-linear-gradient(90deg,var(--eventkan-navy)_0_3px,transparent_3px_7px,var(--eventkan-navy)_7px_9px,transparent_9px_12px)]" />
+          <div className="mt-3 flex justify-between text-[11px] text-eventkan-muted">
             <span>SIT-260912</span>
             <span>GENERAL</span>
           </div>
         </aside>
-        <aside className="absolute -bottom-10 left-1 z-20 w-40 rotate-2 rounded-[22px] border border-[#111927]/8 bg-[#bfe4c7] px-3.5 py-3 text-[#111927] shadow-[0_12px_30px_rgba(17,35,63,.1)] sm:-bottom-7 sm:-left-4.5 sm:w-47.5 sm:rotate-5 sm:px-4.5 sm:py-4 sm:shadow-[0_18px_50px_rgba(17,35,63,.08)]">
+        <aside className="absolute -bottom-10 left-1 z-20 w-40 rotate-2 rounded-[22px] border border-eventkan-ink/8 bg-eventkan-green px-3.5 py-3 text-eventkan-ink shadow-[0_12px_30px_rgba(17,35,63,.1)] sm:-bottom-7 sm:-left-4.5 sm:w-47.5 sm:rotate-5 sm:px-4.5 sm:py-4 sm:shadow-[0_18px_50px_rgba(17,35,63,.08)]">
           <strong className="font-display block text-sm sm:text-[15px]">
             <Check className="mr-1 inline h-4 w-4" />
             Check-in berhasil

@@ -14,7 +14,7 @@ const RegistrationStatusButton: FC<RegistrationStatusButtonProps> = ({
     type="button"
     disabled
     className={cn(
-      'flex w-full cursor-default items-center justify-center gap-2 rounded-[14px] bg-[#f6f3eb] py-3.5 text-sm font-bold text-[#6c7280] hover:bg-[#f6f3eb] disabled:opacity-100',
+      'flex w-full cursor-default items-center justify-center gap-2 rounded-[14px] bg-eventkan-canvas py-3.5 text-sm font-bold text-eventkan-muted hover:bg-eventkan-canvas disabled:opacity-100',
       className
     )}
   >

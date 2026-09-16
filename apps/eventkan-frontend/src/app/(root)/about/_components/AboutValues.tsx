@@ -1,7 +1,7 @@
 import type { AboutValuesProps } from '@/interfaces/features/about';
 
 export const AboutValues = ({ items }: AboutValuesProps) => (
-  <section className="bg-[#11233f] px-4 py-20 text-white sm:px-6 sm:py-24">
+  <section className="bg-eventkan-navy px-4 py-20 text-white sm:px-6 sm:py-24">
     <div className="mx-auto max-w-295">
       <h2 className="font-display mt-5 max-w-215 text-[clamp(36px,5vw,58px)] font-extrabold leading-[1.02] tracking-tighter">
         Dibuat untuk operasional yang lebih rapi tanpa menghilangkan rasa event.

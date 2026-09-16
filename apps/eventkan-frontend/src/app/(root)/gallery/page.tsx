@@ -17,7 +17,7 @@ export default async function PublicGalleryPage() {
   const { data: galleries } = await getPublicGalleries(1, 10);
 
   return (
-    <section className="min-h-screen bg-[#f6f3eb] pb-24 text-[#111927]">
+    <section className="min-h-screen bg-eventkan-canvas pb-24 text-eventkan-ink">
       <GalleryHeader />
 
       <div className="mx-auto max-w-295 px-4 md:px-0">

@@ -18,11 +18,11 @@ export default function ProfileSidebar({ user }: ParticipantProfileFormProps) {
   };
 
   return (
-    <aside className="h-fit rounded-[26px] bg-[#11233f] p-6.5 text-white lg:sticky lg:top-28">
+    <aside className="h-fit rounded-[26px] bg-eventkan-navy p-6.5 text-white lg:sticky lg:top-28">
       {user.image ? (
         <img src={user.image} alt={user.name} className="h-18 w-18 rounded-full object-cover" />
       ) : (
-        <div className="grid h-18 w-18 place-items-center rounded-full bg-[#ff7a45] font-display text-[28px] font-extrabold">
+        <div className="grid h-18 w-18 place-items-center rounded-full bg-eventkan-accent font-display text-[28px] font-extrabold">
           {getInitials(user.name)}
         </div>
       )}

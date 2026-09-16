@@ -16,7 +16,7 @@ export default async function ArticlesPage() {
   const { articles, categories } = await getArticlesPageData();
 
   return (
-    <section className="min-h-screen bg-[#f6f3eb] pb-24 text-[#111927]">
+    <section className="min-h-screen bg-eventkan-canvas pb-24 text-eventkan-ink">
       <ArticlesHeader />
 
       <div className="mx-auto max-w-295 px-4 md:px-0">

@@ -16,7 +16,7 @@ const EventCard: FC<EventCardProps> = ({ event, formattedStartDate, coverStyle }
   return (
     <Link
       href={`/events/${event.slug}`}
-      className="group overflow-hidden rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(17,35,63,.08)]"
+      className="group overflow-hidden rounded-[22px] border border-eventkan-ink/10 bg-eventkan-surface transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(17,35,63,.08)]"
     >
       <div
         className={`relative flex aspect-[1.45] flex-col justify-between overflow-hidden p-5.5 ${coverStyle}`}
@@ -35,10 +35,10 @@ const EventCard: FC<EventCardProps> = ({ event, formattedStartDate, coverStyle }
             isClosed
               ? 'bg-[#f0ece7] text-[#756a61]'
               : isFull
-                ? 'bg-[#ffe5d8] text-[#a94e29]'
+                ? 'bg-eventkan-peach text-[#a94e29]'
               : isLimited
-                ? 'bg-[#ffe5d8] text-[#a94e29]'
-                : 'bg-[#e6f3e9] text-[#36784b]'
+                ? 'bg-eventkan-peach text-[#a94e29]'
+                : 'bg-[#e6f3e9] text-eventkan-green-ink'
           }`}
         >
           {isClosed
@@ -50,25 +50,25 @@ const EventCard: FC<EventCardProps> = ({ event, formattedStartDate, coverStyle }
               : 'Pendaftaran dibuka'}
         </span>
 
-        <h3 className="font-display mt-3 line-clamp-2 text-xl font-bold leading-tight tracking-tight text-[#11233f]">
+        <h3 className="font-display mt-3 line-clamp-2 text-xl font-bold leading-tight tracking-tight text-eventkan-navy">
           {event.title}
         </h3>
-        <div className="mt-3 grid gap-2 text-[13px] text-[#6c7280]">
+        <div className="mt-3 grid gap-2 text-[13px] text-eventkan-muted">
           <span className="flex items-center gap-2">
-            <CalendarDays className="h-4 w-4 shrink-0 text-[#ff7a45]" />
+            <CalendarDays className="h-4 w-4 shrink-0 text-eventkan-accent" />
             {formattedStartDate} · {event.startTime} WIB
           </span>
           <span className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 shrink-0 text-[#ff7a45]" />
+            <MapPin className="h-4 w-4 shrink-0 text-eventkan-accent" />
             <span className="line-clamp-1">{event.location}</span>
           </span>
         </div>
 
-        <div className="mt-4.5 flex items-center justify-between border-t border-[#111927]/10 pt-4">
-          <strong className="text-[#11233f]">
+        <div className="mt-4.5 flex items-center justify-between border-t border-eventkan-ink/10 pt-4">
+          <strong className="text-eventkan-navy">
             {event.price ? formatCurrency(event.price) : 'Gratis'}
           </strong>
-          <span className="grid h-9.5 w-9.5 place-items-center rounded-full bg-[#11233f] text-white transition duration-200 group-hover:-rotate-45">
+          <span className="grid h-9.5 w-9.5 place-items-center rounded-full bg-eventkan-navy text-white transition duration-200 group-hover:-rotate-45">
             <ArrowRight className="h-4 w-4" />
           </span>
         </div>

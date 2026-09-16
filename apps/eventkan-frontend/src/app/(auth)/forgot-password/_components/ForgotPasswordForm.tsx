@@ -58,11 +58,11 @@ const ForgotPasswordForm: FC = () => {
     >
       <FieldGroup className="gap-5">
       <Field className="gap-2" data-invalid={!!form.formState.errors.email}>
-        <FieldLabel htmlFor="forgot-email" className="text-[13px] font-bold text-[#11233f]">
+        <FieldLabel htmlFor="forgot-email" className="text-[13px] font-bold text-eventkan-navy">
           Email
         </FieldLabel>
         <div className="relative">
-          <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6c7280]" />
+          <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-eventkan-muted" />
           <input
             id="forgot-email"
             type="email"
@@ -73,11 +73,11 @@ const ForgotPasswordForm: FC = () => {
             className={getForgotPasswordInputClass(Boolean(form.formState.errors.email))}
           />
         </div>
-        {form.formState.errors.email && <FieldError className="text-xs font-medium text-[#b84a2a]" errors={[form.formState.errors.email]} />}
+        {form.formState.errors.email && <FieldError className="text-xs font-medium text-eventkan-peach-ink" errors={[form.formState.errors.email]} />}
       </Field>
       </FieldGroup>
 
-      <div className="flex gap-3 rounded-[16px] bg-[#ffe5d8] px-4 py-3 text-xs leading-relaxed text-[#8d492e]">
+      <div className="flex gap-3 rounded-[16px] bg-eventkan-peach px-4 py-3 text-xs leading-relaxed text-[#8d492e]">
         <Info className="mt-0.5 h-4 w-4 shrink-0" />
         <span>
           Demi keamanan, kami tidak akan memberi tahu apakah email tersebut sudah terdaftar.
@@ -88,7 +88,7 @@ const ForgotPasswordForm: FC = () => {
         type="submit"
         id="btn-forgot-password-submit"
         disabled={isPending}
-        className="inline-flex group w-full items-center justify-center gap-2 rounded-full bg-[#ff7a45] px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-[#f2693a] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex group w-full items-center justify-center gap-2 rounded-full bg-eventkan-accent px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-eventkan-accent-hover active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? 'Mengirim...' : 'Kirim tautan reset password'}
         {isPending ? (
@@ -98,9 +98,9 @@ const ForgotPasswordForm: FC = () => {
         )}
       </button>
 
-      <p className="text-center text-sm text-[#6c7280]">
+      <p className="text-center text-sm text-eventkan-muted">
         Ingat password kamu?{' '}
-        <Link href="/login" className="font-bold text-[#11233f] transition hover:text-[#ff7a45]">
+        <Link href="/login" className="font-bold text-eventkan-navy transition hover:text-eventkan-accent">
           Masuk
         </Link>
       </p>

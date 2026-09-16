@@ -37,18 +37,18 @@ const EventCover: FC<EventCoverProps> = ({ banner, category, coverStyle, title }
           aria-label={`Perbesar cover ${title}`}
         >
           <img src={banner} alt={title} className="h-full w-full object-cover" />
-          <span className="absolute inset-0 flex items-center justify-center bg-[#11233f]/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#fffdf8] px-4 py-2 text-sm font-bold text-[#11233f] shadow-[0_12px_30px_rgba(17,35,63,.16)]">
-              <ZoomIn className="h-4 w-4 text-[#ff7a45]" />
+          <span className="absolute inset-0 flex items-center justify-center bg-eventkan-navy/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+            <span className="inline-flex items-center gap-2 rounded-full bg-eventkan-surface px-4 py-2 text-sm font-bold text-eventkan-navy shadow-[0_12px_30px_rgba(17,35,63,.16)]">
+              <ZoomIn className="h-4 w-4 text-eventkan-accent" />
               Perbesar cover
             </span>
           </span>
         </button>
       </DialogTrigger>
-      <DialogContent className="w-[calc(100vw-1rem)]! max-w-[calc(100vw-1rem)]! rounded-[26px] border border-[#111927]/10 bg-[#fffdf8] p-3 shadow-[0_24px_70px_rgba(17,35,63,.16)] sm:w-[calc(100vw-2rem)]! sm:max-w-[calc(100vw-2rem)]! sm:p-4 lg:max-w-6xl!">
+      <DialogContent className="w-[calc(100vw-1rem)]! max-w-[calc(100vw-1rem)]! rounded-[26px] border border-eventkan-ink/10 bg-eventkan-surface p-3 shadow-[0_24px_70px_rgba(17,35,63,.16)] sm:w-[calc(100vw-2rem)]! sm:max-w-[calc(100vw-2rem)]! sm:p-4 lg:max-w-6xl!">
         <DialogTitle className="sr-only">{title}</DialogTitle>
         <DialogDescription className="sr-only">Pratinjau cover event {title}</DialogDescription>
-        <div className="relative flex max-h-[88vh] min-h-70 items-center justify-center overflow-hidden rounded-[18px] bg-[#11233f]">
+        <div className="relative flex max-h-[88vh] min-h-70 items-center justify-center overflow-hidden rounded-[18px] bg-eventkan-navy">
           <img src={banner} alt={title} className="max-h-[88vh] w-full object-contain" />
         </div>
       </DialogContent>

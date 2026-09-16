@@ -26,7 +26,7 @@ const GalleryGrid: FC<GalleryGridProps> = ({ initialItems }) => {
           <div
             key={item.id}
             onClick={() => setSelectedItem(item)}
-            className={`group relative cursor-pointer overflow-hidden rounded-[24px] border border-[#111927]/10 bg-[#fffdf8] shadow-[0_12px_30px_rgba(17,35,63,.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(17,35,63,.1)] ${getBentoSpans(idx)}`}
+            className={`group relative cursor-pointer overflow-hidden rounded-[24px] border border-eventkan-ink/10 bg-eventkan-surface shadow-[0_12px_30px_rgba(17,35,63,.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(17,35,63,.1)] ${getBentoSpans(idx)}`}
           >
             <Image
               src={item.imageUrl}
@@ -36,8 +36,8 @@ const GalleryGrid: FC<GalleryGridProps> = ({ initialItems }) => {
               sizes="(max-width: 768px) 100vw, 50vw"
               className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#11233f]/40 opacity-0 backdrop-blur-[2px] transition-opacity duration-300 group-hover:opacity-100">
-              <span className="translate-y-2 rounded-full border border-white/70 bg-white px-4 py-2 text-xs font-bold text-[#11233f] shadow-md transition-transform duration-300 group-hover:translate-y-0">
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-eventkan-navy/40 opacity-0 backdrop-blur-[2px] transition-opacity duration-300 group-hover:opacity-100">
+              <span className="translate-y-2 rounded-full border border-white/70 bg-white px-4 py-2 text-xs font-bold text-eventkan-navy shadow-md transition-transform duration-300 group-hover:translate-y-0">
                 Lihat Detail
               </span>
             </div>
@@ -68,10 +68,10 @@ const GalleryGrid: FC<GalleryGridProps> = ({ initialItems }) => {
 
       {/* Lightbox / Detail Modal */}
       <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
-        <DialogContent className="w-[calc(100vw-2rem)] max-h-[92vh] overflow-hidden rounded-[30px] border border-[#111927]/10 bg-[#f6f3eb] p-0 shadow-[0_24px_70px_rgba(17,35,63,.16)] sm:max-w-4xl lg:max-w-6xl">
+        <DialogContent className="w-[calc(100vw-2rem)] max-h-[92vh] overflow-hidden rounded-[30px] border border-eventkan-ink/10 bg-eventkan-canvas p-0 shadow-[0_24px_70px_rgba(17,35,63,.16)] sm:max-w-4xl lg:max-w-6xl">
           {selectedItem && (
             <div className="flex max-h-[92vh] flex-col overflow-y-auto md:flex-row md:overflow-hidden">
-              <div className="relative flex aspect-4/3 w-full shrink-0 items-center justify-center bg-[#11233f] md:aspect-auto md:min-h-135 md:flex-1">
+              <div className="relative flex aspect-4/3 w-full shrink-0 items-center justify-center bg-eventkan-navy md:aspect-auto md:min-h-135 md:flex-1">
                 <Image
                   src={selectedItem.imageUrl}
                   alt={selectedItem.title}
@@ -82,45 +82,45 @@ const GalleryGrid: FC<GalleryGridProps> = ({ initialItems }) => {
                 />
               </div>
 
-              <div className="flex w-full shrink-0 flex-col justify-between overflow-y-auto border-t border-[#111927]/10 bg-[#fffdf8] p-6 sm:p-8 md:w-90 md:border-l md:border-t-0">
+              <div className="flex w-full shrink-0 flex-col justify-between overflow-y-auto border-t border-eventkan-ink/10 bg-eventkan-surface p-6 sm:p-8 md:w-90 md:border-l md:border-t-0">
                 <div className="space-y-8">
                   {/* <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-[#111927]/10 bg-white/70 px-3 py-2 text-[11px] font-bold text-[#11233f]">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-eventkan-ink/10 bg-white/70 px-3 py-2 text-[11px] font-bold text-eventkan-navy">
                       Dokumentasi
                     </span>
                     {selectedItem.featured && (
-                      <span className="inline-flex items-center gap-2 rounded-full border border-[#ff7a45]/20 bg-[#ffe5d8] px-3 py-2 text-[11px] font-bold text-[#b84a2a]">
+                      <span className="inline-flex items-center gap-2 rounded-full border border-eventkan-accent/20 bg-eventkan-peach px-3 py-2 text-[11px] font-bold text-eventkan-peach-ink">
                         Featured
                       </span>
                     )}
                   </div> */}
 
                   <div className="space-y-3">
-                    <DialogTitle className="font-display text-[clamp(24px,3vw,32px)] font-extrabold leading-[1.05] tracking-[-.04em] text-[#11233f]">
+                    <DialogTitle className="font-display text-[clamp(24px,3vw,32px)] font-extrabold leading-[1.05] tracking-[-.04em] text-eventkan-navy">
                       {selectedItem.title}
                     </DialogTitle>
                     <DialogDescription className="hidden">
                       Detail foto {selectedItem.title}
                     </DialogDescription>
                     {selectedItem.description && (
-                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-[#6c7280]">
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-eventkan-muted">
                         {selectedItem.description}
                       </p>
                     )}
                   </div>
                 </div>
 
-                <div className="mt-8 space-y-4 border-t border-[#111927]/10 pt-6 text-sm text-[#6c7280]">
+                <div className="mt-8 space-y-4 border-t border-eventkan-ink/10 pt-6 text-sm text-eventkan-muted">
                   {selectedItem.event && (
                     <div className="flex items-center gap-2">
-                      <Tag className="h-4 w-4 shrink-0 text-[#ff7a45]" />
-                      <span className="font-semibold text-[#11233f]">
+                      <Tag className="h-4 w-4 shrink-0 text-eventkan-accent" />
+                      <span className="font-semibold text-eventkan-navy">
                         {selectedItem.event.title}
                       </span>
                     </div>
                   )}
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 shrink-0 text-[#ff7a45]" />
+                    <Calendar className="h-4 w-4 shrink-0 text-eventkan-accent" />
                     <span>
                       {moment(selectedItem.createdAt)
                         .tz('Asia/Jakarta')

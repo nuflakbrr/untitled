@@ -75,7 +75,7 @@ const LoginForm: FC = () => {
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5" noValidate>
       <FieldGroup className="gap-5">
       <Field className="gap-2" data-invalid={!!form.formState.errors.email}>
-        <FieldLabel htmlFor="login-email" className="text-[13px] font-bold text-[#11233f]">
+        <FieldLabel htmlFor="login-email" className="text-[13px] font-bold text-eventkan-navy">
           Email
         </FieldLabel>
         <input
@@ -87,11 +87,11 @@ const LoginForm: FC = () => {
           {...form.register('email')}
           className={getLoginInputClass(Boolean(form.formState.errors.email))}
         />
-        {form.formState.errors.email && <FieldError className="text-xs font-medium text-[#b84a2a]" errors={[form.formState.errors.email]} />}
+        {form.formState.errors.email && <FieldError className="text-xs font-medium text-eventkan-peach-ink" errors={[form.formState.errors.email]} />}
       </Field>
 
       <Field className="gap-2" data-invalid={!!form.formState.errors.password}>
-        <FieldLabel htmlFor="login-password" className="text-[13px] font-bold text-[#11233f]">
+        <FieldLabel htmlFor="login-password" className="text-[13px] font-bold text-eventkan-navy">
           Password
         </FieldLabel>
         <div className="relative">
@@ -107,31 +107,31 @@ const LoginForm: FC = () => {
           <button
             type="button"
             onClick={() => setShowPassword((visible) => !visible)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-[#6c7280] transition hover:bg-[#f6f3eb] hover:text-[#11233f]"
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-eventkan-muted transition hover:bg-eventkan-canvas hover:text-eventkan-navy"
             tabIndex={-1}
             aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
           >
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
-        {form.formState.errors.password && <FieldError className="text-xs font-medium text-[#b84a2a]" errors={[form.formState.errors.password]} />}
+        {form.formState.errors.password && <FieldError className="text-xs font-medium text-eventkan-peach-ink" errors={[form.formState.errors.password]} />}
       </Field>
       </FieldGroup>
 
       <div className="-mt-2 flex justify-end">
         <Link
           href={'/forgot-password' as Route}
-          className="text-xs font-semibold text-[#11233f] transition hover:text-[#ff7a45]"
+          className="text-xs font-semibold text-eventkan-navy transition hover:text-eventkan-accent"
         >
           Lupa password?
         </Link>
       </div>
 
-      <p className="-mt-2 text-center text-xs text-[#6c7280]">
+      <p className="-mt-2 text-center text-xs text-eventkan-muted">
         Akun nonaktif?{' '}
         <Link
           href={'/reactivate-account' as Route}
-          className="font-semibold text-[#11233f] transition hover:text-[#ff7a45]"
+          className="font-semibold text-eventkan-navy transition hover:text-eventkan-accent"
         >
           Aktifkan kembali
         </Link>
@@ -141,7 +141,7 @@ const LoginForm: FC = () => {
         type="submit"
         id="btn-login-submit"
         disabled={isPending}
-        className="inline-flex w-full group items-center justify-center gap-2 rounded-full bg-[#ff7a45] px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-[#f2693a] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex w-full group items-center justify-center gap-2 rounded-full bg-eventkan-accent px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-eventkan-accent-hover active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? 'Memproses...' : 'Masuk'}
         {isPending ? (
@@ -151,9 +151,9 @@ const LoginForm: FC = () => {
         )}
       </button>
 
-      <p className="text-center text-sm text-[#6c7280]">
+      <p className="text-center text-sm text-eventkan-muted">
         Belum punya akun?{' '}
-        <Link href="/register" className="font-bold text-[#11233f] transition hover:text-[#ff7a45]">
+        <Link href="/register" className="font-bold text-eventkan-navy transition hover:text-eventkan-accent">
           Daftar
         </Link>
       </p>

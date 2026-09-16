@@ -41,10 +41,10 @@ const Columns = (
     header: () => <span className={participantTableHeaderClass}>Event</span>,
     cell: ({ row }) => (
       <div className="flex flex-col">
-        <span className="font-display text-sm font-semibold tracking-[-.02em] text-[#111927]">
+        <span className="font-display text-sm font-semibold tracking-[-.02em] text-eventkan-ink">
           {row.original.event.title}
         </span>
-        <span className="mt-0.5 text-xs text-[#6c7280]">{row.original.event.location}</span>
+        <span className="mt-0.5 text-xs text-eventkan-muted">{row.original.event.location}</span>
       </div>
     ),
   },
@@ -93,7 +93,7 @@ const Columns = (
           </a>
         </Button>
       ) : (
-        <span className="text-xs text-[#6c7280]">Belum tersedia</span>
+        <span className="text-xs text-eventkan-muted">Belum tersedia</span>
       );
     },
   },
@@ -108,7 +108,7 @@ const Columns = (
           </a>
         </Button>
       ) : (
-        <span className="text-xs text-[#6c7280]">Belum tersedia</span>
+        <span className="text-xs text-eventkan-muted">Belum tersedia</span>
       ),
   },
   {
@@ -119,16 +119,16 @@ const Columns = (
       const isEligible =
         registration.status === 'CHECKED_IN' && registration.event.status === 'COMPLETED';
 
-      if (!isEligible) return <span className="text-xs text-[#6c7280]">Belum tersedia</span>;
+      if (!isEligible) return <span className="text-xs text-eventkan-muted">Belum tersedia</span>;
 
       return registration.testimonial ? (
         <Button
           variant="outline"
           size="xs"
-          className="gap-1 border-[#ff7a45]/20 bg-[#ffe5d8]/55 text-xs font-bold text-[#b84a2a] hover:bg-[#ffe5d8]"
+          className="gap-1 border-eventkan-accent/20 bg-eventkan-peach/55 text-xs font-bold text-eventkan-peach-ink hover:bg-eventkan-peach"
           onClick={() => onOpenTestimonial(registration)}
         >
-          <Star className="h-3.5 w-3.5 fill-[#ff7a45] text-[#ff7a45]" />
+          <Star className="h-3.5 w-3.5 fill-eventkan-accent text-eventkan-accent" />
           <span>{registration.testimonial.rating}/5</span>
           <Edit3 className="ml-0.5 h-3 w-3 opacity-60" />
         </Button>
@@ -139,7 +139,7 @@ const Columns = (
           className="gap-1 text-xs"
           onClick={() => onOpenTestimonial(registration)}
         >
-          <MessageSquarePlus className="h-3.5 w-3.5 text-[#ff7a45]" />
+          <MessageSquarePlus className="h-3.5 w-3.5 text-eventkan-accent" />
           Beri Ulasan
         </Button>
       );

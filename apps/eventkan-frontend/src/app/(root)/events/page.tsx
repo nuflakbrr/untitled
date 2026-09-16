@@ -23,10 +23,10 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
   ]);
 
   return (
-    <section className="min-h-screen bg-[#f6f3eb] pb-16">
+    <section className="min-h-screen bg-eventkan-canvas pb-16">
       <Suspense
         fallback={
-          <div className="bg-[#11233f] px-6 py-28 text-center">
+          <div className="bg-eventkan-navy px-6 py-28 text-center">
             <div className="mx-auto max-w-md animate-pulse space-y-4">
               <div className="mx-auto h-4 w-1/4 rounded bg-white/10" />
               <div className="mx-auto h-8 w-3/4 rounded bg-white/10" />

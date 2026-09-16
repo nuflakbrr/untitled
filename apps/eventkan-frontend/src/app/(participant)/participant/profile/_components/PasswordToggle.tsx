@@ -7,7 +7,7 @@ export default function PasswordToggle({ label, visible, onToggle }: ProfilePass
     <button
       type="button"
       aria-label={visible ? `Sembunyikan ${label}` : `Tampilkan ${label}`}
-      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-[#6c7280] transition-colors hover:text-[#11233f]"
+      className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-eventkan-muted transition-colors hover:text-eventkan-navy"
       onClick={onToggle}
       tabIndex={-1}
     >

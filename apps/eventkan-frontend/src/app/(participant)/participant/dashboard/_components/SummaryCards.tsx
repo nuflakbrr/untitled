@@ -13,16 +13,16 @@ const cards = [
     key: 'totalRegistered',
     label: 'Total Terdaftar',
     icon: Calendar,
-    iconColor: '#ff7a45',
-    bg: '#ffe5d8',
+    iconColor: 'var(--eventkan-accent)',
+    bg: 'var(--eventkan-peach)',
     border: 'rgba(255,122,69,.25)',
   },
   {
     key: 'totalCheckedIn',
     label: 'Hadir (Check-In)',
     icon: CheckCircle2,
-    iconColor: '#36784b',
-    bg: '#e5f2e8',
+    iconColor: 'var(--eventkan-green-ink)',
+    bg: 'var(--eventkan-green-soft)',
     border: 'rgba(54,120,75,.25)',
   },
   {
@@ -30,7 +30,7 @@ const cards = [
     label: 'Menunggu Pembayaran',
     icon: Clock,
     iconColor: '#b84a2a',
-    bg: '#ffe5d8',
+    bg: 'var(--eventkan-peach)',
     border: 'rgba(184,74,42,.25)',
   },
 ] as const;
@@ -45,16 +45,16 @@ export default function SummaryCards({ summary }: SummaryCardsProps) {
         return (
           <div
             key={card.key}
-            className="flex items-center justify-between rounded-[22px] border border-[#111927]/10 bg-[#fffdf8] p-5 shadow-[0_18px_50px_rgba(17,35,63,.05)] transition-transform duration-200 hover:-translate-y-0.5"
+            className="flex items-center justify-between rounded-[22px] border border-eventkan-ink/10 bg-eventkan-surface p-5 shadow-[0_18px_50px_rgba(17,35,63,.05)] transition-transform duration-200 hover:-translate-y-0.5"
           >
             <div className="space-y-1">
               <p
-                className="text-[11px] font-extrabold uppercase tracking-[.08em] text-[#6c7280]"
+                className="text-[11px] font-extrabold uppercase tracking-[.08em] text-eventkan-muted"
               >
                 {card.label}
               </p>
               <h3
-                className="font-display mt-1 text-4xl font-extrabold tracking-[-.04em] text-[#111927]"
+                className="font-display mt-1 text-4xl font-extrabold tracking-[-.04em] text-eventkan-ink"
               >
                 {value}
               </h3>

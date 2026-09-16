@@ -37,7 +37,7 @@ const RegisterButton: FC<RegisterButtonProps> = ({
   if (!isAuthenticated) {
     return (
       <Button
-        className={`${actionButtonClass} bg-[#11233f] text-white hover:bg-[#1b3458]`}
+        className={`${actionButtonClass} bg-eventkan-navy text-white hover:bg-[var(--eventkan-navy-hover)]`}
         asChild
       >
         <Link href={`/login?redirect=/events/${slug}`}>Masuk untuk Mendaftar</Link>
@@ -48,7 +48,7 @@ const RegisterButton: FC<RegisterButtonProps> = ({
   if (!isEmailVerified) {
     return (
       <Button
-        className={`${actionButtonClass} flex items-center justify-center gap-2 bg-[#ffe5d8] text-[#b84a2a] shadow-none hover:bg-[#ffd9c7]`}
+        className={`${actionButtonClass} flex items-center justify-center gap-2 bg-eventkan-peach text-eventkan-peach-ink shadow-none hover:bg-[#ffd9c7]`}
         asChild
       >
         <Link href="/participant/dashboard">
@@ -65,10 +65,10 @@ const RegisterButton: FC<RegisterButtonProps> = ({
           <RegistrationStatusButton
             icon={CreditCard}
             label="Menunggu Pembayaran"
-            className="border-[#ff7a45]/30 bg-[#ffe5d8] text-[#b84a2a]"
+            className="border-eventkan-accent/30 bg-eventkan-peach text-eventkan-peach-ink"
           />
           <Button
-            className={`${actionButtonClass} bg-[#11233f] text-white hover:bg-[#1b3458]`}
+            className={`${actionButtonClass} bg-eventkan-navy text-white hover:bg-[var(--eventkan-navy-hover)]`}
             asChild
           >
             <Link href="/participant/dashboard">Lanjutkan Pembayaran</Link>
@@ -81,7 +81,7 @@ const RegisterButton: FC<RegisterButtonProps> = ({
       <RegistrationStatusButton
         icon={CheckCircle2}
         label="Sudah Terdaftar"
-        className="border-[#bfe4c7] bg-[#e5f2e8] text-[#36784b]"
+        className="border-[var(--eventkan-green)] bg-[var(--eventkan-green-soft)] text-[var(--eventkan-green-ink)]"
       />
     );
   }
@@ -99,7 +99,7 @@ const RegisterButton: FC<RegisterButtonProps> = ({
       <Button
         id="btn-register-event"
         onClick={() => setIsOpen(true)}
-        className={`${actionButtonClass} transition-all duration-200 hover:scale-[1.02] hover:bg-[#1b3458] active:scale-[0.98] bg-[#11233f] text-white`}
+        className={`${actionButtonClass} transition-all duration-200 hover:scale-[1.02] hover:bg-[var(--eventkan-navy-hover)] active:scale-[0.98] bg-eventkan-navy text-white`}
       >
         Daftar Event Sekarang
       </Button>

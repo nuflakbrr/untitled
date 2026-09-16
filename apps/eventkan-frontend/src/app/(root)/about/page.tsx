@@ -14,7 +14,7 @@ export const metadata = genPageMetadata({
 });
 
 const About = () => (
-  <div className="w-full overflow-hidden bg-[#f6f3eb] text-[#111927]">
+  <div className="w-full overflow-hidden bg-eventkan-canvas text-eventkan-ink">
     <AboutHeader
       title="Event yang baik dimulai jauh sebelum hari-H."
       subtitle="EVENTKAN membantu menghubungkan perjalanan peserta dari menemukan event, mendaftar, menerima tiket, check-in, hingga memperoleh sertifikat tanpa proses administratif yang tercecer."

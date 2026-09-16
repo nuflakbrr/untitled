@@ -43,8 +43,8 @@ export default function ConfirmOnlineButton({
       disabled={disabled || isLoading}
       className="w-full cursor-pointer disabled:cursor-not-allowed"
       style={{
-        background: disabled ? '#f6f3eb' : '#36784b',
-        color: disabled ? '#6c7280' : '#ffffff',
+        background: disabled ? 'var(--eventkan-canvas)' : 'var(--eventkan-green-ink)',
+        color: disabled ? 'var(--eventkan-muted)' : '#ffffff',
         borderColor: 'transparent',
         cursor: disabled || isLoading ? 'not-allowed' : 'pointer',
       }}

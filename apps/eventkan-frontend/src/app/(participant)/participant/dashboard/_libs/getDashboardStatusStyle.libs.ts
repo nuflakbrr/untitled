@@ -5,36 +5,36 @@ export const getDashboardStatusStyle = (status: string): DashboardStatusStyle =>
     case 'CHECKED_IN':
       return {
         label: 'Hadir',
-        bg: '#e5f2e8',
-        color: '#36784b',
-        border: '#bfe4c7',
+        bg: 'var(--eventkan-green-soft)',
+        color: 'var(--eventkan-green-ink)',
+        border: 'var(--eventkan-green)',
       };
     case 'REGISTERED':
       return {
         label: 'Terdaftar',
-        bg: '#f6f3eb',
+        bg: 'var(--eventkan-canvas)',
         color: '#4b5565',
         border: 'rgba(17,25,39,.12)',
       };
     case 'WAITING_PAYMENT':
       return {
         label: 'Menunggu Bayar',
-        bg: '#ffe5d8',
+        bg: 'var(--eventkan-peach)',
         color: '#b84a2a',
         border: 'rgba(255,122,69,.3)',
       };
     case 'CANCELLED':
       return {
         label: 'Dibatalkan',
-        bg: '#ffe5d8',
+        bg: 'var(--eventkan-peach)',
         color: '#8d492e',
         border: 'rgba(184,74,42,.25)',
       };
     default:
       return {
         label: status,
-        bg: '#f6f3eb',
-        color: '#6c7280',
+        bg: 'var(--eventkan-canvas)',
+        color: 'var(--eventkan-muted)',
         border: 'rgba(17,25,39,.12)',
       };
   }

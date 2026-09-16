@@ -22,9 +22,9 @@ const CategoryLinks: FC<CategoryLinksProps> = ({ categories }) => {
   } = useCategoryLinks(categories.length);
 
   return (
-    <div className="mb-10 border-y border-[#111927]/10 py-4">
+    <div className="mb-10 border-y border-eventkan-ink/10 py-4">
       <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between sm:gap-40">
-        <p className="shrink-0 text-sm font-bold text-[#11233f]">Jelajahi berdasarkan minatmu</p>
+        <p className="shrink-0 text-sm font-bold text-eventkan-navy">Jelajahi berdasarkan minatmu</p>
         <div className="relative min-w-0 sm:w-0 sm:flex-1">
           <nav
             aria-label="Kategori event"
@@ -38,8 +38,8 @@ const CategoryLinks: FC<CategoryLinksProps> = ({ categories }) => {
               className={cn(
                 'inline-flex shrink-0 items-center rounded-full border px-3.5 py-2 text-sm font-bold whitespace-nowrap transition duration-200',
                 !activeCategory
-                  ? 'border-[#11233f] bg-[#11233f] text-white'
-                  : 'border-[#111927]/15 text-[#11233f] hover:border-[#11233f] hover:bg-[#fffdf8]'
+                  ? 'border-eventkan-navy bg-eventkan-navy text-white'
+                  : 'border-eventkan-ink/15 text-eventkan-navy hover:border-eventkan-navy hover:bg-eventkan-surface'
               )}
             >
               Semua event
@@ -56,8 +56,8 @@ const CategoryLinks: FC<CategoryLinksProps> = ({ categories }) => {
                   className={cn(
                     'inline-flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-bold whitespace-nowrap transition duration-200',
                     isActive
-                      ? 'border-[#11233f] bg-[#11233f] text-white'
-                      : 'border-[#111927]/15 text-[#11233f] hover:border-[#11233f] hover:bg-[#fffdf8]'
+                      ? 'border-eventkan-navy bg-eventkan-navy text-white'
+                      : 'border-eventkan-ink/15 text-eventkan-navy hover:border-eventkan-navy hover:bg-eventkan-surface'
                   )}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -67,10 +67,10 @@ const CategoryLinks: FC<CategoryLinksProps> = ({ categories }) => {
             })}
           </nav>
           {showLeftFade && (
-            <span className="pointer-events-none absolute inset-y-0 left-0 w-3 bg-linear-to-r from-[#f6f3eb] to-transparent" />
+            <span className="pointer-events-none absolute inset-y-0 left-0 w-3 bg-linear-to-r from-eventkan-canvas to-transparent" />
           )}
           {showRightFade && (
-            <span className="pointer-events-none absolute inset-y-0 right-0 w-3 bg-linear-to-l from-[#f6f3eb] to-transparent" />
+            <span className="pointer-events-none absolute inset-y-0 right-0 w-3 bg-linear-to-l from-eventkan-canvas to-transparent" />
           )}
         </div>
       </div>

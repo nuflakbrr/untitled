@@ -78,14 +78,14 @@ const ResetPasswordForm: FC = () => {
           onToggle={() => setShowPassword((value) => !value)}
         />
 
-        <div className="grid gap-2 rounded-[16px] border border-[#111927]/10 bg-white/45 p-4">
+        <div className="grid gap-2 rounded-[16px] border border-eventkan-ink/10 bg-white/45 p-4">
           {rules.map((rule) => (
             <div
               key={rule.label}
-              className={`flex items-center gap-2 text-xs ${rule.valid ? 'text-[#36784b]' : 'text-[#6c7280]'}`}
+              className={`flex items-center gap-2 text-xs ${rule.valid ? 'text-eventkan-green-ink' : 'text-eventkan-muted'}`}
             >
               <span
-                className={`grid h-4.5 w-4.5 place-items-center rounded-full border ${rule.valid ? 'border-[#b8dac1] bg-[#e6f3e9]' : 'border-[#111927]/10'}`}
+                className={`grid h-4.5 w-4.5 place-items-center rounded-full border ${rule.valid ? 'border-[#b8dac1] bg-[#e6f3e9]' : 'border-eventkan-ink/10'}`}
               >
                 {rule.valid && <Check className="h-3 w-3" />}
               </span>
@@ -106,10 +106,10 @@ const ResetPasswordForm: FC = () => {
       </FieldGroup>
 
       {password && confirmPassword && password === confirmPassword && (
-        <p className="-mt-3 text-xs font-medium text-[#36784b]">Password cocok.</p>
+        <p className="-mt-3 text-xs font-medium text-eventkan-green-ink">Password cocok.</p>
       )}
 
-      <div className="rounded-[14px] bg-[#ffe5d8] px-4 py-3 text-xs leading-relaxed text-[#8d492e]">
+      <div className="rounded-[14px] bg-eventkan-peach px-4 py-3 text-xs leading-relaxed text-[#8d492e]">
         Link reset hanya berlaku satu kali dan dapat memiliki batas waktu. Jika tidak valid, minta
         link baru dari halaman lupa password.
       </div>
@@ -118,7 +118,7 @@ const ResetPasswordForm: FC = () => {
         type="submit"
         id="btn-reset-password-submit"
         disabled={isPending || !form.formState.isValid}
-        className="inline-flex group w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-[#ff7a45] px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-[#f2693a] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex group w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-eventkan-accent px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-eventkan-accent-hover active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? 'Menyimpan...' : 'Simpan password baru'}
         {isPending ? (
@@ -128,9 +128,9 @@ const ResetPasswordForm: FC = () => {
         )}
       </button>
 
-      <p className="text-center text-sm text-[#6c7280]">
+      <p className="text-center text-sm text-eventkan-muted">
         Ingat password kamu?{' '}
-        <Link href="/login" className="font-bold text-[#11233f] transition hover:text-[#ff7a45]">
+        <Link href="/login" className="font-bold text-eventkan-navy transition hover:text-eventkan-accent">
           Masuk sekarang
         </Link>
       </p>

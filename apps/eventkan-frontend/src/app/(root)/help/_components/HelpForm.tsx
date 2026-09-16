@@ -26,7 +26,7 @@ const HelpForm: FC<HelpFormProps> = ({
       <FieldGroup className="gap-5">
         <div className="grid gap-5 sm:grid-cols-2">
           <Field data-invalid={!!errors.name}>
-            <FieldLabel htmlFor="help-name" className="text-sm font-bold text-[#11233f]">
+            <FieldLabel htmlFor="help-name" className="text-sm font-bold text-eventkan-navy">
               Nama lengkap
             </FieldLabel>
             <Input
@@ -42,7 +42,7 @@ const HelpForm: FC<HelpFormProps> = ({
           </Field>
 
           <Field data-invalid={!!errors.email}>
-            <FieldLabel htmlFor="help-email" className="text-sm font-bold text-[#11233f]">
+            <FieldLabel htmlFor="help-email" className="text-sm font-bold text-eventkan-navy">
               Email
             </FieldLabel>
             <Input
@@ -60,7 +60,7 @@ const HelpForm: FC<HelpFormProps> = ({
 
         <div className="grid gap-5 sm:grid-cols-2">
           <Field data-invalid={!!errors.phone}>
-            <FieldLabel htmlFor="help-phone" className="text-sm font-bold text-[#11233f]">
+            <FieldLabel htmlFor="help-phone" className="text-sm font-bold text-eventkan-navy">
               Nomor WhatsApp
             </FieldLabel>
             <Input
@@ -76,7 +76,7 @@ const HelpForm: FC<HelpFormProps> = ({
           </Field>
 
           <Field data-invalid={!!errors.category}>
-            <FieldLabel htmlFor="help-category" className="text-sm font-bold text-[#11233f]">
+            <FieldLabel htmlFor="help-category" className="text-sm font-bold text-eventkan-navy">
               Kategori masalah
             </FieldLabel>
             <select
@@ -98,7 +98,7 @@ const HelpForm: FC<HelpFormProps> = ({
         </div>
 
         <Field data-invalid={!!errors.title}>
-          <FieldLabel htmlFor="help-title" className="text-sm font-bold text-[#11233f]">
+          <FieldLabel htmlFor="help-title" className="text-sm font-bold text-eventkan-navy">
             Judul masalah
           </FieldLabel>
           <Input
@@ -114,7 +114,7 @@ const HelpForm: FC<HelpFormProps> = ({
         </Field>
 
         <Field data-invalid={!!errors.chronology}>
-          <FieldLabel htmlFor="help-chronology" className="text-sm font-bold text-[#11233f]">
+          <FieldLabel htmlFor="help-chronology" className="text-sm font-bold text-eventkan-navy">
             Ceritakan kendalanya
           </FieldLabel>
           <Textarea
@@ -133,7 +133,7 @@ const HelpForm: FC<HelpFormProps> = ({
       <button
         type="submit"
         disabled={isPending}
-        className="group inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-[#11233f] px-5 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(17,35,63,.14)] transition hover:-translate-y-0.5 hover:bg-[#1b3458] disabled:cursor-not-allowed disabled:opacity-60"
+        className="group inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-eventkan-navy px-5 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(17,35,63,.14)] transition hover:-translate-y-0.5 hover:bg-eventkan-navy-hover disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? (
           <>

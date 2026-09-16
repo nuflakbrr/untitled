@@ -39,7 +39,7 @@ const Columns: ColumnDef<ParticipantPayment>[] = [
     accessorKey: 'event',
     header: () => <span className={participantTableHeaderClass}>Event</span>,
     cell: ({ row }) => (
-      <span className="font-display text-sm font-semibold tracking-[-.02em] text-[#111927]">
+      <span className="font-display text-sm font-semibold tracking-[-.02em] text-eventkan-ink">
         {row.original.registration.event.title}
       </span>
     ),
@@ -48,7 +48,7 @@ const Columns: ColumnDef<ParticipantPayment>[] = [
     accessorKey: 'amount',
     header: () => <span className={participantTableHeaderClass}>Nominal</span>,
     cell: ({ row }) => (
-      <span className="text-sm font-semibold text-[#11233f]">
+      <span className="text-sm font-semibold text-eventkan-navy">
         {formatCurrency(row.original.amount)}
       </span>
     ),

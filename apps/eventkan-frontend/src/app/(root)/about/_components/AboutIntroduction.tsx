@@ -1,19 +1,19 @@
 export const AboutIntroduction = () => (
   <section id="story" className="px-4 py-20 sm:px-6 sm:py-24">
     <div className="mx-auto max-w-295">
-      {/* <span className="inline-flex items-center gap-2 rounded-full border border-[#111927]/12 bg-white/60 px-3 py-2 text-xs font-bold text-[#11233f]">
-        <span className="h-2 w-2 rounded-full bg-[#ff7a45]" /> Masalah yang kami lihat
+      {/* <span className="inline-flex items-center gap-2 rounded-full border border-eventkan-ink/12 bg-white/60 px-3 py-2 text-xs font-bold text-eventkan-navy">
+        <span className="h-2 w-2 rounded-full bg-eventkan-accent" /> Masalah yang kami lihat
       </span> */}
       <h2 className="font-display mt-5 max-w-215 text-[clamp(36px,5vw,58px)] font-extrabold leading-[1.02] tracking-tighter">
         Banyak event masih berjalan dengan proses yang terpisah-pisah.
       </h2>
-      <p className="mt-5 max-w-175 text-lg leading-relaxed text-[#6c7280]">
+      <p className="mt-5 max-w-175 text-lg leading-relaxed text-eventkan-muted">
         Form pendaftaran, spreadsheet peserta, daftar hadir, tiket, dan sertifikat sering dikelola
         di tempat berbeda. Akibatnya, pekerjaan administrasi menjadi lebih panjang dari yang
         seharusnya.
       </p>
       <div className="mt-11 grid gap-6 lg:grid-cols-2">
-        <article className="rounded-[24px] bg-[#11233f] p-7 text-white sm:p-8">
+        <article className="rounded-[24px] bg-eventkan-navy p-7 text-white sm:p-8">
           <h3 className="font-display text-3xl font-extrabold leading-[1.05] tracking-[-.04em]">
             Yang sering terjadi di lapangan.
           </h3>
@@ -29,15 +29,15 @@ export const AboutIntroduction = () => (
             ))}
           </div>
         </article>
-        <article className="rounded-[24px] border border-[#111927]/12 bg-[#fffdf8] p-7 sm:p-8">
-          <h3 className="font-display text-3xl font-extrabold leading-[1.05] tracking-[-.04em] text-[#111927]">
+        <article className="rounded-[24px] border border-eventkan-ink/12 bg-eventkan-surface p-7 sm:p-8">
+          <h3 className="font-display text-3xl font-extrabold leading-[1.05] tracking-[-.04em] text-eventkan-ink">
             EVENTKAN mencoba menyederhanakannya.
           </h3>
-          <p className="mt-5 text-base leading-relaxed text-[#6c7280]">
+          <p className="mt-5 text-base leading-relaxed text-eventkan-muted">
             Satu platform menghubungkan perjalanan peserta dari sebelum event sampai setelah event
             selesai.
           </p>
-          <p className="mt-4 text-base leading-relaxed text-[#6c7280]">
+          <p className="mt-4 text-base leading-relaxed text-eventkan-muted">
             Tujuannya bukan menambah alat, tapi mengurangi perpindahan platform dan pekerjaan
             repetitif.
           </p>

@@ -14,13 +14,13 @@ export const metadata: Metadata = genPageMetadata({
 
 export default function ReactivateAccountPage() {
   return (
-    <main className="min-h-dvh bg-[#f6f3eb] p-3 sm:p-5 lg:p-5.5">
+    <main className="min-h-dvh bg-eventkan-canvas p-3 sm:p-5 lg:p-5.5">
       <div className="mx-auto grid min-h-[calc(100dvh-44px)] max-w-310 gap-0 lg:grid-cols-[1.05fr_.95fr]">
-        <section className="relative flex min-h-100 flex-col justify-between overflow-hidden rounded-[30px] bg-[#11233f] p-7 text-white sm:p-10 lg:min-h-[calc(100dvh-44px)] lg:p-11">
-          <div className="pointer-events-none absolute -right-28 -top-28 h-80 w-80 rounded-full bg-[#ff7a45]/90" />
-          <div className="pointer-events-none absolute right-[12%] top-[24%] h-28 w-28 rounded-full bg-[#f7df86]" />
+        <section className="relative flex min-h-100 flex-col justify-between overflow-hidden rounded-[30px] bg-eventkan-navy p-7 text-white sm:p-10 lg:min-h-[calc(100dvh-44px)] lg:p-11">
+          <div className="pointer-events-none absolute -right-28 -top-28 h-80 w-80 rounded-full bg-eventkan-accent/90" />
+          <div className="pointer-events-none absolute right-[12%] top-[24%] h-28 w-28 rounded-full bg-eventkan-yellow" />
           <Link href="/" className="relative z-10 inline-flex w-fit items-center gap-2" aria-label="Beranda EVENTKAN">
-            <span className="font-display grid h-9 w-9 -rotate-3 place-items-center rounded-[12px] bg-white text-lg font-extrabold text-[#11233f]">S</span>
+            <span className="font-display grid h-9 w-9 -rotate-3 place-items-center rounded-[12px] bg-white text-lg font-extrabold text-eventkan-navy">S</span>
             <span className="font-display text-xl font-extrabold tracking-[-.04em]">EVENTKAN</span>
           </Link>
           <div className="relative z-10 mt-16 lg:mt-0">
@@ -36,19 +36,19 @@ export default function ReactivateAccountPage() {
           </p>
         </section>
 
-        <section className="grid place-items-center bg-[#f6f3eb] px-5 py-10 sm:px-10 lg:px-12 lg:py-12">
+        <section className="grid place-items-center bg-eventkan-canvas px-5 py-10 sm:px-10 lg:px-12 lg:py-12">
           <div className="w-full max-w-117.5">
-            <Link href="/login" className="group inline-flex items-center gap-2 text-sm text-[#6c7280] transition hover:text-[#11233f]">
+            <Link href="/login" className="group inline-flex items-center gap-2 text-sm text-eventkan-muted transition hover:text-eventkan-navy">
               <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-1" />
               Kembali ke login
             </Link>
             <div className="mt-8">
-              <h2 className="font-display text-[clamp(34px,4vw,44px)] font-extrabold leading-none tracking-[-.045em] text-[#11233f]">
+              <h2 className="font-display text-[clamp(34px,4vw,44px)] font-extrabold leading-none tracking-[-.045em] text-eventkan-navy">
                 Aktifkan kembali akun
               </h2>
-              <p className="mt-3 text-[#6c7280]">Masukkan email akunmu untuk menerima tautan aktivasi.</p>
+              <p className="mt-3 text-eventkan-muted">Masukkan email akunmu untuk menerima tautan aktivasi.</p>
             </div>
-            <div className="mt-8 rounded-[26px] border border-[#111927]/10 bg-[#fffdf8] p-6 shadow-[0_18px_50px_rgba(17,35,63,.06)] sm:p-8">
+            <div className="mt-8 rounded-[26px] border border-eventkan-ink/10 bg-eventkan-surface p-6 shadow-[0_18px_50px_rgba(17,35,63,.06)] sm:p-8">
               <ReactivateAccountForm />
             </div>
           </div>

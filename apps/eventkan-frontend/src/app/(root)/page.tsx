@@ -29,7 +29,7 @@ export default async function HomePage() {
   ]);
 
   return (
-    <div className="w-full bg-[#f6f3eb] text-[#111927]">
+    <div className="w-full bg-eventkan-canvas text-eventkan-ink">
       <HeroBanner events={events.slice(0, 5) as Event[]} />
       <FeaturedEvents events={events} categories={categories} />
       <GalleryBento />

@@ -24,7 +24,7 @@ export default async function ParticipantDashboard() {
   if (!data) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
-        <p className="text-sm text-[#6c7280]">Gagal memuat data dashboard peserta.</p>
+        <p className="text-sm text-eventkan-muted">Gagal memuat data dashboard peserta.</p>
       </div>
     );
   }

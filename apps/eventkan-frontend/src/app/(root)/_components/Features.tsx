@@ -3,7 +3,7 @@ import type { FC } from 'react';
 import { features } from '../_constants/features.constants';
 
 const Features: FC = () => (
-  <section id="fitur" className="rounded-t-[38px] bg-[#11233f] px-4 py-24 text-white sm:px-6">
+  <section id="fitur" className="rounded-t-[38px] bg-eventkan-navy px-4 py-24 text-white sm:px-6">
     <div className="mx-auto max-w-295">
       <div className="max-w-190">
         <h2 className="font-display max-w-190 text-[clamp(34px,5vw,58px)] font-extrabold leading-[1.05] tracking-[-.04em]">
@@ -20,7 +20,7 @@ const Features: FC = () => (
         {features.map(([title, description], index) => (
           <article
             key={title}
-            className={`flex min-h-67.5 flex-col justify-between overflow-hidden rounded-[24px] p-7 ${index === 0 ? 'bg-[#ff7a45] md:col-span-7' : index === 1 ? 'bg-[#fffdf8] text-[#111927] md:col-span-5' : index === 2 ? 'bg-[#f7df86] text-[#111927] md:col-span-5' : 'bg-[#bfe4c7] text-[#111927] md:col-span-7'}`}
+            className={`flex min-h-67.5 flex-col justify-between overflow-hidden rounded-[24px] p-7 ${index === 0 ? 'bg-eventkan-accent md:col-span-7' : index === 1 ? 'bg-eventkan-surface text-eventkan-ink md:col-span-5' : index === 2 ? 'bg-eventkan-yellow text-eventkan-ink md:col-span-5' : 'bg-eventkan-green text-eventkan-ink md:col-span-7'}`}
           >
             <span className="grid h-10.5 w-10.5 place-items-center rounded-full border border-current text-[13px] font-bold opacity-80">
               {String(index + 1).padStart(2, '0')}

@@ -6,24 +6,24 @@ interface EventHistoryStatusConfig {
 const statusConfig: Record<string, EventHistoryStatusConfig> = {
   WAITING_PAYMENT: {
     label: 'Menunggu Pembayaran',
-    className: 'border-[#ff7a45]/20 bg-[#ffe5d8] text-[#b84a2a]',
+    className: 'border-eventkan-accent/20 bg-eventkan-peach text-eventkan-peach-ink',
   },
   REGISTERED: {
     label: 'Terdaftar',
-    className: 'border-[#36784b]/20 bg-[#e5f2e8] text-[#36784b]',
+    className: 'border-eventkan-green-ink/20 bg-eventkan-green-soft text-eventkan-green-ink',
   },
   CANCELLED: {
     label: 'Dibatalkan',
-    className: 'border-[#111927]/10 bg-[#f6f3eb] text-[#6c7280]',
+    className: 'border-eventkan-ink/10 bg-eventkan-canvas text-eventkan-muted',
   },
   CHECKED_IN: {
     label: 'Hadir',
-    className: 'border-[#36784b]/20 bg-[#e5f2e8] text-[#36784b]',
+    className: 'border-eventkan-green-ink/20 bg-eventkan-green-soft text-eventkan-green-ink',
   },
 };
 
 export const getEventHistoryStatusConfig = (status: string): EventHistoryStatusConfig =>
   statusConfig[status] ?? {
     label: status,
-    className: 'border-[#111927]/10 bg-[#f6f3eb] text-[#6c7280]',
+    className: 'border-eventkan-ink/10 bg-eventkan-canvas text-eventkan-muted',
   };

@@ -3,8 +3,8 @@ import { Award, BadgeCheck, CalendarCheck } from 'lucide-react';
 import type { ParticipantRegistration } from '@/interfaces/features/registrations';
 
 export const eventHistoryStatStyles = {
-  orange: 'bg-[#ffe5d8] text-[#ff7a45]',
-  green: 'bg-[#e5f2e8] text-[#36784b]',
+  orange: 'bg-eventkan-peach text-eventkan-accent',
+  green: 'bg-eventkan-green-soft text-eventkan-green-ink',
   yellow: 'bg-[#fbf1c8] text-[#856b16]',
 } as const;
 

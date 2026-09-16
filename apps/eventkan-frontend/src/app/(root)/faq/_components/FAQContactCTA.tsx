@@ -6,9 +6,9 @@ import { MessageSquare } from 'lucide-react';
 import { siteMetadata } from '@/data/siteMetadata';
 
 const FAQContactCTA: FC = () => (
-  <div className="relative mt-16 overflow-hidden rounded-[30px] bg-[#ff7a45] p-7 text-white sm:p-10 lg:p-11">
+  <div className="relative mt-16 overflow-hidden rounded-[30px] bg-eventkan-accent p-7 text-white sm:p-10 lg:p-11">
     <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full border-32 border-white/15" />
-    <div className="pointer-events-none absolute -bottom-24 right-32 h-44 w-44 rounded-full bg-[#f7df86]/25" />
+    <div className="pointer-events-none absolute -bottom-24 right-32 h-44 w-44 rounded-full bg-eventkan-yellow/25" />
     <div className="pointer-events-none absolute bottom-0 left-1/2 h-px w-72 -rotate-12 bg-white/20" />
 
     <div className="relative z-10 flex flex-col items-start justify-between gap-7 sm:flex-row sm:items-center">
@@ -22,7 +22,7 @@ const FAQContactCTA: FC = () => (
       </div>
       <Link
         href={`mailto:${siteMetadata.email}`}
-        className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-4.5 py-3 text-sm font-bold text-[#11233f] transition hover:-translate-y-0.5"
+        className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-4.5 py-3 text-sm font-bold text-eventkan-navy transition hover:-translate-y-0.5"
       >
         <MessageSquare className="h-4 w-4" />
         Email Kami

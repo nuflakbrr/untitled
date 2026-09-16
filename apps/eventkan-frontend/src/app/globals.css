@@ -92,6 +92,20 @@ html {
 }
 
 @theme inline {
+  --color-eventkan-canvas: var(--eventkan-canvas);
+  --color-eventkan-surface: var(--eventkan-surface);
+  --color-eventkan-ink: var(--eventkan-ink);
+  --color-eventkan-navy: var(--eventkan-navy);
+  --color-eventkan-navy-hover: var(--eventkan-navy-hover);
+  --color-eventkan-muted: var(--eventkan-muted);
+  --color-eventkan-accent: var(--eventkan-accent);
+  --color-eventkan-accent-hover: var(--eventkan-accent-hover);
+  --color-eventkan-peach-ink: var(--eventkan-peach-ink);
+  --color-eventkan-peach: var(--eventkan-peach);
+  --color-eventkan-green-ink: var(--eventkan-green-ink);
+  --color-eventkan-green-soft: var(--eventkan-green-soft);
+  --color-eventkan-green: var(--eventkan-green);
+  --color-eventkan-yellow: var(--eventkan-yellow);
   --font-heading: var(--font-sans);
   --font-sans: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -139,6 +153,20 @@ html {
 }
 
 :root {
+  --eventkan-canvas: #f6f3eb;
+  --eventkan-surface: #fffdf8;
+  --eventkan-ink: #111927;
+  --eventkan-navy: #11233f;
+  --eventkan-navy-hover: #1b3458;
+  --eventkan-muted: #6c7280;
+  --eventkan-accent: #ff7a45;
+  --eventkan-accent-hover: #f2693a;
+  --eventkan-peach-ink: #b84a2a;
+  --eventkan-peach: #ffe5d8;
+  --eventkan-green: #bfe4c7;
+  --eventkan-green-ink: #36784b;
+  --eventkan-green-soft: #e5f2e8;
+  --eventkan-yellow: #f7df86;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -221,7 +249,7 @@ html {
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-eventkan-canvas text-eventkan-ink;
   }
 
   html {
