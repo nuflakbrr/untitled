@@ -61,11 +61,11 @@ const ForgotPassword = () => (
       <section className="grid place-items-center bg-eventkan-canvas px-5 py-10 sm:px-10 lg:px-12 lg:py-12">
         <div className="w-full max-w-117.5">
           <Link
-            href="/"
-            className="inline-flex items-center group gap-2 text-sm text-eventkan-muted transition hover:text-eventkan-navy"
+            href="/login"
+            className="group inline-flex items-center gap-2 text-sm text-eventkan-muted transition hover:text-eventkan-navy"
           >
-            <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" />{' '}
-            Kembali ke beranda
+            <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-1" />
+            Kembali ke halaman masuk
           </Link>
 
           <div className="mt-8">

@@ -51,7 +51,7 @@ export default function ReactivateAccountPage() {
               className="group inline-flex items-center gap-2 text-sm text-eventkan-muted transition hover:text-eventkan-navy"
             >
               <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-1" />
-              Kembali ke login
+              Kembali ke halaman masuk
             </Link>
             <div className="mt-8">
               <h2 className="font-display text-[clamp(34px,4vw,44px)] font-extrabold leading-none tracking-[-.045em] text-eventkan-navy">
