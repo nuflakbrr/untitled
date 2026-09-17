@@ -64,6 +64,16 @@ const Login = () => (
           <div className="mt-8 rounded-[26px] border border-eventkan-ink/10 bg-eventkan-surface p-6 shadow-[0_18px_50px_rgba(17,35,63,.06)] sm:p-8">
             <LoginForm />
           </div>
+
+          <p className="mt-6 whitespace-nowrap text-center text-[11px] leading-relaxed tracking-tight text-eventkan-muted sm:text-xs">
+            Akun nonaktif?{' '}
+            <Link
+              href="/reactivate-account"
+              className="font-semibold text-eventkan-navy transition hover:text-eventkan-accent"
+            >
+              Aktifkan kembali
+            </Link>
+          </p>
         </div>
       </section>
     </div>
