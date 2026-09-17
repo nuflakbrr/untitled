@@ -16,6 +16,7 @@ const ResetPassword = () => (
   <main className="min-h-dvh bg-eventkan-canvas p-3 sm:p-5 lg:p-5.5">
     <div className="mx-auto grid min-h-[calc(100dvh-44px)] max-w-310 gap-0 lg:grid-cols-[1.05fr_.95fr]">
       <section className="relative flex min-h-100 flex-col justify-between overflow-hidden rounded-[30px] bg-eventkan-navy p-7 text-white sm:p-10 lg:min-h-[calc(100dvh-44px)] lg:p-11">
+        <div className="pointer-events-none absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-eventkan-accent/20 blur-3xl" />
         <div className="pointer-events-none absolute right-[-14%] top-[12%] h-72 w-72 rounded-full bg-eventkan-accent/90" />
         <div className="pointer-events-none absolute right-[10%] top-[21%] h-28 w-28 rounded-full bg-eventkan-yellow" />
         <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(135deg,transparent_0_42px,rgba(255,255,255,.025)_43px_44px)]" />

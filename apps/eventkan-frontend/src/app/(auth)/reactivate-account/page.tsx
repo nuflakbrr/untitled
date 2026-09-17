@@ -17,8 +17,10 @@ export default function ReactivateAccountPage() {
     <main className="min-h-dvh bg-eventkan-canvas p-3 sm:p-5 lg:p-5.5">
       <div className="mx-auto grid min-h-[calc(100dvh-44px)] max-w-310 overflow-hidden rounded-[30px] lg:grid-cols-2">
         <section className="relative flex min-h-80 flex-col justify-between overflow-hidden rounded-[30px] bg-eventkan-navy p-7 text-white sm:p-10 lg:min-h-0 lg:p-11">
-          <div className="pointer-events-none absolute -right-28 -top-28 h-80 w-80 rounded-full bg-eventkan-accent/90" />
-          <div className="pointer-events-none absolute right-[12%] top-[24%] h-28 w-28 rounded-full bg-eventkan-yellow" />
+          <div className="pointer-events-none absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-eventkan-accent/20 blur-3xl" />
+          <div className="pointer-events-none absolute right-[-14%] top-[12%] h-72 w-72 rounded-full bg-eventkan-accent/90" />
+          <div className="pointer-events-none absolute right-[10%] top-[21%] h-28 w-28 rounded-full bg-eventkan-yellow" />
+          <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(135deg,transparent_0_42px,rgba(255,255,255,.025)_43px_44px)]" />
           <Link
             href="/"
             className="relative z-10 inline-flex w-fit items-center gap-2"
@@ -31,14 +33,14 @@ export default function ReactivateAccountPage() {
           </Link>
           <div className="relative z-10 mt-16 lg:mt-0">
             <h1 className="font-display max-w-150 text-[clamp(44px,6vw,74px)] font-extrabold leading-[.97] tracking-[-.06em]">
-              Mau kembali? Kami siap menyambutmu.
+              Mau balik lagi? Kami siap nyambut kamu.
             </h1>
             <p className="mt-5 max-w-120 text-base leading-relaxed text-white/68 sm:text-lg">
-              Minta tautan aman untuk mengaktifkan kembali akun EVENTKAN-mu.
+              Minta link aman buat mengaktifkan lagi akun EVENTKAN kamu.
             </p>
           </div>
           <p className="relative z-10 mt-12 text-xs text-white/50 lg:mt-0">
-            Satu tautan. Satu langkah. Kembali ikut event favoritmu.
+            Temukan event, Datang ke venue, Bawa pulang pengalaman.
           </p>
         </section>
 
