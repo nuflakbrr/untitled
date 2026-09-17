@@ -2,7 +2,6 @@
 
 import { toast } from 'sonner';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 
 import { signOut } from '@/lib/authClient';
@@ -14,7 +13,6 @@ import { SidebarUserMenu } from './_components/SidebarUserMenu';
 type User = { name: string; email: string; avatar: string };
 
 export function UserSetting({ user }: { user: User }) {
-  const router = useRouter();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const { mutate: logout, isPending } = useMutation({
@@ -24,8 +22,7 @@ export function UserSetting({ user }: { user: User }) {
     },
     onSuccess: () => {
       toast.success('Berhasil keluar. Sampai jumpa!');
-      router.push('/login');
-      router.refresh();
+      window.location.href = '/login';
     },
     onError: (error: Error) => toast.error(error.message),
   });
