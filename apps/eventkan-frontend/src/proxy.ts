@@ -5,6 +5,8 @@ import { NextResponse } from 'next/server';
 import { auth } from './lib/auth';
 import { hasAdminRole } from './lib/roles';
 
+const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password', '/reactivate-account'];
+
 /**
  * Next.js 16 Proxy implementation for Route Protection
  */
@@ -12,14 +14,13 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAdminPath = pathname.startsWith('/admin');
   const isParticipantPath = pathname.startsWith('/participant');
-  const isAuthPath = pathname.startsWith('/login');
-  const isRegisterPath = pathname.startsWith('/register');
+  const isAuthPath = authRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 
   const cmsSegments = ['managements', 'master', 'transactions', 'attendance'];
   const isCMSPath = cmsSegments.some((segment) => pathname.startsWith(`/admin/${segment}`));
 
   // Jika bukan path yang diproteksi, langsung lewat saja (optimasi)
-  if (!isAdminPath && !isParticipantPath && !isAuthPath && !isCMSPath && !isRegisterPath) {
+  if (!isAdminPath && !isParticipantPath && !isAuthPath && !isCMSPath) {
     return NextResponse.next();
   }
 
@@ -53,8 +54,8 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/participant/dashboard', request.url));
     }
 
-    // Blocker 3: Jika akses /login tapi SUDAH login -> Tendang ke dashboard yang sesuai
-    if ((isAuthPath || isRegisterPath) && isAuthenticated) {
+    // Blocker 3: Jika akses route auth tapi SUDAH login -> Tendang ke dashboard yang sesuai
+    if (isAuthPath && isAuthenticated) {
       if (hasAdminAccess) {
         return NextResponse.redirect(new URL(activeTenant ? `/admin/${activeTenant}/dashboard` : '/login', request.url));
       } else {
@@ -94,5 +95,13 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/participant/:path*', '/login', '/register'],
+  matcher: [
+    '/admin/:path*',
+    '/participant/:path*',
+    '/login/:path*',
+    '/register/:path*',
+    '/forgot-password/:path*',
+    '/reset-password/:path*',
+    '/reactivate-account/:path*',
+  ],
 };
