@@ -3,50 +3,19 @@
 import type { FC } from 'react';
 
 import Link from 'next/link';
-import { toast } from 'sonner';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react';
 
-import type { RegisterValues } from '@/schemas/auth';
-
-import { registerSchema } from '@/schemas/auth';
-import { registerAction } from '@/services/public/auth';
+import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 
+import useRegister from '../_hooks/useRegister';
 import { getRegisterInputClass } from '../_libs/inputClass.libs';
 
 const RegisterForm: FC = () => {
-  const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
-
-  const form = useForm<RegisterValues>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: { name: '', email: '', password: '' },
-  });
-
-  const { mutate: handleRegister, isPending } = useMutation({
-    mutationFn: async (values: RegisterValues) => {
-      const result = await registerAction(values);
-      if (!result.success) {
-        throw new Error(result.error ?? 'Terjadi kesalahan saat registrasi.');
-      }
-      return result;
-    },
-    onSuccess: () => {
-      toast.success('Akun berhasil dibuat! Silakan masuk.');
-      router.push('/login');
-    },
-    onError: (error: Error) => toast.error(error.message),
-  });
-
-  const onSubmit = (values: RegisterValues) => handleRegister(values);
+  const { form, handleRegister, isPending, setShowPassword, showPassword } = useRegister();
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5" noValidate>
+    <form onSubmit={form.handleSubmit((values) => handleRegister(values))} className="space-y-5" noValidate>
       <FieldGroup className="grid gap-5 sm:grid-cols-2">
         <Field className="gap-2 sm:col-span-2" data-invalid={!!form.formState.errors.name}>
           <FieldLabel htmlFor="reg-name" className="text-[13px] font-bold text-eventkan-navy">
@@ -94,14 +63,16 @@ const RegisterForm: FC = () => {
               {...form.register('password')}
               className={`${getRegisterInputClass(Boolean(form.formState.errors.password))} pr-11`}
             />
-            <button
+            <Button
               type="button"
+              size="icon-sm"
+              variant="ghost"
               onClick={() => setShowPassword((visible) => !visible)}
               className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-eventkan-muted transition hover:bg-eventkan-canvas hover:text-eventkan-navy"
               aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
             >
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </button>
+            </Button>
           </div>
           {form.formState.errors.password && <FieldError className="text-xs font-medium text-eventkan-peach-ink" errors={[form.formState.errors.password]} />}
           <p className="mt-2 text-xs text-eventkan-muted">
@@ -110,11 +81,11 @@ const RegisterForm: FC = () => {
         </Field>
       </FieldGroup>
 
-      <button
+      <Button
         type="submit"
         id="btn-register-submit"
         disabled={isPending}
-        className="inline-flex w-full items-center group justify-center gap-2 rounded-full bg-eventkan-accent px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-eventkan-accent-hover active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex h-auto w-full items-center group justify-center gap-2 rounded-full bg-eventkan-accent px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-eventkan-accent-hover active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? 'Membuat akun...' : 'Buat akun'}
         {isPending ? (
@@ -122,7 +93,7 @@ const RegisterForm: FC = () => {
         ) : (
           <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:-rotate-45" />
         )}
-      </button>
+      </Button>
 
       <p className="text-center text-sm text-eventkan-muted">
         Sudah punya akun?{' '}

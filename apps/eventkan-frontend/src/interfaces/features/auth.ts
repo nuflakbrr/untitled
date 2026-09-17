@@ -70,6 +70,11 @@ export interface ForgotPasswordSuccessProps {
   onRetry: () => void;
 }
 
+export interface ReactivateAccountStatusProps {
+  variant: 'token' | 'email';
+  isReactivated?: boolean;
+}
+
 export interface AdminSessionUser {
   name: string;
   email: string;

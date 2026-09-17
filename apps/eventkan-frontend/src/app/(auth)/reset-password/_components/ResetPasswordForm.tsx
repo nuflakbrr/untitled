@@ -3,60 +3,31 @@
 import type { FC } from 'react';
 
 import Link from 'next/link';
-import { toast } from 'sonner';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, Loader2, ArrowRight } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
 
-import { authClient } from '@/lib/authClient';
+import { Button } from '@/components/ui/button';
 import { FieldGroup } from '@/components/ui/field';
-import { resetPasswordSchema, type ResetPasswordValues } from '@/schemas/auth';
 
 import PasswordField from './PasswordField';
 import ResetPasswordInvalid from './ResetPasswordInvalid';
 import ResetPasswordSuccess from './ResetPasswordSuccess';
-import { getPasswordRules } from '../_libs/getPasswordRules.libs';
+import useResetPassword from '../_hooks/useResetPassword';
 
 const ResetPasswordForm: FC = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get('token') ?? '';
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  const form = useForm<ResetPasswordValues>({
-    resolver: zodResolver(resetPasswordSchema),
-    defaultValues: { password: '', confirmPassword: '' },
-    mode: 'onChange',
-  });
-
-  const password = form.watch('password');
-  const confirmPassword = form.watch('confirmPassword');
-  const rules = getPasswordRules(password);
-
-  const { mutate: handleReset, isPending } = useMutation({
-    mutationFn: async (values: ResetPasswordValues) => {
-      if (!token) throw new Error('Token reset password tidak valid atau telah kedaluwarsa.');
-
-      const { error } = await authClient.resetPassword({ newPassword: values.password, token });
-      if (error) {
-        throw new Error(
-          error.message.includes('tidak valid')
-            ? 'Token reset password tidak valid atau telah kedaluwarsa.'
-            : 'Gagal mereset password. Silakan coba lagi.'
-        );
-      }
-    },
-    onSuccess: () => {
-      setSuccess(true);
-      setTimeout(() => router.push('/login'), 3000);
-    },
-    onError: (error: Error) => toast.error(error.message),
-  });
+  const {
+    confirmPassword,
+    form,
+    handleReset,
+    isPending,
+    password,
+    rules,
+    setShowConfirm,
+    setShowPassword,
+    showConfirm,
+    showPassword,
+    success,
+    token,
+  } = useResetPassword();
 
   if (!token) return <ResetPasswordInvalid />;
   if (success) return <ResetPasswordSuccess />;
@@ -114,11 +85,11 @@ const ResetPasswordForm: FC = () => {
         link baru dari halaman lupa password.
       </div>
 
-      <button
+      <Button
         type="submit"
         id="btn-reset-password-submit"
         disabled={isPending || !form.formState.isValid}
-        className="inline-flex group w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-eventkan-accent px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-eventkan-accent-hover active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex group h-auto w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-eventkan-accent px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-eventkan-accent-hover active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? 'Menyimpan...' : 'Simpan password baru'}
         {isPending ? (
@@ -126,7 +97,7 @@ const ResetPasswordForm: FC = () => {
         ) : (
           <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:-rotate-45" />
         )}
-      </button>
+      </Button>
 
       <p className="text-center text-sm text-eventkan-muted">
         Ingat password kamu?{' '}

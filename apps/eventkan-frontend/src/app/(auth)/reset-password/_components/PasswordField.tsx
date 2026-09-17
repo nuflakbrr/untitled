@@ -4,6 +4,7 @@ import { Eye, Lock, EyeOff } from 'lucide-react';
 
 import type { PasswordFieldProps } from '@/interfaces/features/auth';
 
+import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 
 import { getResetPasswordInputClass } from '../_libs/getResetPasswordInputClass.libs';
@@ -31,14 +32,16 @@ const PasswordField: FC<PasswordFieldProps> = ({
         {...register(valueName)}
         className={`${getResetPasswordInputClass(Boolean(error))} pl-11 pr-11`}
       />
-      <button
+      <Button
         type="button"
+        size="icon-sm"
+        variant="ghost"
         onClick={onToggle}
         className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-eventkan-muted transition hover:text-eventkan-navy"
         aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
       >
         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-      </button>
+      </Button>
     </div>
     {error && <FieldError className="text-xs font-medium text-[#b8473d]">{error}</FieldError>}
   </Field>

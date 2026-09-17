@@ -3,48 +3,17 @@
 import type { FC } from 'react';
 
 import Link from 'next/link';
-import { toast } from 'sonner';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, Info, Loader2, ArrowRight } from 'lucide-react';
 
-import { authClient } from '@/lib/authClient';
-import { forgotPasswordSchema, type ForgotPasswordValues } from '@/schemas/auth';
+import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 
 import ForgotPasswordSuccess from './ForgotPasswordSuccess';
+import useForgotPassword from '../_hooks/useForgotPassword';
 import { getForgotPasswordInputClass } from '../_libs/getForgotPasswordInputClass.libs';
 
 const ForgotPasswordForm: FC = () => {
-  const [emailSent, setEmailSent] = useState(false);
-  const [sentEmail, setSentEmail] = useState('');
-
-  const form = useForm<ForgotPasswordValues>({
-    resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: { email: '' },
-  });
-
-  const { mutate: handleSubmit, isPending } = useMutation({
-    mutationFn: async (values: ForgotPasswordValues) => {
-      const { error } = await authClient.requestPasswordReset({
-        email: values.email,
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password`,
-      });
-
-      if (error) {
-        throw new Error('Gagal mengirim email. Periksa kembali alamat email Anda.');
-      }
-
-      return values.email;
-    },
-    onSuccess: (email) => {
-      setSentEmail(email);
-      setEmailSent(true);
-    },
-    onError: (error: Error) => toast.error(error.message),
-  });
+  const { emailSent, form, handleSubmit, isPending, sentEmail, setEmailSent } = useForgotPassword();
 
   if (emailSent) {
     return <ForgotPasswordSuccess email={sentEmail} onRetry={() => setEmailSent(false)} />;
@@ -84,11 +53,11 @@ const ForgotPasswordForm: FC = () => {
         </span>
       </div>
 
-      <button
+      <Button
         type="submit"
         id="btn-forgot-password-submit"
         disabled={isPending}
-        className="inline-flex group w-full items-center justify-center gap-2 rounded-full bg-eventkan-accent px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-eventkan-accent-hover active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex group h-auto w-full items-center justify-center gap-2 rounded-full bg-eventkan-accent px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(255,122,69,.2)] transition hover:-translate-y-0.5 hover:bg-eventkan-accent-hover active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isPending ? 'Mengirim...' : 'Kirim tautan reset password'}
         {isPending ? (
@@ -96,7 +65,7 @@ const ForgotPasswordForm: FC = () => {
         ) : (
           <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:-rotate-45" />
         )}
-      </button>
+      </Button>
 
       <p className="text-center text-sm text-eventkan-muted">
         Ingat password kamu?{' '}

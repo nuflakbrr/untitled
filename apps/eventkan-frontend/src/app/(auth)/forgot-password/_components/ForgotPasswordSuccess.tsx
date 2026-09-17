@@ -5,6 +5,8 @@ import { ArrowRight, CheckCircle } from 'lucide-react';
 
 import type { ForgotPasswordSuccessProps } from '@/interfaces/features/auth';
 
+import { Button } from '@/components/ui/button';
+
 const ForgotPasswordSuccess: FC<ForgotPasswordSuccessProps> = ({ email, onRetry }) => (
   <div className="rounded-[20px] bg-eventkan-green p-6 text-left sm:p-7">
     <div className="flex items-center gap-3">
@@ -23,13 +25,15 @@ const ForgotPasswordSuccess: FC<ForgotPasswordSuccessProps> = ({ email, onRetry 
     </div>
     <p className="mt-4 text-xs text-eventkan-muted">
       Belum menerima email?{' '}
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="sm"
         onClick={onRetry}
         className="cursor-pointer font-bold text-eventkan-navy transition hover:text-eventkan-accent"
       >
         Kirim ulang
-      </button>
+      </Button>
     </p>
     <Link
       href="/login"
