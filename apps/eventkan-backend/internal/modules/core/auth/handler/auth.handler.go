@@ -27,8 +27,7 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 func (h *AuthHandler) Logout(c *gin.Context) {
 	claims, _ := middleware.GetUserFromContext(c)
 	if err := middleware.RevokeToken(c.Request.Context(), claims); err != nil {
-		response.Error(c, http.StatusInternalServerError, "Failed to revoke session", "")
-		return
+		logger.Warn("Failed to revoke token during logout", logger.Err(err))
 	}
 	response.Success(c, http.StatusOK, "Logged out successfully", nil)
 }

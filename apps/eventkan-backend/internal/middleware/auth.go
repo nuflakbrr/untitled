@@ -22,7 +22,13 @@ func RevokeToken(ctx context.Context, claims *jwtpkg.Claims) error {
 	if revocationStore == nil || claims == nil || claims.ID == "" || claims.ExpiresAt == nil {
 		return nil
 	}
-	return revocationStore.Set(ctx, "auth:revoked:"+claims.ID, "1", time.Until(claims.ExpiresAt.Time)).Err()
+
+	ttl := time.Until(claims.ExpiresAt.Time)
+	if ttl <= 0 {
+		return nil
+	}
+
+	return revocationStore.Set(ctx, "auth:revoked:"+claims.ID, "1", ttl).Err()
 }
 
 // JWTAuth is a middleware that validates JWT access tokens
