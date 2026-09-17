@@ -13,10 +13,16 @@ import useForgotPassword from '../_hooks/useForgotPassword';
 import { getForgotPasswordInputClass } from '../_libs/getForgotPasswordInputClass.libs';
 
 const ForgotPasswordForm: FC = () => {
-  const { emailSent, form, handleSubmit, isPending, sentEmail, setEmailSent } = useForgotPassword();
+  const { emailSent, form, handleSubmit, isPending, sentEmail } = useForgotPassword();
 
   if (emailSent) {
-    return <ForgotPasswordSuccess email={sentEmail} onRetry={() => setEmailSent(false)} />;
+    return (
+      <ForgotPasswordSuccess
+        email={sentEmail}
+        isPending={isPending}
+        onResend={() => handleSubmit({ email: sentEmail })}
+      />
+    );
   }
 
   return (

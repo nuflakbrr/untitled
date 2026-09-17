@@ -40,6 +40,5 @@ export default function useForgotPassword() {
     handleSubmit,
     isPending,
     sentEmail,
-    setEmailSent,
   };
 }

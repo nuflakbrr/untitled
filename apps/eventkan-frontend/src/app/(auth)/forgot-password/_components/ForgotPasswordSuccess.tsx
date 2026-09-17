@@ -1,13 +1,12 @@
 import type { FC } from 'react';
 
-import Link from 'next/link';
-import { ArrowRight, CheckCircle } from 'lucide-react';
+import { Loader2, CheckCircle } from 'lucide-react';
 
 import type { ForgotPasswordSuccessProps } from '@/interfaces/features/auth';
 
 import { Button } from '@/components/ui/button';
 
-const ForgotPasswordSuccess: FC<ForgotPasswordSuccessProps> = ({ email, onRetry }) => (
+const ForgotPasswordSuccess: FC<ForgotPasswordSuccessProps> = ({ email, isPending, onResend }) => (
   <div className="rounded-[20px] bg-eventkan-green p-6 text-left sm:p-7">
     <div className="flex items-center gap-3">
       <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/55 text-eventkan-green-ink">
@@ -29,19 +28,21 @@ const ForgotPasswordSuccess: FC<ForgotPasswordSuccessProps> = ({ email, onRetry 
         type="button"
         variant="ghost"
         size="sm"
-        onClick={onRetry}
-        className="cursor-pointer font-bold text-eventkan-navy transition hover:text-eventkan-accent"
+        disabled={isPending}
+        onClick={onResend}
+        className="cursor-pointer font-bold text-eventkan-navy hover:bg-white/45 hover:text-eventkan-navy-hover"
       >
-        Kirim ulang
+        {isPending ? 'Mengirim ulang...' : 'Kirim ulang'}
+        {isPending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
       </Button>
     </p>
-    <Link
+    {/* <Link
       href="/login"
       className="mt-6 inline-flex group items-center gap-2 rounded-full bg-eventkan-navy px-4 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-eventkan-navy-hover"
     >
       Kembali ke login{' '}
       <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:-rotate-45" />
-    </Link>
+    </Link> */}
   </div>
 );
 

@@ -67,7 +67,8 @@ export interface PasswordFieldProps {
 
 export interface ForgotPasswordSuccessProps {
   email: string;
-  onRetry: () => void;
+  isPending: boolean;
+  onResend: () => void;
 }
 
 export interface ReactivateAccountStatusProps {
