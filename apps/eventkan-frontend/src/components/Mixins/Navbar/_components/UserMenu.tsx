@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { LogOut, ChevronDown, LayoutDashboard } from 'lucide-react';
+import { LogOut, UserCircle, ChevronDown, LayoutDashboard } from 'lucide-react';
 
 import type { NavbarUser } from '@/interfaces/navbar';
 
@@ -79,7 +79,9 @@ const UserMenu: FC<UserMenuProps> = ({ user, isAdmin, tenantId }) => {
                 {getInitials(user.name)}
               </span>
               <span className="min-w-0">
-                <span className="block truncate text-sm font-bold text-eventkan-navy">{user.name}</span>
+                <span className="block truncate text-sm font-bold text-eventkan-navy">
+                  {user.name}
+                </span>
                 <span className="block truncate text-xs font-normal text-eventkan-muted">
                   {user.email}
                 </span>
@@ -87,6 +89,17 @@ const UserMenu: FC<UserMenuProps> = ({ user, isAdmin, tenantId }) => {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          {!isAdmin && (
+            <DropdownMenuItem asChild>
+              <Link
+                href="/participant/profile"
+                className="cursor-pointer rounded-xl px-3 py-2.5 text-eventkan-navy data-highlighted:bg-eventkan-canvas data-highlighted:text-eventkan-navy"
+              >
+                <UserCircle className="h-4 w-4 text-eventkan-accent" />
+                Profil Saya
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem asChild>
             <Link
               href={dashboardHref as Route}

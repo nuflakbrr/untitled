@@ -7,10 +7,10 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, Loader2, ArrowRight } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { signIn } from '@/lib/authClient';
 import { loginSchema, type LoginValues } from '@/schemas/auth';
@@ -22,6 +22,7 @@ import { sanitizeCallbackUrl } from '../_libs/sanitizeCallbackUrl.libs';
 const LoginForm: FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const rawCallbackUrl = searchParams.get('callbackURL') || searchParams.get('redirectTo');
   const targetUrl = sanitizeCallbackUrl(rawCallbackUrl);
   const [showPassword, setShowPassword] = useState(false);
@@ -55,6 +56,7 @@ const LoginForm: FC = () => {
       return data;
     },
     onSuccess: async (session) => {
+      await queryClient.invalidateQueries({ queryKey: ['auth-me-server-action'] });
       toast.success('Login berhasil! Selamat datang kembali.');
       const userRole = session?.data?.user?.role;
       const tenantPath =
