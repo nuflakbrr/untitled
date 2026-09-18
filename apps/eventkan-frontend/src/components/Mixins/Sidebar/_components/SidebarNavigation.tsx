@@ -4,6 +4,7 @@ import type { Route } from 'next';
 
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 import type { SideLinkGroup } from '../_constants/sideLinks.constants';
 
@@ -18,6 +19,8 @@ import {
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
 
+import { isSidebarPathActive } from '../_libs/isSidebarPathActive.libs';
+
 export function SidebarNavigation({
   items,
   adminPath,
@@ -27,6 +30,8 @@ export function SidebarNavigation({
   adminPath: string;
   onNavigate: () => void;
 }) {
+  const pathname = usePathname();
+
   return (
     <>
       {items.map((item) => (
@@ -35,7 +40,7 @@ export function SidebarNavigation({
             <Collapsible defaultOpen className="group/collapsible">
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton
-                  className="h-auto rounded-[11px] px-2.75 py-2.5 font-semibold text-eventkan-ink hover:bg-eventkan-peach hover:text-eventkan-peach-ink"
+                  className="h-auto rounded-[11px] px-2.75 py-2.5 font-semibold text-eventkan-ink hover:bg-eventkan-canvas! hover:text-eventkan-ink! data-[state=open]:bg-transparent data-[state=open]:text-eventkan-ink data-[state=open]:hover:bg-eventkan-canvas!"
                   onClick={onNavigate}
                 >
                   {item.icon && <item.icon />}
@@ -47,7 +52,11 @@ export function SidebarNavigation({
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
+                      <SidebarMenuSubButton
+                        asChild
+                        isActive={isSidebarPathActive(pathname, adminPath, subItem.url)}
+                        className="text-eventkan-muted hover:bg-eventkan-peach/50 hover:text-eventkan-peach-ink data-[active=true]:bg-eventkan-peach data-[active=true]:text-eventkan-peach-ink"
+                      >
                         <Link
                           href={`${adminPath}/${subItem.url}` as Route}
                           onClick={onNavigate}
@@ -64,7 +73,11 @@ export function SidebarNavigation({
           ) : (
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isSidebarPathActive(pathname, adminPath, item.url)}
+                  className="text-eventkan-ink hover:bg-eventkan-peach/50 hover:text-eventkan-peach-ink data-[active=true]:bg-eventkan-peach data-[active=true]:text-eventkan-peach-ink"
+                >
                   <Link
                     href={`${adminPath}/${item.url}` as Route}
                     onClick={onNavigate}
