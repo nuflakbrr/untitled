@@ -34,11 +34,7 @@ export function UserSetting({ user }: { user: User }) {
         onSettings={() => setSettingsOpen(true)}
         onLogout={() => setLogoutOpen(true)}
       />
-      <UserSettingsModal
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        user={user}
-      />
+      <UserSettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} user={user} />
       <AlertModal
         isOpen={logoutOpen}
         onClose={() => setLogoutOpen(false)}

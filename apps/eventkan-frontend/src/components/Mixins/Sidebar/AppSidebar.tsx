@@ -4,12 +4,7 @@ import type { ComponentProps } from 'react';
 
 import type { AdminSessionContext } from '@/interfaces/features/auth';
 
-import {
-  Sidebar,
-  SidebarRail,
-  SidebarFooter,
-  SidebarContent,
-} from '@/components/ui/sidebar';
+import { Sidebar, SidebarRail, SidebarFooter, SidebarContent } from '@/components/ui/sidebar';
 
 import { UserSetting } from './UserSetting';
 import { SidebarBrand } from './_components/SidebarBrand';
@@ -30,7 +25,10 @@ export function AppSidebar({
   if (!sidebar.isMounted) return <SidebarLoading {...props} />;
 
   return (
-    <Sidebar {...props}>
+    <Sidebar
+      {...props}
+      className="border-eventkan-ink/12 bg-eventkan-surface [--sidebar:var(--eventkan-surface)] [--sidebar-accent:var(--eventkan-peach)] [--sidebar-accent-foreground:var(--eventkan-peach-ink)] [--sidebar-border:rgb(17_25_39_/_12%)] [--sidebar-foreground:var(--eventkan-ink)] [--sidebar-primary:var(--eventkan-navy)] [--sidebar-primary-foreground:#fff]"
+    >
       <SidebarBrand
         tenants={sidebar.tenants}
         activeTenantId={sidebar.tenantId}
@@ -44,7 +42,7 @@ export function AppSidebar({
           onNavigate={sidebar.closeSidebar}
         />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="border-t border-eventkan-ink/12 pt-3">
         <UserSetting user={sidebar.user} />
       </SidebarFooter>
       <SidebarRail />

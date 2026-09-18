@@ -57,7 +57,7 @@ function DropdownMenuItem({
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Item> & {
   inset?: boolean;
-  variant?: 'default' | 'destructive' | 'warning';
+  variant?: 'default' | 'destructive' | 'warning' | 'accent';
 }) {
   return (
     <DropdownMenuPrimitive.Item
@@ -72,6 +72,8 @@ function DropdownMenuItem({
         'data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:*:[svg]:text-destructive',
         // Warning variant
         'data-[variant=warning]:text-warning data-[variant=warning]:focus:bg-warning/10 data-[variant=warning]:focus:text-warning dark:data-[variant=warning]:focus:bg-warning/20 data-[variant=warning]:*:[svg]:text-warning',
+        // Accent variant
+        'data-[variant=accent]:text-eventkan-peach-ink data-[variant=accent]:focus:bg-eventkan-peach/50 data-[variant=accent]:focus:text-eventkan-peach-ink data-[variant=accent]:*:[svg]:text-eventkan-accent',
         className
       )}
       {...props}

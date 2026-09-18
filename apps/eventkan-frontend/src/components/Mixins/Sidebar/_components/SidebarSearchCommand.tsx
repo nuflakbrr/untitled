@@ -25,7 +25,7 @@ export function SidebarSearchCommand({
 }) {
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
-      <Command className="rounded-lg border shadow-md">
+      <Command className="rounded-[15px] border border-eventkan-ink/12 bg-eventkan-surface text-eventkan-ink shadow-[0_18px_50px_rgba(17,35,63,.12)]">
         <CommandInput placeholder="Cari Menu..." className="border-none focus:ring-0" />
         <CommandList className="max-h-[300px]">
           <CommandEmpty>Oops! Tidak ada hasil.</CommandEmpty>
@@ -52,8 +52,8 @@ export function SidebarSearchCommand({
             </CommandGroup>
           ))}
         </CommandList>
-        <div className="flex items-center gap-2 border-t bg-muted/50 px-4 py-3 text-[10px] text-muted-foreground">
-          <div className="flex items-center gap-1.5 rounded border bg-background px-1.5 py-0.5 font-mono font-medium">
+        <div className="flex items-center gap-2 border-t border-eventkan-ink/12 bg-eventkan-canvas/50 px-4 py-3 text-[10px] text-eventkan-muted">
+          <div className="flex items-center gap-1.5 rounded border border-eventkan-ink/12 bg-eventkan-surface px-1.5 py-0.5 font-mono font-medium">
             <CornerDownLeft className="size-3" />
           </div>
           <span className="font-medium uppercase tracking-wider">Menuju ke Halaman</span>
@@ -80,7 +80,7 @@ function SearchCommandItem({
       className="group flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm outline-none hover:bg-accent aria-selected:bg-accent"
     >
       <div className="flex items-center gap-3">
-        <Icon className="size-4 text-muted-foreground group-hover:text-foreground" />
+        <Icon className="size-4 text-eventkan-muted group-hover:text-eventkan-ink" />
         <span>{label}</span>
       </div>
     </CommandItem>

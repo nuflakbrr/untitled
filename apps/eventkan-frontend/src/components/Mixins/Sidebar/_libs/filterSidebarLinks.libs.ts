@@ -6,7 +6,9 @@ export function filterSidebarLinks(
   isRootSuperadmin: boolean
 ) {
   const hasPermission = (permission?: string) =>
-    !permission || (permission === 'tenant.read' && isRootSuperadmin) || permissions.includes(permission);
+    !permission ||
+    (permission === 'tenant.read' && isRootSuperadmin) ||
+    permissions.includes(permission);
 
   return links.flatMap((item) => {
     if (item.hasChildren) {

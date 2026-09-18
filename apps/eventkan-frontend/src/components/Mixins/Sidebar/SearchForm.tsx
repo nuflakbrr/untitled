@@ -15,21 +15,24 @@ export function SearchForm() {
   const router = useRouter();
   const { adminPath, isMac, isMounted, open, setOpen } = useSidebarSearch();
 
-  if (!isMounted) return <div className="h-8 w-40 animate-pulse rounded-md bg-sidebar-accent" />;
+  if (!isMounted)
+    return <div className="h-10.5 w-40 animate-pulse rounded-xl bg-eventkan-canvas" />;
 
   return (
     <>
       <div className="relative">
-        <Label htmlFor="search" className="sr-only">Search</Label>
+        <Label htmlFor="search" className="sr-only">
+          Search
+        </Label>
         <SidebarInput
           id="search"
           onClick={() => setOpen(true)}
           readOnly
           placeholder="Cari Menu..."
-          className="cursor-pointer pl-8 pr-12 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="h-10.5 cursor-pointer rounded-xl border-eventkan-ink/12 bg-white/80 pl-8 pr-12 text-eventkan-ink shadow-none placeholder:text-eventkan-muted focus-visible:ring-1 focus-visible:ring-eventkan-accent/30 focus-visible:ring-offset-0"
         />
         <Search className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 opacity-50 select-none" />
-        <kbd className="pointer-events-none absolute top-1/2 right-2 flex h-5 -translate-y-1/2 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 select-none sm:flex">
+        <kbd className="pointer-events-none absolute top-1/2 right-2 flex h-5 -translate-y-1/2 items-center gap-1 rounded border border-eventkan-ink/12 bg-eventkan-canvas px-1.5 font-mono text-[10px] font-medium text-eventkan-muted opacity-100 select-none sm:flex">
           <span className="text-xs">{isMac ? '⌘' : 'Ctrl'}</span>+ K
         </kbd>
       </div>

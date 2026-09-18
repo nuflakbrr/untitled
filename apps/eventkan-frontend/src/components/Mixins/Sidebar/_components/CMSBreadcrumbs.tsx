@@ -10,7 +10,10 @@ import {
 } from '@/components/ui/breadcrumb';
 
 import { useBreadcrumbs } from '../_hooks/useBreadcrumbs';
-import { formatBreadcrumbSegment, nonClickableBreadcrumbs } from '../_constants/breadcrumbs.constants';
+import {
+  formatBreadcrumbSegment,
+  nonClickableBreadcrumbs,
+} from '../_constants/breadcrumbs.constants';
 
 export function CMSBreadcrumbs() {
   const { tenantId, pathSegments, resolvedLabels } = useBreadcrumbs();

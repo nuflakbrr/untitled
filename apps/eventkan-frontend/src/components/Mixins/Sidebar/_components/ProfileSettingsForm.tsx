@@ -39,12 +39,16 @@ export function ProfileSettingsForm({
           />
         </Field>
       </FieldGroup>
-      <div className="flex justify-end gap-3 border-t border-zinc-100 pt-4 dark:border-zinc-800">
+      <div className="flex justify-end gap-3 border-t border-eventkan-ink/12 pt-4">
         <Button type="button" variant="ghost" onClick={onCancel} disabled={pending}>
           Batal
         </Button>
         <Button type="submit" disabled={pending || name.trim() === ''}>
-          {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
+          {pending ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Check className="mr-2 h-4 w-4" />
+          )}
           {pending ? 'Menyimpan...' : 'Simpan Perubahan'}
         </Button>
       </div>

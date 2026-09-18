@@ -18,7 +18,8 @@ export function useBreadcrumbs() {
   const tenantId =
     rawSegments[0] === 'admin' && isUUID(rawSegments[1] ?? '') ? rawSegments[1] : null;
   const pathSegments = useMemo(
-    () => rawSegments.filter((segment, index) => !(index === 1 && tenantId && segment === tenantId)),
+    () =>
+      rawSegments.filter((segment, index) => !(index === 1 && tenantId && segment === tenantId)),
     [rawSegments, tenantId]
   );
 
