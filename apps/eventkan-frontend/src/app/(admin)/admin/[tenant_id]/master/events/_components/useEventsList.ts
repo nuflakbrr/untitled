@@ -9,7 +9,7 @@ export const useEventsList = (includeDeleted = false) => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useDebounce('', 500);
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(10);
 
   const { data, isLoading } = useQuery({
     queryKey: ['events', page, limit, debouncedSearch, includeDeleted],

@@ -28,7 +28,7 @@ const ArticlesCMS: FC = () => {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [selectedArticles, setSelectedArticles] = useState<Article[]>([]);
   const [rowSelection, setRowSelection] = useState({});
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(10);
   const [includeDeleted, setIncludeDeleted] = useState(false);
 
   const queryClient = useQueryClient();

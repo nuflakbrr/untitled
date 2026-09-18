@@ -10,7 +10,7 @@ export const usePaymentsList = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useDebounce('', 500);
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(10);
   const tenantId = usePathname().split('/')[2];
 
   const { data, isLoading } = useQuery({

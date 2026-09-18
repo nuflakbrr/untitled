@@ -26,7 +26,7 @@ const PermissionsCMS: FC = () => {
   const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
   const [selectedPermissions, setSelectedPermissions] = useState<Permission[]>([]);
   const [rowSelection, setRowSelection] = useState({});
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(10);
 
   const queryClient = useQueryClient();
 

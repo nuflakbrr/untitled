@@ -21,7 +21,7 @@ const RolesCMS: FC = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useDebounce('', 500);
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(10);
   const [selected, setSelected] = useState<typeof roles>([]);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [confirming, setConfirming] = useState(false);
@@ -40,11 +40,31 @@ const RolesCMS: FC = () => {
     includeDeleted ? Boolean(role.deletedAt) : !role.deletedAt
   );
   const meta = data?.meta || { total: 0, page: 1, lastPage: 0 };
-  const deleteMutation = useMutation({ mutationFn: () => Promise.all(selected.map((role) => includeDeleted ? permanentlyDeleteRole(role.id) : deleteRole(role.id))), onSuccess: async () => { toast.success('Jabatan berhasil dihapus.'); setConfirming(false); setSelected([]); setRowSelection({}); await queryClient.invalidateQueries({ queryKey: ['roles'] }); await refetch(); } });
+  const deleteMutation = useMutation({
+    mutationFn: () =>
+      Promise.all(
+        selected.map((role) =>
+          includeDeleted ? permanentlyDeleteRole(role.id) : deleteRole(role.id)
+        )
+      ),
+    onSuccess: async () => {
+      toast.success('Jabatan berhasil dihapus.');
+      setConfirming(false);
+      setSelected([]);
+      setRowSelection({});
+      await queryClient.invalidateQueries({ queryKey: ['roles'] });
+      await refetch();
+    },
+  });
 
   return (
     <section>
-      <AlertModal isOpen={confirming} onClose={() => setConfirming(false)} onConfirm={() => deleteMutation.mutate()} loading={deleteMutation.isPending} />
+      <AlertModal
+        isOpen={confirming}
+        onClose={() => setConfirming(false)}
+        onConfirm={() => deleteMutation.mutate()}
+        loading={deleteMutation.isPending}
+      />
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 md:mb-4">
         <Heading title={`Jabatan (${meta.total})`} description="Daftar jabatan yang tersedia." />
         {hasPermission('role.create') && (
@@ -72,9 +92,16 @@ const RolesCMS: FC = () => {
         searchValue={search}
         rowSelection={rowSelection}
         onRowSelectionChange={setRowSelection}
-        onBulkDelete={(rows) => { setSelected(rows); setConfirming(true); }}
+        onBulkDelete={(rows) => {
+          setSelected(rows);
+          setConfirming(true);
+        }}
         includeDeleted={includeDeleted}
-        onIncludeDeletedChange={(value) => { setIncludeDeleted(value); setPage(1); setRowSelection({}); }}
+        onIncludeDeletedChange={(value) => {
+          setIncludeDeleted(value);
+          setPage(1);
+          setRowSelection({});
+        }}
       />
     </section>
   );
