@@ -73,7 +73,7 @@ function DropdownMenuItem({
         // Warning variant
         'data-[variant=warning]:text-warning data-[variant=warning]:focus:bg-warning/10 data-[variant=warning]:focus:text-warning dark:data-[variant=warning]:focus:bg-warning/20 data-[variant=warning]:*:[svg]:text-warning',
         // Accent variant
-        'data-[variant=accent]:text-eventkan-peach-ink data-[variant=accent]:focus:bg-eventkan-peach/50 data-[variant=accent]:focus:text-eventkan-peach-ink data-[variant=accent]:*:[svg]:text-eventkan-accent',
+        'data-[variant=accent]:focus:bg-eventkan-peach/50 data-[variant=accent]:focus:text-eventkan-peach-ink data-[variant=accent]:*:[svg]:text-eventkan-accent',
         className
       )}
       {...props}
