@@ -94,7 +94,6 @@ export function SidebarUserMenu({
               </DropdownMenuItem>
               <DropdownMenuItem
                 variant="accent"
-                onClick={onSettings}
                 className="cursor-pointer rounded-xl px-3 py-2.5 text-eventkan-navy hover:bg-eventkan-peach/50! hover:text-eventkan-peach-ink! focus:bg-eventkan-peach/50! focus:text-eventkan-peach-ink! data-highlighted:bg-eventkan-peach/50! data-highlighted:text-eventkan-peach-ink! data-highlighted:[&_svg]:text-eventkan-accent!"
                 asChild
               >
