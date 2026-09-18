@@ -54,7 +54,7 @@ export function TenantSwitcherMenu({
           <DropdownMenuContent
             side="bottom"
             align="start"
-            className="w-(--radix-dropdown-menu-trigger-width)"
+            className="w-(--radix-dropdown-menu-trigger-width) rounded-[18px] border-eventkan-ink/10 bg-eventkan-surface/95 p-2 text-eventkan-navy shadow-[0_18px_50px_rgba(17,35,63,.14)] backdrop-blur-xl"
           >
             <div className="p-2">
               <Input
@@ -62,20 +62,24 @@ export function TenantSwitcherMenu({
                 value={query}
                 onChange={(event) => onQueryChange(event.target.value)}
                 onKeyDown={(event) => event.stopPropagation()}
+                className="h-9 rounded-xl border-eventkan-ink/10 bg-eventkan-canvas text-eventkan-ink placeholder:text-eventkan-muted focus-visible:border-eventkan-accent focus-visible:ring-eventkan-accent/20"
               />
             </div>
             {filteredTenants.map((tenant) => (
               <DropdownMenuItem
                 key={tenant.id}
                 onSelect={() => onSwitch(tenant.id)}
-                className="cursor-pointer"
+                variant="accent"
+                className="cursor-pointer rounded-xl px-3 py-2.5 text-eventkan-navy hover:bg-eventkan-peach/50! hover:text-eventkan-peach-ink! focus:bg-eventkan-peach/50! focus:text-eventkan-peach-ink! data-highlighted:bg-eventkan-peach/50! data-highlighted:text-eventkan-peach-ink! data-highlighted:[&_svg]:text-eventkan-accent!"
               >
                 {tenant.name}
-                {tenant.id === activeTenantId && <Check className="ml-auto size-4" />}
+                {tenant.id === activeTenantId && (
+                  <Check className="ml-auto size-4 text-eventkan-accent" />
+                )}
               </DropdownMenuItem>
             ))}
             {filteredTenants.length === 0 && (
-              <p className="px-2 py-1.5 text-sm text-eventkan-muted">Tenant tidak ditemukan.</p>
+              <p className="px-3 py-2.5 text-sm text-eventkan-muted">Tenant tidak ditemukan.</p>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
