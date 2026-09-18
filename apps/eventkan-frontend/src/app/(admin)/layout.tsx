@@ -1,7 +1,8 @@
 import type { FC, ReactNode } from 'react';
 
-import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+
+import { auth } from '@/lib/auth';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { CMSHeader } from '@/components/Mixins/Sidebar/CMSHeader';
 import { AppSidebar } from '@/components/Mixins/Sidebar/AppSidebar';
