@@ -17,6 +17,7 @@ import AlertModal from '@/components/Common/Modals/AlertModal';
 import {
   DropdownMenu,
   DropdownMenuItem,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuContent,
   DropdownMenuTrigger,
@@ -89,31 +90,35 @@ const UserMenu: FC<UserMenuProps> = ({ user, isAdmin, tenantId }) => {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {!isAdmin && (
-            <DropdownMenuItem asChild>
+          <DropdownMenuGroup>
+            {!isAdmin && (
+              <DropdownMenuItem variant="accent" asChild>
+                <Link
+                  href="/participant/profile"
+                  className="cursor-pointer rounded-xl px-3 py-2.5 text-eventkan-navy hover:bg-eventkan-peach/50! hover:text-eventkan-peach-ink! focus:bg-eventkan-peach/50! focus:text-eventkan-peach-ink! data-highlighted:bg-eventkan-peach/50! data-highlighted:text-eventkan-peach-ink! data-highlighted:[&_svg]:text-eventkan-accent!"
+                >
+                  <UserCircle className="h-4 w-4" />
+                  Profil Saya
+                </Link>
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem variant="accent" asChild>
               <Link
-                href="/participant/profile"
-                className="cursor-pointer rounded-xl px-3 py-2.5 text-eventkan-navy data-highlighted:bg-eventkan-canvas data-highlighted:text-eventkan-navy"
+                href={dashboardHref as Route}
+                className="cursor-pointer rounded-xl px-3 py-2.5 text-eventkan-navy hover:bg-eventkan-peach/50! hover:text-eventkan-peach-ink! focus:bg-eventkan-peach/50! focus:text-eventkan-peach-ink! data-highlighted:bg-eventkan-peach/50! data-highlighted:text-eventkan-peach-ink! data-highlighted:[&_svg]:text-eventkan-accent!"
               >
-                <UserCircle className="h-4 w-4 text-eventkan-accent" />
-                Profil Saya
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
               </Link>
             </DropdownMenuItem>
-          )}
-          <DropdownMenuItem asChild>
-            <Link
-              href={dashboardHref as Route}
-              className="cursor-pointer rounded-xl px-3 py-2.5 text-eventkan-navy data-highlighted:bg-eventkan-canvas data-highlighted:text-eventkan-navy"
-            >
-              <LayoutDashboard className="h-4 w-4 text-eventkan-accent" />
-              Dashboard
-            </Link>
-          </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
           <DropdownMenuItem
+            variant="destructive"
             onClick={() => setLogoutOpen(true)}
-            className="cursor-pointer rounded-xl px-3 py-2.5 text-eventkan-peach-ink data-highlighted:bg-[#fff0e9] data-highlighted:text-eventkan-peach-ink"
+            className="cursor-pointer rounded-xl px-3 py-2.5 text-red-700 hover:bg-red-50! hover:text-red-700! focus:bg-red-50! focus:text-red-700! data-highlighted:bg-red-50! data-highlighted:text-red-700!"
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="h-4 w-4 text-red-700" />
             Keluar
           </DropdownMenuItem>
         </DropdownMenuContent>

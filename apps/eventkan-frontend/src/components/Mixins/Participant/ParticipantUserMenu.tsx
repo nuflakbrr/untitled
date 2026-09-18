@@ -5,11 +5,7 @@ import { toast } from 'sonner';
 import { useState } from 'react';
 import { useTour } from '@reactour/tour';
 import { useMutation } from '@tanstack/react-query';
-import {
-  Home,
-  LogOut,
-  ChevronDown,
-} from 'lucide-react';
+import { Home, LogOut, ChevronDown } from 'lucide-react';
 
 import type { ParticipantNavbarProps } from '@/interfaces/navbar';
 
@@ -20,6 +16,7 @@ import AlertModal from '@/components/Common/Modals/AlertModal';
 import {
   DropdownMenu,
   DropdownMenuItem,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuContent,
   DropdownMenuTrigger,
@@ -85,43 +82,59 @@ export default function ParticipantUserMenu({ user }: ParticipantNavbarProps) {
                 {getInitials(user.name)}
               </span>
               <span className="min-w-0">
-                <span className="block truncate text-sm font-bold text-eventkan-navy">{user.name}</span>
-                <span className="block truncate text-xs font-normal text-eventkan-muted">{user.email}</span>
+                <span className="block truncate text-sm font-bold text-eventkan-navy">
+                  {user.name}
+                </span>
+                <span className="block truncate text-xs font-normal text-eventkan-muted">
+                  {user.email}
+                </span>
               </span>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {participantUserMenuLinks.map((link) => {
-            const Icon = link.icon;
+          <DropdownMenuGroup>
+            {participantUserMenuLinks.map((link) => {
+              const Icon = link.icon;
 
-            return (
-              <DropdownMenuItem
-                key={link.href}
-                asChild
-                className={link.mobileOnly ? 'md:hidden' : undefined}
-              >
-                <Link
-                  href={link.href}
-                  {...(link.tourTarget && {
-                    'data-tour-mobile': `step-${link.tourTarget}`,
-                  })}
-                  className="cursor-pointer rounded-xl px-3 py-2.5 text-eventkan-navy data-highlighted:bg-eventkan-canvas"
+              return (
+                <DropdownMenuItem
+                  key={link.href}
+                  asChild
+                  className={link.mobileOnly ? 'md:hidden' : undefined}
+                  variant="accent"
                 >
-                  <Icon className="h-4 w-4 text-eventkan-accent" />
-                  {link.label}
-                </Link>
-              </DropdownMenuItem>
-            );
-          })}
+                  <Link
+                    href={link.href}
+                    {...(link.tourTarget && {
+                      'data-tour-mobile': `step-${link.tourTarget}`,
+                    })}
+                    className="cursor-pointer rounded-xl px-3 py-2.5 text-eventkan-navy hover:bg-eventkan-canvas hover:text-eventkan-navy focus:bg-eventkan-canvas focus:text-eventkan-navy data-highlighted:bg-eventkan-canvas data-highlighted:text-eventkan-navy"
+                  >
+                    <Icon className="h-4 w-4 text-eventkan-accent" />
+                    {link.label}
+                  </Link>
+                </DropdownMenuItem>
+              );
+            })}
+          </DropdownMenuGroup>
           <DropdownMenuSeparator className="md:hidden" />
-          <DropdownMenuItem asChild>
-            <Link href="/" className="cursor-pointer rounded-xl px-3 py-2.5 text-eventkan-navy data-highlighted:bg-eventkan-canvas">
-              <Home className="h-4 w-4 text-eventkan-accent" /> Kembali ke Beranda
+          <DropdownMenuItem variant="accent" asChild>
+            <Link
+              href="/"
+              className="cursor-pointer rounded-xl px-3 py-2.5 text-eventkan-navy hover:bg-eventkan-peach/50! hover:text-eventkan-peach-ink! focus:bg-eventkan-peach/50! focus:text-eventkan-peach-ink! data-highlighted:bg-eventkan-peach/50! data-highlighted:text-eventkan-peach-ink! data-highlighted:[&_svg]:text-eventkan-accent!"
+            >
+              <Home className="h-4 w-4" />
+              Kembali ke Beranda
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setLogoutOpen(true)} className="cursor-pointer rounded-xl px-3 py-2.5 text-eventkan-peach-ink data-highlighted:bg-[#fff0e9] data-highlighted:text-eventkan-peach-ink">
-            <LogOut className="h-4 w-4" /> Keluar
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => setLogoutOpen(true)}
+            className="cursor-pointer rounded-xl px-3 py-2.5 text-red-700 hover:bg-red-50! hover:text-red-700! focus:bg-red-50! focus:text-red-700! data-highlighted:bg-red-50! data-highlighted:text-red-700!"
+          >
+            <LogOut className="h-4 w-4 text-red-700" />
+            Keluar
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
