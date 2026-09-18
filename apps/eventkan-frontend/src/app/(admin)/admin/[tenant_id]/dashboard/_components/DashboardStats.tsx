@@ -1,7 +1,7 @@
 import type { Route } from 'next';
 
 import Link from 'next/link';
-import { Users, Calendar, CreditCard, CheckSquare, ChevronRight } from 'lucide-react';
+import { Users, Award, Calendar, CreditCard, ChevronRight } from 'lucide-react';
 
 import type { AdminDashboardStats } from '@/interfaces/features/dashboard';
 
@@ -44,7 +44,7 @@ export default function DashboardStats({ counts }: { counts: AdminDashboardStats
       'Kehadiran (Check-In)',
       counts.checkIns,
       `${counts.certificates} Sertifikat Terbit`,
-      CheckSquare,
+      Award,
       '/admin/attendances',
       'bg-eventkan-yellow text-[#856b16]',
     ],
