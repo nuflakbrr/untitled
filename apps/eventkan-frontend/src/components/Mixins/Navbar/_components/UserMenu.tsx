@@ -14,6 +14,7 @@ import type { NavbarUser } from '@/interfaces/navbar';
 import { signOut } from '@/lib/authClient';
 import { getInitials } from '@/lib/getInitials';
 import AlertModal from '@/components/Common/Modals/AlertModal';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -58,9 +59,12 @@ const UserMenu: FC<UserMenuProps> = ({ user, isAdmin, tenantId }) => {
             aria-label="Menu akun"
             className="group inline-flex h-12 cursor-pointer items-center gap-2 rounded-full border border-eventkan-ink/10 bg-white/60 p-1.5 pr-3 text-left shadow-[0_8px_24px_rgba(17,35,63,.08)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-eventkan-navy/25"
           >
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-eventkan-navy text-xs font-bold tracking-wide text-white">
-              {getInitials(user.name)}
-            </span>
+            <Avatar className="h-9 w-9 shrink-0">
+              <AvatarImage src={user.image ?? undefined} alt={user.name} />
+              <AvatarFallback className="bg-eventkan-navy text-xs font-bold tracking-wide text-white">
+                {getInitials(user.name)}
+              </AvatarFallback>
+            </Avatar>
             <span className="hidden max-w-28 sm:grid">
               {/* <span className="text-[10px] font-bold uppercase tracking-[.12em] text-eventkan-accent">
                 Akun saya
@@ -76,9 +80,12 @@ const UserMenu: FC<UserMenuProps> = ({ user, isAdmin, tenantId }) => {
         >
           <DropdownMenuLabel className="rounded-2xl bg-eventkan-canvas p-3">
             <div className="flex items-center gap-3">
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-eventkan-accent text-xs font-bold text-white">
-                {getInitials(user.name)}
-              </span>
+              <Avatar className="h-10 w-10 shrink-0">
+                <AvatarImage src={user.image ?? undefined} alt={user.name} />
+                <AvatarFallback className="bg-eventkan-accent text-xs font-bold text-white">
+                  {getInitials(user.name)}
+                </AvatarFallback>
+              </Avatar>
               <span className="min-w-0">
                 <span className="block truncate text-sm font-bold text-eventkan-navy">
                   {user.name}
