@@ -23,6 +23,14 @@ import {
   SelectContent,
   SelectTrigger,
 } from '@/components/ui/select';
+import {
+  Table,
+  TableRow,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+} from '@/components/ui/table';
 
 import {
   paymentStatus,
@@ -67,51 +75,65 @@ export default function RecentRegistrations({
             Belum ada registrasi peserta.
           </div>
         ) : (
-          <div className="space-y-2 px-4 pb-4 sm:px-5">
-            <div className="hidden grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)_auto] gap-4 px-3 pb-1 text-[10px] font-extrabold uppercase tracking-[.08em] text-eventkan-muted sm:grid">
-              <span>Peserta</span>
-              <span>Event</span>
-              <span>Status</span>
-            </div>
-            {paginatedRegistrations.map((reg) => (
-              <div
-                key={reg.id}
-                className="grid gap-3 rounded-[16px] bg-eventkan-canvas/45 p-3 transition-colors hover:bg-eventkan-canvas sm:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)_auto] sm:items-center sm:gap-4"
-              >
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-eventkan-navy/8 text-[10px] font-extrabold text-eventkan-navy">
-                    {getInitials(reg.user.name || 'Anonymous')}
-                  </span>
-                  <span className="min-w-0">
-                    <strong className="block truncate text-[11px] font-extrabold text-eventkan-ink">
-                      {reg.user.name || 'Anonymous'}
-                    </strong>
-                    <span className="block truncate text-[10px] text-eventkan-muted">
-                      {reg.user.email}
-                    </span>
-                  </span>
-                </div>
-                <div className="min-w-0 pl-10 sm:pl-0">
-                  <p className="truncate text-[11px] font-semibold text-eventkan-ink">
-                    {reg.event.title}
-                  </p>
-                  <p className="mt-1 text-[10px] text-eventkan-muted">{date(reg.createdAt)}</p>
-                </div>
-                <div className="flex items-center justify-between gap-3 pl-10 sm:block sm:pl-0 sm:text-right">
-                  <Badge
-                    variant="secondary"
-                    className={`rounded-full px-2 py-1 text-[10px] font-extrabold ${registrationStatusClass[reg.status] ?? 'bg-eventkan-canvas text-eventkan-muted'}`}
+          <div className="px-4 pb-4 sm:px-5">
+            <Table className="min-w-170 border-separate border-spacing-y-2">
+              <TableHeader>
+                <TableRow className="border-0 hover:bg-transparent">
+                  <TableHead className="h-7 px-3 text-[10px] font-extrabold uppercase tracking-[.08em] text-eventkan-muted">
+                    Peserta
+                  </TableHead>
+                  <TableHead className="h-7 px-3 text-[10px] font-extrabold uppercase tracking-[.08em] text-eventkan-muted">
+                    Event
+                  </TableHead>
+                  <TableHead className="h-7 px-3 text-right text-[10px] font-extrabold uppercase tracking-[.08em] text-eventkan-muted">
+                    Status
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedRegistrations.map((reg) => (
+                  <TableRow
+                    key={reg.id}
+                    className="border-0 bg-eventkan-canvas/45 hover:bg-eventkan-canvas [&>td:first-child]:rounded-l-[16px] [&>td:last-child]:rounded-r-[16px]"
                   >
-                    {registrationStatus[reg.status] ?? reg.status}
-                  </Badge>
-                  {reg.event.price > 0 && reg.payment && (
-                    <span className="text-[10px] font-semibold text-eventkan-muted sm:mt-1 sm:block">
-                      {paymentStatus[reg.payment.status] ?? reg.payment.status}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
+                    <TableCell className="px-3 py-3">
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-eventkan-navy/8 text-[10px] font-extrabold text-eventkan-navy">
+                          {getInitials(reg.user.name || 'Anonymous')}
+                        </span>
+                        <span className="min-w-0">
+                          <strong className="block truncate text-[11px] font-extrabold text-eventkan-ink">
+                            {reg.user.name || 'Anonymous'}
+                          </strong>
+                          <span className="block truncate text-[10px] text-eventkan-muted">
+                            {reg.user.email}
+                          </span>
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-3 py-3">
+                      <p className="truncate text-[11px] font-semibold text-eventkan-ink">
+                        {reg.event.title}
+                      </p>
+                      <p className="mt-1 text-[10px] text-eventkan-muted">{date(reg.createdAt)}</p>
+                    </TableCell>
+                    <TableCell className="px-3 py-3 text-right">
+                      <Badge
+                        variant="secondary"
+                        className={`rounded-full px-2 py-1 text-[10px] font-extrabold ${registrationStatusClass[reg.status] ?? 'bg-eventkan-canvas text-eventkan-muted'}`}
+                      >
+                        {registrationStatus[reg.status] ?? reg.status}
+                      </Badge>
+                      {reg.event.price > 0 && reg.payment && (
+                        <span className="mt-1 block text-[10px] font-semibold text-eventkan-muted">
+                          {paymentStatus[reg.payment.status] ?? reg.payment.status}
+                        </span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         )}
         {registrations.length > pageSize && (
