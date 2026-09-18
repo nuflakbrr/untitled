@@ -4,41 +4,19 @@ import 'moment-timezone';
 
 import moment from 'moment';
 import { type FC, useState, useEffect } from 'react';
-import { Sun, Moon, Sunset, Sunrise } from 'lucide-react';
 
-type TimeOfDay = 'morning' | 'afternoon' | 'evening' | 'night';
+import { TIME_OF_DAY_CONFIG } from './_constants/greeting.constants';
+import { getTimeOfDay, type TimeOfDay } from './_libs/getTimeOfDay.libs';
 
 const GreetingCard: FC = () => {
-  // Timezone
-  const [greeting, setGreeting] = useState('');
   const [currentTime, setCurrentTime] = useState('');
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>('morning');
-
-  // Function to determine time of day and set appropriate greeting and icon
-  const updateTimeOfDay = (hour: number) => {
-    if (hour >= 4 && hour < 12) {
-      setGreeting('SELAMAT PAGI');
-      setTimeOfDay('morning');
-    } else if (hour >= 12 && hour < 15) {
-      setGreeting('SELAMAT SIANG');
-      setTimeOfDay('afternoon');
-    } else if (hour >= 15 && hour < 18) {
-      setGreeting('SELAMAT SORE');
-      setTimeOfDay('evening');
-    } else {
-      setGreeting('SELAMAT MALAM');
-      setTimeOfDay('night');
-    }
-  };
 
   useEffect(() => {
     const update = () => {
       const now = moment().tz('Asia/Jakarta');
-      const timeStr = now.format('HH:mm:ss [WIB]');
-      const hour = now.hour();
-
-      setCurrentTime(timeStr);
-      updateTimeOfDay(hour);
+      setCurrentTime(now.format('HH:mm:ss [WIB]'));
+      setTimeOfDay(getTimeOfDay(now.hour()));
     };
 
     update();
@@ -46,49 +24,25 @@ const GreetingCard: FC = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const getGreetingIcon = () => {
-    switch (timeOfDay) {
-      case 'morning':
-        return <Sunrise className="w-6 h-6 sm:w-8 sm:h-8 text-[#F9D923] dark:text-white" />;
-      case 'afternoon':
-        return <Sun className="w-6 h-6 sm:w-8 sm:h-8 text-[#F08700] dark:text-white" />;
-      case 'evening':
-        return <Sunset className="w-6 h-6 sm:w-8 sm:h-8 text-[#EB6440] dark:text-white" />;
-      case 'night':
-        return <Moon className="w-6 h-6 sm:w-8 sm:h-8 text-[#36455A] dark:text-white" />;
-    }
-  };
-
-  const getBackgroundColor = () => {
-    switch (timeOfDay) {
-      case 'morning':
-        return 'bg-[#FFEFD6]/30 dark:bg-[#6B4226]/30'; // warm brown for morning
-      case 'afternoon':
-        return 'bg-[#F9F54B]/20 dark:bg-[#B59E0D]/30'; // golden mustard for afternoon
-      case 'evening':
-        return 'bg-[#FFC3C3]/30 dark:bg-[#872626]/30'; // soft deep red for evening
-      case 'night':
-        return 'bg-[#8294C4]/20 dark:bg-[#2C3E50]/30'; // muted deep blue for night
-    }
-  };
+  const { greeting, icon: GreetingIcon, iconClass, panelClass } = TIME_OF_DAY_CONFIG[timeOfDay];
 
   return (
-    <div className="w-full bg-white dark:bg-sidebar rounded-lg shadow-md p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="grid border gap-6 rounded-[22px] bg-eventkan-surface p-6 shadow-[0_18px_50px_rgba(17,35,63,.06)] lg:grid-cols-[1fr_380px] lg:items-center">
       <div>
-        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-black dark:text-white">
+        <h1 className="font-display mt-2 text-[clamp(28px,3vw,34px)] font-extrabold leading-none tracking-[-.04em] text-eventkan-ink">
           {greeting}!
         </h1>
-        <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mt-1">
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-eventkan-muted">
           Terimakasih sudah mengelola semua data dengan baik. Kamu sangat luar biasa!
         </p>
         {currentTime && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-            Sekarang Pukul: {currentTime}
-          </p>
+          <p className="mt-3 text-[11px] text-eventkan-muted">Sekarang pukul {currentTime}</p>
         )}
       </div>
-      <div className={`${getBackgroundColor()} p-3 sm:p-4 rounded-lg self-end sm:self-auto`}>
-        {getGreetingIcon()}
+      <div
+        className={`grid h-20 w-20 place-items-center justify-self-end rounded-[18px] sm:h-16 sm:w-16 ${panelClass}`}
+      >
+        <GreetingIcon className={`h-6 w-6 sm:h-8 sm:w-8 ${iconClass}`} />
       </div>
     </div>
   );
