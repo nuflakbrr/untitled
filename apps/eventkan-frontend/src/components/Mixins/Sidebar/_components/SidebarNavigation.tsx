@@ -43,7 +43,7 @@ export function SidebarNavigation({
                   className="h-auto rounded-[11px] px-2.75 py-2.5 font-semibold text-eventkan-ink hover:bg-eventkan-canvas! hover:text-eventkan-ink! data-[state=open]:bg-transparent data-[state=open]:text-eventkan-ink data-[state=open]:hover:bg-eventkan-canvas!"
                   onClick={onNavigate}
                 >
-                  {item.icon && <item.icon />}
+                  {item.icon && <item.icon className="text-eventkan-accent" />}
                   <span>{item.title}</span>
                   <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </SidebarMenuButton>
@@ -83,7 +83,7 @@ export function SidebarNavigation({
                     onClick={onNavigate}
                     className="text-eventkan-ink"
                   >
-                    {item.icon && <item.icon />}
+                    {item.icon && <item.icon className="text-eventkan-accent" />}
                     <span>{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
