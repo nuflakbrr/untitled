@@ -650,9 +650,168 @@ const adminEventSchema = z.object({
   quota: z.number(),
   price: z.number(),
   status: z.string(),
+  certificate_enabled: z.boolean().default(false),
   deleted_at: z.string().nullish(),
   category: z.object({ name: z.string() }).nullish(),
 });
+
+export type CertificateTemplate = {
+  id?: string;
+  tenant_id?: string;
+  event_id: string;
+  background_url: string;
+  number_template: string;
+  number_mode: 'AUTO' | 'MANUAL';
+  show_issued_date: boolean;
+  show_event_date: boolean;
+  show_event_location: boolean;
+  show_header: boolean;
+  header_text: string;
+  header_subtitle: string;
+  header_font: string;
+  header_color: string;
+  title_font: string;
+  title_color: string;
+  content_font: string;
+  content_color: string;
+  primary_color: string;
+  footer_margin_bottom: number;
+  signatures: Array<{
+    id?: string;
+    name: string;
+    title: string;
+    signature_url: string;
+    order: number;
+  }>;
+};
+
+export type CertificateEditorState = { error: string; success: string; jobID?: string };
+
+const certificateTemplateSchema = z.object({
+  id: z.string().optional(),
+  tenant_id: z.string().optional(),
+  event_id: z.string(),
+  background_url: z.string().default(''),
+  number_template: z.string(),
+  number_mode: z.enum(['AUTO', 'MANUAL']),
+  show_issued_date: z.boolean(),
+  show_event_date: z.boolean(),
+  show_event_location: z.boolean(),
+  show_header: z.boolean(),
+  header_text: z.string(),
+  header_subtitle: z.string(),
+  header_font: z.string().default(''),
+  header_color: z.string().default(''),
+  title_font: z.string().default(''),
+  title_color: z.string().default(''),
+  content_font: z.string().default(''),
+  content_color: z.string().default(''),
+  primary_color: z.string().default(''),
+  footer_margin_bottom: z.number(),
+  signatures: z.array(
+    z.object({
+      id: z.string().optional(),
+      name: z.string(),
+      title: z.string(),
+      signature_url: z.string(),
+      order: z.number(),
+    })
+  ),
+});
+
+export async function getCertificateTemplateAction(eventID: string) {
+  const auth = await authenticatedSession();
+  if (!auth) return { data: null, error: 'Sesi tidak ditemukan' };
+  const response = await fetchBackend(
+    `features/v1/certificates/templates/event/${eventID}`,
+    auth.token
+  );
+  if (response.status === 404) return { data: null, error: null };
+  const payload = await responseJson<unknown>(response);
+  const parsed = certificateTemplateSchema.safeParse(payload.data);
+  if (!response.ok || !parsed.success)
+    return { data: null, error: payload.message || 'Template sertifikat gagal dimuat' };
+  return { data: parsed.data, error: null };
+}
+
+export async function saveCertificateTemplateAction(
+  _state: CertificateEditorState,
+  formData: FormData
+): Promise<CertificateEditorState> {
+  const auth = await authenticatedSession();
+  if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
+  const eventID = String(formData.get('event_id') || '');
+  let signatures: CertificateTemplate['signatures'] = [];
+  try {
+    signatures = z
+      .array(
+        z.object({
+          name: z.string().trim().min(2).max(255),
+          title: z.string().trim().max(255),
+          signature_url: z.url(),
+          order: z.number().int().min(0).max(10),
+        })
+      )
+      .parse(JSON.parse(String(formData.get('signatures') || '[]')));
+  } catch {
+    return { error: 'Lengkapi data dan URL tanda tangan dengan benar', success: '' };
+  }
+  const body = {
+    background_url: String(formData.get('background_url') || '').trim(),
+    number_template: String(formData.get('number_template') || '').trim(),
+    number_mode: String(formData.get('number_mode') || 'AUTO'),
+    show_issued_date: formData.get('show_issued_date') === 'on',
+    show_event_date: formData.get('show_event_date') === 'on',
+    show_event_location: formData.get('show_event_location') === 'on',
+    show_header: formData.get('show_header') === 'on',
+    header_text: String(formData.get('header_text') || '').trim(),
+    header_subtitle: String(formData.get('header_subtitle') || '').trim(),
+    header_font: String(formData.get('header_font') || '').trim(),
+    header_color: String(formData.get('header_color') || ''),
+    title_font: String(formData.get('title_font') || '').trim(),
+    title_color: String(formData.get('title_color') || ''),
+    content_font: String(formData.get('content_font') || '').trim(),
+    content_color: String(formData.get('content_color') || ''),
+    primary_color: String(formData.get('primary_color') || ''),
+    footer_margin_bottom: Number(formData.get('footer_margin_bottom') || 0),
+    signatures,
+  };
+  if (!z.uuid().safeParse(eventID).success || !body.number_template)
+    return { error: 'Data template belum lengkap', success: '' };
+  const response = await fetchBackend(
+    `features/v1/certificates/templates/event/${eventID}`,
+    auth.token,
+    { method: 'PUT', body: JSON.stringify(body) }
+  );
+  const payload = await responseJson<unknown>(response);
+  if (!response.ok)
+    return { error: payload.message || 'Template sertifikat gagal disimpan', success: '' };
+  revalidatePath(paths.dashboard.certificates);
+  revalidatePath(paths.dashboard.certificateEditor(eventID));
+  return { error: '', success: 'Template sertifikat berhasil disimpan' };
+}
+
+export async function generateCertificatesAction(
+  _state: CertificateEditorState,
+  formData: FormData
+): Promise<CertificateEditorState> {
+  const auth = await authenticatedSession();
+  if (!auth) return { error: 'Sesi tidak ditemukan', success: '' };
+  const eventID = String(formData.get('event_id') || '');
+  const response = await fetchBackend(
+    `features/v1/certificates/event/${eventID}/generate`,
+    auth.token,
+    { method: 'POST', body: JSON.stringify({}) }
+  );
+  const payload = await responseJson<{ id?: string }>(response);
+  if (!response.ok)
+    return { error: payload.message || 'Penerbitan sertifikat gagal dimulai', success: '' };
+  return {
+    error: '',
+    success: 'Penerbitan sertifikat masuk antrean',
+    jobID: payload.data?.id,
+  };
+}
 
 export async function listAdminEventsAction() {
   const auth = await authenticatedSession();

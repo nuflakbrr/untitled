@@ -29,6 +29,7 @@ export const paths = {
     eventCategories: '/dashboard/event-categories',
     eventCategoriesCreate: '/dashboard/event-categories/create',
     certificates: '/dashboard/certificates',
+    certificateEditor: (eventID: string) => `/dashboard/certificates/${eventID}/edit`,
     galleries: '/dashboard/galleries',
     registrations: '/dashboard/registrations',
     payments: '/dashboard/payments',
