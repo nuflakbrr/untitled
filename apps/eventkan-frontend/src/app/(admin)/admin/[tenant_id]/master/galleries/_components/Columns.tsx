@@ -9,6 +9,7 @@ import { Star, Search } from 'lucide-react';
 import type { Gallery } from '@/interfaces/features/galleries';
 
 import { Badge } from '@/components/ui/badge';
+import { formatGalleryFeaturedLabel } from '@/lib/formatAdminBadgeLabel';
 import SortableTableHeader from '@/components/Common/SortableTableHeader';
 import ImagePreviewModal from '@/components/Common/Modals/ImagePreviewModal';
 
@@ -25,9 +26,9 @@ const Columns: ColumnDef<Gallery>[] = [
     header: ({ column }) => <SortableTableHeader column={column} label="Judul Foto" />,
     cell: ({ row }) => (
       <div className="flex flex-col">
-        <span className="line-clamp-1 text-sm font-medium text-eventkan-ink">{row.original.title}</span>
+        <span className="font-display line-clamp-1 text-sm font-semibold tracking-[-.02em] text-eventkan-ink">{row.original.title}</span>
         {row.original.event && (
-          <span className="line-clamp-1 text-xs font-sans text-eventkan-muted">
+          <span className="line-clamp-1 text-sm leading-relaxed text-eventkan-muted">
             Event: {row.original.event.title}
           </span>
         )}
@@ -38,7 +39,7 @@ const Columns: ColumnDef<Gallery>[] = [
     accessorKey: 'description',
     header: 'Deskripsi',
     cell: ({ row }) => (
-      <span className="line-clamp-2 max-w-xs text-sm text-eventkan-muted">
+      <span className="line-clamp-2 max-w-md text-sm leading-relaxed text-eventkan-muted">
         {row.original.description || '-'}
       </span>
     ),
@@ -50,13 +51,13 @@ const Columns: ColumnDef<Gallery>[] = [
       row.original.featured ? (
         <Badge
           variant="default"
-          className="flex w-fit items-center gap-1 bg-eventkan-yellow text-eventkan-ink hover:bg-eventkan-yellow/90"
+          className="flex w-fit items-center gap-1 rounded-full border-0 bg-eventkan-yellow px-2.5 py-1 text-[10px] font-medium text-eventkan-ink"
         >
-          <Star className="w-3 h-3 fill-white" /> Featured
+          <Star className="w-3 h-3 fill-white" /> {formatGalleryFeaturedLabel(true)}
         </Badge>
       ) : (
-        <Badge variant="outline" className="w-fit text-eventkan-muted">
-          Standard
+        <Badge variant="outline" className="w-fit rounded-full border-0 bg-eventkan-canvas px-2.5 py-1 text-[10px] font-medium text-eventkan-muted">
+          {formatGalleryFeaturedLabel(false)}
         </Badge>
       ),
   },
@@ -81,7 +82,7 @@ const PhotoCell = ({ row }: { row: { original: Gallery } }) => {
         aspectRatio="video"
       />
       <div
-        className="relative h-10 w-16 min-w-16 rounded-md overflow-hidden border bg-muted flex items-center justify-center cursor-zoom-in hover:ring-2 hover:ring-primary/20 transition-all group"
+        className="relative h-10 w-16 min-w-16 rounded-md overflow-hidden border bg-eventkan-canvas flex items-center justify-center cursor-zoom-in hover:ring-2 hover:ring-primary/20 transition-all group"
         onClick={() => gallery.imageUrl && setIsPreviewOpen(true)}
       >
         <Image

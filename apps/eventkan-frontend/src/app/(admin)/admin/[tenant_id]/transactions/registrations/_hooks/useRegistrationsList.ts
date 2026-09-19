@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { useDebounce } from '@/hooks/useDebounce';
+import { useTenantId } from '@/hooks/useTenantId';
 import {
   getRegistrations,
   getEventsForFilter,
@@ -17,6 +18,7 @@ import {
 } from '@/services/admin/registrations';
 
 export const useRegistrationsList = () => {
+  const tenantId = useTenantId();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useDebounce('', 500);
@@ -26,12 +28,12 @@ export const useRegistrationsList = () => {
   const [isExporting, setIsExporting] = useState(false);
 
   const { data, isLoading } = useQuery({
-    queryKey: ['registrations', page, limit, debouncedSearch, eventId, statusFilter],
+    queryKey: ['registrations', tenantId, page, limit, debouncedSearch, eventId, statusFilter],
     queryFn: () => getRegistrations(page, limit, debouncedSearch, eventId, statusFilter),
   });
 
   const { data: eventsData } = useQuery({
-    queryKey: ['events-for-filter'],
+    queryKey: ['events-for-filter', tenantId],
     queryFn: () => getEventsForFilter(),
   });
 

@@ -11,11 +11,12 @@ import { Camera, CameraOff, Smartphone, Flashlight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { formatScannerStateLabel } from '@/lib/formatAdminBadgeLabel';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { qrTokenSchema, type QrTokenValues } from '@/schemas/attendance';
 import { Card, CardTitle, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
 
-import { useScanner } from './useScanner';
+import { useScanner } from '../_hooks/useScanner';
 
 const ScannerClient: FC = () => {
   const {
@@ -167,7 +168,7 @@ const ScannerClient: FC = () => {
               // Show loading state when API call is pending (during verification)
               <div className="text-center px-4 z-20 space-y-3">
                 <Badge variant="secondary" className="text-[10px] uppercase font-bold py-0.5">
-                  Memproses QR Code...
+                  {formatScannerStateLabel('processing')}
                 </Badge>
                 <div className="flex justify-center">
                   <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-eventkan-accent" />
@@ -180,7 +181,7 @@ const ScannerClient: FC = () => {
               // Original "Camera Disabled" state when not scanning
               <div className="text-center px-4 z-20 space-y-3">
                 <Badge variant="destructive" className="text-[10px] uppercase font-bold py-0.5">
-                  Kamera Dinonaktifkan
+                  {formatScannerStateLabel('disabled')}
                 </Badge>
                 <p className="mx-auto max-w-50 text-[10px] leading-normal text-white/60">
                   Aktifkan scanner dengan tombol di bawah.
@@ -196,7 +197,7 @@ const ScannerClient: FC = () => {
               // "Connection Not Secure" state
               <div className="text-center px-4 z-20 space-y-3">
                 <Badge variant="destructive" className="text-[10px] uppercase font-bold py-0.5">
-                  Koneksi Tidak Aman
+                  {formatScannerStateLabel('insecure')}
                 </Badge>
                 <p className="mx-auto max-w-50 text-[10px] leading-normal text-white/60">
                   Akses video stream diblokir browser. Ambil foto QR Code menggunakan kamera HP
@@ -224,7 +225,7 @@ const ScannerClient: FC = () => {
           <Button
             variant="outline"
             onClick={() => setIsScanning(false)}
-            className="text-xs font-semibold px-4 py-2 border-zinc-300 dark:border-zinc-800 hover:bg-muted/50 rounded-xl"
+            className="text-xs font-semibold px-4 py-2 border-zinc-300 dark:border-zinc-800 hover:bg-eventkan-canvas/50 rounded-xl"
           >
             <CameraOff className="h-4 w-4 mr-2" /> Matikan Kamera
           </Button>
@@ -234,7 +235,7 @@ const ScannerClient: FC = () => {
             className={`text-xs font-semibold px-4 py-2 rounded-xl transition-colors ${
               isFlashOn
                 ? 'bg-amber-500/20 text-amber-600 border-amber-300 dark:border-amber-500/30'
-                : 'border-zinc-300 dark:border-zinc-800 hover:bg-muted/50'
+                : 'border-zinc-300 dark:border-zinc-800 hover:bg-eventkan-canvas/50'
             }`}
           >
             <Flashlight className="h-4 w-4 mr-2" /> Flash: {isFlashOn ? 'On' : 'Off'}
@@ -246,7 +247,7 @@ const ScannerClient: FC = () => {
       <Card className="border-none shadow-md bg-white dark:bg-zinc-900 rounded-2xl w-full mx-auto">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-bold flex items-center gap-2">
-            <Smartphone className="h-4 w-4 text-primary" /> Input Token Manual
+            <Smartphone className="h-4 w-4 text-eventkan-accent" /> Input Token Manual
           </CardTitle>
           <CardDescription className="text-[11px]">
             Gunakan input di bawah ini jika scanner kamera mengalami kendala.

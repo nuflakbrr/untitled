@@ -13,7 +13,7 @@ const DashboardCMS = async ({ params }: { params: Promise<{ tenant_id: string }>
   if (!data)
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4">
-        <p className="text-muted-foreground">Gagal memuat data dashboard.</p>
+        <p className="text-eventkan-muted">Gagal memuat data dashboard.</p>
       </div>
     );
   return (

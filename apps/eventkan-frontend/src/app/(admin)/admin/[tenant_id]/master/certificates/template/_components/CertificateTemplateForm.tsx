@@ -161,7 +161,7 @@ export default function CertificateTemplateForm({
 
   if (isTemplateLoading) {
     return (
-      <div className="flex items-center justify-center py-16 gap-2 text-muted-foreground">
+      <div className="flex items-center justify-center py-16 gap-2 text-eventkan-muted">
         <Loader2 className="h-5 w-5 animate-spin" />
         <span className="text-sm">Memuat konfigurasi...</span>
       </div>
@@ -175,8 +175,8 @@ export default function CertificateTemplateForm({
       {/* Event badge */}
       <div className="flex items-center gap-2 px-1">
         <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-        <span className="text-sm text-muted-foreground">
-          Konfigurasi untuk: <strong className="text-foreground">{eventTitle}</strong>
+        <span className="text-sm text-eventkan-muted">
+          Konfigurasi untuk: <strong className="text-eventkan-ink">{eventTitle}</strong>
         </span>
       </div>
 
@@ -192,16 +192,16 @@ export default function CertificateTemplateForm({
             {/* Background */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <ImageIcon className="h-4 w-4 text-primary shrink-0" />
+                <ImageIcon className="h-4 w-4 text-eventkan-accent shrink-0" />
                 <p className="text-sm font-semibold">Background Sertifikat</p>
               </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+              <p className="text-xs text-eventkan-muted leading-relaxed">
                 Gambar background landscape (A4). PNG/JPG/WebP — maks. 10MB.
               </p>
 
               {/* Upload zone */}
               <div
-                className="relative w-full aspect-video rounded-xl border-2 border-dashed border-foreground/15 overflow-hidden cursor-pointer hover:border-primary/40 transition-colors bg-muted/30 group"
+                className="relative w-full aspect-video rounded-xl border-2 border-dashed border-eventkan-ink/15 overflow-hidden cursor-pointer hover:border-eventkan-accent/40 transition-colors bg-eventkan-canvas/30 group"
                 onClick={() => bgInputRef.current?.click()}
               >
                 {bgPreview ? (
@@ -218,10 +218,10 @@ export default function CertificateTemplateForm({
                     )}
                   </>
                 ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-eventkan-muted">
                     {isUploadingBg ? (
                       <>
-                        <Loader2 className="h-7 w-7 animate-spin text-primary" />
+                        <Loader2 className="h-7 w-7 animate-spin text-eventkan-accent" />
                         <span className="text-xs">Mengupload...</span>
                       </>
                     ) : (
@@ -271,19 +271,19 @@ export default function CertificateTemplateForm({
             {/* Header Customization */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <Heading1 className="h-4 w-4 text-primary shrink-0" />
+                <Heading1 className="h-4 w-4 text-eventkan-accent shrink-0" />
                 <p className="text-sm font-semibold">Header Sertifikat</p>
               </div>
-              <div className="flex items-center justify-between p-3 rounded-xl border border-foreground/10 bg-muted/30">
+              <div className="flex items-center justify-between p-3 rounded-xl border border-eventkan-ink/10 bg-eventkan-canvas/30">
                 <div className="flex flex-col items-start gap-2">
                   <p className="text-xs font-semibold">Tampilkan Header</p>
-                  <p className="text-[11px] text-muted-foreground">Di bagian atas sertifikat</p>
+                  <p className="text-[11px] text-eventkan-muted">Di bagian atas sertifikat</p>
                 </div>
                 <Switch id="show-header" checked={showHeader} onCheckedChange={setShowHeader} />
               </div>
               <div className="space-y-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Teks Header</Label>
+                  <Label className="text-xs text-eventkan-muted">Teks Header</Label>
                   <Input
                     value={headerText}
                     onChange={(e) => setHeaderText(e.target.value)}
@@ -292,7 +292,7 @@ export default function CertificateTemplateForm({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Subtitle Header</Label>
+                  <Label className="text-xs text-eventkan-muted">Subtitle Header</Label>
                   <Input
                     value={headerSubtitle}
                     onChange={(e) => setHeaderSubtitle(e.target.value)}
@@ -301,7 +301,7 @@ export default function CertificateTemplateForm({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Font Header</Label>
+                  <Label className="text-xs text-eventkan-muted">Font Header</Label>
                   <div className="grid grid-cols-2 gap-2">
                     {FONT_OPTIONS.map((font) => (
                       <Button
@@ -319,8 +319,8 @@ export default function CertificateTemplateForm({
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <Label className="text-xs text-muted-foreground">Warna Header</Label>
-                    <span className="text-xs font-mono text-muted-foreground">{headerColor}</span>
+                    <Label className="text-xs text-eventkan-muted">Warna Header</Label>
+                    <span className="text-xs font-mono text-eventkan-muted">{headerColor}</span>
                   </div>
                   <div className="flex gap-2 items-center">
                     <Input
@@ -342,13 +342,13 @@ export default function CertificateTemplateForm({
             {/* Colors & Fonts */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <Type className="h-4 w-4 text-primary shrink-0" />
+                <Type className="h-4 w-4 text-eventkan-accent shrink-0" />
                 <p className="text-sm font-semibold">Tipografi & Warna</p>
               </div>
 
               <div className="space-y-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Font Judul Sertifikat</Label>
+                  <Label className="text-xs text-eventkan-muted">Font Judul Sertifikat</Label>
                   <div className="grid grid-cols-2 gap-2">
                     {FONT_OPTIONS.map((font) => (
                       <Button
@@ -367,8 +367,8 @@ export default function CertificateTemplateForm({
 
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <Label className="text-xs text-muted-foreground">Warna Judul Sertifikat</Label>
-                    <span className="text-xs font-mono text-muted-foreground">{titleColor}</span>
+                    <Label className="text-xs text-eventkan-muted">Warna Judul Sertifikat</Label>
+                    <span className="text-xs font-mono text-eventkan-muted">{titleColor}</span>
                   </div>
                   <div className="flex gap-2 items-center">
                     <Input
@@ -386,7 +386,7 @@ export default function CertificateTemplateForm({
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-muted-foreground">Font Isi</Label>
+                  <Label className="text-xs text-eventkan-muted">Font Isi</Label>
                   <div className="grid grid-cols-2 gap-2">
                     {FONT_OPTIONS.map((font) => (
                       <Button
@@ -405,8 +405,8 @@ export default function CertificateTemplateForm({
 
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <Label className="text-xs text-muted-foreground">Warna Isi</Label>
-                    <span className="text-xs font-mono text-muted-foreground">{contentColor}</span>
+                    <Label className="text-xs text-eventkan-muted">Warna Isi</Label>
+                    <span className="text-xs font-mono text-eventkan-muted">{contentColor}</span>
                   </div>
                   <div className="flex gap-2 items-center">
                     <Input
@@ -425,8 +425,8 @@ export default function CertificateTemplateForm({
 
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <Label className="text-xs text-muted-foreground">Warna Primer</Label>
-                    <span className="text-xs font-mono text-muted-foreground">{primaryColor}</span>
+                    <Label className="text-xs text-eventkan-muted">Warna Primer</Label>
+                    <span className="text-xs font-mono text-eventkan-muted">{primaryColor}</span>
                   </div>
                   <div className="flex gap-2 items-center">
                     <Input
@@ -449,16 +449,16 @@ export default function CertificateTemplateForm({
           {/* Display Options */}
           <div className="space-y-3 pt-2">
             <div className="flex items-center gap-2">
-              <Palette className="h-4 w-4 text-primary shrink-0" />
+              <Palette className="h-4 w-4 text-eventkan-accent shrink-0" />
               <p className="text-sm font-semibold">Elemen yang Ditampilkan</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div className="flex items-center justify-between p-3 rounded-xl border border-foreground/10 bg-muted/30">
+              <div className="flex items-center justify-between p-3 rounded-xl border border-eventkan-ink/10 bg-eventkan-canvas/30">
                 <div className="flex items-center gap-2">
-                  <CalendarDays className="h-3.5 w-3.5 text-primary shrink-0" />
+                  <CalendarDays className="h-3.5 w-3.5 text-eventkan-accent shrink-0" />
                   <div>
                     <p className="text-xs font-semibold">Tanggal Terbit</p>
-                    <p className="text-[11px] text-muted-foreground">Di footer sertifikat</p>
+                    <p className="text-[11px] text-eventkan-muted">Di footer sertifikat</p>
                   </div>
                 </div>
                 <Switch
@@ -468,12 +468,12 @@ export default function CertificateTemplateForm({
                 />
               </div>
 
-              <div className="flex items-center justify-between p-3 rounded-xl border border-foreground/10 bg-muted/30">
+              <div className="flex items-center justify-between p-3 rounded-xl border border-eventkan-ink/10 bg-eventkan-canvas/30">
                 <div className="flex items-center gap-2">
-                  <CalendarDays className="h-3.5 w-3.5 text-primary shrink-0" />
+                  <CalendarDays className="h-3.5 w-3.5 text-eventkan-accent shrink-0" />
                   <div>
                     <p className="text-xs font-semibold">Tanggal Event</p>
-                    <p className="text-[11px] text-muted-foreground">Di body sertifikat</p>
+                    <p className="text-[11px] text-eventkan-muted">Di body sertifikat</p>
                   </div>
                 </div>
                 <Switch
@@ -483,12 +483,12 @@ export default function CertificateTemplateForm({
                 />
               </div>
 
-              <div className="flex items-center justify-between p-3 rounded-xl border border-foreground/10 bg-muted/30">
+              <div className="flex items-center justify-between p-3 rounded-xl border border-eventkan-ink/10 bg-eventkan-canvas/30">
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
+                  <MapPin className="h-3.5 w-3.5 text-eventkan-accent shrink-0" />
                   <div>
                     <p className="text-xs font-semibold">Lokasi Event</p>
-                    <p className="text-[11px] text-muted-foreground">Di body sertifikat</p>
+                    <p className="text-[11px] text-eventkan-muted">Di body sertifikat</p>
                   </div>
                 </div>
                 <Switch
@@ -498,7 +498,7 @@ export default function CertificateTemplateForm({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">Jarak Margin Bawah Footer</Label>
+                <Label className="text-xs text-eventkan-muted">Jarak Margin Bawah Footer</Label>
                 <Input
                   type="number"
                   value={footerMarginBottom}
@@ -515,10 +515,10 @@ export default function CertificateTemplateForm({
         <TabsContent value="numbering" className="space-y-4 pt-4">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <Hash className="h-4 w-4 text-primary shrink-0" />
+              <Hash className="h-4 w-4 text-eventkan-accent shrink-0" />
               <p className="text-sm font-semibold">Template Nomor Sertifikat</p>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed flex flex-wrap gap-1 items-center">
+            <p className="text-xs text-eventkan-muted leading-relaxed flex flex-wrap gap-1 items-center">
               <span>Placeholder:</span>
               {[
                 '{SLUG}',
@@ -533,7 +533,7 @@ export default function CertificateTemplateForm({
               ].map((p) => (
                 <code
                   key={p}
-                  className="text-primary font-mono text-[11px] bg-primary/5 px-1 py-0.5 rounded"
+                  className="text-eventkan-accent font-mono text-[11px] bg-eventkan-accent/5 px-1 py-0.5 rounded"
                 >
                   {p}
                 </code>
@@ -549,8 +549,8 @@ export default function CertificateTemplateForm({
                   disabled={numberMode === CertNumberMode.AUTO}
                   className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors font-mono ${
                     numberTemplate === ex.value
-                      ? 'bg-primary text-primary-foreground border-primary'
-                      : 'border-foreground/20 text-muted-foreground hover:border-primary/50 hover:text-foreground bg-transparent'
+                      ? 'bg-eventkan-accent text-white border-eventkan-accent'
+                      : 'border-eventkan-ink/20 text-eventkan-muted hover:border-eventkan-accent/50 hover:text-eventkan-ink bg-transparent'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                   onClick={() => setNumberTemplate(ex.value)}
                 >
@@ -560,7 +560,7 @@ export default function CertificateTemplateForm({
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Custom template</Label>
+              <Label className="text-xs text-eventkan-muted">Custom template</Label>
               <Input
                 value={numberTemplate}
                 onChange={(e) => setNumberTemplate(e.target.value)}
@@ -571,7 +571,7 @@ export default function CertificateTemplateForm({
             </div>
 
             <div className="space-y-2">
-              <Label className="text-xs text-muted-foreground">Mode Penomoran</Label>
+              <Label className="text-xs text-eventkan-muted">Mode Penomoran</Label>
               <RadioGroup
                 value={numberMode}
                 onValueChange={(v) => {
@@ -583,20 +583,20 @@ export default function CertificateTemplateForm({
                 }}
                 className="flex flex-col gap-2"
               >
-                <div className="flex items-center gap-2 p-2.5 rounded-lg border border-foreground/10 cursor-pointer hover:bg-muted/40 transition-colors">
+                <div className="flex items-center gap-2 p-2.5 rounded-lg border border-eventkan-ink/10 cursor-pointer hover:bg-eventkan-canvas/40 transition-colors">
                   <RadioGroupItem value={CertNumberMode.AUTO} id="mode-auto" />
                   <Label htmlFor="mode-auto" className="text-xs cursor-pointer leading-tight">
                     <span className="font-semibold block">Otomatis (Sistem)</span>
-                    <span className="text-muted-foreground">
+                    <span className="text-eventkan-muted">
                       Generate otomatis menggunakan format bawaan sistem
                     </span>
                   </Label>
                 </div>
-                <div className="flex items-center gap-2 p-2.5 rounded-lg border border-foreground/10 cursor-pointer hover:bg-muted/40 transition-colors">
+                <div className="flex items-center gap-2 p-2.5 rounded-lg border border-eventkan-ink/10 cursor-pointer hover:bg-eventkan-canvas/40 transition-colors">
                   <RadioGroupItem value={CertNumberMode.MANUAL} id="mode-manual" />
                   <Label htmlFor="mode-manual" className="text-xs cursor-pointer leading-tight">
                     <span className="font-semibold block">Kustom Manual</span>
-                    <span className="text-muted-foreground">
+                    <span className="text-eventkan-muted">
                       Tentukan dan buat sendiri format template nomor sertifikat Anda
                     </span>
                   </Label>
@@ -609,14 +609,14 @@ export default function CertificateTemplateForm({
         <TabsContent value="signatures" className="space-y-3 pt-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <PenLine className="h-4 w-4 text-primary" />
+              <PenLine className="h-4 w-4 text-eventkan-accent" />
               <p className="text-sm font-semibold">E-Signature Penandatangan</p>
             </div>
-            <span className="text-xs font-mono bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-              {signatures.length} TTD
+            <span className="text-xs font-mono bg-eventkan-canvas text-eventkan-muted px-2 py-0.5 rounded-full">
+              {signatures.length} tanda tangan
             </span>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-eventkan-muted">
             Upload TTD lebih dari 1 orang. Drag untuk mengubah urutan tampil di sertifikat.
           </p>
 
@@ -638,7 +638,7 @@ export default function CertificateTemplateForm({
       <div className="pt-4">
         <div className="flex items-center justify-between mb-3">
           <p className="text-sm font-semibold">Preview</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-eventkan-muted">
             Tampilan sertifikat akan terupdate secara langsung
           </p>
         </div>

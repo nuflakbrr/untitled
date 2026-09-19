@@ -127,7 +127,7 @@ export default function SignatureUploadList({
       {/* Existing signatures */}
       {signatures.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          <p className="text-xs font-semibold text-eventkan-muted uppercase tracking-wide">
             Daftar TTD ({signatures.length})
           </p>
           <div className="space-y-2">
@@ -144,8 +144,8 @@ export default function SignatureUploadList({
                 }}
                 className={`rounded-xl border transition-all ${
                   dragOverIndex === index
-                    ? 'border-primary bg-primary/5'
-                    : 'border-foreground/10 bg-card hover:border-foreground/20'
+                    ? 'border-eventkan-accent bg-eventkan-accent/5'
+                    : 'border-eventkan-ink/10 bg-card hover:border-eventkan-ink/20'
                 } ${editingId === sig.id ? 'p-3 space-y-3' : 'flex items-center gap-3 p-3'}`}
               >
                 {editingId === sig.id ? (
@@ -153,14 +153,14 @@ export default function SignatureUploadList({
                   <>
                     <div className="flex items-center gap-3">
                       {/* Signature image (non-editable in this view) */}
-                      <div className="w-20 h-10 bg-zinc-100 dark:bg-zinc-800 rounded-md overflow-hidden border border-foreground/10 shrink-0 flex items-center justify-center">
+                      <div className="w-20 h-10 bg-zinc-100 dark:bg-zinc-800 rounded-md overflow-hidden border border-eventkan-ink/10 shrink-0 flex items-center justify-center">
                         <img
                           src={sig.signatureUrl}
                           alt={sig.name}
                           className="w-full h-full object-contain"
                         />
                       </div>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-eventkan-muted">
                         Edit nama & jabatan penandatangan
                       </p>
                     </div>
@@ -222,8 +222,8 @@ export default function SignatureUploadList({
                 ) : (
                   /* ── Display mode ── */
                   <>
-                    <GripVertical className="h-4 w-4 text-muted-foreground shrink-0 cursor-grab active:cursor-grabbing" />
-                    <div className="w-20 h-10 bg-zinc-100 dark:bg-zinc-800 rounded-md overflow-hidden border border-foreground/10 shrink-0 flex items-center justify-center">
+                    <GripVertical className="h-4 w-4 text-eventkan-muted shrink-0 cursor-grab active:cursor-grabbing" />
+                    <div className="w-20 h-10 bg-zinc-100 dark:bg-zinc-800 rounded-md overflow-hidden border border-eventkan-ink/10 shrink-0 flex items-center justify-center">
                       <img
                         src={sig.signatureUrl}
                         alt={sig.name}
@@ -231,16 +231,16 @@ export default function SignatureUploadList({
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-foreground truncate">{sig.name}</p>
+                      <p className="text-sm font-semibold text-eventkan-ink truncate">{sig.name}</p>
                       {sig.title && (
-                        <p className="text-xs text-muted-foreground truncate">{sig.title}</p>
+                        <p className="text-xs text-eventkan-muted truncate">{sig.title}</p>
                       )}
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                        className="h-7 w-7 p-0 text-eventkan-muted hover:text-eventkan-ink"
                         onClick={() => startEdit(sig)}
                       >
                         <Pencil className="h-3.5 w-3.5" />
@@ -268,21 +268,21 @@ export default function SignatureUploadList({
       )}
 
       {/* Add new signature form */}
-      <div className="rounded-xl border border-dashed border-foreground/20 p-4 space-y-3 bg-muted/30">
-        <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+      <div className="rounded-xl border border-dashed border-eventkan-ink/20 p-4 space-y-3 bg-eventkan-canvas/30">
+        <p className="text-xs font-semibold text-eventkan-muted flex items-center gap-1.5">
           <UserCircle2 className="h-3.5 w-3.5" /> Tambah TTD Baru
         </p>
 
         <div
-          className="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border-2 border-dashed border-foreground/15 hover:border-primary/50 cursor-pointer transition-colors bg-background"
+          className="flex flex-col items-center justify-center gap-2 p-4 rounded-lg border-2 border-dashed border-eventkan-ink/15 hover:border-eventkan-accent/50 cursor-pointer transition-colors bg-eventkan-surface"
           onClick={() => fileInputRef.current?.click()}
         >
           {previewUrl ? (
             <img src={previewUrl} alt="preview" className="max-h-16 object-contain rounded" />
           ) : (
             <>
-              <Upload className="h-6 w-6 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground text-center">
+              <Upload className="h-6 w-6 text-eventkan-muted" />
+              <span className="text-xs text-eventkan-muted text-center">
                 Klik untuk upload gambar TTD
                 <br />
                 <span className="text-[10px]">PNG transparan direkomendasikan</span>

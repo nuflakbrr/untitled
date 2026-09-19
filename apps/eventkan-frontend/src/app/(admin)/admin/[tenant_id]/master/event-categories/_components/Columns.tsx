@@ -5,6 +5,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { EventCategory } from '@/interfaces/features/events';
 
 import { Badge } from '@/components/ui/badge';
+import { formatDeletedStatusLabel } from '@/lib/formatAdminBadgeLabel';
 import SortableTableHeader from '@/components/Common/SortableTableHeader';
 
 import CellAction from './CellAction';
@@ -24,7 +25,7 @@ const Columns: ColumnDef<EventCategory>[] = [
               variant="outline"
               className="border-eventkan-peach/40 bg-eventkan-peach px-2 py-1 text-[10px] font-medium text-eventkan-peach-ink"
             >
-              Terhapus
+              {formatDeletedStatusLabel(true)}
             </Badge>
           )}
         </div>
@@ -63,7 +64,7 @@ const Columns: ColumnDef<EventCategory>[] = [
             : 'rounded-full border-0 bg-eventkan-green px-2.5 py-1 text-[10px] font-medium text-eventkan-green-ink'
         }
       >
-        {row.original.deletedAt ? 'Terhapus' : 'Aktif'}
+        {formatDeletedStatusLabel(Boolean(row.original.deletedAt))}
       </Badge>
     ),
   },

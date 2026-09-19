@@ -17,6 +17,11 @@ import { formatCurrency } from '@/lib/formatCurrency';
 import { EventType, EventStatus } from '@/interfaces/enums';
 import SortableTableHeader from '@/components/Common/SortableTableHeader';
 import ImagePreviewModal from '@/components/Common/Modals/ImagePreviewModal';
+import {
+  formatEventTypeLabel,
+  formatEventStatusLabel,
+  formatDeletedStatusLabel,
+} from '@/lib/formatAdminBadgeLabel';
 
 import CellAction from './CellAction';
 
@@ -35,13 +40,13 @@ const Columns: ColumnDef<Event>[] = [
       return (
         <Badge
           variant="outline"
-          className={`font-medium capitalize px-2 py-0.5 ${
+          className={`rounded-full border-0 px-2.5 py-1 text-[10px] font-medium capitalize ${
             isOnline
-              ? 'border-eventkan-peach/30 bg-eventkan-peach text-eventkan-peach-ink'
-              : 'border-eventkan-navy/10 bg-eventkan-navy/8 text-eventkan-navy'
+              ? 'bg-eventkan-peach text-eventkan-peach-ink'
+              : 'bg-eventkan-navy/8 text-eventkan-navy'
           }`}
         >
-          {type}
+          {formatEventTypeLabel(type)}
         </Badge>
       );
     },
@@ -55,13 +60,13 @@ const Columns: ColumnDef<Event>[] = [
         return (
           <Badge
             variant="outline"
-            className="border-eventkan-green/30 bg-eventkan-green text-eventkan-green-ink"
+            className="rounded-full border-0 bg-eventkan-green px-2.5 py-1 text-[10px] font-medium text-eventkan-green-ink"
           >
             Gratis
           </Badge>
         );
       }
-      return <span className="font-medium text-sm">{formatCurrency(price)}</span>;
+      return <span className="text-sm font-semibold text-eventkan-ink">{formatCurrency(price)}</span>;
     },
   },
   {
@@ -72,8 +77,8 @@ const Columns: ColumnDef<Event>[] = [
       const registered = event._count?.registrations ?? 0;
       const quota = event.quota;
       return (
-        <span>
-          {registered} / <span className="font-medium text-eventkan-ink">{quota}</span>
+        <span className="text-sm font-semibold text-eventkan-ink">
+          {registered} / <span className="font-normal text-eventkan-muted">{quota}</span>
         </span>
       );
     },
@@ -86,13 +91,13 @@ const Columns: ColumnDef<Event>[] = [
       const getStatusClass = (val: typeof status) => {
         switch (val) {
           case EventStatus.DRAFT:
-            return 'border-eventkan-ink/10 bg-eventkan-canvas text-eventkan-muted';
+            return 'bg-eventkan-canvas text-eventkan-muted';
           case EventStatus.PUBLISHED:
-            return 'border-eventkan-green/30 bg-eventkan-green text-eventkan-green-ink';
+            return 'bg-eventkan-green text-eventkan-green-ink';
           case EventStatus.CLOSED:
-            return 'border-eventkan-peach/30 bg-eventkan-peach text-eventkan-peach-ink';
+            return 'bg-eventkan-peach text-eventkan-peach-ink';
           case EventStatus.COMPLETED:
-            return 'border-eventkan-navy/10 bg-eventkan-navy/8 text-eventkan-navy';
+            return 'bg-eventkan-navy/8 text-eventkan-navy';
           default:
             return '';
         }
@@ -100,9 +105,9 @@ const Columns: ColumnDef<Event>[] = [
       return (
         <Badge
           variant="outline"
-          className={`font-medium capitalize px-2 py-0.5 ${getStatusClass(status)}`}
+          className={`rounded-full border-0 px-2.5 py-1 text-[10px] font-medium capitalize ${getStatusClass(status)}`}
         >
-          {status}
+          {formatEventStatusLabel(status)}
         </Badge>
       );
     },
@@ -117,7 +122,7 @@ const Columns: ColumnDef<Event>[] = [
         .locale('id')
         .format('DD MMM YYYY');
       return (
-        <span className="text-sm text-eventkan-muted">
+        <span className="text-sm leading-relaxed text-eventkan-muted">
           {formattedDate}, {event.startTime}
         </span>
       );
@@ -145,7 +150,7 @@ const TitleCell = ({ row }: { row: { original: Event } }) => {
       />
       <div className="flex items-center gap-3">
         <div
-          className="relative h-10 w-16 min-w-16 rounded-md overflow-hidden border bg-muted flex items-center justify-center cursor-zoom-in hover:ring-2 hover:ring-primary/20 transition-all group"
+          className="relative h-10 w-16 min-w-16 rounded-md overflow-hidden border bg-eventkan-canvas flex items-center justify-center cursor-zoom-in hover:ring-2 hover:ring-primary/20 transition-all group"
           onClick={() => event.banner && setIsPreviewOpen(true)}
         >
           {event.banner ? (
@@ -167,17 +172,17 @@ const TitleCell = ({ row }: { row: { original: Event } }) => {
         </div>
         <div className="flex flex-col text-left max-w-50 md:max-w-75">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="truncate text-sm font-medium leading-snug text-eventkan-ink">{event.title}</span>
+            <span className="font-display truncate text-sm font-semibold tracking-[-.02em] text-eventkan-ink">{event.title}</span>
             {event.deletedAt && (
               <Badge
                 variant="outline"
-                className="shrink-0 border-eventkan-peach/30 bg-eventkan-peach text-[10px] text-eventkan-peach-ink"
+                className="shrink-0 rounded-full border-0 bg-eventkan-peach px-2.5 py-1 text-[10px] font-medium text-eventkan-peach-ink"
               >
-                Terhapus
+                {formatDeletedStatusLabel(true)}
               </Badge>
             )}
           </div>
-          <span className="truncate font-mono text-xs text-eventkan-muted">/{event.slug}</span>
+          <span className="truncate text-sm leading-relaxed text-eventkan-muted">/{event.slug}</span>
         </div>
       </div>
     </>

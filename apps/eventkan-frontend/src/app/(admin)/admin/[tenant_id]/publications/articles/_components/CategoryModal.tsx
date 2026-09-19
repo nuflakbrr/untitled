@@ -164,7 +164,7 @@ const CategoryModal: FC<CategoryModalProps> = ({ isOpen, onClose }) => {
 
           <Separator />
 
-          <div className="flex rounded-lg bg-muted p-1">
+          <div className="flex rounded-lg bg-eventkan-canvas p-1">
             <Button
               type="button"
               variant={!showDeleted ? 'secondary' : 'ghost'}
@@ -187,17 +187,17 @@ const CategoryModal: FC<CategoryModalProps> = ({ isOpen, onClose }) => {
             {isLoading ? (
               <div className="flex flex-col gap-2">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-10 w-full bg-muted animate-pulse rounded-md" />
+                  <div key={i} className="h-10 w-full bg-eventkan-canvas animate-pulse rounded-md" />
                 ))}
               </div>
             ) : categories.length > 0 ? (
               categories.map((cat) => (
                 <div
                   key={cat.id}
-                  className="flex items-center justify-between p-2 border rounded-md group hover:bg-muted/50 transition-colors"
+                  className="flex items-center justify-between p-2 border rounded-md group hover:bg-eventkan-canvas/50 transition-colors"
                 >
                   <div className="flex items-center gap-2 flex-1 mr-4">
-                    <Tag className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                    <Tag className="h-3.5 w-3.5 text-eventkan-muted shrink-0" />
                     {editingId === cat.id ? (
                       <Input
                         value={editValue}
@@ -250,7 +250,7 @@ const CategoryModal: FC<CategoryModalProps> = ({ isOpen, onClose }) => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7 text-muted-foreground hover:text-warning hover:bg-warning/10 opacity-0 group-hover:opacity-100 transition-all"
+                            className="h-7 w-7 text-eventkan-muted hover:text-warning hover:bg-warning/10 opacity-0 group-hover:opacity-100 transition-all"
                             onClick={() => handleStartEdit(cat.id, cat.name)}
                             disabled={updateMutation.isPending || deleteMutation.isPending}
                           >
@@ -281,7 +281,7 @@ const CategoryModal: FC<CategoryModalProps> = ({ isOpen, onClose }) => {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all"
+                              className="h-7 w-7 text-eventkan-muted hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all"
                               onClick={() => deleteMutation.mutate(cat.id)}
                               disabled={updateMutation.isPending || deleteMutation.isPending}
                             >
@@ -299,7 +299,7 @@ const CategoryModal: FC<CategoryModalProps> = ({ isOpen, onClose }) => {
                 </div>
               ))
             ) : (
-              <div className="text-center py-6 text-sm text-muted-foreground italic border border-dashed rounded-md">
+              <div className="text-center py-6 text-sm text-eventkan-muted italic border border-dashed rounded-md">
                 Belum ada kategori.
               </div>
             )}

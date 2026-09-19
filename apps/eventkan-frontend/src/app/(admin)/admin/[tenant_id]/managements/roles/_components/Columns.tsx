@@ -10,6 +10,7 @@ import moment from 'moment';
 import type { Role } from '@/interfaces/features/roles';
 
 import { Badge } from '@/components/ui/badge';
+import { formatPermissionLabel } from '@/lib/formatAdminBadgeLabel';
 import SortableTableHeader from '@/components/Common/SortableTableHeader';
 
 import CellAction from './CellAction';
@@ -18,7 +19,11 @@ const Columns: ColumnDef<Role>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => <SortableTableHeader column={column} label="Nama Jabatan" />,
-    cell: ({ row }) => <div className="text-sm font-medium text-eventkan-ink">{row.getValue('name')}</div>,
+    cell: ({ row }) => (
+      <div className="font-display text-sm font-semibold tracking-[-.02em] text-eventkan-ink">
+        {row.getValue('name')}
+      </div>
+    ),
   },
   {
     accessorKey: 'permissions',
@@ -32,21 +37,23 @@ const Columns: ColumnDef<Role>[] = [
         const method = name.split('.')[1] || name;
         switch (method) {
           case 'read':
-            return 'bg-eventkan-navy/8 text-eventkan-navy border-eventkan-navy/10';
+            return 'bg-eventkan-navy/8 text-eventkan-navy';
           case 'create':
-            return 'bg-eventkan-green text-eventkan-green-ink border-eventkan-green/30';
+            return 'bg-eventkan-green text-eventkan-green-ink';
           case 'update':
-            return 'bg-eventkan-yellow text-eventkan-ink border-eventkan-yellow/30';
+            return 'bg-eventkan-yellow text-eventkan-ink';
           case 'delete':
-            return 'bg-eventkan-peach text-eventkan-peach-ink border-eventkan-peach/30';
+            return 'bg-eventkan-peach text-eventkan-peach-ink';
           case 'access':
-            return 'bg-eventkan-accent/10 text-eventkan-accent border-eventkan-accent/20';
+            return 'bg-eventkan-accent/10 text-eventkan-accent';
           default:
-            return 'bg-eventkan-canvas text-eventkan-muted border-eventkan-ink/10';
+        return 'bg-eventkan-canvas text-eventkan-muted';
         }
       };
 
-      if (permissions.length === 0) return <div className="text-sm text-eventkan-muted">-</div>;
+      if (permissions.length === 0) {
+        return <div className="text-sm leading-relaxed text-eventkan-muted">-</div>;
+      }
 
       return (
         <div className="flex flex-wrap gap-1 max-w-100">
@@ -54,13 +61,13 @@ const Columns: ColumnDef<Role>[] = [
             <Badge
               key={permission.id}
               variant="outline"
-              className={`text-[10px] px-1.5 py-0 font-medium ${getPermissionColor(permission.name)}`}
+              className={`rounded-full border-0 px-2.5 py-1 text-[10px] font-medium ${getPermissionColor(permission.name)}`}
             >
-              {permission.name.split('.')[1] || permission.name}
+              {formatPermissionLabel(permission.name)}
             </Badge>
           ))}
           {remainingCount > 0 && (
-            <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-secondary/30">
+            <Badge variant="outline" className="rounded-full border-0 bg-eventkan-canvas px-2.5 py-1 text-[10px] font-medium text-eventkan-muted">
               +{remainingCount} lainnya
             </Badge>
           )}
@@ -72,7 +79,9 @@ const Columns: ColumnDef<Role>[] = [
     accessorKey: 'description',
     header: 'Deskripsi',
     cell: ({ row }) => (
-      <div className="max-w-75 truncate text-sm text-eventkan-muted">{row.getValue('description') || '-'}</div>
+      <div className="line-clamp-2 max-w-md text-sm leading-relaxed text-eventkan-muted">
+        {row.getValue('description') || '-'}
+      </div>
     ),
   },
   {
@@ -80,10 +89,14 @@ const Columns: ColumnDef<Role>[] = [
     header: ({ column }) => <SortableTableHeader column={column} label="Terakhir Diperbarui" />,
     cell: ({ row }) => {
       const date = row.original;
-      return <span className="text-sm text-eventkan-muted">{moment(date.updatedAt || new Date())
-        .tz('Asia/Jakarta')
-        .locale('id')
-        .format('DD MMMM YYYY, HH:mm')}</span>;
+      return (
+        <span className="text-sm leading-relaxed text-eventkan-muted">
+          {moment(date.updatedAt || new Date())
+            .tz('Asia/Jakarta')
+            .locale('id')
+            .format('DD MMMM YYYY, HH:mm')}
+        </span>
+      );
     },
   },
   {

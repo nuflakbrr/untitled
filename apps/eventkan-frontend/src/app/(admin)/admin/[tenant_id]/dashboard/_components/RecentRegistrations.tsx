@@ -17,6 +17,10 @@ import { Button } from '@/components/ui/button';
 import { getInitials } from '@/lib/getInitials';
 import { Card, CardTitle, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
 import {
+  formatPaymentStatusLabel,
+  formatRegistrationStatusLabel,
+} from '@/lib/formatAdminBadgeLabel';
+import {
   Select,
   SelectItem,
   SelectValue,
@@ -32,11 +36,7 @@ import {
   TableHeader,
 } from '@/components/ui/table';
 
-import {
-  paymentStatus,
-  registrationStatus,
-  registrationStatusClass,
-} from '../_constants/recentRegistrations.constants';
+import { registrationStatusClass } from '../_constants/recentRegistrations.constants';
 
 const date = (value: Date) => moment(value).tz('Asia/Jakarta').locale('id').format('D MMM YYYY');
 export default function RecentRegistrations({
@@ -124,11 +124,11 @@ export default function RecentRegistrations({
                         variant="secondary"
                         className={`rounded-full px-2 py-1 text-[10px] font-extrabold ${registrationStatusClass[reg.status] ?? 'bg-eventkan-canvas text-eventkan-muted'}`}
                       >
-                        {registrationStatus[reg.status] ?? reg.status}
+                        {formatRegistrationStatusLabel(reg.status)}
                       </Badge>
                       {reg.event.price > 0 && reg.payment && (
                         <span className="mt-1 block text-[10px] font-semibold text-eventkan-muted">
-                          {paymentStatus[reg.payment.status] ?? reg.payment.status}
+                      {formatPaymentStatusLabel(reg.payment.status)}
                         </span>
                       )}
                     </TableCell>

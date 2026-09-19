@@ -91,7 +91,7 @@ const EventForm: FC<Props> = ({ initialData }) => {
   const canEdit = !isCompleted || isSuper;
 
   const { data: categories } = useQuery({
-    queryKey: ['event-categories'],
+    queryKey: ['event-categories', tenantId],
     queryFn: () => getAllEventCategories(),
   });
 
@@ -222,7 +222,7 @@ const EventForm: FC<Props> = ({ initialData }) => {
       />
 
       <div className="flex items-center justify-between mb-3 md:mb-4">
-        <Heading title={title} description={description} />
+        <Heading variant="soft" title={title} description={description} />
         <div className="flex items-center gap-2">
           {initialData && hasPermission('events.delete') && (
             <Button
@@ -306,8 +306,8 @@ const EventForm: FC<Props> = ({ initialData }) => {
                             className={cn(
                               'px-3 py-1.5 rounded-full text-xs font-medium border transition-all',
                               isSelected
-                                ? 'bg-primary text-primary-foreground border-primary'
-                                : 'bg-muted text-muted-foreground border-transparent hover:border-zinc-500',
+                                ? 'bg-eventkan-accent text-white border-eventkan-accent'
+                                : 'bg-eventkan-canvas text-eventkan-muted border-transparent hover:border-zinc-500',
                               !canEdit && 'opacity-60 cursor-not-allowed'
                             )}
                           >
@@ -316,11 +316,11 @@ const EventForm: FC<Props> = ({ initialData }) => {
                         );
                       })}
                       {(!categories || categories.length === 0) && (
-                        <p className="text-xs text-muted-foreground italic">
+                        <p className="text-xs text-eventkan-muted italic">
                           Belum ada kategori.{' '}
                           <Link
                             href={`/admin/${tenantId}/master/event-categories`}
-                            className="underline hover:text-foreground"
+                            className="underline hover:text-eventkan-ink"
                           >
                             Buat kategori
                           </Link>
@@ -449,7 +449,7 @@ const EventForm: FC<Props> = ({ initialData }) => {
                         <FieldLabel className="text-sm font-semibold">
                           Aktifkan Presensi Online
                         </FieldLabel>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-eventkan-muted">
                           Peserta dapat melakukan presensi mandiri dari dashboard.
                         </span>
                       </div>
@@ -517,7 +517,7 @@ const EventForm: FC<Props> = ({ initialData }) => {
                       <FieldLabel className="text-sm font-semibold">
                         Aktifkan Sertifikat Elektronik
                       </FieldLabel>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-eventkan-muted">
                         Berikan sertifikat otomatis setelah event diselesaikan.
                       </span>
                     </div>
@@ -551,8 +551,8 @@ const EventForm: FC<Props> = ({ initialData }) => {
                             variant="outline"
                             disabled={!canEdit}
                             className={cn(
-                              'w-full justify-between text-left font-normal h-11 px-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-background text-zinc-900 dark:text-zinc-50 hover:bg-muted/50',
-                              !field.value && 'text-muted-foreground'
+                              'w-full justify-between text-left font-normal h-11 px-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-eventkan-surface text-zinc-900 dark:text-zinc-50 hover:bg-eventkan-canvas/50',
+                              !field.value && 'text-eventkan-muted'
                             )}
                           >
                             <span>
@@ -562,7 +562,7 @@ const EventForm: FC<Props> = ({ initialData }) => {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent
-                          className="w-auto p-0 bg-background border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-lg"
+                          className="w-auto p-0 bg-eventkan-surface border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-lg"
                           align="start"
                         >
                           <Calendar
@@ -610,8 +610,8 @@ const EventForm: FC<Props> = ({ initialData }) => {
                             variant="outline"
                             disabled={!canEdit}
                             className={cn(
-                              'w-full justify-between text-left font-normal h-11 px-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-background text-zinc-900 dark:text-zinc-50 hover:bg-muted/50',
-                              !field.value && 'text-muted-foreground'
+                              'w-full justify-between text-left font-normal h-11 px-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-eventkan-surface text-zinc-900 dark:text-zinc-50 hover:bg-eventkan-canvas/50',
+                              !field.value && 'text-eventkan-muted'
                             )}
                           >
                             <span>
@@ -621,7 +621,7 @@ const EventForm: FC<Props> = ({ initialData }) => {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent
-                          className="w-auto p-0 bg-background border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-lg"
+                          className="w-auto p-0 bg-eventkan-surface border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-lg"
                           align="start"
                         >
                           <Calendar
@@ -669,8 +669,8 @@ const EventForm: FC<Props> = ({ initialData }) => {
                             variant="outline"
                             disabled={!canEdit}
                             className={cn(
-                              'w-full justify-between text-left font-normal h-11 px-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-background text-zinc-900 dark:text-zinc-50 hover:bg-muted/50',
-                              !field.value && 'text-muted-foreground'
+                              'w-full justify-between text-left font-normal h-11 px-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-eventkan-surface text-zinc-900 dark:text-zinc-50 hover:bg-eventkan-canvas/50',
+                              !field.value && 'text-eventkan-muted'
                             )}
                           >
                             <span>
@@ -682,7 +682,7 @@ const EventForm: FC<Props> = ({ initialData }) => {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent
-                          className="w-auto p-0 bg-background border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-lg"
+                          className="w-auto p-0 bg-eventkan-surface border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-lg"
                           align="start"
                         >
                           <Calendar
@@ -821,7 +821,7 @@ const EventForm: FC<Props> = ({ initialData }) => {
             {speakersArray.fields.map((fieldItem, index) => (
               <div
                 key={fieldItem.id}
-                className="border rounded-xl p-4 space-y-3 relative bg-muted/30"
+                className="border rounded-xl p-4 space-y-3 relative bg-eventkan-canvas/30"
               >
                 {canEdit && speakersArray.fields.length > 1 && (
                   <Button
@@ -1009,7 +1009,7 @@ const EventForm: FC<Props> = ({ initialData }) => {
             {benefitsArray.fields.map((fieldItem, index) => (
               <div
                 key={fieldItem.id}
-                className="border rounded-xl p-4 space-y-3 relative bg-muted/30"
+                className="border rounded-xl p-4 space-y-3 relative bg-eventkan-canvas/30"
               >
                 {canEdit && benefitsArray.fields.length > 1 && (
                   <Button

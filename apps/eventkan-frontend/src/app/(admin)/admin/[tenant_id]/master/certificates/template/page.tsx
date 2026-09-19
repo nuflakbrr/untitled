@@ -46,7 +46,7 @@ export default function TemplateConfigPage() {
       <div className="flex flex-col lg:flex-row gap-4 items-start mt-4">
         <div className="w-full lg:w-64 shrink-0">
           <Card className="shadow-md border-none ring-0">
-            <CardHeader className="pb-3 border-b border-foreground/5 px-4 pt-4">
+            <CardHeader className="pb-3 border-b border-eventkan-ink/5 px-4 pt-4">
               <CardTitle className="text-sm font-bold">Pilih Event</CardTitle>
               <CardDescription className="text-xs">
                 Event dengan sertifikat diaktifkan
@@ -55,7 +55,7 @@ export default function TemplateConfigPage() {
             <CardContent className="p-0">
               <div className="px-3">
                 <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-eventkan-muted" />
                   <Input
                     type="text"
                     placeholder="Cari event..."
@@ -68,15 +68,15 @@ export default function TemplateConfigPage() {
                 </div>
               </div>
               {events.length === 0 ? (
-                <div className="flex flex-col items-center justify-center gap-2 py-8 px-4 text-muted-foreground">
-                  <AlertCircle className="h-6 w-6 text-muted-foreground/50" />
+                <div className="flex flex-col items-center justify-center gap-2 py-8 px-4 text-eventkan-muted">
+                  <AlertCircle className="h-6 w-6 text-eventkan-muted/50" />
                   <p className="text-xs text-center">
                     Aktifkan fitur sertifikat pada pengaturan event.
                   </p>
                 </div>
               ) : filteredEvents.length === 0 ? (
-                <div className="flex flex-col items-center justify-center gap-2 py-8 px-4 text-muted-foreground">
-                  <AlertCircle className="h-6 w-6 text-muted-foreground/50" />
+                <div className="flex flex-col items-center justify-center gap-2 py-8 px-4 text-eventkan-muted">
+                  <AlertCircle className="h-6 w-6 text-eventkan-muted/50" />
                   <p className="text-xs text-center">
                     Tidak ada event yang sesuai dengan pencarian.
                   </p>
@@ -93,13 +93,13 @@ export default function TemplateConfigPage() {
                         onClick={() => setSelectedEventId(event.id)}
                         className={`w-full flex items-center justify-between gap-2 px-4 py-3 text-left transition-colors ${
                           isSelected
-                            ? 'bg-primary/5 border-l-2 border-l-primary'
-                            : 'hover:bg-muted/40 border-l-2 border-l-transparent'
+                            ? 'bg-eventkan-accent/5 border-l-2 border-l-primary'
+                            : 'hover:bg-eventkan-canvas/40 border-l-2 border-l-transparent'
                         }`}
                       >
                         <div className="min-w-0 space-y-0.5">
                           <p
-                            className={`text-xs font-semibold truncate ${isSelected ? 'text-primary' : 'text-foreground'}`}
+                            className={`text-xs font-semibold truncate ${isSelected ? 'text-eventkan-accent' : 'text-eventkan-ink'}`}
                           >
                             {event.title}
                           </p>
@@ -109,14 +109,14 @@ export default function TemplateConfigPage() {
                                 <CheckCircle2 className="h-2.5 w-2.5" /> Terkonfigurasi
                               </span>
                             ) : (
-                              <span className="text-[10px] text-muted-foreground">
+                              <span className="text-[10px] text-eventkan-muted">
                                 Belum dikonfigurasi
                               </span>
                             )}
                           </div>
                         </div>
                         <ChevronRight
-                          className={`h-3.5 w-3.5 shrink-0 transition-colors ${isSelected ? 'text-primary' : 'text-muted-foreground/40'}`}
+                          className={`h-3.5 w-3.5 shrink-0 transition-colors ${isSelected ? 'text-eventkan-accent' : 'text-eventkan-muted/40'}`}
                         />
                       </button>
                     );
@@ -129,9 +129,9 @@ export default function TemplateConfigPage() {
 
         <div className="flex-1 min-w-0">
           <Card className="shadow-md border-none ring-0">
-            <CardHeader className="pb-3 border-b border-foreground/5">
+            <CardHeader className="pb-3 border-b border-eventkan-ink/5">
               <div className="flex items-center gap-2">
-                <Settings className="h-5 w-5 text-primary" />
+                <Settings className="h-5 w-5 text-eventkan-accent" />
                 <div>
                   <CardTitle className="text-base font-bold">Konfigurasi Template</CardTitle>
                   <CardDescription>Background, nomor sertifikat, dan e-signature</CardDescription>
@@ -147,8 +147,8 @@ export default function TemplateConfigPage() {
                   eventLocation={selectedEvent.location}
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center py-16 gap-3 text-muted-foreground">
-                  <Settings className="h-10 w-10 text-muted-foreground/30" />
+                <div className="flex flex-col items-center justify-center py-16 gap-3 text-eventkan-muted">
+                  <Settings className="h-10 w-10 text-eventkan-muted/30" />
                   <p className="text-sm">
                     {canManageTemplates
                       ? 'Pilih event di panel kiri untuk mulai konfigurasi.'

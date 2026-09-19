@@ -187,7 +187,7 @@ const GalleryForm: FC<Props> = ({ initialData }) => {
       />
 
       <div className="flex items-center justify-between">
-        <Heading title={title} description={description} />
+        <Heading variant="soft" title={title} description={description} />
         {initialData && hasPermission('galleries.delete') && (
           <Button
             disabled={submitMutation.isPending || deleteMutation.isPending}
@@ -280,7 +280,7 @@ const GalleryForm: FC<Props> = ({ initialData }) => {
                       <FieldLabel className="text-sm font-semibold">
                         Tampilkan di Landing Page
                       </FieldLabel>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-eventkan-muted">
                         Jadikan foto unggulan pada Bento Grid Landing Page.
                       </span>
                     </div>

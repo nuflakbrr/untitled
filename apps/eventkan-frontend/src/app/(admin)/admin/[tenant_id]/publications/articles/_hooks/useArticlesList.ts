@@ -4,16 +4,18 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { useDebounce } from '@/hooks/useDebounce';
+import { useTenantId } from '@/hooks/useTenantId';
 import { getArticles } from '@/services/admin/articles';
 
 export const useArticlesList = (includeDeleted = false) => {
+  const tenantId = useTenantId();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useDebounce('', 500);
   const [limit, setLimit] = useState(10);
 
   const { data: articlesData, isLoading } = useQuery({
-    queryKey: ['articles', page, limit, debouncedSearch, includeDeleted],
+    queryKey: ['articles', tenantId, page, limit, debouncedSearch, includeDeleted],
     queryFn: () => getArticles(page, limit, debouncedSearch, includeDeleted),
   });
   const articles = articlesData?.data || [];

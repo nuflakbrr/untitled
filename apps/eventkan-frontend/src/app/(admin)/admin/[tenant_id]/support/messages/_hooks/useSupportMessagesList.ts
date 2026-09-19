@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { useDebounce } from '@/hooks/useDebounce';
+import { useTenantId } from '@/hooks/useTenantId';
 import { getSupportMessagesAction } from '@/services/participant/support';
 
 export const useSupportMessagesList = () => {
+  const tenantId = useTenantId();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useDebounce('', 500);
@@ -14,7 +16,7 @@ export const useSupportMessagesList = () => {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
 
   const { data, isLoading } = useQuery({
-    queryKey: ['support-messages', page, limit, debouncedSearch, statusFilter],
+    queryKey: ['support-messages', tenantId, page, limit, debouncedSearch, statusFilter],
     queryFn: async () => {
       const res = await getSupportMessagesAction(page, limit, debouncedSearch, statusFilter);
       if (!res.success) {

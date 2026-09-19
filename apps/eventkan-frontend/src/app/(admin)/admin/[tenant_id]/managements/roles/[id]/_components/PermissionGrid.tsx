@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import Heading from '@/components/Common/Heading';
 import { Checkbox } from '@/components/ui/checkbox';
+import { formatPermissionLabel } from '@/lib/formatAdminBadgeLabel';
 
 type PermissionGridProps = {
   control: Control<z.infer<typeof roleSchema>>;
@@ -96,7 +97,7 @@ const PermissionGrid: FC<PermissionGridProps> = ({ control, allPermissions, init
             <div className="space-y-6">
               {Object.keys(groupedPermissions).map((category) => (
                 <div key={category} className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-eventkan-muted uppercase tracking-wider">
                     {category.replace(/\./g, ' ')}
                   </div>
 
@@ -127,14 +128,14 @@ const PermissionGrid: FC<PermissionGridProps> = ({ control, allPermissions, init
                           <div className="flex flex-col">
                             <span
                               className={`text-sm font-medium leading-none transition-colors ${
-                                !isProtected && 'group-hover:text-primary'
+                                !isProtected && 'group-hover:text-eventkan-accent'
                               }`}
                             >
-                              {permission.name.split('.').pop()}
+                              {formatPermissionLabel(permission.name)}
                             </span>
 
                             {permission.description && (
-                              <span className="text-xs text-muted-foreground mt-1.5 line-clamp-2">
+                              <span className="text-xs text-eventkan-muted mt-1.5 line-clamp-2">
                                 {permission.description}
                               </span>
                             )}

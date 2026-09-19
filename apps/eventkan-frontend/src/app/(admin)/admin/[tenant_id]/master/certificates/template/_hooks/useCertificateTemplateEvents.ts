@@ -6,14 +6,16 @@ import { useQuery } from '@tanstack/react-query';
 import type { EventWithCertificate } from '@/interfaces/features/certificates';
 
 import { useDebounce } from '@/hooks/useDebounce';
+import { useTenantId } from '@/hooks/useTenantId';
 import { getEventsWithCertificateEnabled } from '@/services/admin/certificates';
 
 export function useCertificateTemplateEvents() {
+  const tenantId = useTenantId();
   const [selectedEventId, setSelectedEventId] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useDebounce('', 500);
   const { data } = useQuery({
-    queryKey: ['events-with-cert-enabled'],
+    queryKey: ['events-with-cert-enabled', tenantId],
     queryFn: getEventsWithCertificateEnabled,
   });
 

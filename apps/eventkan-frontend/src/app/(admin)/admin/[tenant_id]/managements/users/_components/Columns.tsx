@@ -10,6 +10,7 @@ import moment from 'moment';
 import type { User } from '@/interfaces/features/users';
 
 import { Badge } from '@/components/ui/badge';
+import { formatRoleLabel } from '@/lib/formatAdminBadgeLabel';
 import SortableTableHeader from '@/components/Common/SortableTableHeader';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
@@ -28,8 +29,8 @@ const Columns: ColumnDef<User>[] = [
             <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-sm font-medium text-eventkan-ink">{user.name}</span>
-            <span className="text-xs text-eventkan-muted">{user.email}</span>
+            <span className="font-display text-sm font-semibold tracking-[-.02em] text-eventkan-ink">{user.name}</span>
+            <span className="text-sm leading-relaxed text-eventkan-muted">{user.email}</span>
           </div>
         </div>
       );
@@ -46,29 +47,24 @@ const Columns: ColumnDef<User>[] = [
       const getRoleColor = (name: string) => {
         const normalizedName = name.toLowerCase();
         if (normalizedName.includes('panitia'))
-          return 'bg-eventkan-green text-eventkan-green-ink border-eventkan-green/30';
+          return 'bg-eventkan-green text-eventkan-green-ink';
         if (normalizedName === 'superadmin' || normalizedName === 'root_superadmin')
-          return 'bg-eventkan-peach text-eventkan-peach-ink border-eventkan-peach/30';
+          return 'bg-eventkan-peach text-eventkan-peach-ink';
         if (normalizedName.includes('admin'))
-          return 'bg-eventkan-navy/8 text-eventkan-navy border-eventkan-navy/10';
+          return 'bg-eventkan-navy/8 text-eventkan-navy';
         if (normalizedName === 'user')
-          return 'bg-eventkan-green text-eventkan-green-ink border-eventkan-green/30';
-        return 'bg-eventkan-canvas text-eventkan-muted border-eventkan-ink/10';
+          return 'bg-eventkan-green text-eventkan-green-ink';
+        return 'bg-eventkan-canvas text-eventkan-muted';
       };
 
       if (!role) return <div className="text-eventkan-muted">-</div>;
 
-      const roleLabel =
-        role.name.toLowerCase() === 'root_superadmin'
-          ? 'Root Superadmin'
-          : role.name.replace(/_/g, ' ');
-
       return (
         <Badge
           variant="outline"
-          className={`font-medium capitalize px-2.5 py-0.5 ${getRoleColor(role.name)}`}
+          className={`rounded-full border-0 px-2.5 py-1 text-[10px] font-medium capitalize ${getRoleColor(role.name)}`}
         >
-          {roleLabel}
+          {formatRoleLabel(role.name)}
         </Badge>
       );
     },
@@ -77,7 +73,7 @@ const Columns: ColumnDef<User>[] = [
     accessorKey: 'createdAt',
     header: ({ column }) => <SortableTableHeader column={column} label="Tanggal Terdaftar" />,
     cell: ({ row }) =>
-      <span className="text-sm text-eventkan-muted">
+      <span className="text-sm leading-relaxed text-eventkan-muted">
         {moment(row.original.createdAt).tz('Asia/Jakarta').locale('id').format('DD MMMM YYYY, HH:mm')}
       </span>,
   },

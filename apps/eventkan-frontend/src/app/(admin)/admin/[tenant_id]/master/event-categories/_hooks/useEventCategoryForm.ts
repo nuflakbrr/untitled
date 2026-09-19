@@ -27,9 +27,9 @@ export const useEventCategoryForm = (id: string) => {
   const isNew = id === 'new';
 
   const { data: existing, isLoading } = useQuery({
-    queryKey: ['event-category', id],
+    queryKey: ['event-category', tenantId, id],
     queryFn: () => getEventCategoryById(id),
-    enabled: !isNew,
+    enabled: Boolean(tenantId) && !isNew,
   });
 
   const form = useForm<EventCategoryValues>({

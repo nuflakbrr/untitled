@@ -18,6 +18,31 @@ export async function confirmOnlineAttendance(registrationId: string): Promise<a
     };
   }
 }
+
+export type AttendanceProofStatus = 'APPROVED' | 'REJECTED';
+
+export async function submitAttendanceProof(registrationId: string, proofUrl: string) {
+  try {
+    await api.post(`/features/v1/registrations/${registrationId}/attendance-proof`, {
+      proof_url: proofUrl,
+    });
+    return { success: true, message: 'Bukti kehadiran berhasil dikirim.' };
+  } catch {
+    return { success: false, error: 'Gagal mengirim bukti kehadiran.' };
+  }
+}
+
+export async function reviewAttendanceProof(
+  registrationId: string,
+  status: AttendanceProofStatus
+) {
+  try {
+    await api.patch(`/features/v1/registrations/${registrationId}/attendance-proof`, { status });
+    return { success: true, message: 'Bukti kehadiran berhasil diperbarui.' };
+  } catch {
+    return { success: false, error: 'Gagal memperbarui bukti kehadiran.' };
+  }
+}
 export async function scanQrCode(qrToken: string): Promise<any> {
   try {
     return {

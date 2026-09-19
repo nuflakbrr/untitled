@@ -4,16 +4,18 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { useDebounce } from '@/hooks/useDebounce';
+import { useTenantId } from '@/hooks/useTenantId';
 import { getEventCategories } from '@/services/admin/event-categories';
 
 export const useEventCategoriesList = (includeDeleted = false) => {
+  const tenantId = useTenantId();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useDebounce('', 500);
   const [limit, setLimit] = useState(10);
 
   const { data, isLoading } = useQuery({
-    queryKey: ['event-categories', page, limit, debouncedSearch, includeDeleted],
+    queryKey: ['event-categories', tenantId, page, limit, debouncedSearch, includeDeleted],
     queryFn: () => getEventCategories(page, limit, debouncedSearch, includeDeleted),
   });
 

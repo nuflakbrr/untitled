@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { useDebounce } from '@/hooks/useDebounce';
+import { useTenantId } from '@/hooks/useTenantId';
 import {
   getCertificates,
   generateCertificatesForEvent,
@@ -14,6 +15,7 @@ import {
 } from '@/services/admin/certificates';
 
 export const useCertificatesList = () => {
+  const tenantId = useTenantId();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -23,19 +25,19 @@ export const useCertificatesList = () => {
 
   // Certificates list query
   const { data: certsData, isLoading: isCertsLoading } = useQuery({
-    queryKey: ['certificates', page, debouncedSearch, limit, eventId],
+    queryKey: ['certificates', tenantId, page, debouncedSearch, limit, eventId],
     queryFn: () => getCertificates(page, limit, debouncedSearch, eventId),
   });
 
   // Events query for stats
   const { data: eventsData, isLoading: isEventsLoading } = useQuery({
-    queryKey: ['completed-events-certs'],
+    queryKey: ['completed-events-certs', tenantId],
     queryFn: () => getCompletedEventsWithCertStats(),
   });
 
   // Events query for filter dropdown
   const { data: eventsWithCertData } = useQuery({
-    queryKey: ['events-with-cert-enabled'],
+    queryKey: ['events-with-cert-enabled', tenantId],
     queryFn: () => getEventsWithCertificateEnabled(),
   });
 

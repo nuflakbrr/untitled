@@ -116,6 +116,7 @@ export default function UpcomingEventCard({ upcomingEvent }: UpcomingEventCardPr
                 <ConfirmOnlineButton
                   registrationId={upcomingEvent.id}
                   disabled={upcomingEvent.status === 'CHECKED_IN'}
+                  proofStatus={upcomingEvent.attendanceProofStatus}
                 />
               </div>
             </div>

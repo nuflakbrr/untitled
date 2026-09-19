@@ -12,14 +12,16 @@ import type { Registration } from '@/interfaces/features/registrations';
 import { Badge } from '@/components/ui/badge';
 import { RegistrationStatus } from '@/interfaces/enums';
 import SortableTableHeader from '@/components/Common/SortableTableHeader';
+import { formatRegistrationStatusLabel } from '@/lib/formatAdminBadgeLabel';
 
 import CellAction from './CellAction';
+import AttendanceProofCell from './AttendanceProofCell';
 
 const Columns: ColumnDef<Registration>[] = [
   {
     accessorKey: 'registrationNumber',
     header: ({ column }) => <SortableTableHeader column={column} label="No. Registrasi" />,
-    cell: ({ row }) => <span className="font-mono text-sm text-eventkan-ink">{row.original.registrationNumber}</span>,
+    cell: ({ row }) => <span className="font-display text-sm font-semibold tracking-[-.02em] text-eventkan-ink">{row.original.registrationNumber}</span>,
   },
   {
     accessorKey: 'event',
@@ -28,11 +30,11 @@ const Columns: ColumnDef<Registration>[] = [
       const event = row.original.event;
       return (
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-eventkan-ink">{event?.title}</span>
+          <span className="font-display text-sm font-semibold tracking-[-.02em] text-eventkan-ink">{event?.title}</span>
           {event?.price > 0 ? (
-            <span className="text-xs font-medium text-eventkan-accent">Berbayar</span>
+            <span className="text-sm leading-relaxed text-eventkan-accent">Berbayar</span>
           ) : (
-            <span className="text-xs font-medium text-eventkan-green-ink">Gratis</span>
+            <span className="text-sm leading-relaxed text-eventkan-green-ink">Gratis</span>
           )}
         </div>
       );
@@ -45,8 +47,8 @@ const Columns: ColumnDef<Registration>[] = [
       const user = row.original.user;
       return (
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-eventkan-ink">{user?.name || '-'}</span>
-          <span className="text-xs text-eventkan-muted">{user?.email}</span>
+          <span className="font-display text-sm font-semibold tracking-[-.02em] text-eventkan-ink">{user?.name || '-'}</span>
+          <span className="text-sm leading-relaxed text-eventkan-muted">{user?.email}</span>
         </div>
       );
     },
@@ -59,40 +61,31 @@ const Columns: ColumnDef<Registration>[] = [
       const getStatusClass = (val: typeof status) => {
         switch (val) {
           case RegistrationStatus.WAITING_PAYMENT:
-            return 'bg-eventkan-yellow text-eventkan-ink border-eventkan-yellow/30';
+            return 'bg-eventkan-yellow text-eventkan-ink';
           case RegistrationStatus.REGISTERED:
-            return 'bg-eventkan-green text-eventkan-green-ink border-eventkan-green/30';
+            return 'bg-eventkan-green text-eventkan-green-ink';
           case RegistrationStatus.CANCELLED:
-            return 'bg-eventkan-peach text-eventkan-peach-ink border-eventkan-peach/30';
+            return 'bg-eventkan-peach text-eventkan-peach-ink';
           case RegistrationStatus.CHECKED_IN:
-            return 'bg-eventkan-navy/8 text-eventkan-navy border-eventkan-navy/10';
+            return 'bg-eventkan-navy/8 text-eventkan-navy';
           default:
             return '';
-        }
-      };
-      const getStatusLabel = (val: typeof status) => {
-        switch (val) {
-          case RegistrationStatus.WAITING_PAYMENT:
-            return 'Menunggu Pembayaran';
-          case RegistrationStatus.REGISTERED:
-            return 'Terdaftar';
-          case RegistrationStatus.CANCELLED:
-            return 'Dibatalkan';
-          case RegistrationStatus.CHECKED_IN:
-            return 'Hadir';
-          default:
-            return val;
         }
       };
       return (
         <Badge
           variant="outline"
-          className={`px-1.5 py-0.5 text-xs font-medium sm:text-sm ${getStatusClass(status)}`}
+          className={`rounded-full border-0 px-2.5 py-1 text-[10px] font-medium ${getStatusClass(status)}`}
         >
-          {getStatusLabel(status)}
+          {formatRegistrationStatusLabel(status)}
         </Badge>
       );
     },
+  },
+  {
+    id: 'attendanceProof',
+    header: 'Bukti Kehadiran',
+    cell: ({ row }) => <AttendanceProofCell data={row.original} />,
   },
   {
     accessorKey: 'createdAt',
@@ -103,7 +96,7 @@ const Columns: ColumnDef<Registration>[] = [
         .locale('id')
         .tz('Asia/Jakarta')
         .format('DD MMM, HH:mm');
-      return <span className="text-sm text-eventkan-muted">{formattedDate}</span>;
+      return <span className="text-sm leading-relaxed text-eventkan-muted">{formattedDate}</span>;
     },
   },
   {

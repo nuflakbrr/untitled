@@ -4,15 +4,17 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { useDebounce } from '@/hooks/useDebounce';
+import { useTenantId } from '@/hooks/useTenantId';
 import { getPermissions } from '@/services/admin/permissions';
 
 export const usePermissionsList = () => {
+  const tenantId = useTenantId();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useDebounce('', 500);
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['permissions', page, limit, debouncedSearch],
+    queryKey: ['permissions', tenantId, page, limit, debouncedSearch],
     queryFn: () => getPermissions(page, limit, debouncedSearch),
   });
 

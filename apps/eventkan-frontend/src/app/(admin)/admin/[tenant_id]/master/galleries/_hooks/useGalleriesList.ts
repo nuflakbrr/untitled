@@ -4,9 +4,11 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { useDebounce } from '@/hooks/useDebounce';
+import { useTenantId } from '@/hooks/useTenantId';
 import { getGalleries } from '@/services/admin/galleries';
 
 export const useGalleriesList = () => {
+  const tenantId = useTenantId();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useDebounce('', 500);
@@ -14,7 +16,7 @@ export const useGalleriesList = () => {
   const [includeDeleted, setIncludeDeleted] = useState(false);
 
   const { data, isLoading } = useQuery({
-    queryKey: ['galleries', page, limit, debouncedSearch, includeDeleted],
+    queryKey: ['galleries', tenantId, page, limit, debouncedSearch, includeDeleted],
     queryFn: () => getGalleries(page, limit, debouncedSearch, undefined, includeDeleted),
   });
 

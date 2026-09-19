@@ -24,7 +24,7 @@ type CategorySelectionProps = {
 const CategorySelection: FC<CategorySelectionProps> = ({ control }) => {
   const tenantId = useTenantId();
   const { data: masterCategoriesData, isLoading: isLoadingCategories } = useQuery({
-    queryKey: ['article-categories'],
+    queryKey: ['article-categories', tenantId],
     queryFn: async () => await getCategories(),
   });
 
@@ -33,10 +33,10 @@ const CategorySelection: FC<CategorySelectionProps> = ({ control }) => {
   return (
     <div className="bg-sidebar p-6 rounded-2xl border space-y-6">
       <div className="flex items-center gap-2">
-        <Tag className="h-5 w-5 text-primary" />
+        <Tag className="h-5 w-5 text-eventkan-accent" />
         <h3 className="font-semibold text-lg">Kategori Artikel</h3>
       </div>
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-eventkan-muted">
         Pilih kategori yang sesuai untuk artikel ini dari daftar Master Kategori.
       </p>
 
@@ -45,7 +45,7 @@ const CategorySelection: FC<CategorySelectionProps> = ({ control }) => {
       {isLoadingCategories ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-8 w-full bg-muted animate-pulse rounded-md" />
+            <div key={i} className="h-8 w-full bg-eventkan-canvas animate-pulse rounded-md" />
           ))}
         </div>
       ) : masterCategories.length > 0 ? (
@@ -63,8 +63,8 @@ const CategorySelection: FC<CategorySelectionProps> = ({ control }) => {
                   return (
                     <label
                       key={cat.id}
-                      className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer hover:border-primary/50 ${
-                        isSelected ? 'bg-primary/5 border-primary shadow-sm' : 'bg-background'
+                      className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer hover:border-eventkan-accent/50 ${
+                        isSelected ? 'bg-eventkan-accent/5 border-eventkan-accent shadow-sm' : 'bg-eventkan-surface'
                       }`}
                     >
                       <Checkbox
@@ -76,7 +76,7 @@ const CategorySelection: FC<CategorySelectionProps> = ({ control }) => {
                           field.onChange(newValue);
                         }}
                       />
-                      <span className={`text-sm font-medium ${isSelected ? 'text-primary' : ''}`}>
+                      <span className={`text-sm font-medium ${isSelected ? 'text-eventkan-accent' : ''}`}>
                         {cat.name}
                       </span>
                     </label>
@@ -88,7 +88,7 @@ const CategorySelection: FC<CategorySelectionProps> = ({ control }) => {
         </div>
       ) : (
         <div className="text-center py-8 border border-dashed rounded-xl space-y-2">
-          <p className="text-sm text-muted-foreground italic">Belum ada Master Kategori.</p>
+          <p className="text-sm text-eventkan-muted italic">Belum ada Master Kategori.</p>
           <Button variant="link" size="sm" asChild>
                   <Link href={`/admin/${tenantId}/publications/articles`}>Buat di Master Kategori</Link>
           </Button>

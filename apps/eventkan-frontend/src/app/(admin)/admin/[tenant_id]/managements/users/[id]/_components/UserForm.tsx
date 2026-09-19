@@ -71,7 +71,7 @@ const UserForm: FC<Props> = ({ initialData }) => {
         loading={deleteMutation.isPending}
       />
       <div className="flex items-center justify-between mb-4">
-        <Heading title={title} description={description} />
+        <Heading variant="soft" title={title} description={description} />
         {initialData && hasPermission('user.delete') && canDelete && (
           <Button
             disabled={submitMutation.isPending || deleteMutation.isPending}

@@ -14,6 +14,7 @@ import type { Article } from '@/interfaces/features/articles';
 
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { formatDeletedStatusLabel } from '@/lib/formatAdminBadgeLabel';
 import SortableTableHeader from '@/components/Common/SortableTableHeader';
 import ImagePreviewModal from '@/components/Common/Modals/ImagePreviewModal';
 
@@ -52,12 +53,12 @@ const Columns: ColumnDef<Article>[] = [
     header: ({ column }) => <SortableTableHeader column={column} label="Status" />,
     cell: ({ row }) =>
       row.original.deletedAt ? (
-        <Badge variant="outline" className="border-eventkan-peach/30 bg-eventkan-peach text-eventkan-peach-ink">
-          Terhapus
+        <Badge variant="outline" className="rounded-full border-0 bg-eventkan-peach px-2.5 py-1 text-[10px] font-medium text-eventkan-peach-ink">
+          {formatDeletedStatusLabel(true)}
         </Badge>
       ) : (
-        <Badge variant="outline" className="border-eventkan-green/30 bg-eventkan-green text-eventkan-green-ink">
-          Aktif
+        <Badge variant="outline" className="rounded-full border-0 bg-eventkan-green px-2.5 py-1 text-[10px] font-medium text-eventkan-green-ink">
+          {formatDeletedStatusLabel(false)}
         </Badge>
       ),
   },
@@ -68,12 +69,12 @@ const Columns: ColumnDef<Article>[] = [
       <div className="flex flex-wrap gap-1">
         {row.original.articleCategories && row.original.articleCategories.length > 0 ? (
           row.original.articleCategories.map((cat) => (
-            <Badge key={cat.id} variant="secondary" className="text-[10px]">
+            <Badge key={cat.id} variant="secondary" className="rounded-full border-0 bg-eventkan-canvas px-2.5 py-1 text-[10px] font-medium text-eventkan-muted">
               {cat.name}
             </Badge>
           ))
         ) : (
-          <span className="text-xs text-eventkan-muted">-</span>
+          <span className="text-sm leading-relaxed text-eventkan-muted">-</span>
         )}
       </div>
     ),
@@ -82,7 +83,9 @@ const Columns: ColumnDef<Article>[] = [
     accessorKey: 'updatedAt',
     header: ({ column }) => <SortableTableHeader column={column} label="Terakhir Diperbarui" />,
     cell: ({ row }) =>
-      moment(row.original.updatedAt).tz('Asia/Jakarta').locale('id').format('DD MMMM YYYY, HH:mm'),
+      <span className="text-sm leading-relaxed text-eventkan-muted">
+        {moment(row.original.updatedAt).tz('Asia/Jakarta').locale('id').format('DD MMMM YYYY, HH:mm')}
+      </span>,
   },
   {
     id: 'action',
@@ -106,7 +109,7 @@ const TitleCell = ({ row }: { row: { original: Article } }) => {
       />
       <div className="flex items-center gap-3 text-left">
         <div
-          className="relative h-10 w-16 min-w-16 rounded-lg overflow-hidden border bg-muted flex items-center justify-center cursor-zoom-in hover:ring-2 hover:ring-primary/20 transition-all group"
+          className="relative h-10 w-16 min-w-16 rounded-lg overflow-hidden border bg-eventkan-canvas flex items-center justify-center cursor-zoom-in hover:ring-2 hover:ring-primary/20 transition-all group"
           onClick={() => image && setIsPreviewOpen(true)}
         >
           {image ? (
@@ -127,8 +130,8 @@ const TitleCell = ({ row }: { row: { original: Article } }) => {
           )}
         </div>
         <div className="flex flex-col">
-          <span className="font-medium text-eventkan-ink">{row.original.title}</span>
-          <span className="max-w-50 truncate text-xs text-eventkan-muted">
+          <span className="font-display text-sm font-semibold tracking-[-.02em] text-eventkan-ink">{row.original.title}</span>
+          <span className="line-clamp-2 max-w-md text-sm leading-relaxed text-eventkan-muted">
             {row.original.content.replace(/<[^>]*>?/gm, '').substring(0, 50)}...
           </span>
         </div>

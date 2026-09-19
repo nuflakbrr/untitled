@@ -3,14 +3,12 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
 
 import type { User } from '@/interfaces/features/users';
 
 import { Button } from '@/components/ui/button';
 import { useTenantId } from '@/hooks/useTenantId';
 import Heading from '@/components/Common/Heading';
-import { getMeAction } from '@/services/public/auth';
 import { DataTable } from '@/components/ui/data-table';
 import AlertModal from '@/components/Common/Modals/AlertModal';
 import { usePermission } from '@/providers/PermissionProvider';
@@ -26,9 +24,17 @@ export const UsersCMS = ({ participantOnly = false }: { participantOnly?: boolea
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [confirming, setConfirming] = useState(false);
   const [includeDeleted, setIncludeDeleted] = useState(false);
-  const { data: meData } = useQuery({ queryKey: ['auth-me-server-action'], queryFn: getMeAction });
-  const { users, meta, isLoading, refetch, setPage, setLimit, search, handleSearchChange } =
-    useUsersList(participantOnly, includeDeleted);
+  const {
+    users,
+    meta,
+    isLoading,
+    refetch,
+    setPage,
+    setLimit,
+    search,
+    handleSearchChange,
+    currentUserId,
+  } = useUsersList(participantOnly, includeDeleted);
   const { bulkDelete, isPending: isBulkDeletePending } = useUsersBulkActions(
     includeDeleted,
     async () => {
@@ -82,7 +88,7 @@ export const UsersCMS = ({ participantOnly = false }: { participantOnly?: boolea
               }
             : undefined
         }
-        isRowSelectable={(row) => row.id !== meData?.session?.user?.id}
+        isRowSelectable={(row) => row.id !== currentUserId}
         includeDeleted={includeDeleted}
         onIncludeDeletedChange={(value) => {
           setIncludeDeleted(value);

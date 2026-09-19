@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent } from '@/components/ui/card';
+import { formatScanCodeLabel } from '@/lib/formatAdminBadgeLabel';
 
 import { SuccessResultCard } from './_components/SuccessResultCard';
 import { FailureResultCard } from './_components/FailureResultCard';
@@ -66,13 +67,13 @@ export default async function ScanResultPage({ params: routeParams, searchParams
                 variant={isSuccess ? 'default' : 'destructive'}
                 className="text-xs uppercase font-extrabold px-3 py-1 shadow-xs border-none"
               >
-                {params.code || (isSuccess ? 'CHECKED_IN' : 'FAILED')}
+                {formatScanCodeLabel(params.code, isSuccess)}
               </Badge>
               <h2 className="text-eventkan-ink text-2xl font-black tracking-tight">
                 {isSuccess ? 'Presensi Berhasil' : 'Presensi Gagal'}
               </h2>
               {params.message && (
-                <p className="text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">
+                <p className="text-sm text-eventkan-muted max-w-xs mx-auto leading-relaxed">
                   {params.message}
                 </p>
               )}

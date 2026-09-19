@@ -55,7 +55,7 @@ const SupportMessagesPage: FC = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">Semua Status</SelectItem>
-                <SelectItem value="PENDING">Pending</SelectItem>
+                <SelectItem value="PENDING">Menunggu</SelectItem>
                 <SelectItem value="PROCESS">Proses</SelectItem>
                 <SelectItem value="RESOLVED">Selesai</SelectItem>
               </SelectContent>

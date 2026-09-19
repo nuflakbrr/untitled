@@ -10,6 +10,8 @@ function normalizeRegistration(item: Record<string, unknown>): ParticipantRegist
     eventId: item.eventId ?? item.event_id,
     userId: item.userId ?? item.user_id,
     registrationNumber: item.registrationNumber ?? item.registration_number,
+    attendanceProofUrl: item.attendanceProofUrl ?? item.attendance_proof_url ?? null,
+    attendanceProofStatus: item.attendanceProofStatus ?? item.attendance_proof_status ?? '',
     createdAt: new Date(String(item.createdAt ?? item.created_at)),
     updatedAt: new Date(String(item.updatedAt ?? item.updated_at)),
     deletedAt:

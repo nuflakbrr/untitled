@@ -11,6 +11,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { AdminTenantRow } from '@/interfaces/features/tenants';
 
 import { Badge } from '@/components/ui/badge';
+import { formatTenantTypeLabel } from '@/lib/formatAdminBadgeLabel';
 import SortableTableHeader from '@/components/Common/SortableTableHeader';
 
 import CellAction from './CellAction';
@@ -30,8 +31,8 @@ const Columns = (): ColumnDef<AdminTenantRow>[] => [
           </button>
         ) : <span className="w-6" />}
         <div>
-        <p className="font-medium">{row.original.name}</p>
-        <p className="text-xs text-eventkan-muted">{row.original.code}</p>
+        <p className="font-display text-sm font-semibold tracking-[-.02em] text-eventkan-ink">{row.original.name}</p>
+        <p className="text-sm leading-relaxed text-eventkan-muted">{row.original.code}</p>
         </div>
       </div>
     ),
@@ -40,13 +41,15 @@ const Columns = (): ColumnDef<AdminTenantRow>[] => [
     accessorKey: 'type',
     header: ({ column }) => <SortableTableHeader column={column} label="Tipe" />,
     cell: ({ row }) => (
-      <Badge className={tenantTypeClass(row.original.type)}>{row.original.type}</Badge>
+      <Badge className={`rounded-full border-0 px-2.5 py-1 text-[10px] font-medium ${tenantTypeClass(row.original.type)}`}>
+        {formatTenantTypeLabel(row.original.type)}
+      </Badge>
     ),
   },
   {
     accessorKey: 'parentName',
     header: ({ column }) => <SortableTableHeader column={column} label="Tenant Induk" />,
-    cell: ({ row }) => <span className="text-sm text-eventkan-muted">{row.original.parentName || '-'}</span>,
+    cell: ({ row }) => <span className="text-sm leading-relaxed text-eventkan-muted">{row.original.parentName || '-'}</span>,
   },
   {
     accessorKey: 'createdAt',
@@ -54,7 +57,7 @@ const Columns = (): ColumnDef<AdminTenantRow>[] => [
     cell: ({ row }) =>
       row.original.createdAt
         ? moment(row.original.createdAt).tz('Asia/Jakarta').locale('id').format('DD MMM YYYY')
-        : <span className="text-sm text-eventkan-muted">-</span>,
+        : <span className="text-sm leading-relaxed text-eventkan-muted">-</span>,
   },
   { id: 'action', header: 'Aksi', cell: ({ row }) => <CellAction data={row.original} /> },
 ];
@@ -63,14 +66,14 @@ function tenantTypeClass(type: string) {
   const normalizedType = type.toLowerCase();
 
   if (normalizedType.includes('root') || normalizedType.includes('university')) {
-    return 'border-eventkan-peach/30 bg-eventkan-peach text-eventkan-peach-ink hover:bg-eventkan-peach';
+    return 'bg-eventkan-peach text-eventkan-peach-ink';
   }
 
   if (normalizedType.includes('faculty') || normalizedType.includes('fakultas')) {
-    return 'border-eventkan-navy/10 bg-eventkan-navy/8 text-eventkan-navy hover:bg-eventkan-navy/8';
+    return 'bg-eventkan-navy/8 text-eventkan-navy';
   }
 
-  return 'border-eventkan-ink/10 bg-eventkan-canvas text-eventkan-muted hover:bg-eventkan-canvas';
+  return 'bg-eventkan-canvas text-eventkan-muted';
 }
 
 export default Columns;

@@ -7,6 +7,8 @@ export interface Registration {
   userId: string;
   registrationNumber: string;
   qrToken?: string | null;
+  attendanceProofUrl?: string | null;
+  attendanceProofStatus?: string;
   status: RegistrationStatus;
   createdAt: Date;
   updatedAt: Date;

@@ -171,7 +171,7 @@ const ImageUpload: FC<ImageUploadProps> = ({
               src={previewUrl}
               alt="Preview"
               fill
-              className="object-contain bg-muted/50"
+              className="object-contain bg-eventkan-canvas/50"
               loading="lazy"
             />
             <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
@@ -225,14 +225,14 @@ const ImageUpload: FC<ImageUploadProps> = ({
                 fileInputRef.current?.click();
               }}
               disabled={isUploading}
-              className={`w-full aspect-video flex flex-col items-center justify-center gap-2 border-2 border-dashed border-muted-foreground/25 rounded-xl hover:bg-muted/50 hover:border-primary/50 transition-all ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-full aspect-video flex flex-col items-center justify-center gap-2 border-2 border-dashed border-muted-foreground/25 rounded-xl hover:bg-eventkan-canvas/50 hover:border-eventkan-accent/50 transition-all ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {isUploading ? (
-                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                <Loader2 className="h-6 w-6 animate-spin text-eventkan-muted" />
               ) : (
-                <Upload className="h-6 w-6 text-muted-foreground" />
+                <Upload className="h-6 w-6 text-eventkan-muted" />
               )}
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-eventkan-muted">
                 {isUploading
                   ? progress > 0 && progress < 100
                     ? `Mengunggah... ${Math.round(progress)}%`
@@ -252,7 +252,7 @@ const ImageUpload: FC<ImageUploadProps> = ({
         aspectRatio={3 / 2}
         customFileName={customFileName || tempFileName}
       />
-      <p className="text-xs text-muted-foreground mt-2">
+      <p className="text-xs text-eventkan-muted mt-2">
         Maksimal 5MB. Minimal 400x400px (Mendukung Landscape & Portrait). Gambar akan dikompres
         secara otomatis menjadi WebP untuk menghemat penyimpanan.
       </p>

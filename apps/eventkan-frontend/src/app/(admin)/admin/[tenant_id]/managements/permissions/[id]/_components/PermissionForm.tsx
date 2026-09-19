@@ -60,7 +60,7 @@ const PermissionForm: FC<Props> = ({ initialData }) => {
         loading={deleteMutation.isPending}
       />
       <div className="flex items-center justify-between mb-4">
-        <Heading title={title} description={description} />
+        <Heading variant="soft" title={title} description={description} />
         {initialData && hasPermission('permission.delete') && (
           <Button
             disabled={submitMutation.isPending || deleteMutation.isPending}
@@ -104,7 +104,7 @@ const PermissionForm: FC<Props> = ({ initialData }) => {
                   >
                     Mode Pembuatan CRUD
                   </Label>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-eventkan-muted">
                     Otomatis membuat 5 hak akses (read, create, update, delete).
                   </p>
                 </div>

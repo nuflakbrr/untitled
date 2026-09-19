@@ -157,6 +157,8 @@ export async function getParticipantDashboardData(): Promise<ParticipantDashboar
       registrationNumber: String(registration.registration_number ?? ''),
       createdAt: new Date(String(registration.created_at ?? '')),
       status: String(registration.status ?? ''),
+      attendanceProofUrl: (registration.attendance_proof_url as string | null) ?? null,
+      attendanceProofStatus: String(registration.attendance_proof_status ?? ''),
       event: {
         id: String(registration.event_id ?? ''),
         title: String(registration.event_title ?? 'Event tidak tersedia'),
@@ -188,6 +190,8 @@ export async function getParticipantDashboardData(): Promise<ParticipantDashboar
               endDate: upcomingEvent.startDate,
               qrToken: null,
               registrationNumber: upcoming.registrationNumber,
+              attendanceProofUrl: upcoming.attendanceProofUrl,
+              attendanceProofStatus: upcoming.attendanceProofStatus,
             }
           : null,
       history,

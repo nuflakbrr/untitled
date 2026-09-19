@@ -34,6 +34,8 @@ export interface AdminDashboardStats {
     registrationNumber: string;
     createdAt: Date;
     status: string;
+    attendanceProofUrl?: string | null;
+    attendanceProofStatus?: string;
     user: {
       name: string | null;
       email: string;
@@ -76,6 +78,8 @@ export interface ParticipantDashboardStats {
     eventType?: string;
     meetingLink?: string | null;
     onlineAttendance?: boolean;
+    attendanceProofUrl?: string | null;
+    attendanceProofStatus?: string;
     qrToken: string | null;
     status: string;
     registrationNumber?: string;
@@ -85,6 +89,8 @@ export interface ParticipantDashboardStats {
     registrationNumber: string;
     createdAt: Date;
     status: string;
+    attendanceProofUrl?: string | null;
+    attendanceProofStatus?: string;
     event: {
       id: string;
       title: string;
@@ -143,6 +149,8 @@ export interface UpcomingEventCardProps {
     status: string;
     registrationNumber?: string;
     onlineAttendance?: boolean;
+    attendanceProofUrl?: string | null;
+    attendanceProofStatus?: string;
   } | null;
 }
 
@@ -165,6 +173,7 @@ export interface EventHistoryTableProps {
 export interface ConfirmOnlineButtonProps {
   registrationId: string;
   disabled: boolean;
+  proofStatus?: string;
 }
 
 export interface TestimonialNoticeBannerProps {

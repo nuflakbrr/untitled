@@ -10,48 +10,30 @@ import type { SupportMessage } from '@/interfaces/features/support';
 
 import { Badge } from '@/components/ui/badge';
 import SortableTableHeader from '@/components/Common/SortableTableHeader';
+import {
+  SUPPORT_STATUS_CONFIG,
+  getSupportCategoryClass,
+  formatSupportStatusLabel,
+  formatSupportCategoryLabel,
+} from '@/lib/formatAdminBadgeLabel';
 
 import CellAction from './CellAction';
 import { useCellAction } from '../_hooks/useCellAction';
-
-const STATUS_CONFIG = {
-  PENDING: {
-    label: 'Pending',
-    className: 'border-eventkan-peach/30 bg-eventkan-peach/60 text-eventkan-peach-ink',
-  },
-  PROCESS: {
-    label: 'Diproses',
-    className: 'border-eventkan-yellow/30 bg-eventkan-yellow/60 text-eventkan-ink',
-  },
-  RESOLVED: {
-    label: 'Selesai',
-    className: 'border-eventkan-green/30 bg-eventkan-green text-eventkan-green-ink',
-  },
-} as const;
-
-const categoryClass = (category: string) => {
-  const value = category.toLowerCase();
-  if (value.includes('bayar') || value.includes('payment'))
-    return 'border-eventkan-green/30 bg-eventkan-green text-eventkan-green-ink';
-  if (value.includes('event'))
-    return 'border-eventkan-navy/10 bg-eventkan-navy/8 text-eventkan-navy';
-  if (value.includes('akun') || value.includes('account'))
-    return 'border-eventkan-accent/20 bg-eventkan-accent/10 text-eventkan-accent';
-  return 'border-eventkan-yellow/30 bg-eventkan-yellow/60 text-eventkan-ink';
-};
 
 const StatusCell = ({ row }: { row: Row<SupportMessage> }) => {
   const data = row.original;
   const { updateStatus, isStatusUpdating } = useCellAction(data.id);
 
-  const config = STATUS_CONFIG[data.status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.PENDING;
+  const config =
+    SUPPORT_STATUS_CONFIG[data.status as keyof typeof SUPPORT_STATUS_CONFIG] ||
+    SUPPORT_STATUS_CONFIG.PENDING;
   return (
     <div className="flex items-center gap-2">
       <Badge
         variant="outline"
-        className={`shrink-0 gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider ${config.className}`}
+        className={`shrink-0 gap-1 rounded-full border-0 px-2.5 py-1 text-[10px] font-medium ${config.className}`}
       >
-        <span>{config.label}</span>
+        <span>{formatSupportStatusLabel(data.status)}</span>
       </Badge>
       <select
         value={data.status}
@@ -60,7 +42,7 @@ const StatusCell = ({ row }: { row: Row<SupportMessage> }) => {
         className="cursor-pointer rounded-lg border border-eventkan-ink/10 bg-eventkan-surface px-2 py-0.5 text-xs outline-none disabled:cursor-not-allowed disabled:opacity-60"
       >
         <option value="PENDING" disabled={data.status !== 'PENDING'}>
-          Pending
+          Menunggu
         </option>
         <option value="PROCESS" disabled={data.status === 'RESOLVED'}>
           Proses
@@ -86,8 +68,8 @@ const Columns: ColumnDef<SupportMessage>[] = [
     header: ({ column }) => <SortableTableHeader column={column} label="Pengirim" />,
     cell: ({ row }) => (
       <div className="flex flex-col">
-        <span className="text-sm font-medium text-eventkan-ink">{row.original.name}</span>
-        <span className="text-xs text-eventkan-muted">{row.original.email}</span>
+        <span className="font-display text-sm font-semibold tracking-[-.02em] text-eventkan-ink">{row.original.name}</span>
+        <span className="text-sm leading-relaxed text-eventkan-muted">{row.original.email}</span>
       </div>
     ),
   },
@@ -96,9 +78,9 @@ const Columns: ColumnDef<SupportMessage>[] = [
     header: ({ column }) => <SortableTableHeader column={column} label="Kategori" />,
     cell: ({ row }) => (
       <span
-        className={`w-fit rounded-full border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider ${categoryClass(row.original.category)}`}
+        className={`w-fit rounded-full border-0 px-2.5 py-1 text-[10px] font-medium ${getSupportCategoryClass(row.original.category)}`}
       >
-        {row.original.category}
+        {formatSupportCategoryLabel(row.original.category)}
       </span>
     ),
   },
@@ -107,8 +89,8 @@ const Columns: ColumnDef<SupportMessage>[] = [
     header: ({ column }) => <SortableTableHeader column={column} label="Subjek & Kronologi" />,
     cell: ({ row }) => (
       <div className="flex min-w-0 max-w-xs flex-col">
-        <span className="block max-w-full truncate text-sm font-medium">{row.original.title}</span>
-        <span className="block max-w-full truncate text-xs text-eventkan-muted">
+        <span className="font-display block max-w-full truncate text-sm font-semibold tracking-[-.02em] text-eventkan-ink">{row.original.title}</span>
+        <span className="line-clamp-2 max-w-md text-sm leading-relaxed text-eventkan-muted">
           {row.original.chronology}
         </span>
       </div>

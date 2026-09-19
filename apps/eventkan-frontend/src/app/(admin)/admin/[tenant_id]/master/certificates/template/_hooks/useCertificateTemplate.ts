@@ -6,6 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import type { CertificateTemplate as CertificateTemplateInterface } from '@/interfaces/features/certificates';
 
+import { useTenantId } from '@/hooks/useTenantId';
 import { CertNumberMode } from '@/interfaces/enums';
 import { uploadImage } from '@/services/public/uploads';
 import {
@@ -20,13 +21,14 @@ import {
 } from '@/services/admin/certificates';
 
 export const useCertificateTemplate = (eventId: string | null) => {
+  const tenantId = useTenantId();
   const queryClient = useQueryClient();
   const [isUploadingBg, setIsUploadingBg] = useState(false);
   const [isUploadingSig, setIsUploadingSig] = useState(false);
 
   // Fetch template for a specific event
   const { data: templateData, isLoading: isTemplateLoading } = useQuery({
-    queryKey: ['certificate-template', eventId],
+    queryKey: ['certificate-template', tenantId, eventId],
     queryFn: () => getCertificateTemplate(eventId!),
     enabled: !!eventId,
   });
@@ -39,7 +41,7 @@ export const useCertificateTemplate = (eventId: string | null) => {
     onSuccess: (res) => {
       if (res.success) {
         toast.success(res.message);
-        queryClient.invalidateQueries({ queryKey: ['certificate-template', eventId] });
+        queryClient.invalidateQueries({ queryKey: ['certificate-template', tenantId, eventId] });
       } else {
         toast.error(res.error);
       }
@@ -54,7 +56,7 @@ export const useCertificateTemplate = (eventId: string | null) => {
     onSuccess: (res) => {
       if (res.success) {
         toast.success(res.message);
-        queryClient.invalidateQueries({ queryKey: ['certificate-template', eventId] });
+        queryClient.invalidateQueries({ queryKey: ['certificate-template', tenantId, eventId] });
       } else {
         toast.error(res.error);
       }
@@ -68,7 +70,7 @@ export const useCertificateTemplate = (eventId: string | null) => {
     onSuccess: (res) => {
       if (res.success) {
         toast.success(res.message);
-        queryClient.invalidateQueries({ queryKey: ['certificate-template', eventId] });
+        queryClient.invalidateQueries({ queryKey: ['certificate-template', tenantId, eventId] });
       } else {
         toast.error(res.error);
       }
@@ -81,7 +83,7 @@ export const useCertificateTemplate = (eventId: string | null) => {
     mutationFn: (orderedIds: string[]) => reorderSignatures(orderedIds),
     onSuccess: (res) => {
       if (res.success) {
-        queryClient.invalidateQueries({ queryKey: ['certificate-template', eventId] });
+        queryClient.invalidateQueries({ queryKey: ['certificate-template', tenantId, eventId] });
       }
     },
   });
@@ -93,7 +95,7 @@ export const useCertificateTemplate = (eventId: string | null) => {
     onSuccess: (res) => {
       if (res.success) {
         toast.success(res.message);
-        queryClient.invalidateQueries({ queryKey: ['certificate-template', eventId] });
+        queryClient.invalidateQueries({ queryKey: ['certificate-template', tenantId, eventId] });
       } else {
         toast.error(res.error);
       }
@@ -146,7 +148,7 @@ export const useCertificateTemplate = (eventId: string | null) => {
         toast.error('Gagal menginisialisasi template.');
         return;
       }
-      await queryClient.invalidateQueries({ queryKey: ['certificate-template', eventId] });
+      await queryClient.invalidateQueries({ queryKey: ['certificate-template', tenantId, eventId] });
       // Refetch to get new template id
       const fresh = await getCertificateTemplate(eventId!);
       if (!fresh.data) return;

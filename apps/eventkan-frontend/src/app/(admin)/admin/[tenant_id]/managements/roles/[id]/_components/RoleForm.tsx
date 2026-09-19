@@ -58,7 +58,7 @@ const RoleForm: FC<Props> = ({ initialData }) => {
       />
 
       <div className="flex items-center justify-between mb-4">
-        <Heading title={title} description={description} />
+        <Heading variant="soft" title={title} description={description} />
         {initialData && hasPermission('role.delete') && (
           <Button
             suppressHydrationWarning

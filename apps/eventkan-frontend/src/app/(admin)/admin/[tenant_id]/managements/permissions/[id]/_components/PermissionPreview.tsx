@@ -4,6 +4,7 @@ import { memo, type FC } from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import Heading from '@/components/Common/Heading';
+import { formatPermissionLabel } from '@/lib/formatAdminBadgeLabel';
 
 type PermissionPreviewProps = {
   nameValue: string;
@@ -31,7 +32,7 @@ const PermissionPreview: FC<PermissionPreviewProps> = memo(({ nameValue, isCrudM
 
           return (
             <Badge key={suffix} className={suffixColors[suffix]} variant="outline">
-              {moduleName}.{suffix}
+              {formatPermissionLabel(`${moduleName}.${suffix}`)}
             </Badge>
           );
         })
@@ -42,7 +43,7 @@ const PermissionPreview: FC<PermissionPreviewProps> = memo(({ nameValue, isCrudM
           }
           variant="outline"
         >
-          {nameValue || 'Belum ada nama'}
+          {nameValue ? formatPermissionLabel(nameValue) : 'Belum ada nama'}
         </Badge>
       )}
     </div>

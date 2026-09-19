@@ -12,6 +12,7 @@ import type { Payment } from '@/interfaces/features/payments';
 import { Badge } from '@/components/ui/badge';
 import { PaymentStatus } from '@/interfaces/enums';
 import { formatCurrency } from '@/lib/formatCurrency';
+import { formatPaymentStatusLabel } from '@/lib/formatAdminBadgeLabel';
 import SortableTableHeader from '@/components/Common/SortableTableHeader';
 
 import CellAction from './CellAction';
@@ -21,13 +22,13 @@ const Columns: ColumnDef<Payment>[] = [
     accessorKey: 'registrationNumber',
     header: ({ column }) => <SortableTableHeader column={column} label="No. Registrasi" />,
     cell: ({ row }) => (
-      <span className="font-mono text-sm text-eventkan-ink">{row.original.registration.registrationNumber}</span>
+      <span className="font-display text-sm font-semibold tracking-[-.02em] text-eventkan-ink">{row.original.registration.registrationNumber}</span>
     ),
   },
   {
     accessorKey: 'event',
     header: ({ column }) => <SortableTableHeader column={column} label="Event" />,
-    cell: ({ row }) => <span className="text-sm font-medium text-eventkan-ink">{row.original.registration.event.title}</span>,
+    cell: ({ row }) => <span className="font-display text-sm font-semibold tracking-[-.02em] text-eventkan-ink">{row.original.registration.event.title}</span>,
   },
   {
     accessorKey: 'user',
@@ -36,8 +37,8 @@ const Columns: ColumnDef<Payment>[] = [
       const user = row.original.registration.user;
       return (
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-eventkan-ink">{user.name || '-'}</span>
-          <span className="text-xs text-eventkan-muted">{user.email}</span>
+        <span className="font-display text-sm font-semibold tracking-[-.02em] text-eventkan-ink">{user.name || '-'}</span>
+        <span className="text-sm leading-relaxed text-eventkan-muted">{user.email}</span>
         </div>
       );
     },
@@ -46,7 +47,7 @@ const Columns: ColumnDef<Payment>[] = [
     accessorKey: 'amount',
     header: ({ column }) => <SortableTableHeader column={column} label="Nominal" />,
     cell: ({ row }) => (
-      <span className="font-medium text-sm">{formatCurrency(row.original.amount)}</span>
+      <span className="text-sm font-semibold text-eventkan-ink">{formatCurrency(row.original.amount)}</span>
     ),
   },
   {
@@ -57,34 +58,20 @@ const Columns: ColumnDef<Payment>[] = [
       const getStatusClass = (val: typeof status) => {
         switch (val) {
           case PaymentStatus.WAITING:
-            return 'bg-eventkan-yellow text-eventkan-ink border-eventkan-yellow/30';
+            return 'bg-eventkan-yellow text-eventkan-ink';
           case PaymentStatus.PAID:
-            return 'bg-eventkan-green text-eventkan-green-ink border-eventkan-green/30';
+            return 'bg-eventkan-green text-eventkan-green-ink';
           case PaymentStatus.FAILED:
-            return 'bg-eventkan-peach text-eventkan-peach-ink border-eventkan-peach/30';
+            return 'bg-eventkan-peach text-eventkan-peach-ink';
           case PaymentStatus.REFUNDED:
-            return 'bg-eventkan-navy/8 text-eventkan-navy border-eventkan-navy/10';
+            return 'bg-eventkan-navy/8 text-eventkan-navy';
           default:
             return '';
         }
       };
-      const getStatusLabel = (val: typeof status) => {
-        switch (val) {
-          case PaymentStatus.WAITING:
-            return 'Menunggu Pembayaran';
-          case PaymentStatus.PAID:
-            return 'Lunas';
-          case PaymentStatus.FAILED:
-            return 'Ditolak';
-          case PaymentStatus.REFUNDED:
-            return 'Dikembalikan';
-          default:
-            return val;
-        }
-      };
       return (
-        <Badge variant="outline" className={`px-2 py-0.5 font-medium ${getStatusClass(status)}`}>
-          {getStatusLabel(status)}
+        <Badge variant="outline" className={`rounded-full border-0 px-2.5 py-1 text-[10px] font-medium ${getStatusClass(status)}`}>
+          {formatPaymentStatusLabel(status)}
         </Badge>
       );
     },
@@ -97,7 +84,7 @@ const Columns: ColumnDef<Payment>[] = [
         .tz('Asia/Jakarta')
         .locale('id')
         .format('DD MMM YYYY, HH:mm');
-      return <span className="text-sm text-eventkan-muted">{formattedDate}</span>;
+      return <span className="text-sm leading-relaxed text-eventkan-muted">{formattedDate}</span>;
     },
   },
   {

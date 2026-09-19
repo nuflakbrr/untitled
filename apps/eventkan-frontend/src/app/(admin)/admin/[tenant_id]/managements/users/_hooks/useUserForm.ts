@@ -37,11 +37,12 @@ export const useUserForm = (initialData: User | null) => {
   });
 
   const { data: rolesData, isLoading: isLoadingRoles } = useQuery({
-    queryKey: ['roles-all'],
+    queryKey: ['roles-all', tenantId],
     queryFn: async () => {
       const result = await getRoles(1, 100);
       return result.success ? result.data : [];
     },
+    enabled: Boolean(tenantId),
   });
 
   const roles = rolesData || [];

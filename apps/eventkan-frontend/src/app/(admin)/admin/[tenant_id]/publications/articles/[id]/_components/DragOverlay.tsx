@@ -13,15 +13,15 @@ const DragOverlay: FC<DragOverlayProps> = ({ isDragging, isReplacing }) => {
   if (!isDragging) return null;
 
   return (
-    <div className="absolute inset-0 z-50 bg-primary/5 backdrop-blur-[2px] rounded-3xl border-4 border-dashed border-primary/50 flex flex-col items-center justify-center gap-4 animate-in fade-in zoom-in-95 duration-300">
-      <div className="p-8 bg-background/80 backdrop-blur-md rounded-full shadow-2xl border border-primary/20 animate-bounce">
-        <Upload className="h-12 w-12 text-primary" />
+    <div className="absolute inset-0 z-50 bg-eventkan-accent/5 backdrop-blur-[2px] rounded-3xl border-4 border-dashed border-eventkan-accent/50 flex flex-col items-center justify-center gap-4 animate-in fade-in zoom-in-95 duration-300">
+      <div className="p-8 bg-eventkan-surface/80 backdrop-blur-md rounded-full shadow-2xl border border-eventkan-accent/20 animate-bounce">
+        <Upload className="h-12 w-12 text-eventkan-accent" />
       </div>
-      <div className="text-center px-6 py-3 bg-background/80 backdrop-blur-md rounded-2xl shadow-xl border border-primary/20">
-        <p className="text-xl font-bold text-primary">
+      <div className="text-center px-6 py-3 bg-eventkan-surface/80 backdrop-blur-md rounded-2xl shadow-xl border border-eventkan-accent/20">
+        <p className="text-xl font-bold text-eventkan-accent">
           {isReplacing ? 'Lepas untuk Ganti Cover' : 'Lepas untuk Unggah Cover'}
         </p>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-eventkan-muted mt-1">
           WebP, PNG, JPG (Maks. 5MB, Min. 600x400px)
         </p>
       </div>

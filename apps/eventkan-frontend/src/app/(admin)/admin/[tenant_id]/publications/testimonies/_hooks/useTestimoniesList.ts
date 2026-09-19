@@ -4,21 +4,23 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { useDebounce } from '@/hooks/useDebounce';
+import { useTenantId } from '@/hooks/useTenantId';
 import { getTestimonies } from '@/services/admin/testimonials';
 import { getEventsForFilter } from '@/services/admin/registrations';
 
 export const useTestimoniesList = () => {
+  const tenantId = useTenantId();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useDebounce('', 500);
   const [eventId, setEventId] = useState<string | undefined>();
   const { data, isLoading } = useQuery({
-    queryKey: ['testimonies', page, limit, debouncedSearch, eventId],
+    queryKey: ['testimonies', tenantId, page, limit, debouncedSearch, eventId],
     queryFn: () => getTestimonies(page, limit, debouncedSearch, eventId),
   });
   const { data: eventsData } = useQuery({
-    queryKey: ['events-for-filter'],
+    queryKey: ['events-for-filter', tenantId],
     queryFn: getEventsForFilter,
   });
 

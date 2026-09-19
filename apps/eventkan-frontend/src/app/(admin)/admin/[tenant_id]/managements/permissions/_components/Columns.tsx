@@ -40,13 +40,19 @@ const Columns: ColumnDef<Permission>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => <SortableTableHeader column={column} label="Nama Hak Akses" />,
-    cell: ({ row }) => <div className="text-sm font-medium text-eventkan-ink">{row.getValue('name')}</div>,
+    cell: ({ row }) => (
+      <div className="font-display text-sm font-semibold tracking-[-.02em] text-eventkan-ink">
+        {row.getValue('name')}
+      </div>
+    ),
   },
   {
     accessorKey: 'description',
     header: 'Deskripsi',
     cell: ({ row }) => (
-      <div className="max-w-75 truncate text-sm text-eventkan-muted">{row.getValue('description') || '-'}</div>
+      <div className="line-clamp-2 max-w-md text-sm leading-relaxed text-eventkan-muted">
+        {row.getValue('description') || '-'}
+      </div>
     ),
   },
   {
@@ -54,10 +60,14 @@ const Columns: ColumnDef<Permission>[] = [
     header: ({ column }) => <SortableTableHeader column={column} label="Terakhir Diperbarui" />,
     cell: ({ row }) => {
       const date = row.original;
-      return <span className="text-sm text-eventkan-muted">{moment(date.updatedAt || new Date())
-        .tz('Asia/Jakarta')
-        .locale('id')
-        .format('DD MMMM YYYY, HH:mm')}</span>;
+      return (
+        <span className="text-sm leading-relaxed text-eventkan-muted">
+          {moment(date.updatedAt || new Date())
+            .tz('Asia/Jakarta')
+            .locale('id')
+            .format('DD MMMM YYYY, HH:mm')}
+        </span>
+      );
     },
   },
   {
