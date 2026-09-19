@@ -190,10 +190,14 @@ export default async function ParticipantDashboardPage() {
                     </Stack>
                     <ParticipantTicketQR
                       eventTitle={ticket.event_title}
+                      registrationID={ticket.id}
                       qrToken={ticket.qr_token}
                       eventID={ticket.event_id}
                       registrationNumber={ticket.registration_number}
                       attendanceStatus={ticket.attendance_status}
+                      attendanceProofStatus={ticket.attendance_proof_status}
+                      eventType={ticket.event_type}
+                      eventLocation={ticket.event_location}
                     />
                   </Stack>
                 </Paper>

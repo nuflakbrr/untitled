@@ -32,6 +32,8 @@ export type ParticipantRegistration = {
   status: string;
   price: number;
   created_at: string;
+  attendance_proof_url?: string | null;
+  attendance_proof_status: string;
 };
 export type ParticipantCertificate = {
   id: string;
@@ -105,6 +107,8 @@ const participantRegistrationSchema = z.object({
   status: z.string(),
   price: z.number(),
   created_at: z.string(),
+  attendance_proof_url: z.string().nullish(),
+  attendance_proof_status: z.string(),
 });
 const adminRegistrationSchema = participantRegistrationSchema.extend({
   user_name: z.string(),
@@ -331,6 +335,44 @@ export async function listMyRegistrationsAction(): Promise<
   if (!backend.ok || !registrations.success)
     return { data: null, error: payload.message || 'Registrasi gagal dimuat' };
   return { data: registrations.data, error: null };
+}
+
+export async function submitAttendanceProofAction(
+  _state: AuthActionState,
+  formData: FormData
+): Promise<AuthActionState> {
+  const registrationID = z.uuid().safeParse(formData.get('registration_id'));
+  const proofURL = z.url().safeParse(formData.get('proof_url'));
+  if (!registrationID.success || !proofURL.success)
+    return { error: 'Link bukti kehadiran tidak valid' };
+  const auth = await authenticatedSession();
+  if (!auth) return { error: 'Sesi tidak ditemukan' };
+  const response = await fetchBackend(
+    `features/v1/registrations/${registrationID.data}/attendance-proof`,
+    auth.token,
+    { method: 'POST', body: JSON.stringify({ proof_url: proofURL.data }) }
+  );
+  const payload = await responseJson<unknown>(response);
+  return response.ok
+    ? { error: '' }
+    : { error: payload.message || 'Bukti kehadiran gagal dikirim' };
+}
+
+export async function reviewAttendanceProofAction(
+  registrationID: string,
+  status: 'APPROVED' | 'REJECTED'
+) {
+  const auth = await authenticatedSession();
+  if (!auth) return { error: 'Sesi tidak ditemukan' };
+  const response = await fetchBackend(
+    `features/v1/registrations/${registrationID}/attendance-proof`,
+    auth.token,
+    { method: 'PATCH', body: JSON.stringify({ status }) }
+  );
+  const payload = await responseJson<unknown>(response);
+  return response.ok
+    ? { error: null }
+    : { error: payload.message || 'Bukti kehadiran gagal diproses' };
 }
 
 export async function listMyReviewsAction(): Promise<AuthActionResult<ParticipantReview[]>> {

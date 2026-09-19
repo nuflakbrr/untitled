@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useTransition } from 'react';
 
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
@@ -19,6 +19,8 @@ import TableContainer from '@mui/material/TableContainer';
 import { Iconify } from 'src/components/iconify';
 import { RefreshButton } from 'src/components/refresh-button';
 
+import { reviewAttendanceProofAction } from 'src/auth/actions';
+
 import { downloadExcel } from '../excel-export';
 
 type Row = {
@@ -30,6 +32,8 @@ type Row = {
   status: string;
   event_status: string;
   created_at: string;
+  attendance_proof_url?: string | null;
+  attendance_proof_status: string;
 };
 
 const statusLabel: Record<string, string> = {
@@ -59,6 +63,7 @@ function StatusBadge({ value }: { value: string }) {
 }
 
 export function RegistrationTable({ rows }: { rows: Row[] }) {
+  const [pending, startTransition] = useTransition();
   const [q, setQ] = useState('');
   const [query, setQuery] = useState('');
   const [event, setEvent] = useState('ALL');
@@ -108,6 +113,11 @@ export function RegistrationTable({ rows }: { rows: Row[] }) {
       'FF1565C0',
       `Filter: ${event === 'ALL' ? 'Semua event' : event} · ${status === 'ALL' ? 'Semua status event' : (statusLabel[status] ?? status)} · ${query || 'Tanpa pencarian'} · Total ${filtered.length} data`
     );
+  };
+  const reviewProof = (id: string, proofStatus: 'APPROVED' | 'REJECTED') => {
+    startTransition(() => {
+      void reviewAttendanceProofAction(id, proofStatus).then(() => window.location.reload());
+    });
   };
   return (
     <Box sx={{ display: 'grid', gap: 2 }}>
@@ -177,6 +187,7 @@ export function RegistrationTable({ rows }: { rows: Row[] }) {
               <TableCell>Nomor registrasi</TableCell>
               <TableCell>Status pendaftaran</TableCell>
               <TableCell>Status event</TableCell>
+              <TableCell>Bukti kehadiran</TableCell>
               <TableCell>Tanggal</TableCell>
             </TableRow>
           </TableHead>
@@ -194,12 +205,44 @@ export function RegistrationTable({ rows }: { rows: Row[] }) {
                   <TableCell>
                     <StatusBadge value={r.event_status} />
                   </TableCell>
+                  <TableCell>
+                    {r.attendance_proof_status === 'PENDING' && r.attendance_proof_url ? (
+                      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                        <Button
+                          component="a"
+                          href={r.attendance_proof_url}
+                          target="_blank"
+                          size="small"
+                        >
+                          Lihat
+                        </Button>
+                        <Button
+                          size="small"
+                          color="success"
+                          disabled={pending}
+                          onClick={() => reviewProof(r.id, 'APPROVED')}
+                        >
+                          Valid
+                        </Button>
+                        <Button
+                          size="small"
+                          color="error"
+                          disabled={pending}
+                          onClick={() => reviewProof(r.id, 'REJECTED')}
+                        >
+                          Tolak
+                        </Button>
+                      </Box>
+                    ) : (
+                      <StatusBadge value={r.attendance_proof_status} />
+                    )}
+                  </TableCell>
                   <TableCell>{new Date(r.created_at).toLocaleDateString('id-ID')}</TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
+                <TableCell colSpan={8} align="center" sx={{ py: 6 }}>
                   <Typography color="text.secondary">
                     {query || event !== 'ALL' || status !== 'ALL'
                       ? 'Pendaftaran tidak ditemukan.'
