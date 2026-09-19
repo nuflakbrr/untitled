@@ -4,12 +4,13 @@ import 'moment-timezone';
 import 'moment/locale/id';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import type { User } from '@/interfaces/features/users';
 
 import moment from 'moment';
-import { ChevronsUpDown } from 'lucide-react';
+
+import type { User } from '@/interfaces/features/users';
+
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import SortableTableHeader from '@/components/Common/SortableTableHeader';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 import CellAction from './CellAction';
@@ -17,12 +18,7 @@ import CellAction from './CellAction';
 const Columns: ColumnDef<User>[] = [
   {
     accessorKey: 'name',
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Pengguna
-        <ChevronsUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: ({ column }) => <SortableTableHeader column={column} label="Pengguna" />,
     cell: ({ row }) => {
       const user = row.original;
       return (
@@ -32,16 +28,17 @@ const Columns: ColumnDef<User>[] = [
             <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="font-medium">{user.name}</span>
-            <span className="text-xs text-muted-foreground">{user.email}</span>
+            <span className="text-sm font-medium text-eventkan-ink">{user.name}</span>
+            <span className="text-xs text-eventkan-muted">{user.email}</span>
           </div>
         </div>
       );
     },
   },
   {
-    accessorKey: 'role',
-    header: 'Jabatan',
+    accessorFn: (row) => row.roles?.[0]?.name ?? '',
+    id: 'role',
+    header: ({ column }) => <SortableTableHeader column={column} label="Jabatan" />,
     cell: ({ row }) => {
       const user = row.original;
       const role = user.roles?.[0];
@@ -49,17 +46,17 @@ const Columns: ColumnDef<User>[] = [
       const getRoleColor = (name: string) => {
         const normalizedName = name.toLowerCase();
         if (normalizedName.includes('panitia'))
-          return 'bg-emerald-500/10 text-emerald-600 border-emerald-200 dark:border-emerald-500/30';
+          return 'bg-eventkan-green text-eventkan-green-ink border-eventkan-green/30';
         if (normalizedName === 'superadmin' || normalizedName === 'root_superadmin')
-          return 'bg-rose-500/10 text-rose-600 border-rose-200 dark:border-rose-500/30';
+          return 'bg-eventkan-peach text-eventkan-peach-ink border-eventkan-peach/30';
         if (normalizedName.includes('admin'))
-          return 'bg-blue-500/10 text-blue-600 border-blue-200 dark:border-blue-500/30';
+          return 'bg-eventkan-navy/8 text-eventkan-navy border-eventkan-navy/10';
         if (normalizedName === 'user')
-          return 'bg-emerald-500/10 text-emerald-600 border-emerald-200 dark:border-emerald-500/30';
-        return 'bg-slate-500/10 text-slate-600 border-slate-200 dark:border-slate-500/30';
+          return 'bg-eventkan-green text-eventkan-green-ink border-eventkan-green/30';
+        return 'bg-eventkan-canvas text-eventkan-muted border-eventkan-ink/10';
       };
 
-      if (!role) return <div className="text-muted-foreground">-</div>;
+      if (!role) return <div className="text-eventkan-muted">-</div>;
 
       const roleLabel =
         role.name.toLowerCase() === 'root_superadmin'
@@ -69,7 +66,7 @@ const Columns: ColumnDef<User>[] = [
       return (
         <Badge
           variant="outline"
-          className={`font-semibold capitalize px-2.5 py-0.5 ${getRoleColor(role.name)}`}
+          className={`font-medium capitalize px-2.5 py-0.5 ${getRoleColor(role.name)}`}
         >
           {roleLabel}
         </Badge>
@@ -78,9 +75,11 @@ const Columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: 'createdAt',
-    header: 'Tanggal Terdaftar',
+    header: ({ column }) => <SortableTableHeader column={column} label="Tanggal Terdaftar" />,
     cell: ({ row }) =>
-      moment(row.original.createdAt).tz('Asia/Jakarta').locale('id').format('DD MMMM YYYY, HH:mm'),
+      <span className="text-sm text-eventkan-muted">
+        {moment(row.original.createdAt).tz('Asia/Jakarta').locale('id').format('DD MMMM YYYY, HH:mm')}
+      </span>,
   },
   {
     id: 'action',

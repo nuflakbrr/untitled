@@ -6,6 +6,7 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import { X, Search, ArrowRight, CalendarDays } from 'lucide-react';
 
 import type { CategoryItem } from '@/interfaces/features/search';
+import type { NavbarEventSearchProps } from '@/interfaces/navbar';
 import type { EventSearchResult } from '@/interfaces/features/events';
 
 import { cn } from '@/lib/utils';
@@ -18,17 +19,13 @@ import {
   getPublicCategoriesAction,
 } from '@/services/public/search';
 
-interface Props {
-  scrolled: boolean;
-}
-
 const EVENT_TYPE_LABEL: Record<EventType, string> = {
   [EventType.ONLINE]: 'Online',
   [EventType.OFFLINE]: 'Offline',
   [EventType.HYBRID]: 'Hybrid',
 };
 
-export const EventSearch: React.FC<Props> = ({ scrolled }) => {
+export const EventSearch: React.FC<NavbarEventSearchProps> = ({ scrolled }) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');

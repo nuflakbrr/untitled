@@ -1,15 +1,7 @@
 'use client';
 
 import { toast } from 'sonner';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { CertNumberMode } from '@/interfaces/enums';
-import { Separator } from '@/components/ui/separator';
 import { useRef, useState, useEffect, type ChangeEvent } from 'react';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
 import {
   X,
   Hash,
@@ -25,9 +17,18 @@ import {
   Image as ImageIcon,
 } from 'lucide-react';
 
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { CertNumberMode } from '@/interfaces/enums';
+import { Separator } from '@/components/ui/separator';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
+
 import CertificatePreview from './CertificatePreview';
 import SignatureUploadList from './SignatureUploadList';
-import { useCertificateTemplate } from './useCertificateTemplate';
+import { useCertificateTemplate } from '../_hooks/useCertificateTemplate';
 
 type CertificateTemplateFormProps = {
   eventId: string;

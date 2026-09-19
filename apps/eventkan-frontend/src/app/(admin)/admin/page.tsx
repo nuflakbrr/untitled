@@ -1,5 +1,6 @@
-import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+
+import { auth } from '@/lib/auth';
 import { getMyTenantsAction } from '@/services/public/auth';
 
 export default async function AdminEntryPage() {

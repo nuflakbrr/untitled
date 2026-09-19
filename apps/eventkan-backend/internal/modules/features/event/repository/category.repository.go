@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"eventkan-backend/internal/modules/features/event/domain"
+	"eventkan-backend/internal/modules/features/event/dto"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -54,6 +56,71 @@ func (r *CategoryRepository) FindAll(ctx context.Context, tenantID *string) ([]*
 		return nil, fmt.Errorf("iterate event categories: %w", err)
 	}
 	return categories, nil
+}
+
+func (r *CategoryRepository) FindAllPaged(ctx context.Context, tenantID *string, filter dto.CategoryQuery) ([]*domain.Category, int64, error) {
+	conditions := make([]string, 0, 3)
+	args := make([]any, 0, 3)
+	argIndex := 1
+
+	if tenantID != nil && *tenantID != "" {
+		conditions = append(conditions, fmt.Sprintf("ec.tenant_id = $%d", argIndex))
+		args = append(args, *tenantID)
+		argIndex++
+	}
+	if filter.IncludeDeleted {
+		conditions = append(conditions, "ec.deleted_at IS NOT NULL")
+	} else {
+		conditions = append(conditions, "ec.deleted_at IS NULL")
+	}
+	if search := strings.TrimSpace(filter.Search); search != "" {
+		conditions = append(conditions, fmt.Sprintf("(ec.name ILIKE $%d OR ec.slug ILIKE $%d OR ec.description ILIKE $%d)", argIndex, argIndex, argIndex))
+		args = append(args, "%"+search+"%")
+		argIndex++
+	}
+
+	whereClause := strings.Join(conditions, " AND ")
+	var total int64
+	if err := r.db.QueryRow(ctx, "SELECT COUNT(*) FROM event_categories ec WHERE "+whereClause, args...).Scan(&total); err != nil {
+		return nil, 0, fmt.Errorf("count event categories: %w", err)
+	}
+
+	page := filter.Page
+	if page < 1 {
+		page = 1
+	}
+	limit := filter.Limit
+	if limit < 1 {
+		limit = 10
+	}
+	offset := (page - 1) * limit
+	query := fmt.Sprintf(`
+		SELECT ec.id, ec.tenant_id, ec.name, ec.slug, ec.description, ec.created_at, ec.updated_at, ec.deleted_at,
+		       (SELECT COUNT(*) FROM events e WHERE e.category_id = ec.id AND e.deleted_at IS NULL)
+		FROM event_categories ec
+		WHERE %s
+		ORDER BY ec.tenant_id NULLS FIRST, ec.name ASC
+		LIMIT $%d OFFSET $%d`, whereClause, argIndex, argIndex+1)
+	args = append(args, limit, offset)
+
+	rows, err := r.db.Query(ctx, query, args...)
+	if err != nil {
+		return nil, 0, fmt.Errorf("query event categories: %w", err)
+	}
+	defer rows.Close()
+
+	categories := make([]*domain.Category, 0)
+	for rows.Next() {
+		category := new(domain.Category)
+		if err := rows.Scan(&category.ID, &category.TenantID, &category.Name, &category.Slug, &category.Description, &category.CreatedAt, &category.UpdatedAt, &category.DeletedAt, &category.EventsCount); err != nil {
+			return nil, 0, fmt.Errorf("scan event category: %w", err)
+		}
+		categories = append(categories, category)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, 0, fmt.Errorf("iterate event categories: %w", err)
+	}
+	return categories, total, nil
 }
 
 func (r *CategoryRepository) FindByID(ctx context.Context, id string, scopeTenantID *string) (*domain.Category, error) {

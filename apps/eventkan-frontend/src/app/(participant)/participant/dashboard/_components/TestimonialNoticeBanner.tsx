@@ -4,13 +4,11 @@ import Link from 'next/link';
 import { type FC } from 'react';
 import { Star, ArrowRight, MessageSquarePlus } from 'lucide-react';
 
+import type { TestimonialNoticeBannerProps } from '@/interfaces/features/dashboard';
+
 import { Button } from '@/components/ui/button';
 
-interface Props {
-  count: number;
-}
-
-const TestimonialNoticeBanner: FC<Props> = ({ count }) => {
+const TestimonialNoticeBanner: FC<TestimonialNoticeBannerProps> = ({ count }) => {
   if (!count || count <= 0) return null;
 
   return (

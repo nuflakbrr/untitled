@@ -1,99 +1,67 @@
 'use client';
 
 import Link from 'next/link';
-import { toast } from 'sonner';
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
+
+import type { User } from '@/interfaces/features/users';
 
 import { Button } from '@/components/ui/button';
-import { useDebounce } from '@/hooks/useDebounce';
+import { useTenantId } from '@/hooks/useTenantId';
 import Heading from '@/components/Common/Heading';
 import { getMeAction } from '@/services/public/auth';
-import { Separator } from '@/components/ui/separator';
 import { DataTable } from '@/components/ui/data-table';
 import AlertModal from '@/components/Common/Modals/AlertModal';
 import { usePermission } from '@/providers/PermissionProvider';
-import { getUsers, deleteUser, permanentlyDeleteUser } from '@/services/admin/users';
 
 import Columns from './_components/Columns';
+import { useUsersList } from './_hooks/useUsersList';
+import { useUsersBulkActions } from './_hooks/useUsersBulkActions';
 
 export const UsersCMS = ({ participantOnly = false }: { participantOnly?: boolean }) => {
+  const tenantId = useTenantId();
   const { hasPermission } = usePermission();
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useDebounce('', 500);
-  const [limit, setLimit] = useState(10);
-  const [selected, setSelected] = useState<typeof users>([]);
+  const [selected, setSelected] = useState<User[]>([]);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [confirming, setConfirming] = useState(false);
   const [includeDeleted, setIncludeDeleted] = useState(false);
-  const queryClient = useQueryClient();
-
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ['users', participantOnly, page, limit, debouncedSearch, includeDeleted],
-    queryFn: () =>
-      getUsers(page, limit, debouncedSearch, includeDeleted, participantOnly ? 'peserta' : ''),
-  });
   const { data: meData } = useQuery({ queryKey: ['auth-me-server-action'], queryFn: getMeAction });
-
-  const users = data?.data || [];
-  const meta = data?.meta || { total: 0, page: 1, lastPage: 0 };
-  const deleteMutation = useMutation({
-    mutationFn: async () => {
-      const results = await Promise.all(
-        selected.map((user) =>
-          includeDeleted ? permanentlyDeleteUser(user.id) : deleteUser(user.id)
-        )
-      );
-      const failed = results.find((result) => !result.success);
-      if (failed) throw new Error(failed.error ?? 'Gagal menghapus pengguna.');
-      return results;
-    },
-    onSuccess: async () => {
-      toast.success('Pengguna berhasil dihapus.');
+  const { users, meta, isLoading, refetch, setPage, setLimit, search, handleSearchChange } =
+    useUsersList(participantOnly, includeDeleted);
+  const { bulkDelete, isPending: isBulkDeletePending } = useUsersBulkActions(
+    includeDeleted,
+    async () => {
       setConfirming(false);
       setSelected([]);
       setRowSelection({});
-      await queryClient.invalidateQueries({ queryKey: ['users'] });
       await refetch();
-    },
-    onError: (error) =>
-      toast.error(error instanceof Error ? error.message : 'Gagal menghapus pengguna.'),
-  });
+    }
+  );
 
   return (
-    <section>
+    <section className="mx-auto w-full max-w-375">
       <AlertModal
         isOpen={confirming}
         onClose={() => setConfirming(false)}
-        onConfirm={() => deleteMutation.mutate()}
-        loading={deleteMutation.isPending}
+        onConfirm={() => bulkDelete(selected)}
+        loading={isBulkDeletePending}
       />
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 md:mb-4">
-        <Heading
-          title={`${participantOnly ? 'Peserta' : 'Pengguna'} (${meta.total})`}
-          description={
-            participantOnly
-              ? 'Kelola akun peserta yang terdaftar.'
-              : 'Daftar pengguna yang terdaftar.'
-          }
-        />
-        {hasPermission('user.create') && (
-          <Button asChild className="w-full sm:w-auto">
-            <Link
-              href={
-                participantOnly
-                  ? '/admin/managements/participants/new'
-                  : '/admin/managements/users/new'
-              }
-            >
-              <Plus /> Tambah Pengguna
-            </Link>
-          </Button>
-        )}
-      </div>
-      <Separator />
+      <Heading
+        variant="soft"
+        title={participantOnly ? 'Peserta' : 'Pengguna'}
+        titleSuffix={`(${meta.total})`}
+        description={participantOnly ? 'Kelola akun peserta yang terdaftar.' : 'Daftar pengguna yang terdaftar.'}
+        action={
+          hasPermission('user.create') ? (
+            <Button asChild className="w-full rounded-xl bg-eventkan-navy font-bold text-white hover:bg-eventkan-navy-hover sm:w-auto">
+              <Link href={participantOnly ? `/admin/${tenantId}/managements/participants/new` : `/admin/${tenantId}/managements/users/new`}>
+                <Plus /> Tambah Pengguna
+              </Link>
+            </Button>
+          ) : null
+        }
+      />
       <DataTable
         searchKey="name"
         columns={Columns}
@@ -102,18 +70,18 @@ export const UsersCMS = ({ participantOnly = false }: { participantOnly?: boolea
         pageCount={meta.lastPage}
         onPageChange={(p) => setPage(p)}
         onLimitChange={(l) => setLimit(l)}
-        onSearchChange={(v) => {
-          setSearch(v);
-          setDebouncedSearch(v);
-          setPage(1);
-        }}
+        onSearchChange={handleSearchChange}
         searchValue={search}
         rowSelection={rowSelection}
         onRowSelectionChange={setRowSelection}
-        onBulkDelete={(rows) => {
-          setSelected(rows);
-          setConfirming(true);
-        }}
+        onBulkDelete={
+          hasPermission('user.delete')
+            ? (rows) => {
+                setSelected(rows);
+                setConfirming(true);
+              }
+            : undefined
+        }
         isRowSelectable={(row) => row.id !== meData?.session?.user?.id}
         includeDeleted={includeDeleted}
         onIncludeDeletedChange={(value) => {
@@ -121,6 +89,7 @@ export const UsersCMS = ({ participantOnly = false }: { participantOnly?: boolea
           setPage(1);
           setRowSelection({});
         }}
+        variant="eventkan"
       />
     </section>
   );

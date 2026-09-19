@@ -121,3 +121,8 @@ export interface ArticleDetailApiRecord {
   category?: { name?: string | null } | null;
   articleCategories?: Array<{ name?: string | null }>;
 }
+
+export interface CategoryModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}

@@ -1,7 +1,4 @@
-interface EventHistoryStatusConfig {
-  label: string;
-  className: string;
-}
+import type { EventHistoryStatusConfig } from '@/interfaces/features/event-history';
 
 const statusConfig: Record<string, EventHistoryStatusConfig> = {
   WAITING_PAYMENT: {

@@ -47,5 +47,10 @@ export interface ParticipantPayment {
   };
 }
 
+export interface PaymentStatusConfig {
+  label: string;
+  className: string;
+}
+
 export type PaymentResponse = ApiResponse<Payment>;
 export type PaymentPaginationResponse = PaginatedResponse<Payment>;

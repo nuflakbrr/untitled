@@ -199,39 +199,41 @@ export function DataTable<TData, TValue>({
   const isEventkan = variant === 'eventkan';
 
   return (
-    <div>
+    <div
+      className={cn(
+        isEventkan &&
+          'mt-5 rounded-[24px] border border-eventkan-ink/15 bg-eventkan-surface p-4 shadow-[0_6px_20px_rgba(17,35,63,.045)] sm:p-5'
+      )}
+    >
       {/* 🔍 Search input, custom filters & Bulk Actions */}
-      <div className={cn('flex items-center justify-between gap-2 py-4', isEventkan && 'mt-4')}>
-        <div className="flex items-center gap-2">
-          {onBulkDelete && selectedRows.length > 0 && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => onBulkDelete(selectedRows.map((row) => row.original))}
-              className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2"
-            >
-              <Trash className="h-4 w-4" />
-              Hapus Terpilih ({selectedRows.length})
-            </Button>
-          )}
+      <div
+        className={cn(
+          'flex items-center justify-between gap-2 py-4',
+          isEventkan && 'flex-wrap pb-4 sm:flex-nowrap'
+        )}
+      >
+        <div className="flex flex-wrap items-center gap-2">
           {customFilters}
           {onIncludeDeletedChange && (
             <div
               className={cn(
                 'flex items-center gap-1 rounded-md border bg-background p-1 shadow-sm',
-                isEventkan && 'rounded-xl border-eventkan-ink/10 bg-eventkan-surface shadow-none'
+                isEventkan && 'rounded-xl border-eventkan-ink/10 bg-eventkan-canvas/70 shadow-none'
               )}
             >
               <Button
                 type="button"
-                variant={!includeDeleted ? 'secondary' : 'ghost'}
+                variant="ghost"
                 size="sm"
                 className={cn(
                   'h-8 px-3 text-xs',
-                  isEventkan && 'rounded-lg font-bold text-eventkan-muted hover:bg-eventkan-canvas',
+                  isEventkan && 'rounded-lg font-semibold text-eventkan-muted',
                   isEventkan &&
                     !includeDeleted &&
-                    'bg-eventkan-navy text-white hover:bg-eventkan-navy-hover hover:text-white'
+                    'bg-eventkan-navy text-white hover:bg-eventkan-navy-hover hover:text-white hover:[&_svg]:text-white',
+                  isEventkan &&
+                    includeDeleted &&
+                    'hover:bg-eventkan-navy hover:text-white hover:[&_svg]:text-white'
                 )}
                 onClick={() => onIncludeDeletedChange(false)}
               >
@@ -240,20 +242,36 @@ export function DataTable<TData, TValue>({
               </Button>
               <Button
                 type="button"
-                variant={includeDeleted ? 'destructive' : 'ghost'}
+                variant="ghost"
                 size="sm"
                 className={cn(
                   'h-8 px-3 text-xs',
-                  isEventkan && 'rounded-lg font-bold text-eventkan-muted hover:bg-eventkan-peach',
+                  isEventkan &&
+                    'rounded-lg font-semibold text-eventkan-muted hover:bg-eventkan-peach/50 hover:text-eventkan-peach-ink hover:[&_svg]:text-eventkan-peach-ink',
                   isEventkan &&
                     includeDeleted &&
-                    'bg-eventkan-peach text-eventkan-peach-ink hover:bg-eventkan-peach hover:text-eventkan-peach-ink'
+                    'bg-eventkan-peach text-eventkan-peach-ink hover:bg-eventkan-peach/70 hover:text-eventkan-peach-ink hover:[&_svg]:text-eventkan-peach-ink'
                 )}
                 onClick={() => onIncludeDeletedChange(true)}
               >
                 <Trash className="mr-1.5 h-3.5 w-3.5" /> Recycle bin
               </Button>
             </div>
+          )}
+          {onBulkDelete && selectedRows.length > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => onBulkDelete(selectedRows.map((row) => row.original))}
+              className={cn(
+                'h-8 px-3 text-xs max-sm:w-full',
+                isEventkan &&
+                  'rounded-lg bg-eventkan-peach font-bold text-eventkan-peach-ink hover:bg-eventkan-peach hover:text-eventkan-peach-ink'
+              )}
+            >
+              <Trash className="h-4 w-4" />
+              Hapus Terpilih ({selectedRows.length})
+            </Button>
           )}
         </div>
         <Input
@@ -281,10 +299,10 @@ export function DataTable<TData, TValue>({
         className={cn(
           'rounded-md border',
           isEventkan &&
-            'overflow-hidden rounded-[18px] border-eventkan-ink/10 bg-eventkan-surface shadow-[0_18px_50px_rgba(17,35,63,.06)]'
+            'overflow-x-auto rounded-2xl border border-eventkan-ink/10 bg-transparent shadow-none'
         )}
       >
-        <Table>
+        <Table className={isEventkan ? 'min-w-[720px]' : undefined}>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
@@ -323,7 +341,7 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   className={cn(
                     isEventkan &&
-                      'border-eventkan-ink/10 hover:bg-eventkan-peach/35 data-[state=selected]:bg-eventkan-peach/45'
+                      'border-eventkan-ink/10 hover:bg-eventkan-peach/25 data-[state=selected]:bg-eventkan-peach/45'
                   )}
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -353,13 +371,21 @@ export function DataTable<TData, TValue>({
       {/* 🔄 Pagination */}
       <div
         className={cn(
-          'flex items-center justify-between space-x-2 py-4',
-          isEventkan && 'text-eventkan-muted'
+          'flex items-center justify-between gap-3 py-4',
+          isEventkan &&
+            'flex-col items-stretch text-eventkan-muted sm:flex-row sm:items-center sm:py-5'
         )}
       >
-        <div className="flex items-center justify-between space-x-6 py-4">
-          <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">Tampilkan</p>
+        <div
+          className={cn(
+            'flex items-center gap-6',
+            isEventkan && 'w-full justify-between sm:w-auto sm:justify-start'
+          )}
+        >
+          <div className="flex items-center gap-2">
+            <p className={cn('text-sm font-medium', isEventkan && 'text-xs text-eventkan-muted')}>
+              Tampilkan
+            </p>
             <Select
               value={`${pageSize}`}
               onValueChange={(value) => {
@@ -372,20 +398,36 @@ export function DataTable<TData, TValue>({
               <SelectTrigger
                 className={cn(
                   'h-8 w-17.5',
-                  isEventkan && 'rounded-lg border-eventkan-ink/10 bg-eventkan-surface'
+                  isEventkan &&
+                    'rounded-xl border-eventkan-ink/10 bg-eventkan-surface text-xs text-eventkan-navy'
                 )}
               >
                 <SelectValue placeholder={pageSize} />
               </SelectTrigger>
-              <SelectContent side="top">
+              <SelectContent
+                side="top"
+                className={cn(
+                  isEventkan &&
+                    'rounded-xl border-eventkan-ink/10 bg-eventkan-surface p-1 text-eventkan-navy shadow-[0_12px_30px_rgba(17,35,63,.12)]'
+                )}
+              >
                 {[10, 15, 20, 25, 30].map((pageSize) => (
-                  <SelectItem key={pageSize} value={`${pageSize}`}>
+                  <SelectItem
+                    key={pageSize}
+                    value={`${pageSize}`}
+                    className={cn(
+                      isEventkan &&
+                        'cursor-pointer rounded-lg text-xs text-eventkan-navy focus:bg-eventkan-canvas focus:text-eventkan-navy data-highlighted:bg-eventkan-canvas data-highlighted:text-eventkan-navy'
+                    )}
+                  >
                     {pageSize}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-sm font-medium">baris data</p>
+            <p className={cn('text-sm font-medium', isEventkan && 'text-xs text-eventkan-muted')}>
+              baris data
+            </p>
           </div>
 
           {/* <span className="text-sm text-muted-foreground">
@@ -393,13 +435,18 @@ export function DataTable<TData, TValue>({
           </span> */}
         </div>
 
-        <div className="flex items-center justify-end space-x-6 py-4">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-muted-foreground">
+        <div
+          className={cn(
+            'flex items-center justify-end gap-3',
+            isEventkan && 'w-full justify-between sm:w-auto sm:justify-end'
+          )}
+        >
+          <div className="flex w-full items-center justify-between gap-3 sm:w-auto">
+            <span className={cn('shrink-0 text-sm text-muted-foreground', isEventkan && 'text-xs')}>
               Halaman {table.getState().pagination.pageIndex + 1} dari {pageCount || 1}
             </span>
 
-            <div className="space-x-2">
+            <div className={cn('flex items-center gap-2', isEventkan && 'max-sm:flex-1')}>
               <Button
                 variant="outline"
                 size="sm"
@@ -411,7 +458,7 @@ export function DataTable<TData, TValue>({
                     ? 'cursor-not-allowed opacity-50'
                     : 'cursor-pointer',
                   isEventkan &&
-                    'rounded-lg border-eventkan-ink/10 bg-eventkan-surface text-eventkan-navy hover:bg-eventkan-canvas hover:text-eventkan-navy'
+                    'h-9 rounded-xl border-eventkan-ink/10 bg-eventkan-surface px-3 text-xs font-semibold text-eventkan-navy hover:bg-eventkan-canvas hover:text-eventkan-navy disabled:bg-eventkan-surface max-sm:flex-1'
                 )}
               >
                 Sebelumnya
@@ -427,7 +474,7 @@ export function DataTable<TData, TValue>({
                     ? 'cursor-not-allowed opacity-50'
                     : 'cursor-pointer',
                   isEventkan &&
-                    'rounded-lg border-eventkan-ink/10 bg-eventkan-surface text-eventkan-navy hover:bg-eventkan-canvas hover:text-eventkan-navy'
+                    'h-9 rounded-xl border-eventkan-ink/10 bg-eventkan-surface px-3 text-xs font-semibold text-eventkan-navy hover:bg-eventkan-canvas hover:text-eventkan-navy disabled:bg-eventkan-surface max-sm:flex-1'
                 )}
               >
                 Selanjutnya

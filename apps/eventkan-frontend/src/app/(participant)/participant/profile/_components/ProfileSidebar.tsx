@@ -2,7 +2,7 @@
 
 import type { MouseEvent } from 'react';
 
-import type { ParticipantProfileFormProps } from '@/interfaces/features/users';
+import type { ParticipantProfileFormProps } from '@/interfaces/features/profile';
 
 import { getInitials } from '@/lib/getInitials';
 

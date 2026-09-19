@@ -19,10 +19,10 @@ const DashboardCMS = async ({ params }: { params: Promise<{ tenant_id: string }>
   return (
     <div className="space-y-6 pb-10">
       <GreetingCard />
-      <DashboardStats counts={data.counts} />
+      <DashboardStats counts={data.counts} tenantId={tenantId} />
       <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2 md:space-y-6">
-          <RecentRegistrations registrations={data.recentRegistrations} />
+          <RecentRegistrations registrations={data.recentRegistrations} tenantId={tenantId} />
         </div>
         <DashboardLeaderboards
           globalPopularEvents={data.globalPopularEvents}

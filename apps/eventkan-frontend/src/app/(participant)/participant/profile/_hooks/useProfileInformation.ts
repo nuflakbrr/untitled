@@ -7,7 +7,7 @@ import { useMutation } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import type { UpdateNameValues } from '@/schemas/profile';
-import type { ParticipantProfileFormProps } from '@/interfaces/features/users';
+import type { ParticipantProfileFormProps } from '@/interfaces/features/profile';
 
 import { updateNameSchema } from '@/schemas/profile';
 import { updateUserProfile } from '@/services/participant/profile';

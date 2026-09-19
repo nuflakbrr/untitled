@@ -1,51 +1,47 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { Search, Settings, ArrowLeft, AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react';
-
-import type { EventWithCertificate } from '@/interfaces/features/certificates';
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Heading from '@/components/Common/Heading';
-import { useDebounce } from '@/hooks/useDebounce';
+import { useTenantId } from '@/hooks/useTenantId';
 import { Separator } from '@/components/ui/separator';
-import { getEventsWithCertificateEnabled } from '@/services/admin/certificates';
+import { usePermission } from '@/providers/PermissionProvider';
 import { Card, CardTitle, CardHeader, CardContent, CardDescription } from '@/components/ui/card';
 
 import CertificateTemplateForm from './_components/CertificateTemplateForm';
+import { useCertificateTemplateEvents } from './_hooks/useCertificateTemplateEvents';
 
 export default function TemplateConfigPage() {
-  const [selectedEventId, setSelectedEventId] = useState<string>('');
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useDebounce<string>('', 500);
-
-  const { data } = useQuery({
-    queryKey: ['events-with-cert-enabled'],
-    queryFn: () => getEventsWithCertificateEnabled(),
-  });
-
-  const events: EventWithCertificate[] = data?.data ?? [];
-  const filteredEvents = events.filter((event: EventWithCertificate) =>
-    event.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-  );
-  const selectedEvent = filteredEvents.find((event) => event.id === selectedEventId);
+  const tenantId = useTenantId();
+  const { hasPermission } = usePermission();
+  const canManageTemplates = hasPermission('certificates.create');
+  const {
+    events,
+    filteredEvents,
+    selectedEventId,
+    selectedEvent,
+    setSelectedEventId,
+    searchTerm,
+    setSearchTerm,
+  } = useCertificateTemplateEvents();
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-4">
-        <Heading
-          title="Konfigurasi Template Sertifikat"
-          description="Kelola template sertifikat per event"
-        />
-        <Button variant="outline" asChild>
-          <Link href="/admin/master/certificates">
-            <ArrowLeft className="h-4 w-4 mr-2" /> Kembali
-          </Link>
-        </Button>
-      </div>
+    <section className="mx-auto w-full max-w-375">
+      <Heading
+        variant="soft"
+        title="Konfigurasi Template Sertifikat"
+        description="Kelola template sertifikat per event"
+        action={
+          <Button variant="outline" asChild className="w-full rounded-xl border-eventkan-ink/10 text-eventkan-navy hover:bg-eventkan-canvas sm:w-auto">
+            <Link href={`/admin/${tenantId}/master/certificates`}>
+              <ArrowLeft className="mr-2 h-4 w-4" /> Kembali
+            </Link>
+          </Button>
+        }
+      />
       <Separator />
       <div className="flex flex-col lg:flex-row gap-4 items-start mt-4">
         <div className="w-full lg:w-64 shrink-0">
@@ -66,7 +62,6 @@ export default function TemplateConfigPage() {
                     value={searchTerm}
                     onChange={(e) => {
                       setSearchTerm(e.target.value);
-                      setDebouncedSearchTerm(e.target.value);
                     }}
                     className="pl-8"
                   />
@@ -88,7 +83,7 @@ export default function TemplateConfigPage() {
                 </div>
               ) : (
                 <div className="divide-y divide-foreground/5 max-h-[calc(100vh-300px)] overflow-y-auto">
-                  {filteredEvents.map((event: EventWithCertificate) => {
+                  {filteredEvents.map((event) => {
                     const isSelected = selectedEventId === event.id;
                     const isConfigured = !!event.certificateTemplate;
                     return (
@@ -144,7 +139,7 @@ export default function TemplateConfigPage() {
               </div>
             </CardHeader>
             <CardContent className="p-4 sm:p-6">
-              {selectedEventId && selectedEvent ? (
+              {selectedEventId && selectedEvent && canManageTemplates ? (
                 <CertificateTemplateForm
                   eventId={selectedEventId}
                   eventTitle={selectedEvent.title}
@@ -154,7 +149,11 @@ export default function TemplateConfigPage() {
               ) : (
                 <div className="flex flex-col items-center justify-center py-16 gap-3 text-muted-foreground">
                   <Settings className="h-10 w-10 text-muted-foreground/30" />
-                  <p className="text-sm">Pilih event di panel kiri untuk mulai konfigurasi.</p>
+                  <p className="text-sm">
+                    {canManageTemplates
+                      ? 'Pilih event di panel kiri untuk mulai konfigurasi.'
+                      : 'Kamu tidak memiliki izin untuk mengubah template sertifikat.'}
+                  </p>
                 </div>
               )}
             </CardContent>

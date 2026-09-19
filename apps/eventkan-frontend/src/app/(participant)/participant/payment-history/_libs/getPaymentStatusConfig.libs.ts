@@ -1,7 +1,4 @@
-interface PaymentStatusConfig {
-  label: string;
-  className: string;
-}
+import type { PaymentStatusConfig } from '@/interfaces/features/payments';
 
 const statusConfig: Record<string, PaymentStatusConfig> = {
   WAITING: {

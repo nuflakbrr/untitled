@@ -1,7 +1,9 @@
 import type { FC } from 'react';
-import type { Gallery } from '@/interfaces/features/galleries';
 
 import { notFound } from 'next/navigation';
+
+import type { Gallery } from '@/interfaces/features/galleries';
+
 import { getGalleryById } from '@/services/admin/galleries';
 
 import GalleryForm from './_components/GalleryForm';
@@ -12,11 +14,11 @@ type Props = {
 
 const GalleryDetailCMS: FC<Props> = async ({ params }) => {
   const { id } = await params;
-  const isEdit = id !== 'new';
+  const isNew = id === 'new';
 
   let initialData: Gallery | null = null;
 
-  if (isEdit) {
+  if (!isNew) {
     const result = await getGalleryById(id);
     if (result.success && result.data) {
       initialData = result.data as Gallery;

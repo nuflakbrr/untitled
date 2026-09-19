@@ -1,6 +1,6 @@
 'use client';
 
-import type { ParticipantProfileFormProps } from '@/interfaces/features/users';
+import type { ParticipantProfileFormProps } from '@/interfaces/features/profile';
 
 import ProfileSidebar from './ProfileSidebar';
 import ProfileSecuritySection from './ProfileSecuritySection';

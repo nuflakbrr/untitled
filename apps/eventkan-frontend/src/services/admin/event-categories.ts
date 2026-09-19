@@ -14,12 +14,6 @@ import { eventCategorySchema, type EventCategoryValues } from '@/schemas/event-c
 
 const BASE_PATH = '/admin/master/event-categories';
 
-function unwrap<T>(response: {
-  data: { data?: T; pagination?: { total?: number; page?: number; limit?: number } };
-}) {
-  return response.data;
-}
-
 export async function getEventCategories(
   page = 1,
   limit = 10,
@@ -28,10 +22,13 @@ export async function getEventCategories(
 ): Promise<EventCategoryPaginationResponse> {
   try {
     const response = await api.get('/features/v1/event-categories', {
-      params: { page, limit, search },
+      params: { page, limit, search, include_deleted: includeDeleted },
     });
-    const body = unwrap<EventCategory[]>(response);
-    const pagination = body.pagination;
+    const body = response.data as {
+      data?: EventCategory[];
+      meta?: { pagination?: { total?: number; page?: number; total_pages?: number } };
+    };
+    const pagination = body.meta?.pagination;
     const data = (body.data ?? [])
       .map((item) => ({
         ...item,
@@ -58,15 +55,14 @@ export async function getEventCategories(
             (item as unknown as Record<string, unknown>).events_count ??
             0
         ),
-      }))
-      .filter((item) => (includeDeleted ? Boolean(item.deletedAt) : !item.deletedAt));
+      }));
     return {
       success: true,
       data,
       meta: {
-        total: data.length,
+        total: pagination?.total ?? data.length,
         page: pagination?.page ?? page,
-        lastPage: Math.ceil(data.length / limit) || 1,
+        lastPage: pagination?.total_pages ?? Math.max(1, Math.ceil(data.length / limit)),
       },
     };
   } catch {

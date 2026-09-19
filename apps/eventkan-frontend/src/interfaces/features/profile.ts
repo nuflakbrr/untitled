@@ -6,6 +6,7 @@ export interface ProfilePasswordToggleProps {
 
 import type { UseFormReturn } from 'react-hook-form';
 
+import type { User } from './users';
 import type { ChangePasswordValues } from '@/schemas/profile';
 
 export interface PasswordFieldProps {
@@ -15,4 +16,8 @@ export interface PasswordFieldProps {
   onToggle: () => void;
   form: UseFormReturn<ChangePasswordValues>;
   placeholder: string;
+}
+
+export interface ParticipantProfileFormProps {
+  user: Pick<User, 'name' | 'email' | 'image'>;
 }

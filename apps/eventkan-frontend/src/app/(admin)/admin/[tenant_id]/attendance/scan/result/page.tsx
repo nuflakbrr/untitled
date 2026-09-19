@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 
 import Link from 'next/link';
+import { ArrowLeft, CheckCircle2, AlertTriangle } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 import { SuccessResultCard } from './_components/SuccessResultCard';
 import { FailureResultCard } from './_components/FailureResultCard';
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
 };
 
 type Props = {
+  params: Promise<{ tenant_id: string }>;
   searchParams: Promise<{
     status?: string;
     code?: string;
@@ -28,7 +30,8 @@ type Props = {
   }>;
 };
 
-export default async function ScanResultPage({ searchParams }: Props) {
+export default async function ScanResultPage({ params: routeParams, searchParams }: Props) {
+  const { tenant_id: tenantId } = await routeParams;
   const params = await searchParams;
   const isSuccess = params.status === 'success';
 
@@ -39,19 +42,19 @@ export default async function ScanResultPage({ searchParams }: Props) {
         <Card
           className={`border-none overflow-hidden rounded-3xl ${
             isSuccess
-              ? 'bg-linear-to-b from-emerald-500/10 to-emerald-600/5 dark:from-emerald-500/10 dark:to-zinc-900'
-              : 'bg-linear-to-b from-rose-500/10 to-rose-600/5 dark:from-rose-500/10 dark:to-zinc-900'
+              ? 'bg-linear-to-b from-eventkan-green/35 to-eventkan-green/10'
+              : 'bg-linear-to-b from-eventkan-peach/35 to-eventkan-peach/10'
           }`}
         >
           <CardContent className="p-6 text-center space-y-6">
             {/* Header Icon */}
             <div className="flex justify-center pt-4">
               {isSuccess ? (
-                <div className="p-4 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full">
+                <div className="rounded-full bg-eventkan-green p-4 text-eventkan-green-ink">
                   <CheckCircle2 className="h-16 w-16" />
                 </div>
               ) : (
-                <div className="p-4 bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-full">
+                <div className="rounded-full bg-eventkan-peach p-4 text-eventkan-peach-ink">
                   <AlertTriangle className="h-16 w-16" />
                 </div>
               )}
@@ -65,7 +68,7 @@ export default async function ScanResultPage({ searchParams }: Props) {
               >
                 {params.code || (isSuccess ? 'CHECKED_IN' : 'FAILED')}
               </Badge>
-              <h2 className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">
+              <h2 className="text-eventkan-ink text-2xl font-black tracking-tight">
                 {isSuccess ? 'Presensi Berhasil' : 'Presensi Gagal'}
               </h2>
               {params.message && (
@@ -94,7 +97,7 @@ export default async function ScanResultPage({ searchParams }: Props) {
 
         {/* Scan Again Action Button */}
         <Button size="lg" className="w-full py-6 rounded-2xl font-bold shadow-lg" asChild>
-          <Link href="/admin/attendance/scan">
+          <Link href={`/admin/${tenantId}/attendance/scan`}>
             <ArrowLeft className="h-5 w-5 mr-2" /> Pindai QR Lainnya
           </Link>
         </Button>

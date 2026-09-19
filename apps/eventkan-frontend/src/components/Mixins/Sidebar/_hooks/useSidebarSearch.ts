@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
 
 import { useMounted } from '@/hooks/useMounted';
+import { useTenantId } from '@/hooks/useTenantId';
 import { usePermission } from '@/providers/PermissionProvider';
 
 import { sideLinks } from '../_constants/sideLinks.constants';
@@ -11,11 +11,10 @@ import { filterSidebarLinks } from '../_libs/filterSidebarLinks.libs';
 
 export function useSidebarSearch() {
   const isMounted = useMounted();
-  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [isMac, setIsMac] = useState(false);
   const { permissions, hasRole } = usePermission();
-  const tenantId = pathname.split('/')[2];
+  const tenantId = useTenantId();
   const adminPath = tenantId ? `/admin/${tenantId}` : '/admin';
 
   useEffect(() => {

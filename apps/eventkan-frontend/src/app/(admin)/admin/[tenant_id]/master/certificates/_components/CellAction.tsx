@@ -4,6 +4,7 @@ import type { FC } from 'react';
 
 import { Copy, Trash, ExternalLink, MoreHorizontal } from 'lucide-react';
 
+import type { CellActionProps } from '@/interfaces/table';
 import type { CertificateResponse } from '@/interfaces/features/certificates';
 
 import { Button } from '@/components/ui/button';
@@ -17,14 +18,17 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  cellActionItemClass,
+  cellActionLabelClass,
+  cellActionDangerClass,
+  cellActionContentClass,
+  cellActionTriggerClass,
+} from '@/components/Common/CellActionMenu';
 
-import { useCellAction } from './useCellAction';
+import { useCellAction } from '../_hooks/useCellAction';
 
-interface CellActionProps {
-  data: CertificateResponse;
-}
-
-const CellAction: FC<CellActionProps> = ({ data }) => {
+const CellAction: FC<CellActionProps<CertificateResponse>> = ({ data }) => {
   const { hasPermission } = usePermission();
   const { openDelete, setOpenDelete, onDelete, isDeletePending } = useCellAction(data.id);
 
@@ -38,17 +42,20 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
       />
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
+          <Button variant="ghost" className={cellActionTriggerClass}>
             <span className="sr-only">Buka menu</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="rounded-xl">
-          <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => copyToClipboard(data.id)} className="cursor-pointer">
+        <DropdownMenuContent align="end" className={cellActionContentClass}>
+          <DropdownMenuLabel className={cellActionLabelClass}>Aksi</DropdownMenuLabel>
+          <DropdownMenuItem
+            onClick={() => copyToClipboard(data.id)}
+            className={cellActionItemClass}
+          >
             <Copy className="mr-2 h-4 w-4" /> Salin ID
           </DropdownMenuItem>
-          <DropdownMenuItem asChild className="cursor-pointer">
+          <DropdownMenuItem asChild className={cellActionItemClass}>
             <a href={`/certificates/${data.id}`} target="_blank" rel="noopener noreferrer">
               <ExternalLink className="mr-2 h-4 w-4" /> Buka di tab baru
             </a>
@@ -56,7 +63,7 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
           {hasPermission('certificates.delete') && (
             <DropdownMenuItem
               variant="destructive"
-              className="cursor-pointer"
+              className={cellActionDangerClass}
               onClick={() => setOpenDelete(true)}
             >
               <Trash className="mr-2 h-4 w-4" /> Hapus

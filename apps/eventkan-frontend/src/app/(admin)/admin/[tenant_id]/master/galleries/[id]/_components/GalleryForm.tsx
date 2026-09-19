@@ -2,27 +2,30 @@
 
 import type { z } from 'zod';
 import type { Route } from 'next';
-import type { Gallery } from '@/interfaces/features/galleries';
 
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { type FC, useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+import type { Gallery } from '@/interfaces/features/galleries';
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import Heading from '@/components/Common/Heading';
+import { useTenantId } from '@/hooks/useTenantId';
 import { Textarea } from '@/components/ui/textarea';
 import { gallerySchema } from '@/schemas/galleries';
-import { type FC, useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
 import { Separator } from '@/components/ui/separator';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { getAllEvents } from '@/services/admin/events';
 import { uploadImage } from '@/services/public/uploads';
 import { usePermission } from '@/providers/PermissionProvider';
 import AlertModal from '@/components/Common/Modals/AlertModal';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { createGallery, updateGallery, deleteGallery } from '@/services/admin/galleries';
 import {
@@ -43,6 +46,7 @@ type Props = {
 const GalleryForm: FC<Props> = ({ initialData }) => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const tenantId = useTenantId();
   const { hasPermission } = usePermission();
 
   const [isUploading, setIsUploading] = useState(false);
@@ -95,7 +99,7 @@ const GalleryForm: FC<Props> = ({ initialData }) => {
       }
       toast.success(res.message || 'Berhasil menyimpan foto.');
       queryClient.invalidateQueries({ queryKey: ['galleries'] });
-      router.push('/admin/master/galleries' as Route);
+      router.push(`/admin/${tenantId}/master/galleries` as Route);
     },
     onError: () => toast.error('Terjadi kesalahan saat menyimpan.'),
   });
@@ -109,7 +113,7 @@ const GalleryForm: FC<Props> = ({ initialData }) => {
       }
       toast.success('Foto berhasil dihapus.');
       queryClient.invalidateQueries({ queryKey: ['galleries'] });
-      router.push('/admin/master/galleries' as Route);
+      router.push(`/admin/${tenantId}/master/galleries` as Route);
     },
     onError: () => toast.error('Terjadi kesalahan saat menghapus.'),
   });
@@ -317,7 +321,7 @@ const GalleryForm: FC<Props> = ({ initialData }) => {
 
         <div className="flex justify-end gap-4 mt-6">
           <Button variant="outline" type="button" asChild>
-            <Link href={'/admin/master/galleries' as Route}>Batal</Link>
+            <Link href={`/admin/${tenantId}/master/galleries` as Route}>Batal</Link>
           </Button>
           <Button type="submit" disabled={submitMutation.isPending || isUploading}>
             {submitMutation.isPending ? 'Menyimpan...' : action}

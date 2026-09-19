@@ -41,8 +41,10 @@ import {
 const date = (value: Date) => moment(value).tz('Asia/Jakarta').locale('id').format('D MMM YYYY');
 export default function RecentRegistrations({
   registrations,
+  tenantId,
 }: {
   registrations: AdminDashboardStats['recentRegistrations'];
+  tenantId: string;
 }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -66,7 +68,7 @@ export default function RecentRegistrations({
           className="cursor-pointer! font-bold text-eventkan-navy hover:bg-eventkan-peach hover:text-eventkan-peach-ink"
           asChild
         >
-          <Link href={'/admin/transactions/registrations' as Route}>Lihat Semua</Link>
+          <Link href={`/admin/${tenantId}/transactions/registrations` as Route}>Lihat Semua</Link>
         </Button>
       </CardHeader>
       <CardContent className="p-0">

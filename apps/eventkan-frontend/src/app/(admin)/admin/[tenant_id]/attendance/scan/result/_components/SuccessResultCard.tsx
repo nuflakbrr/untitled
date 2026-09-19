@@ -15,47 +15,47 @@ type Props = {
 };
 
 export const SuccessResultCard: FC<Props> = ({ name, email, number, event, time }) => (
-  <div className="space-y-4 text-left text-sm bg-white/60 dark:bg-zinc-950/40 p-5 rounded-2xl border">
+  <div className="space-y-4 rounded-2xl border border-eventkan-ink/10 bg-eventkan-surface/70 p-5 text-left text-sm">
     <div className="flex items-start gap-3">
-      <User className="h-4.5 w-4.5 text-emerald-500 shrink-0 mt-0.5" />
+      <User className="mt-0.5 h-4.5 w-4.5 shrink-0 text-eventkan-green-ink" />
       <div>
-        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+        <p className="text-eventkan-muted text-[10px] font-bold uppercase tracking-wider">
           Peserta
         </p>
-        <p className="font-semibold text-zinc-900 dark:text-white mt-0.5">{name}</p>
-        <p className="text-xs text-muted-foreground">{email}</p>
+        <p className="mt-0.5 font-semibold text-eventkan-ink">{name}</p>
+        <p className="text-xs text-eventkan-muted">{email}</p>
       </div>
     </div>
 
     <div className="flex items-start gap-3">
-      <QrCode className="h-4.5 w-4.5 text-emerald-500 shrink-0 mt-0.5" />
+      <QrCode className="mt-0.5 h-4.5 w-4.5 shrink-0 text-eventkan-green-ink" />
       <div>
-        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+        <p className="text-eventkan-muted text-[10px] font-bold uppercase tracking-wider">
           No. Registrasi
         </p>
-        <p className="font-mono text-xs text-zinc-900 dark:text-white mt-0.5 font-bold">{number}</p>
+        <p className="mt-0.5 font-mono text-xs font-bold text-eventkan-ink">{number}</p>
       </div>
     </div>
 
     <div className="flex items-start gap-3">
-      <Calendar className="h-4.5 w-4.5 text-emerald-500 shrink-0 mt-0.5" />
+      <Calendar className="mt-0.5 h-4.5 w-4.5 shrink-0 text-eventkan-green-ink" />
       <div>
-        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+        <p className="text-eventkan-muted text-[10px] font-bold uppercase tracking-wider">
           Event
         </p>
-        <p className="font-semibold text-zinc-900 dark:text-white mt-0.5 leading-snug line-clamp-2">
+        <p className="mt-0.5 line-clamp-2 font-semibold leading-snug text-eventkan-ink">
           {event}
         </p>
       </div>
     </div>
 
     <div className="flex items-start gap-3">
-      <Clock className="h-4.5 w-4.5 text-emerald-500 shrink-0 mt-0.5" />
+      <Clock className="mt-0.5 h-4.5 w-4.5 shrink-0 text-eventkan-green-ink" />
       <div>
-        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+        <p className="text-eventkan-muted text-[10px] font-bold uppercase tracking-wider">
           Waktu Kehadiran
         </p>
-        <p className="font-semibold text-zinc-900 dark:text-white mt-0.5">
+        <p className="mt-0.5 font-semibold text-eventkan-ink">
           {time
             ? moment(time).clone().locale('id').tz('Asia/Jakarta').format('DD MMM YYYY, HH:mm:ss') +
               ' WIB'

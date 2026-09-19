@@ -1,60 +1,41 @@
 'use client';
 
 import Link from 'next/link';
-import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
-import { usePathname } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { useDebounce } from '@/hooks/useDebounce';
-import Heading from '@/components/Common/Heading';
 import { useMemo, useState, useEffect } from 'react';
-import { Separator } from '@/components/ui/separator';
+
+import type { AdminTenantRow } from '@/interfaces/features/tenants';
+
+import { Button } from '@/components/ui/button';
+import { useTenantId } from '@/hooks/useTenantId';
+import Heading from '@/components/Common/Heading';
 import { DataTable } from '@/components/ui/data-table';
 import AlertModal from '@/components/Common/Modals/AlertModal';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getTenants, deleteTenant, permanentlyDeleteTenant } from '@/services/admin/tenants';
+import { usePermission } from '@/providers/PermissionProvider';
 
 import Columns from './_components/Columns';
+import { useTenantsList } from './_hooks/useTenantsList';
+import { useTenantsBulkActions } from './_hooks/useTenantsBulkActions';
 
 export default function TenantsCMS() {
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useDebounce('', 500);
-  const [selected, setSelected] = useState<NonNullable<typeof data>['data']>([]);
+  const [selected, setSelected] = useState<AdminTenantRow[]>([]);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [confirming, setConfirming] = useState(false);
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const queryClient = useQueryClient();
-  const tenantId = usePathname().split('/')[2];
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ['admin-tenants', page, limit, debouncedSearch, includeDeleted],
-    queryFn: () => getTenants(page, limit, debouncedSearch, includeDeleted),
-  });
-  const deleteMutation = useMutation({
-    mutationFn: () =>
-      Promise.all(
-        selected.map((tenant) =>
-          includeDeleted ? permanentlyDeleteTenant(tenant.id) : deleteTenant(tenant.id)
-        )
-      ).then((results) => {
-        const failed = results.find((result) => !result.success);
-        if (failed) throw new Error(failed.error ?? 'Gagal menghapus tenant.');
-        return results;
-      }),
-    onSuccess: async () => {
-      toast.success('Tenant berhasil dihapus.');
+  const tenantId = useTenantId();
+  const { hasPermission } = usePermission();
+  const { data, isLoading, refetch, setPage, setLimit, search, handleSearchChange } =
+    useTenantsList(includeDeleted);
+  const { bulkDelete, isPending: isBulkDeletePending } = useTenantsBulkActions(
+    includeDeleted,
+    async () => {
       setConfirming(false);
       setSelected([]);
       setRowSelection({});
-      await queryClient.invalidateQueries({ queryKey: ['admin-tenants'] });
       await refetch();
-    },
-    onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Gagal menghapus tenant.');
-    },
-  });
+    }
+  );
   const tenants = data?.data ?? [];
   useEffect(() => {
     const parentIds = new Set(tenants.map((tenant) => tenant.parentId).filter(Boolean) as string[]);
@@ -102,25 +83,28 @@ export default function TenantsCMS() {
   }, [expanded, tenants]);
 
   return (
-    <section>
+    <section className="mx-auto w-full max-w-375">
       <AlertModal
         isOpen={confirming}
         onClose={() => setConfirming(false)}
-        onConfirm={() => deleteMutation.mutate()}
-        loading={deleteMutation.isPending}
+        onConfirm={() => bulkDelete(selected)}
+        loading={isBulkDeletePending}
       />
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 md:mb-4">
-        <Heading
-          title={`Organisasi (${data?.meta.total ?? 0})`}
-          description="Kelola organisasi dan unit kerja dalam EVENTKAN."
-        />
-        <Button asChild>
-          <Link href={`/admin/${tenantId}/managements/tenants/new`}>
-            <Plus className="mr-2 h-4 w-4" /> Tambah Organisasi
-          </Link>
-        </Button>
-      </div>
-      <Separator />
+      <Heading
+        variant="soft"
+        title="Organisasi"
+        titleSuffix={`(${data?.meta.total ?? 0})`}
+        description="Kelola organisasi dan unit kerja dalam EVENTKAN."
+        action={
+          hasPermission('tenant.create') ? (
+          <Button asChild className="w-full rounded-xl bg-eventkan-navy font-bold text-white hover:bg-eventkan-navy-hover sm:w-auto">
+            <Link href={`/admin/${tenantId}/managements/tenants/new`}>
+              <Plus className="mr-2 h-4 w-4" /> Tambah Organisasi
+            </Link>
+          </Button>
+          ) : null
+        }
+      />
       <DataTable
         columns={Columns()}
         data={treeTenants}
@@ -131,25 +115,26 @@ export default function TenantsCMS() {
           setLimit(value);
           setPage(1);
         }}
-        onSearchChange={(value) => {
-          setSearch(value);
-          setDebouncedSearch(value);
-          setPage(1);
-        }}
+        onSearchChange={handleSearchChange}
         searchValue={search}
         searchKey="name"
         rowSelection={rowSelection}
         onRowSelectionChange={setRowSelection}
-        onBulkDelete={(rows) => {
-          setSelected(rows);
-          setConfirming(true);
-        }}
+        onBulkDelete={
+          hasPermission('tenant.delete')
+            ? (rows) => {
+                setSelected(rows);
+                setConfirming(true);
+              }
+            : undefined
+        }
         includeDeleted={includeDeleted}
         onIncludeDeletedChange={(value) => {
           setIncludeDeleted(value);
           setPage(1);
           setRowSelection({});
         }}
+        variant="eventkan"
       />
     </section>
   );

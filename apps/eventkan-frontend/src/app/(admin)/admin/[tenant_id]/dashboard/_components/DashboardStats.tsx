@@ -14,14 +14,20 @@ const money = (value: number) =>
     minimumFractionDigits: 0,
   }).format(value);
 
-export default function DashboardStats({ counts }: { counts: AdminDashboardStats['counts'] }) {
+export default function DashboardStats({
+  counts,
+  tenantId,
+}: {
+  counts: AdminDashboardStats['counts'];
+  tenantId: string;
+}) {
   const stats = [
     [
       'Total Event',
       counts.events.total,
       `${counts.events.published} Aktif | ${counts.events.draft} Draft`,
       Calendar,
-      '/admin/master/events',
+      `/admin/${tenantId}/master/events`,
       'bg-eventkan-peach text-eventkan-accent',
     ],
     [
@@ -29,7 +35,7 @@ export default function DashboardStats({ counts }: { counts: AdminDashboardStats
       counts.registrations.total,
       `Peserta Terdaftar`,
       Users,
-      '/admin/transactions/registrations',
+      `/admin/${tenantId}/transactions/registrations`,
       'bg-eventkan-navy/8 text-eventkan-navy',
     ],
     [
@@ -37,7 +43,7 @@ export default function DashboardStats({ counts }: { counts: AdminDashboardStats
       money(counts.revenue),
       'Dari pembayaran sukses',
       CreditCard,
-      '/admin/transactions/payments',
+      `/admin/${tenantId}/transactions/payments`,
       'bg-eventkan-green text-eventkan-green-ink',
     ],
     [
@@ -45,7 +51,7 @@ export default function DashboardStats({ counts }: { counts: AdminDashboardStats
       counts.checkIns,
       `${counts.certificates} Sertifikat Terbit`,
       Award,
-      '/admin/attendances',
+      `/admin/${tenantId}/attendance/scan`,
       'bg-eventkan-yellow text-[#856b16]',
     ],
   ] as const;

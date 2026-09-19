@@ -16,6 +16,8 @@ import { FontFamily } from '@tiptap/extension-font-family';
 import { Superscript } from '@tiptap/extension-superscript';
 import { TableHeader } from '@tiptap/extension-table-header';
 
+import type { RichTextEditorProps } from '@/interfaces/editor';
+
 // UI Components
 import { Separator } from '@/components/ui/separator';
 import { uploadImage } from '@/services/public/uploads';
@@ -56,13 +58,6 @@ import {
   TextAlignCenterToolbar,
   TextAlignJustifyToolbar,
 } from '@/components/ui/toolbars/text-align';
-
-interface RichTextEditorProps {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  folderName?: string;
-}
 
 const RichTextEditor = ({ value, onChange, placeholder, folderName }: RichTextEditorProps) => {
   const lastContentRef = useRef(value);

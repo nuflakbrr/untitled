@@ -1,88 +1,52 @@
 'use client';
 
-import type { Permission } from '@/interfaces/features/permissions';
-
 import Link from 'next/link';
-import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
 import { type FC, useState } from 'react';
+
 import { Button } from '@/components/ui/button';
-import { useDebounce } from '@/hooks/useDebounce';
+import { useTenantId } from '@/hooks/useTenantId';
 import Heading from '@/components/Common/Heading';
-import { Separator } from '@/components/ui/separator';
 import { DataTable } from '@/components/ui/data-table';
 import { usePermission } from '@/providers/PermissionProvider';
 import AlertModal from '@/components/Common/Modals/AlertModal';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getPermissions, deleteBulkPermissions } from '@/services/admin/permissions';
 
 import Columns from './_components/Columns';
+import { usePermissionsList } from './_hooks/usePermissionsList';
+import { usePermissionsBulkActions } from './_hooks/usePermissionsBulkActions';
 
 const PermissionsCMS: FC = () => {
+  const tenantId = useTenantId();
   const { hasPermission } = usePermission();
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useDebounce('', 500);
   const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
-  const [selectedPermissions, setSelectedPermissions] = useState<Permission[]>([]);
+  const [selectedPermissions, setSelectedPermissions] = useState<ReturnType<typeof usePermissionsList>['permissions']>([]);
   const [rowSelection, setRowSelection] = useState({});
-  const [limit, setLimit] = useState(10);
-
-  const queryClient = useQueryClient();
-
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ['permissions', page, limit, debouncedSearch],
-    queryFn: async () => {
-      const result = await getPermissions(page, limit, debouncedSearch);
-      return result;
-    },
-  });
-
-  const deleteBulkMutation = useMutation({
-    mutationFn: (ids: string[]) => deleteBulkPermissions(ids),
-    onSuccess: async (result) => {
-      if (result.success) {
-        toast.success(result.message);
-        queryClient.invalidateQueries({ queryKey: ['permissions'] });
-        setIsBulkDeleteOpen(false);
-        setSelectedPermissions([]);
-        setRowSelection({});
-        await refetch();
-      } else {
-        toast.error(result.error);
-      }
-    },
-  });
-
-  const onBulkDelete = () => {
-    deleteBulkMutation.mutate(selectedPermissions.map((p) => p.id));
-  };
-
-  const permissions = data?.data || [];
-  const meta = data?.meta || { total: 0, page: 1, lastPage: 0 };
+  const { permissions, meta, isLoading, search, setPage, setLimit, handleSearchChange } = usePermissionsList();
+  const { bulkDelete, isDeleting } = usePermissionsBulkActions();
 
   return (
-    <section>
+    <section className="mx-auto w-full max-w-375">
       <AlertModal
         isOpen={isBulkDeleteOpen}
         onClose={() => setIsBulkDeleteOpen(false)}
-        onConfirm={onBulkDelete}
-        loading={deleteBulkMutation.isPending}
+        onConfirm={() => bulkDelete(selectedPermissions)}
+        loading={isDeleting}
       />
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 md:mb-4">
-        <Heading
-          title={`Hak Akses (${meta.total})`}
-          description="Daftar hak akses yang tersedia."
-        />
-        {hasPermission('permission.create') && (
-          <Button asChild className="w-full sm:w-auto">
-            <Link href="/admin/managements/permissions/new">
-              <Plus /> Tambah Hak Akses
-            </Link>
-          </Button>
-        )}
-      </div>
-      <Separator />
+      <Heading
+        variant="soft"
+        title="Hak Akses"
+        titleSuffix={`(${meta.total})`}
+        description="Daftar hak akses yang tersedia."
+        action={
+          hasPermission('permission.create') ? (
+            <Button asChild className="w-full rounded-xl bg-eventkan-navy font-bold text-white hover:bg-eventkan-navy-hover sm:w-auto">
+              <Link href={`/admin/${tenantId}/managements/permissions/new`}>
+                <Plus /> Tambah Hak Akses
+              </Link>
+            </Button>
+          ) : null
+        }
+      />
       <DataTable
         searchKey="name"
         columns={Columns}
@@ -91,18 +55,19 @@ const PermissionsCMS: FC = () => {
         pageCount={meta.lastPage}
         onPageChange={(p) => setPage(p)}
         onLimitChange={(l) => setLimit(l)}
-        onSearchChange={(v) => {
-          setSearch(v);
-          setDebouncedSearch(v);
-          setPage(1);
-        }}
-        onBulkDelete={(rows) => {
-          setSelectedPermissions(rows);
-          setIsBulkDeleteOpen(true);
-        }}
+        onSearchChange={handleSearchChange}
+        onBulkDelete={
+          hasPermission('permission.delete')
+            ? (rows) => {
+                setSelectedPermissions(rows);
+                setIsBulkDeleteOpen(true);
+              }
+            : undefined
+        }
         rowSelection={rowSelection}
         onRowSelectionChange={setRowSelection}
         searchValue={search}
+        variant="eventkan"
       />
       {/* {process.env.NODE_ENV === 'development' && (
         <>

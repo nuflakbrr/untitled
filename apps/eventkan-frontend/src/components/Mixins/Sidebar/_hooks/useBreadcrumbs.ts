@@ -3,20 +3,16 @@
 import { usePathname } from 'next/navigation';
 import { useMemo, useState, useEffect } from 'react';
 
+import { useTenantId } from '@/hooks/useTenantId';
 import { resolveLabel } from '@/services/admin/labels';
 
-import {
-  isUUID,
-  breadcrumbLabels,
-  resolvableBreadcrumbParents,
-} from '../_constants/breadcrumbs.constants';
+import { breadcrumbLabels, resolvableBreadcrumbParents } from '../_constants/breadcrumbs.constants';
 
 export function useBreadcrumbs() {
   const pathname = usePathname();
   const [resolvedLabels, setResolvedLabels] = useState<Record<string, string>>({});
   const rawSegments = useMemo(() => pathname.split('/').filter(Boolean), [pathname]);
-  const tenantId =
-    rawSegments[0] === 'admin' && isUUID(rawSegments[1] ?? '') ? rawSegments[1] : null;
+  const tenantId = useTenantId() ?? null;
   const pathSegments = useMemo(
     () =>
       rawSegments.filter((segment, index) => !(index === 1 && tenantId && segment === tenantId)),

@@ -23,9 +23,5 @@ export interface ExtendedUser {
   roles?: { id: string; name: string }[];
 }
 
-export interface ParticipantProfileFormProps {
-  user: Pick<User, 'name' | 'email' | 'image'>;
-}
-
 export type UserResponse = ApiResponse<User>;
 export type UserPaginationResponse = PaginatedResponse<User>;

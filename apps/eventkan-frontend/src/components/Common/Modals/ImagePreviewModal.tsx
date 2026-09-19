@@ -4,18 +4,11 @@ import Image from 'next/image';
 import { type FC, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+import type { ImagePreviewModalProps } from '@/interfaces/modal';
+
 import { Button } from '@/components/ui/button';
 
 import Modal from './Modal';
-
-interface ImagePreviewModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  imageSrc?: string | null | undefined;
-  images?: string[];
-  title?: string;
-  aspectRatio?: 'video' | '3/2' | '1/1' | '16/9';
-}
 
 const ImagePreviewModal: FC<ImagePreviewModalProps> = ({
   isOpen,

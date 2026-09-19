@@ -114,7 +114,7 @@ const ScannerClient: FC = () => {
           display: none !important;
         }
         #qr-reader button {
-          background-color: var(--color-primary, #3b82f6) !important;
+          background-color: var(--eventkan-navy) !important;
           color: white !important;
           border: none !important;
           padding: 8px 16px !important;
@@ -152,15 +152,15 @@ const ScannerClient: FC = () => {
       {/* Title block */}
       <div className="text-center">
         <h1 className="text-2xl font-extrabold tracking-tight">Scan Kehadiran</h1>
-        <p className="text-xs text-muted-foreground mt-1">
+        <p className="mt-1 text-xs text-eventkan-muted">
           Gunakan kamera atau input manual untuk mencatat kehadiran peserta.
         </p>
       </div>
 
       {/* Scanner Viewport */}
-      <div className="relative aspect-4/3 w-full mx-auto rounded-2xl overflow-hidden bg-zinc-950 flex flex-col items-center justify-center p-0 group">
+      <div className="group relative mx-auto flex aspect-4/3 w-full flex-col items-center justify-center overflow-hidden rounded-2xl bg-eventkan-ink p-0">
         {isScanning ? (
-          <div id="qr-reader" className="w-full h-full bg-zinc-950" aria-label="Pemindai QR Code" />
+          <div id="qr-reader" className="h-full w-full bg-eventkan-ink" aria-label="Pemindai QR Code" />
         ) : (
           <>
             {isPending ? (
@@ -170,9 +170,9 @@ const ScannerClient: FC = () => {
                   Memproses QR Code...
                 </Badge>
                 <div className="flex justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+                  <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-eventkan-accent" />
                 </div>
-                <p className="text-[10px] text-zinc-400 max-w-50 leading-normal mx-auto">
+                <p className="mx-auto max-w-50 text-[10px] leading-normal text-white/60">
                   Memverifikasi dan memproses presensi peserta...
                 </p>
               </div>
@@ -182,12 +182,12 @@ const ScannerClient: FC = () => {
                 <Badge variant="destructive" className="text-[10px] uppercase font-bold py-0.5">
                   Kamera Dinonaktifkan
                 </Badge>
-                <p className="text-[10px] text-zinc-400 max-w-50 leading-normal mx-auto">
+                <p className="mx-auto max-w-50 text-[10px] leading-normal text-white/60">
                   Aktifkan scanner dengan tombol di bawah.
                 </p>
                 <Button
                   onClick={handleStartScanning}
-                  className="z-20 inline-flex items-center gap-2 text-xs font-semibold px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md cursor-pointer transition-colors"
+                  className="z-20 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-eventkan-accent px-4 py-2.5 text-xs font-semibold text-white shadow-md transition-colors hover:bg-eventkan-accent-hover"
                 >
                   <Camera className="h-4 w-4" /> Aktifkan Kamera
                 </Button>
@@ -198,11 +198,11 @@ const ScannerClient: FC = () => {
                 <Badge variant="destructive" className="text-[10px] uppercase font-bold py-0.5">
                   Koneksi Tidak Aman
                 </Badge>
-                <p className="text-[10px] text-zinc-400 max-w-50 leading-normal mx-auto">
+                <p className="mx-auto max-w-50 text-[10px] leading-normal text-white/60">
                   Akses video stream diblokir browser. Ambil foto QR Code menggunakan kamera HP
                   Anda.
                 </p>
-                <label className="z-20 inline-flex items-center gap-2 text-xs font-semibold px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md cursor-pointer transition-colors">
+                <label className="z-20 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-eventkan-accent px-4 py-2.5 text-xs font-semibold text-white shadow-md transition-colors hover:bg-eventkan-accent-hover">
                   <Camera className="h-4 w-4" /> Foto QR Code
                   <input
                     type="file"

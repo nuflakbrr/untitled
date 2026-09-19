@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { LogOut, UserCircle, ChevronDown, LayoutDashboard } from 'lucide-react';
 
-import type { NavbarUser } from '@/interfaces/navbar';
+import type { UserMenuProps } from '@/interfaces/navbar';
 
 import { signOut } from '@/lib/authClient';
 import { getInitials } from '@/lib/getInitials';
@@ -24,12 +24,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-
-interface UserMenuProps {
-  user: NavbarUser;
-  isAdmin: boolean;
-  tenantId?: string | null;
-}
 
 const UserMenu: FC<UserMenuProps> = ({ user, isAdmin, tenantId }) => {
   const [logoutOpen, setLogoutOpen] = useState(false);

@@ -214,5 +214,13 @@ export interface EventDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
+export interface EmptyEventsStateProps {
+  query?: string;
+}
+
+export interface CategoryFormProps {
+  id: string;
+}
+
 export type EventCategoryResponse = ApiResponse<EventCategory>;
 export type EventCategoryPaginationResponse = PaginatedResponse<EventCategory>;

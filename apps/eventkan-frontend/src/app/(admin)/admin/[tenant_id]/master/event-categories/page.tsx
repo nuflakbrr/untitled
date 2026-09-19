@@ -4,47 +4,26 @@ import type { FC } from 'react';
 import type { Route } from 'next';
 
 import Link from 'next/link';
-import { toast } from 'sonner';
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Button } from '@/components/ui/button';
 import Heading from '@/components/Common/Heading';
+import { useTenantId } from '@/hooks/useTenantId';
 import { DataTable } from '@/components/ui/data-table';
 import { usePermission } from '@/providers/PermissionProvider';
-import {
-  deleteEventCategory,
-  permanentlyDeleteEventCategory,
-} from '@/services/admin/event-categories';
 
 import Columns from './_components/Columns';
-import { useEventCategoriesList } from './_components/useEventCategoriesList';
+import { useEventCategoriesList } from './_hooks/useEventCategoriesList';
+import { useEventCategoriesBulkActions } from './_hooks/useEventCategoriesBulkActions';
 
 const EventCategoriesCMS: FC = () => {
+  const tenantId = useTenantId();
   const [includeDeleted, setIncludeDeleted] = useState(false);
   const { hasPermission } = usePermission();
-  const queryClient = useQueryClient();
   const { setPage, search, setLimit, categories, meta, isLoading, handleSearchChange } =
     useEventCategoriesList(includeDeleted);
-  const { mutate: bulkDelete } = useMutation({
-    mutationFn: (items: typeof categories) =>
-      Promise.all(
-        items.map((item) =>
-          includeDeleted ? permanentlyDeleteEventCategory(item.id) : deleteEventCategory(item.id)
-        )
-      ),
-    onSuccess: (results) => {
-      const failed = results.find((result) => !result.success);
-      if (failed) {
-        toast.error(failed.error ?? 'Sebagian kategori gagal dihapus.');
-        return;
-      }
-      toast.success('Kategori terpilih berhasil dihapus.');
-      queryClient.invalidateQueries({ queryKey: ['event-categories'] });
-    },
-    onError: () => toast.error('Gagal menghapus kategori terpilih.'),
-  });
+  const { bulkDelete } = useEventCategoriesBulkActions(includeDeleted);
 
   return (
     <section className="mx-auto w-full max-w-375">
@@ -59,7 +38,7 @@ const EventCategoriesCMS: FC = () => {
               asChild
               className="w-full rounded-xl bg-eventkan-navy px-4 font-bold text-white hover:bg-eventkan-navy-hover sm:w-auto"
             >
-              <Link href={'/admin/master/event-categories/new' as Route}>
+              <Link href={`/admin/${tenantId}/master/event-categories/new` as Route}>
                 <Plus className="mr-2 h-4 w-4" /> Tambah Kategori
               </Link>
             </Button>
@@ -78,8 +57,11 @@ const EventCategoriesCMS: FC = () => {
         searchValue={search}
         placeholderSearch="Cari kategori..."
         includeDeleted={includeDeleted}
-        onIncludeDeletedChange={setIncludeDeleted}
-        onBulkDelete={bulkDelete}
+        onIncludeDeletedChange={(value) => {
+          setIncludeDeleted(value);
+          setPage(1);
+        }}
+        onBulkDelete={hasPermission('event.categories.delete') ? bulkDelete : undefined}
         variant="eventkan"
       />
     </section>

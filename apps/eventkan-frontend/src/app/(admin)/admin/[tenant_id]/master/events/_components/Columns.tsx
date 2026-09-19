@@ -4,16 +4,18 @@ import 'moment-timezone';
 import 'moment/locale/id';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import type { Event } from '@/interfaces/features/events';
 
 import moment from 'moment';
 import Image from 'next/image';
 import { useState } from 'react';
+import { Search } from 'lucide-react';
+
+import type { Event } from '@/interfaces/features/events';
+
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Search, ChevronsUpDown } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { EventType, EventStatus } from '@/interfaces/enums';
+import SortableTableHeader from '@/components/Common/SortableTableHeader';
 import ImagePreviewModal from '@/components/Common/Modals/ImagePreviewModal';
 
 import CellAction from './CellAction';
@@ -21,27 +23,22 @@ import CellAction from './CellAction';
 const Columns: ColumnDef<Event>[] = [
   {
     accessorKey: 'title',
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Event
-        <ChevronsUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: ({ column }) => <SortableTableHeader column={column} label="Event" />,
     cell: ({ row }) => <TitleCell row={row} />,
   },
   {
     accessorKey: 'eventType',
-    header: 'Tipe',
+    header: ({ column }) => <SortableTableHeader column={column} label="Tipe" />,
     cell: ({ row }) => {
       const type = row.original.eventType;
       const isOnline = type === EventType.ONLINE;
       return (
         <Badge
           variant="outline"
-          className={`font-semibold capitalize px-2 py-0.5 ${
+          className={`font-medium capitalize px-2 py-0.5 ${
             isOnline
-              ? 'bg-emerald-500/10 text-emerald-600 border-emerald-200 dark:border-emerald-500/30'
-              : 'bg-blue-500/10 text-blue-600 border-blue-200 dark:border-blue-500/30'
+              ? 'border-eventkan-peach/30 bg-eventkan-peach text-eventkan-peach-ink'
+              : 'border-eventkan-navy/10 bg-eventkan-navy/8 text-eventkan-navy'
           }`}
         >
           {type}
@@ -51,14 +48,14 @@ const Columns: ColumnDef<Event>[] = [
   },
   {
     accessorKey: 'price',
-    header: 'Biaya',
+    header: ({ column }) => <SortableTableHeader column={column} label="Biaya" />,
     cell: ({ row }) => {
       const price = row.original.price;
       if (price === 0) {
         return (
           <Badge
             variant="outline"
-            className="font-bold bg-green-500/10 text-green-600 border-green-200 dark:border-green-500/30"
+            className="border-eventkan-green/30 bg-eventkan-green text-eventkan-green-ink"
           >
             Gratis
           </Badge>
@@ -69,33 +66,33 @@ const Columns: ColumnDef<Event>[] = [
   },
   {
     accessorKey: 'quota',
-    header: 'Peserta',
+    header: ({ column }) => <SortableTableHeader column={column} label="Peserta" />,
     cell: ({ row }) => {
       const event = row.original;
       const registered = event._count?.registrations ?? 0;
       const quota = event.quota;
       return (
         <span>
-          {registered} / <strong className="text-foreground">{quota}</strong>
+          {registered} / <span className="font-medium text-eventkan-ink">{quota}</span>
         </span>
       );
     },
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: ({ column }) => <SortableTableHeader column={column} label="Status" />,
     cell: ({ row }) => {
       const status = row.original.status;
       const getStatusClass = (val: typeof status) => {
         switch (val) {
           case EventStatus.DRAFT:
-            return 'bg-slate-500/10 text-slate-600 border-slate-200 dark:border-slate-500/30';
+            return 'border-eventkan-ink/10 bg-eventkan-canvas text-eventkan-muted';
           case EventStatus.PUBLISHED:
-            return 'bg-emerald-500/10 text-emerald-600 border-emerald-200 dark:border-emerald-500/30';
+            return 'border-eventkan-green/30 bg-eventkan-green text-eventkan-green-ink';
           case EventStatus.CLOSED:
-            return 'bg-rose-500/10 text-rose-600 border-rose-200 dark:border-rose-500/30';
+            return 'border-eventkan-peach/30 bg-eventkan-peach text-eventkan-peach-ink';
           case EventStatus.COMPLETED:
-            return 'bg-blue-500/10 text-blue-600 border-blue-200 dark:border-blue-500/30';
+            return 'border-eventkan-navy/10 bg-eventkan-navy/8 text-eventkan-navy';
           default:
             return '';
         }
@@ -103,7 +100,7 @@ const Columns: ColumnDef<Event>[] = [
       return (
         <Badge
           variant="outline"
-          className={`font-semibold capitalize px-2 py-0.5 ${getStatusClass(status)}`}
+          className={`font-medium capitalize px-2 py-0.5 ${getStatusClass(status)}`}
         >
           {status}
         </Badge>
@@ -112,7 +109,7 @@ const Columns: ColumnDef<Event>[] = [
   },
   {
     accessorKey: 'startDate',
-    header: 'Tanggal Mulai',
+    header: ({ column }) => <SortableTableHeader column={column} label="Tanggal Mulai" />,
     cell: ({ row }) => {
       const event = row.original;
       const formattedDate = moment(event.startDate)
@@ -120,7 +117,7 @@ const Columns: ColumnDef<Event>[] = [
         .locale('id')
         .format('DD MMM YYYY');
       return (
-        <span>
+        <span className="text-sm text-eventkan-muted">
           {formattedDate}, {event.startTime}
         </span>
       );
@@ -165,22 +162,22 @@ const TitleCell = ({ row }: { row: { original: Event } }) => {
               </div>
             </>
           ) : (
-            <span className="text-[10px] text-muted-foreground font-bold">EVENT</span>
+            <span className="text-[10px] font-medium text-eventkan-muted">EVENT</span>
           )}
         </div>
         <div className="flex flex-col text-left max-w-50 md:max-w-75">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="font-semibold truncate leading-snug">{event.title}</span>
+            <span className="truncate text-sm font-medium leading-snug text-eventkan-ink">{event.title}</span>
             {event.deletedAt && (
               <Badge
                 variant="outline"
-                className="shrink-0 border-rose-200 bg-rose-50 text-[10px] text-rose-700 dark:border-rose-500/30 dark:bg-rose-950/30 dark:text-rose-300"
+                className="shrink-0 border-eventkan-peach/30 bg-eventkan-peach text-[10px] text-eventkan-peach-ink"
               >
                 Terhapus
               </Badge>
             )}
           </div>
-          <span className="text-xs text-muted-foreground font-mono truncate">{event.slug}</span>
+          <span className="truncate font-mono text-xs text-eventkan-muted">/{event.slug}</span>
         </div>
       </div>
     </>

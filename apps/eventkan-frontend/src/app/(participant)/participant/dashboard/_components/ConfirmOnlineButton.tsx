@@ -5,13 +5,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle2 } from 'lucide-react';
 
+import type { ConfirmOnlineButtonProps } from '@/interfaces/features/dashboard';
+
 import { Button } from '@/components/ui/button';
 import { confirmOnlineAttendance } from '@/services/admin/attendance';
-
-interface ConfirmOnlineButtonProps {
-  registrationId: string;
-  disabled: boolean;
-}
 
 export default function ConfirmOnlineButton({
   registrationId,

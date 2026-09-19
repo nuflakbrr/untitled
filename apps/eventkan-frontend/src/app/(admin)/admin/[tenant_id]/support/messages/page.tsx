@@ -3,7 +3,6 @@
 import type { FC } from 'react';
 
 import Heading from '@/components/Common/Heading';
-import { Separator } from '@/components/ui/separator';
 import { DataTable } from '@/components/ui/data-table';
 import {
   Select,
@@ -14,7 +13,7 @@ import {
 } from '@/components/ui/select';
 
 import Columns from './_components/Columns';
-import { useSupportMessagesList } from './_components/useSupportMessagesList';
+import { useSupportMessagesList } from './_hooks/useSupportMessagesList';
 
 const SupportMessagesPage: FC = () => {
   const {
@@ -30,14 +29,13 @@ const SupportMessagesPage: FC = () => {
   } = useSupportMessagesList();
 
   return (
-    <section>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 md:mb-4">
-        <Heading
-          title={`Inbox Pengaduan (${meta.total})`}
-          description="Kelola aduan bantuan pelanggan dan hubungi langsung via WhatsApp."
-        />
-      </div>
-      <Separator />
+    <section className="mx-auto w-full max-w-375">
+      <Heading
+        variant="soft"
+        title="Inbox Pengaduan"
+        titleSuffix={`(${meta.total})`}
+        description="Kelola aduan bantuan pelanggan dan hubungi langsung via WhatsApp."
+      />
       <DataTable
         searchKey="title"
         columns={Columns}
@@ -50,9 +48,9 @@ const SupportMessagesPage: FC = () => {
         searchValue={search}
         placeholderSearch="Cari nama, email, subjek..."
         customFilters={
-          <div className="flex gap-2">
+          <div className="flex w-full gap-2 sm:w-auto">
             <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value || 'ALL')}>
-              <SelectTrigger className="w-50">
+            <SelectTrigger className="w-full sm:w-50">
                 <SelectValue placeholder="Semua Status" />
               </SelectTrigger>
               <SelectContent>
@@ -64,6 +62,7 @@ const SupportMessagesPage: FC = () => {
             </Select>
           </div>
         }
+        variant="eventkan"
       />
     </section>
   );

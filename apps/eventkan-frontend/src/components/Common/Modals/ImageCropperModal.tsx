@@ -6,21 +6,12 @@ import { X, Check, Loader2, Scissors } from 'lucide-react';
 import { useRef, type FC, useState, useEffect } from 'react';
 import { Cropper, type CropperRef, ImageRestriction } from 'react-advanced-cropper';
 
+import type { ImageCropperModalProps } from '@/interfaces/modal';
+
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 import Modal from './Modal';
-
-interface ImageCropperModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  imageSrc: string | null;
-  onCrop: (croppedFile: File) => void;
-  aspectRatio?: number;
-  outputWidth?: number;
-  outputHeight?: number;
-  customFileName?: string;
-}
 
 const ImageCropperModal: FC<ImageCropperModalProps> = ({
   isOpen,

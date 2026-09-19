@@ -1,13 +1,14 @@
 'use client';
 
+import { toast } from 'sonner';
+import { useRef, useState, type ChangeEvent } from 'react';
+import { X, Check, Trash2, Upload, Pencil, Loader2, UserCircle2, GripVertical } from 'lucide-react';
+
 import type { CertificateSignature } from '@/interfaces/features/certificates';
 
-import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { useRef, useState, type ChangeEvent } from 'react';
-import { X, Check, Trash2, Upload, Pencil, Loader2, UserCircle2, GripVertical } from 'lucide-react';
 
 type Signature = Pick<CertificateSignature, 'id' | 'name' | 'title' | 'signatureUrl' | 'order'>;
 

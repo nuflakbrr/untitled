@@ -68,6 +68,25 @@ func (s *EventService) ListCategories(ctx context.Context, tenantID *string) ([]
 	return result, nil
 }
 
+func (s *EventService) ListCategoriesPaged(ctx context.Context, tenantID *string, filter dto.CategoryQuery) ([]dto.CategoryResponse, int64, error) {
+	repository, ok := s.categories.(interface {
+		FindAllPaged(context.Context, *string, dto.CategoryQuery) ([]*domain.Category, int64, error)
+	})
+	if !ok {
+		categories, err := s.ListCategories(ctx, tenantID)
+		return categories, int64(len(categories)), err
+	}
+	categories, total, err := repository.FindAllPaged(ctx, tenantID, filter)
+	if err != nil {
+		return nil, 0, err
+	}
+	result := make([]dto.CategoryResponse, 0, len(categories))
+	for _, category := range categories {
+		result = append(result, toCategoryResponse(category))
+	}
+	return result, total, nil
+}
+
 func (s *EventService) CreateCategory(ctx context.Context, tenantID string, req dto.CreateCategoryRequest) (*dto.CategoryResponse, error) {
 	name := strings.TrimSpace(req.Name)
 	slug := slugify(name)

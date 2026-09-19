@@ -2,6 +2,8 @@
 
 import { Clock, Video, MapPin, Calendar, ArrowRight, AlertCircle } from 'lucide-react';
 
+import type { UpcomingEventCardProps } from '@/interfaces/features/dashboard';
+
 import { Button } from '@/components/ui/button';
 import { formatLongDate } from '@/lib/formatLongDate';
 import EmptyState from '@/components/Common/EmptyState';
@@ -10,25 +12,6 @@ import { getCoverStyles } from '@/app/(root)/_libs/getCoverStyles.libs';
 
 import ShowQrButton from './ShowQrButton';
 import ConfirmOnlineButton from './ConfirmOnlineButton';
-
-interface UpcomingEventCardProps {
-  upcomingEvent: {
-    id: string;
-    title: string;
-    banner: string | null;
-    startDate: Date;
-    endDate: Date;
-    startTime: string;
-    endTime: string;
-    location: string;
-    eventType?: string;
-    meetingLink?: string | null;
-    qrToken: string | null;
-    status: string;
-    registrationNumber?: string;
-    onlineAttendance?: boolean;
-  } | null;
-}
 
 export default function UpcomingEventCard({ upcomingEvent }: UpcomingEventCardProps) {
   const coverStyle = upcomingEvent ? getCoverStyles([upcomingEvent.id])[0] : '';

@@ -8,7 +8,7 @@ import type { EventWithCertificate } from '@/interfaces/features/certificates';
 
 import { Button } from '@/components/ui/button';
 import Heading from '@/components/Common/Heading';
-import { Separator } from '@/components/ui/separator';
+import { useTenantId } from '@/hooks/useTenantId';
 import { DataTable } from '@/components/ui/data-table';
 import { usePermission } from '@/providers/PermissionProvider';
 import AlertModal from '@/components/Common/Modals/AlertModal';
@@ -21,9 +21,10 @@ import {
 } from '@/components/ui/select';
 
 import Columns from './_components/Columns';
-import { useCertificatesList } from './_components/useCertificatesList';
+import { useCertificatesList } from './_hooks/useCertificatesList';
 
 const CertificatesCMS: FC = () => {
+  const tenantId = useTenantId();
   const { hasPermission } = usePermission();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const {
@@ -42,7 +43,7 @@ const CertificatesCMS: FC = () => {
   } = useCertificatesList();
 
   return (
-    <section>
+    <section className="mx-auto w-full max-w-375">
       <AlertModal
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
@@ -58,33 +59,34 @@ const CertificatesCMS: FC = () => {
             : 'Apakah Anda yakin ingin menyinkronkan sertifikat untuk SEMUA event? Proses ini akan memproses semua data event yang aktif.'
         }
       />
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 md:mb-4">
-        <Heading
-          title={`Manajemen Sertifikat (${meta.total})`}
-          description="Pantau dan kelola sertifikat elektronik untuk peserta event."
-        />
-        <div className="flex flex-wrap items-center gap-2 mt-3 sm:mt-0">
+      <Heading
+        variant="soft"
+        title="Manajemen Sertifikat"
+        titleSuffix={`(${meta.total})`}
+        description="Pantau dan kelola sertifikat elektronik untuk peserta event."
+        action={
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
           {hasPermission('certificates.create') && (
             <Button
               onClick={() => setIsConfirmOpen(true)}
               disabled={isGenerating || isLoading}
               variant="outline"
-              className="w-full sm:w-auto"
+              className="w-full rounded-xl border-eventkan-ink/10 text-eventkan-navy hover:bg-eventkan-canvas sm:w-auto"
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${isGenerating ? 'animate-spin' : ''}`} />
               {eventId ? 'Sinkronisasi Event Ini' : 'Sinkronisasi Semua Event'}
             </Button>
           )}
           {hasPermission('certificates.create') && (
-            <Button asChild className="w-full sm:w-auto">
-              <Link href="/admin/master/certificates/template">
+            <Button asChild className="w-full rounded-xl bg-eventkan-navy font-bold text-white hover:bg-eventkan-navy-hover sm:w-auto">
+              <Link href={`/admin/${tenantId}/master/certificates/template`}>
                 <Settings className="h-4 w-4 mr-2" /> Konfigurasi Template
               </Link>
             </Button>
           )}
-        </div>
-      </div>
-      <Separator />
+          </div>
+        }
+      />
       <DataTable
         searchKey="certificateNumber"
         columns={Columns}
@@ -114,6 +116,7 @@ const CertificatesCMS: FC = () => {
             </SelectContent>
           </Select>
         }
+        variant="eventkan"
       />
     </section>
   );

@@ -113,3 +113,60 @@ export interface ParticipantDashboardStats {
     pendingTestimonials: number;
   };
 }
+
+export interface DashboardHeaderProps {
+  userName: string;
+  emailVerified: boolean;
+}
+
+export interface SummaryCardsProps {
+  summary: {
+    totalRegistered: number;
+    totalCheckedIn: number;
+    totalPendingPayment: number;
+  };
+}
+
+export interface UpcomingEventCardProps {
+  upcomingEvent: {
+    id: string;
+    title: string;
+    banner: string | null;
+    startDate: Date;
+    endDate: Date;
+    startTime: string;
+    endTime: string;
+    location: string;
+    eventType?: string;
+    meetingLink?: string | null;
+    qrToken: string | null;
+    status: string;
+    registrationNumber?: string;
+    onlineAttendance?: boolean;
+  } | null;
+}
+
+export interface EventHistoryTableProps {
+  history: Array<{
+    id: string;
+    registrationNumber: string;
+    status: string;
+    event?: {
+      title: string;
+      startDate: Date;
+      eventType: string;
+      meetingLink: string | null;
+      certificateEnabled: boolean;
+    };
+    certificates: Array<{ id: string; downloadUrl: string }>;
+  }>;
+}
+
+export interface ConfirmOnlineButtonProps {
+  registrationId: string;
+  disabled: boolean;
+}
+
+export interface TestimonialNoticeBannerProps {
+  count: number;
+}

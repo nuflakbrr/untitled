@@ -1,20 +1,18 @@
 'use client';
 
-import { toast } from 'sonner';
-import { type FC, useState } from 'react';
+import { type FC } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Ban, Copy, Edit, Trash, UserCheck, MoreHorizontal } from 'lucide-react';
 
-import type { User, ExtendedUser } from '@/interfaces/features/users';
+import type { User } from '@/interfaces/features/users';
+import type { CellActionProps } from '@/interfaces/table';
 
 import { Button } from '@/components/ui/button';
 import { copyToClipboard } from '@/lib/clipboard';
-import { getMeAction } from '@/services/public/auth';
+import { useTenantId } from '@/hooks/useTenantId';
 import { usePermission } from '@/providers/PermissionProvider';
 import AlertModal from '@/components/Common/Modals/AlertModal';
 import UserSettingsModal from '@/components/Mixins/Sidebar/UserSettingsModal';
-import { banUser, unbanUser, deleteUser, permanentlyDeleteUser } from '@/services/admin/users';
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -22,59 +20,36 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  cellActionItemClass,
+  cellActionLabelClass,
+  cellActionDangerClass,
+  cellActionContentClass,
+  cellActionTriggerClass,
+} from '@/components/Common/CellActionMenu';
 
-interface CellActionProps {
-  data: User;
-}
+import { useCellAction } from '../_hooks/useCellAction';
 
-const CellAction: FC<CellActionProps> = ({ data }) => {
+const CellAction: FC<CellActionProps<User>> = ({ data }) => {
   const router = useRouter();
-  const tenantId = usePathname().split('/')[2];
-  const queryClient = useQueryClient();
-  const { hasPermission, hasRole } = usePermission();
-  const { data: meData } = useQuery({
-    queryKey: ['auth-me-server-action'],
-    queryFn: () => getMeAction(),
-  });
-  const session = meData?.session;
-  const [open, setOpen] = useState(false);
-  const [openBan, setOpenBan] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-  const currentUser = session?.user as ExtendedUser | undefined;
-  const isSelf = currentUser?.id === data.id;
-  const isTargetSuperAdmin = data.roles?.some((role) => role.name.toLowerCase() === 'superadmin');
-  const isCurrentUserSuperAdmin = hasRole('superadmin') || hasRole('root_superadmin');
-
-  const canDelete = !isSelf && (isCurrentUserSuperAdmin || !isTargetSuperAdmin);
-  const canEdit = isSelf || isCurrentUserSuperAdmin || !isTargetSuperAdmin;
-
-  const { mutate: onDelete, isPending } = useMutation({
-    mutationFn: () => data.deletedAt ? permanentlyDeleteUser(data.id) : deleteUser(data.id),
-    onSuccess: (result) => {
-      if (result.success) {
-        toast.success(result.message);
-        queryClient.invalidateQueries({ queryKey: ['users'] });
-        setOpen(false);
-      } else {
-        toast.error(result.error);
-      }
-    },
-    onError: () => {
-      toast.error('Gagal menghapus pengguna.');
-    },
-  });
-  const { mutate: onBan, isPending: isBanPending } = useMutation({
-    mutationFn: () => (data.banned ? unbanUser(data.id) : banUser(data.id)),
-    onSuccess: (result) => {
-      if (result.success) {
-        toast.success(result.message);
-        queryClient.invalidateQueries({ queryKey: ['users'] });
-        setOpenBan(false);
-      } else toast.error(result.error);
-    },
-    onError: () => toast.error(data.banned ? 'Gagal melakukan unban user.' : 'Gagal memban user.'),
-  });
+  const tenantId = useTenantId();
+  const pathname = usePathname();
+  const { hasPermission } = usePermission();
+  const {
+    isSelf,
+    canDelete,
+    canEdit,
+    open,
+    setOpen,
+    openBan,
+    setOpenBan,
+    isSettingsOpen,
+    setIsSettingsOpen,
+    onDelete,
+    isDeletePending,
+    onBan,
+    isBanPending,
+  } = useCellAction(data);
 
   return (
     <>
@@ -82,7 +57,7 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
         isOpen={open}
         onClose={() => setOpen(false)}
         onConfirm={onDelete}
-        loading={isPending}
+        loading={isDeletePending}
       />
       <AlertModal
         isOpen={openBan}
@@ -101,25 +76,25 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
       />
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
+          <Button variant="ghost" className={cellActionTriggerClass}>
             <span className="sr-only">Open menu</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="rounded-xl">
-          <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => copyToClipboard(data.id)} className="cursor-pointer">
+        <DropdownMenuContent align="end" className={cellActionContentClass}>
+          <DropdownMenuLabel className={cellActionLabelClass}>Aksi</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => copyToClipboard(data.id)} className={cellActionItemClass}>
             <Copy className="mr-2 h-4 w-4" /> Salin ID
           </DropdownMenuItem>
           {hasPermission('user.update') && canEdit && (
             <DropdownMenuItem
-              variant="warning"
-              className="cursor-pointer"
+              variant="accent"
+              className={cellActionItemClass}
               onClick={() => {
                 if (isSelf) {
                   setIsSettingsOpen(true);
                 } else {
-                  router.push(`/admin/${tenantId}/managements/users/${data.id}`);
+                  router.push(`/admin/${tenantId}/managements/${pathname.includes('/managements/participants') ? 'participants' : 'users'}/${data.id}`);
                 }
               }}
             >
@@ -127,7 +102,7 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
             </DropdownMenuItem>
           )}
           {hasPermission('user.update') && canDelete && (
-            <DropdownMenuItem className="cursor-pointer" onClick={() => setOpenBan(true)}>
+            <DropdownMenuItem className={cellActionItemClass} onClick={() => setOpenBan(true)}>
               {data.banned ? (
                 <UserCheck className="mr-2 h-4 w-4" />
               ) : (
@@ -139,7 +114,7 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
           {hasPermission('user.delete') && canDelete && (
             <DropdownMenuItem
               variant="destructive"
-              className="cursor-pointer"
+              className={cellActionDangerClass}
               onClick={() => setOpen(true)}
             >
               <Trash className="mr-2 h-4 w-4" /> Hapus

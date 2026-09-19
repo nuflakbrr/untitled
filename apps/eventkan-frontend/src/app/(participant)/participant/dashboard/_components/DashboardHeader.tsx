@@ -1,9 +1,6 @@
 import { AlertCircle } from 'lucide-react';
 
-interface DashboardHeaderProps {
-  userName: string;
-  emailVerified: boolean;
-}
+import type { DashboardHeaderProps } from '@/interfaces/features/dashboard';
 
 export default function DashboardHeader({ userName, emailVerified }: DashboardHeaderProps) {
   return (

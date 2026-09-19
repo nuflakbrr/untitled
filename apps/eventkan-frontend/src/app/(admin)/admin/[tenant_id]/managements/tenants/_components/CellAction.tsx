@@ -1,16 +1,16 @@
 'use client';
 
 import { toast } from 'sonner';
-import { type FC, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { type FC } from 'react';
+import { useRouter } from 'next/navigation';
 import { Copy, Edit, Trash, MoreHorizontal } from 'lucide-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import type { CellActionProps } from '@/interfaces/table';
 import type { AdminTenantRow } from '@/interfaces/features/tenants';
 
 import { Button } from '@/components/ui/button';
 import { copyToClipboard } from '@/lib/clipboard';
-import { deleteTenant } from '@/services/admin/tenants';
+import { useTenantId } from '@/hooks/useTenantId';
 import { usePermission } from '@/providers/PermissionProvider';
 import AlertModal from '@/components/Common/Modals/AlertModal';
 import {
@@ -20,33 +20,26 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  cellActionItemClass,
+  cellActionLabelClass,
+  cellActionDangerClass,
+  cellActionContentClass,
+  cellActionTriggerClass,
+} from '@/components/Common/CellActionMenu';
 
-interface CellActionProps {
-  data: AdminTenantRow;
-}
+import { useCellAction } from '../_hooks/useCellAction';
 
-const CellAction: FC<CellActionProps> = ({ data }) => {
+const CellAction: FC<CellActionProps<AdminTenantRow>> = ({ data }) => {
   const router = useRouter();
-  const tenantId = usePathname().split('/')[2];
-  const queryClient = useQueryClient();
+  const tenantId = useTenantId();
   const { hasPermission, hasRole } = usePermission();
-  const [openDelete, setOpenDelete] = useState(false);
   const isRootSuperadmin = hasRole('root_superadmin');
   const canManageTenant = isRootSuperadmin || data.parentId === tenantId;
   const canDeleteTenant = !['root', 'university'].some((type) =>
     data.type.toLowerCase().includes(type)
   );
-  const { mutate: onDelete, isPending } = useMutation({
-    mutationFn: () => deleteTenant(data.id),
-    onSuccess: (result) => {
-      if (result.success) {
-        toast.success('Tenant berhasil dihapus.');
-        queryClient.invalidateQueries({ queryKey: ['admin-tenants'] });
-        setOpenDelete(false);
-      } else toast.error(result.error);
-    },
-    onError: () => toast.error('Gagal menghapus tenant.'),
-  });
+  const { openDelete, setOpenDelete, onDelete, isDeletePending } = useCellAction(data.id);
 
   return (
     <>
@@ -54,30 +47,30 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
         isOpen={openDelete}
         onClose={() => setOpenDelete(false)}
         onConfirm={onDelete}
-        loading={isPending}
+        loading={isDeletePending}
       />
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
+          <Button variant="ghost" className={cellActionTriggerClass}>
             <span className="sr-only">Buka menu</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="rounded-xl">
-          <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+        <DropdownMenuContent align="end" className={cellActionContentClass}>
+          <DropdownMenuLabel className={cellActionLabelClass}>Aksi</DropdownMenuLabel>
           <DropdownMenuItem
             onClick={() => {
               copyToClipboard(data.id);
               toast.success('ID disalin ke clipboard.');
             }}
-            className="cursor-pointer"
+            className={cellActionItemClass}
           >
             <Copy className="mr-2 h-4 w-4" /> Salin ID
           </DropdownMenuItem>
           {hasPermission('tenant.update') && canManageTenant && (
             <DropdownMenuItem
-              variant="warning"
-              className="cursor-pointer"
+              variant="accent"
+              className={cellActionItemClass}
               onClick={() => router.push(`/admin/${tenantId}/managements/tenants/${data.id}`)}
             >
               <Edit className="mr-2 h-4 w-4" /> Ubah
@@ -86,7 +79,7 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
           {hasPermission('tenant.delete') && canManageTenant && canDeleteTenant && (
             <DropdownMenuItem
               variant="destructive"
-              className="cursor-pointer"
+              className={cellActionDangerClass}
               onClick={() => setOpenDelete(true)}
             >
               <Trash className="mr-2 h-4 w-4" /> Hapus

@@ -1,14 +1,9 @@
 'use client';
 
-import { type FC, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { type FC } from 'react';
 
 import Heading from '@/components/Common/Heading';
-import { useDebounce } from '@/hooks/useDebounce';
-import { Separator } from '@/components/ui/separator';
 import { DataTable } from '@/components/ui/data-table';
-import { getTestimonies } from '@/services/admin/testimonials';
-import { getEventsForFilter } from '@/services/admin/registrations';
 import {
   Select,
   SelectItem,
@@ -18,43 +13,19 @@ import {
 } from '@/components/ui/select';
 
 import Columns from './_components/Columns';
+import { useTestimoniesList } from './_hooks/useTestimoniesList';
 
 const TestimoniesCMS: FC = () => {
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useDebounce('', 500);
-  const [eventId, setEventId] = useState<string | undefined>(undefined);
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['testimonies', page, limit, debouncedSearch, eventId],
-    queryFn: () => getTestimonies(page, limit, debouncedSearch, eventId),
-  });
-
-  const { data: eventsData } = useQuery({
-    queryKey: ['events-for-filter'],
-    queryFn: () => getEventsForFilter(),
-  });
-
-  const testimonies = data?.data || [];
-  const meta = data?.meta || { total: 0, page: 1, lastPage: 0 };
-  const events = eventsData?.data || [];
-
-  const handleSearchChange = (value: string) => {
-    setSearch(value);
-    setDebouncedSearch(value);
-    setPage(1);
-  };
+  const { testimonies, meta, events, eventId, setPage, setLimit, setEventId, search, isLoading, handleSearchChange } = useTestimoniesList();
 
   return (
-    <section>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 md:mb-4">
-        <Heading
-          title={`Ulasan & Testimoni (${meta.total})`}
-          description="Kelola dan pantau ulasan serta testimoni yang diberikan oleh peserta event."
-        />
-      </div>
-      <Separator />
+    <section className="mx-auto w-full max-w-375">
+      <Heading
+        variant="soft"
+        title="Ulasan & Testimoni"
+        titleSuffix={`(${meta.total})`}
+        description="Kelola dan pantau ulasan serta testimoni yang diberikan oleh peserta event."
+      />
       <DataTable
         searchKey="comment"
         columns={Columns}
@@ -72,7 +43,6 @@ const TestimoniesCMS: FC = () => {
               value={eventId || ''}
               onValueChange={(value) => {
                 setEventId(value || undefined);
-                setPage(1);
               }}
             >
               <SelectTrigger className="w-full sm:w-50">
@@ -89,6 +59,7 @@ const TestimoniesCMS: FC = () => {
             </Select>
           </div>
         }
+        variant="eventkan"
       />
     </section>
   );

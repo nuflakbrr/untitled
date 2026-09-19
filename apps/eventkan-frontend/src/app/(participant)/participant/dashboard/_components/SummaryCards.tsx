@@ -1,12 +1,6 @@
 import { Clock, Calendar, CheckCircle2 } from 'lucide-react';
 
-interface SummaryCardsProps {
-  summary: {
-    totalRegistered: number;
-    totalCheckedIn: number;
-    totalPendingPayment: number;
-  };
-}
+import type { SummaryCardsProps } from '@/interfaces/features/dashboard';
 
 const cards = [
   {

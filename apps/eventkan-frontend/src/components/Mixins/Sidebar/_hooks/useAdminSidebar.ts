@@ -1,12 +1,12 @@
 'use client';
 
 import * as React from 'react';
-import { usePathname } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 
 import type { AdminSessionContext } from '@/interfaces/features/auth';
 
 import { useMounted } from '@/hooks/useMounted';
+import { useTenantId } from '@/hooks/useTenantId';
 import { getMyTenantsAction } from '@/services/public/auth';
 
 import { sideLinks } from '../_constants/sideLinks.constants';
@@ -16,8 +16,7 @@ const BASE_ADMIN_PATH = '/admin';
 
 export function useAdminSidebar(session: AdminSessionContext, permissions: string[]) {
   const isMounted = useMounted();
-  const pathname = usePathname();
-  const tenantId = pathname.split('/')[2] ?? '';
+  const tenantId = useTenantId() ?? '';
   const adminPath = tenantId ? `${BASE_ADMIN_PATH}/${tenantId}` : BASE_ADMIN_PATH;
   const { data: tenants = [] } = useQuery({
     queryKey: ['my-tenants'],

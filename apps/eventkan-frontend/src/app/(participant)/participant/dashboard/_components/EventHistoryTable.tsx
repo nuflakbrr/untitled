@@ -1,27 +1,13 @@
 import { Award, Video, FileDown } from 'lucide-react';
 
+import type { EventHistoryTableProps } from '@/interfaces/features/dashboard';
+
 import { Button } from '@/components/ui/button';
 import { formatLongDate } from '@/lib/formatLongDate';
 import EmptyState from '@/components/Common/EmptyState';
 
 import { canDownloadCertificate } from '../_libs/canDownloadCertificate.libs';
 import { getDashboardStatusStyle } from '../_libs/getDashboardStatusStyle.libs';
-
-interface EventHistoryTableProps {
-  history: Array<{
-    id: string;
-    registrationNumber: string;
-    status: string;
-    event?: {
-      title: string;
-      startDate: Date;
-      eventType: string;
-      meetingLink: string | null;
-      certificateEnabled: boolean;
-    };
-    certificates: Array<{ id: string; downloadUrl: string }>;
-  }>;
-}
 
 const PanelHeader = () => (
   <div className="flex items-center gap-2 border-b border-eventkan-ink/10 px-5 py-4">

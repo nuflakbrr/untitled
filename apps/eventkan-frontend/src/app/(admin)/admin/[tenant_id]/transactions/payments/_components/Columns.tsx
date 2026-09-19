@@ -6,70 +6,64 @@ import 'moment/locale/id';
 import type { ColumnDef } from '@tanstack/react-table';
 
 import moment from 'moment';
-import { ChevronsUpDown } from 'lucide-react';
 
 import type { Payment } from '@/interfaces/features/payments';
 
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { PaymentStatus } from '@/interfaces/enums';
 import { formatCurrency } from '@/lib/formatCurrency';
+import SortableTableHeader from '@/components/Common/SortableTableHeader';
 
 import CellAction from './CellAction';
 
 const Columns: ColumnDef<Payment>[] = [
   {
     accessorKey: 'registrationNumber',
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        No. Registrasi
-        <ChevronsUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: ({ column }) => <SortableTableHeader column={column} label="No. Registrasi" />,
     cell: ({ row }) => (
-      <span className="font-mono text-sm">{row.original.registration.registrationNumber}</span>
+      <span className="font-mono text-sm text-eventkan-ink">{row.original.registration.registrationNumber}</span>
     ),
   },
   {
     accessorKey: 'event',
-    header: 'Event',
-    cell: ({ row }) => <span className="text-sm">{row.original.registration.event.title}</span>,
+    header: ({ column }) => <SortableTableHeader column={column} label="Event" />,
+    cell: ({ row }) => <span className="text-sm font-medium text-eventkan-ink">{row.original.registration.event.title}</span>,
   },
   {
     accessorKey: 'user',
-    header: 'Peserta',
+    header: ({ column }) => <SortableTableHeader column={column} label="Peserta" />,
     cell: ({ row }) => {
       const user = row.original.registration.user;
       return (
         <div className="flex flex-col">
-          <span className="text-sm">{user.name || '-'}</span>
-          <span className="text-xs text-muted-foreground">{user.email}</span>
+          <span className="text-sm font-medium text-eventkan-ink">{user.name || '-'}</span>
+          <span className="text-xs text-eventkan-muted">{user.email}</span>
         </div>
       );
     },
   },
   {
     accessorKey: 'amount',
-    header: 'Nominal',
+    header: ({ column }) => <SortableTableHeader column={column} label="Nominal" />,
     cell: ({ row }) => (
       <span className="font-medium text-sm">{formatCurrency(row.original.amount)}</span>
     ),
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: ({ column }) => <SortableTableHeader column={column} label="Status" />,
     cell: ({ row }) => {
       const status = row.original.status;
       const getStatusClass = (val: typeof status) => {
         switch (val) {
           case PaymentStatus.WAITING:
-            return 'bg-amber-500/10 text-amber-600 border-amber-200 dark:border-amber-500/30';
+            return 'bg-eventkan-yellow text-eventkan-ink border-eventkan-yellow/30';
           case PaymentStatus.PAID:
-            return 'bg-emerald-500/10 text-emerald-600 border-emerald-200 dark:border-emerald-500/30';
+            return 'bg-eventkan-green text-eventkan-green-ink border-eventkan-green/30';
           case PaymentStatus.FAILED:
-            return 'bg-rose-500/10 text-rose-600 border-rose-200 dark:border-rose-500/30';
+            return 'bg-eventkan-peach text-eventkan-peach-ink border-eventkan-peach/30';
           case PaymentStatus.REFUNDED:
-            return 'bg-blue-500/10 text-blue-600 border-blue-200 dark:border-blue-500/30';
+            return 'bg-eventkan-navy/8 text-eventkan-navy border-eventkan-navy/10';
           default:
             return '';
         }
@@ -89,7 +83,7 @@ const Columns: ColumnDef<Payment>[] = [
         }
       };
       return (
-        <Badge variant="outline" className={`font-semibold px-2 py-0.5 ${getStatusClass(status)}`}>
+        <Badge variant="outline" className={`px-2 py-0.5 font-medium ${getStatusClass(status)}`}>
           {getStatusLabel(status)}
         </Badge>
       );
@@ -97,13 +91,13 @@ const Columns: ColumnDef<Payment>[] = [
   },
   {
     accessorKey: 'createdAt',
-    header: 'Tanggal Transaksi',
+    header: ({ column }) => <SortableTableHeader column={column} label="Tanggal Transaksi" />,
     cell: ({ row }) => {
       const formattedDate = moment(row.original.createdAt)
         .tz('Asia/Jakarta')
         .locale('id')
         .format('DD MMM YYYY, HH:mm');
-      return <span className="text-sm">{formattedDate}</span>;
+      return <span className="text-sm text-eventkan-muted">{formattedDate}</span>;
     },
   },
   {

@@ -5,8 +5,8 @@ type Props = {
 };
 
 export const FailureResultCard: FC<Props> = ({ code }) => (
-  <div className="space-y-3 text-left text-xs bg-white/60 dark:bg-zinc-950/40 p-5 rounded-2xl border text-muted-foreground leading-relaxed">
-    <p className="font-bold text-zinc-800 dark:text-zinc-200">Panduan Kegagalan:</p>
+  <div className="space-y-3 rounded-2xl border border-eventkan-ink/10 bg-eventkan-surface/70 p-5 text-left text-xs leading-relaxed text-eventkan-muted">
+    <p className="font-bold text-eventkan-ink">Panduan Kegagalan:</p>
     <ul className="list-disc pl-4 space-y-1">
       <li>
         {code === 'QR_ALREADY_USED'

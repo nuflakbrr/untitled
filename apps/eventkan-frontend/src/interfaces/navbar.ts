@@ -12,3 +12,13 @@ export interface NavbarMobileMenuProps {
 export type ParticipantNavbarProps = {
   user: NavbarUser;
 };
+
+export interface UserMenuProps {
+  user: NavbarUser;
+  isAdmin: boolean;
+  tenantId?: string | null;
+}
+
+export interface NavbarEventSearchProps {
+  scrolled: boolean;
+}

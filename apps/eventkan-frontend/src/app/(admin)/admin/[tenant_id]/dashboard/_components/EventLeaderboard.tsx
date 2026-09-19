@@ -11,9 +11,9 @@ import { Card, CardTitle, CardHeader, CardContent, CardDescription } from '@/com
 type LeaderboardEvent = AdminDashboardStats['popularEvents'][number];
 
 const rankTones = [
-  'bg-[#fff4c4] text-[#b18a17]',
-  'bg-[#eef0f2] text-[#7d858d]',
-  'bg-[#f2dfd2] text-[#a8673f]',
+  'bg-eventkan-yellow text-eventkan-ink',
+  'bg-eventkan-canvas text-eventkan-muted',
+  'bg-eventkan-peach text-eventkan-peach-ink',
 ] as const;
 
 export default function EventLeaderboard({

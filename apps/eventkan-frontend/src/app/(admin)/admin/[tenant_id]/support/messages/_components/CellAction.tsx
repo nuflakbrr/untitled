@@ -1,13 +1,15 @@
 'use client';
 
+import { toast } from 'sonner';
+import { type FC } from 'react';
+import { Eye, Copy, MessageCircle, MoreHorizontal } from 'lucide-react';
+
+import type { CellActionProps } from '@/interfaces/table';
 import type { SupportMessage } from '@/interfaces/features/support';
 
-import { toast } from 'sonner';
-import { type FC, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { copyToClipboard } from '@/lib/clipboard';
 import Modal from '@/components/Common/Modals/Modal';
-import { Eye, Copy, MessageCircle, MoreHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -15,24 +17,17 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  cellActionItemClass,
+  cellActionLabelClass,
+  cellActionContentClass,
+  cellActionTriggerClass,
+} from '@/components/Common/CellActionMenu';
 
-interface CellActionProps {
-  data: SupportMessage;
-}
+import { useCellAction } from '../_hooks/useCellAction';
 
-const CellAction: FC<CellActionProps> = ({ data }) => {
-  const [openDetail, setOpenDetail] = useState(false);
-
-  const getWhatsAppLink = (phone: string, name: string, title: string) => {
-    let cleanPhone = phone.replace(/[^0-9]/g, '');
-    if (cleanPhone.startsWith('0')) {
-      cleanPhone = '62' + cleanPhone.substring(1);
-    }
-    const text = encodeURIComponent(
-      `Halo ${name},\n\nKami dari tim Support EVENTKAN ingin menindaklanjuti laporan Anda mengenai "${title}".\n\nBagaimana kami bisa membantu Anda?`
-    );
-    return `https://wa.me/${cleanPhone}?text=${text}`;
-  };
+const CellAction: FC<CellActionProps<SupportMessage>> = ({ data }) => {
+  const { openDetail, setOpenDetail, getWhatsAppLink } = useCellAction();
 
   return (
     <>
@@ -44,28 +39,28 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
         description="Informasi lengkap mengenai laporan pengaduan bantuan pelanggan."
         className="sm:max-w-xl"
       >
-        <div className="space-y-4 mt-4">
-          <div className="grid grid-cols-2 gap-4 text-xs p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border">
+        <div className="mt-4 space-y-4">
+          <div className="grid grid-cols-2 gap-4 rounded-xl border border-eventkan-ink/10 bg-eventkan-canvas/55 p-4 text-xs">
             <div>
-              <span className="text-muted-foreground block font-semibold uppercase text-[10px]">
+                <span className="block text-[10px] font-semibold uppercase text-eventkan-muted">
                 Pengirim
               </span>
               <span className="font-medium">{data.name}</span>
             </div>
             <div>
-              <span className="text-muted-foreground block font-semibold uppercase text-[10px]">
+                <span className="block text-[10px] font-semibold uppercase text-eventkan-muted">
                 Kategori
               </span>
               <span className="font-medium">{data.category}</span>
             </div>
             <div>
-              <span className="text-muted-foreground block font-semibold uppercase text-[10px]">
+                <span className="block text-[10px] font-semibold uppercase text-eventkan-muted">
                 Email
               </span>
               <span className="font-medium">{data.email}</span>
             </div>
             <div>
-              <span className="text-muted-foreground block font-semibold uppercase text-[10px]">
+                <span className="block text-[10px] font-semibold uppercase text-eventkan-muted">
                 Telepon
               </span>
               <span className="font-medium">{data.phone}</span>
@@ -73,26 +68,26 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
           </div>
 
           <div className="space-y-1">
-            <span className="text-xs font-semibold text-muted-foreground uppercase text-[10px]">
+            <span className="text-[10px] font-semibold uppercase text-eventkan-muted">
               Subjek
             </span>
             <p className="text-sm font-semibold">{data.title}</p>
           </div>
 
           <div className="space-y-1">
-            <span className="text-xs font-semibold text-muted-foreground uppercase text-[10px]">
+            <span className="text-[10px] font-semibold uppercase text-eventkan-muted">
               Kronologi Kejadian
             </span>
-            <div className="p-4 rounded-xl text-sm bg-muted/60 border whitespace-pre-wrap max-h-60 overflow-y-auto leading-relaxed">
+            <div className="max-h-60 overflow-y-auto whitespace-pre-wrap rounded-xl border border-eventkan-ink/10 bg-eventkan-canvas/55 p-4 text-sm leading-relaxed text-eventkan-ink">
               {data.chronology}
             </div>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button variant="ghost" onClick={() => setOpenDetail(false)}>
+            <Button variant="outline" onClick={() => setOpenDetail(false)} className="cursor-pointer">
               Tutup
             </Button>
-            <Button asChild>
+            <Button asChild className="cursor-pointer bg-eventkan-navy text-white hover:bg-eventkan-navy-hover">
               <a
                 href={getWhatsAppLink(data.phone, data.name, data.title)}
                 target="_blank"
@@ -107,26 +102,26 @@ const CellAction: FC<CellActionProps> = ({ data }) => {
 
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
+          <Button variant="ghost" className={cellActionTriggerClass}>
             <span className="sr-only">Buka menu</span>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="rounded-xl">
-          <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+        <DropdownMenuContent align="end" className={cellActionContentClass}>
+          <DropdownMenuLabel className={cellActionLabelClass}>Aksi</DropdownMenuLabel>
           <DropdownMenuItem
             onClick={() => {
               copyToClipboard(data.id);
               toast.success('ID disalin ke clipboard.');
             }}
-            className="cursor-pointer"
+            className={cellActionItemClass}
           >
             <Copy className="mr-2 h-4 w-4" /> Salin ID
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setOpenDetail(true)} className="cursor-pointer">
+          <DropdownMenuItem onClick={() => setOpenDetail(true)} className={cellActionItemClass}>
             <Eye className="mr-2 h-4 w-4" /> Lihat Detail
           </DropdownMenuItem>
-          <DropdownMenuItem asChild className="cursor-pointer">
+          <DropdownMenuItem asChild className={cellActionItemClass}>
             <a
               href={getWhatsAppLink(data.phone, data.name, data.title)}
               target="_blank"

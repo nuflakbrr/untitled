@@ -7,6 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { X, Tag, Plus, Edit, Trash, Check, Loader2, RotateCcw } from 'lucide-react';
 
+import type { CategoryModalProps } from '@/interfaces/features/articles';
+
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -28,11 +30,6 @@ import {
   restoreCategory,
   permanentlyDeleteCategory,
 } from '@/services/admin/articles';
-
-interface CategoryModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
 
 const CategoryModal: FC<CategoryModalProps> = ({ isOpen, onClose }) => {
   const { hasPermission } = usePermission();

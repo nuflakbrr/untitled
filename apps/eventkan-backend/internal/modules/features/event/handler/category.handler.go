@@ -27,6 +27,28 @@ func (h *CategoryHandler) GetAll(c *gin.Context) {
 	if tenant != "" {
 		tenantID = &tenant
 	}
+	if c.Request.URL.Query().Get("page") != "" || c.Request.URL.Query().Get("limit") != "" || c.Request.URL.Query().Get("search") != "" || c.Request.URL.Query().Get("include_deleted") != "" {
+		var filter dto.CategoryQuery
+		if err := c.ShouldBindQuery(&filter); err != nil {
+			response.Error(c, http.StatusBadRequest, "Invalid query parameters", err.Error())
+			return
+		}
+		if filter.Page == 0 {
+			filter.Page = 1
+		}
+		if filter.Limit == 0 {
+			filter.Limit = 10
+		}
+		if paged, ok := h.service.(PagedCategoryService); ok {
+			categories, total, err := paged.ListCategoriesPaged(c.Request.Context(), tenantID, filter)
+			if err != nil {
+				response.Error(c, http.StatusInternalServerError, "Failed to retrieve event categories", err.Error())
+				return
+			}
+			response.SuccessWithPagination(c, http.StatusOK, "Event categories retrieved successfully", categories, filter.Page, filter.Limit, total)
+			return
+		}
+	}
 	categories, err := h.service.ListCategories(c.Request.Context(), tenantID)
 	if err != nil {
 		response.Error(c, http.StatusInternalServerError, "Failed to retrieve event categories", err.Error())

@@ -31,6 +31,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import Heading from '@/components/Common/Heading';
+import { useTenantId } from '@/hooks/useTenantId';
 import { Calendar } from '@/components/ui/calendar';
 import { Separator } from '@/components/ui/separator';
 import { formatLocalTime } from '@/lib/formatLocalTime';
@@ -52,7 +53,7 @@ import {
 
 import ImageUpload from './ImageUpload';
 import DragOverlay from './DragOverlay';
-import { useEventForm } from './useEventForm';
+import { useEventForm } from '../../_hooks/useEventForm';
 
 type Props = {
   initialData: Event | null;
@@ -79,6 +80,7 @@ const defaultBenefit: EventBenefit = {
 
 const EventForm: FC<Props> = ({ initialData }) => {
   const { hasPermission, hasRole } = usePermission();
+  const tenantId = useTenantId();
   const { form, onSubmit, onDelete, isAlertOpen, setIsAlertOpen, submitMutation, deleteMutation } =
     useEventForm(initialData);
 
@@ -235,7 +237,7 @@ const EventForm: FC<Props> = ({ initialData }) => {
           )}
           {!initialData && (
             <Button variant="outline" asChild>
-              <Link href="/admin/master/events">
+              <Link href={`/admin/${tenantId}/master/events`}>
                 <ArrowLeft className="h-4 w-4 mr-2" /> Kembali
               </Link>
             </Button>
@@ -317,7 +319,7 @@ const EventForm: FC<Props> = ({ initialData }) => {
                         <p className="text-xs text-muted-foreground italic">
                           Belum ada kategori.{' '}
                           <Link
-                            href="/admin/master/event-categories"
+                            href={`/admin/${tenantId}/master/event-categories`}
                             className="underline hover:text-foreground"
                           >
                             Buat kategori
@@ -1083,7 +1085,7 @@ const EventForm: FC<Props> = ({ initialData }) => {
 
         <div className="flex justify-end gap-4 mt-6">
           <Button variant="outline" type="button" asChild>
-            <Link href="/admin/master/events">Batal</Link>
+            <Link href={`/admin/${tenantId}/master/events`}>Batal</Link>
           </Button>
           {canEdit && (
             <Button type="submit" disabled={submitMutation.isPending || isUploading}>

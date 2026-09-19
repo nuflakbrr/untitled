@@ -28,6 +28,10 @@ type Service interface {
 	DeleteEvent(ctx context.Context, id string, scopeTenantID *string) error
 }
 
+type PagedCategoryService interface {
+	ListCategoriesPaged(ctx context.Context, tenantID *string, filter dto.CategoryQuery) ([]dto.CategoryResponse, int64, error)
+}
+
 type EventHandler struct {
 	service Service
 }

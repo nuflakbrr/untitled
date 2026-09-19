@@ -4,15 +4,17 @@ import 'moment-timezone';
 import 'moment/locale/id';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import type { Article } from '@/interfaces/features/articles';
 
 import moment from 'moment';
 import Image from 'next/image';
 import { useState } from 'react';
+import { Search } from 'lucide-react';
+
+import type { Article } from '@/interfaces/features/articles';
+
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, ChevronsUpDown } from 'lucide-react';
+import SortableTableHeader from '@/components/Common/SortableTableHeader';
 import ImagePreviewModal from '@/components/Common/Modals/ImagePreviewModal';
 
 import CellAction from './CellAction';
@@ -41,24 +43,20 @@ const Columns: ColumnDef<Article>[] = [
   },
   {
     accessorKey: 'title',
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Judul Artikel
-        <ChevronsUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: ({ column }) => <SortableTableHeader column={column} label="Judul Artikel" />,
     cell: ({ row }) => <TitleCell row={row} />,
   },
   {
     id: 'deleted',
-    header: 'Status',
+    accessorFn: (row) => (row.deletedAt ? 0 : 1),
+    header: ({ column }) => <SortableTableHeader column={column} label="Status" />,
     cell: ({ row }) =>
       row.original.deletedAt ? (
-        <Badge variant="outline" className="border-rose-200 bg-rose-50 text-rose-700">
+        <Badge variant="outline" className="border-eventkan-peach/30 bg-eventkan-peach text-eventkan-peach-ink">
           Terhapus
         </Badge>
       ) : (
-        <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700">
+        <Badge variant="outline" className="border-eventkan-green/30 bg-eventkan-green text-eventkan-green-ink">
           Aktif
         </Badge>
       ),
@@ -75,19 +73,14 @@ const Columns: ColumnDef<Article>[] = [
             </Badge>
           ))
         ) : (
-          <span className="text-xs text-muted-foreground">-</span>
+          <span className="text-xs text-eventkan-muted">-</span>
         )}
       </div>
     ),
   },
   {
     accessorKey: 'updatedAt',
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Terakhir Diperbarui
-        <ChevronsUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    header: ({ column }) => <SortableTableHeader column={column} label="Terakhir Diperbarui" />,
     cell: ({ row }) =>
       moment(row.original.updatedAt).tz('Asia/Jakarta').locale('id').format('DD MMMM YYYY, HH:mm'),
   },
@@ -130,12 +123,12 @@ const TitleCell = ({ row }: { row: { original: Article } }) => {
               </div>
             </>
           ) : (
-            <span className="text-[10px] text-muted-foreground font-bold">COVER</span>
+            <span className="text-[10px] font-medium text-eventkan-muted">COVER</span>
           )}
         </div>
         <div className="flex flex-col">
-          <span className="font-medium text-foreground">{row.original.title}</span>
-          <span className="text-xs text-muted-foreground truncate max-w-50">
+          <span className="font-medium text-eventkan-ink">{row.original.title}</span>
+          <span className="max-w-50 truncate text-xs text-eventkan-muted">
             {row.original.content.replace(/<[^>]*>?/gm, '').substring(0, 50)}...
           </span>
         </div>

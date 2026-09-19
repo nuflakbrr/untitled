@@ -4,12 +4,13 @@ import 'moment-timezone';
 import 'moment/locale/id';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import type { Permission } from '@/interfaces/features/permissions';
 
 import moment from 'moment';
-import { ChevronsUpDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+
+import type { Permission } from '@/interfaces/features/permissions';
+
 import { Checkbox } from '@/components/ui/checkbox';
+import SortableTableHeader from '@/components/Common/SortableTableHeader';
 
 import CellAction from './CellAction';
 
@@ -38,35 +39,25 @@ const Columns: ColumnDef<Permission>[] = [
 
   {
     accessorKey: 'name',
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Nama Hak Akses
-        <ChevronsUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div>{row.getValue('name')}</div>,
+    header: ({ column }) => <SortableTableHeader column={column} label="Nama Hak Akses" />,
+    cell: ({ row }) => <div className="text-sm font-medium text-eventkan-ink">{row.getValue('name')}</div>,
   },
   {
     accessorKey: 'description',
     header: 'Deskripsi',
     cell: ({ row }) => (
-      <div className="max-w-75 truncate">{row.getValue('description') || '-'}</div>
+      <div className="max-w-75 truncate text-sm text-eventkan-muted">{row.getValue('description') || '-'}</div>
     ),
   },
   {
     accessorKey: 'updated_at',
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Terakhir Diperbarui
-        <ChevronsUpDown />
-      </Button>
-    ),
+    header: ({ column }) => <SortableTableHeader column={column} label="Terakhir Diperbarui" />,
     cell: ({ row }) => {
       const date = row.original;
-      return moment(date.updatedAt || new Date())
+      return <span className="text-sm text-eventkan-muted">{moment(date.updatedAt || new Date())
         .tz('Asia/Jakarta')
         .locale('id')
-        .format('DD MMMM YYYY, HH:mm');
+        .format('DD MMMM YYYY, HH:mm')}</span>;
     },
   },
   {

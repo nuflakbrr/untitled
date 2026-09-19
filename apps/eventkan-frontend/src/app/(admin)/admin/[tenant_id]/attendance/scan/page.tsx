@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { redirect } from 'next/navigation';
+
 import { verifyPermission } from '@/services/admin/security';
 
 import ScannerClient from './_components/ScannerClient';
@@ -12,10 +13,11 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function ScanPage() {
+export default async function ScanPage({ params }: { params: Promise<{ tenant_id: string }> }) {
+  const { tenant_id: tenantId } = await params;
   const hasScanPermission = await verifyPermission('attendance.scan');
   if (!hasScanPermission) {
-    return redirect('/admin/dashboard');
+    return redirect(`/admin/${tenantId}/dashboard`);
   }
 
   return (

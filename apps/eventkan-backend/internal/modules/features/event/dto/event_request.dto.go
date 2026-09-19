@@ -13,6 +13,13 @@ type EventQuery struct {
 	Limit          int    `form:"limit,default=10" binding:"min=1,max=100"`
 }
 
+type CategoryQuery struct {
+	Search         string `form:"search"`
+	IncludeDeleted bool   `form:"include_deleted"`
+	Page           int    `form:"page,default=1" binding:"min=1"`
+	Limit          int    `form:"limit,default=10" binding:"min=1,max=100"`
+}
+
 type CreateCategoryRequest struct {
 	Name        string  `json:"name" binding:"required,max=150"`
 	Description *string `json:"description"`
